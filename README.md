@@ -1,2 +1,1 @@
-# pandas
-Pandas lib in Moonbit
+# smallbearrr/pandas
