@@ -1,3 +1,4 @@
+///|
 enum SeriesData {
   Int(Array[Int])
   Float(Array[Float])
@@ -5,19 +6,19 @@ enum SeriesData {
   Str(Array[String])
 } derive(Show, Eq)
 
+///|
 struct Series {
-  name: String
-  data: SeriesData
+  name : String
+  data : SeriesData
 } derive(Show, Eq)
 
-pub fn Series :: new(name: String, values: SeriesData) -> Series {
-  Series :: {
-      name: name.to_string(),
-      data : values,
-  }
+///|
+pub fn Series::new(name : String, values : SeriesData) -> Series {
+  Series::{ name: name.to_string(), data: values }
 }
 
-pub fn SeriesData :: length(self : SeriesData) -> Int {
+///|
+pub fn SeriesData::length(self : SeriesData) -> Int {
   match self {
     SeriesData::Int(data) => data.length()
     SeriesData::Float(data) => data.length()
@@ -26,11 +27,13 @@ pub fn SeriesData :: length(self : SeriesData) -> Int {
   }
 }
 
-pub fn Series :: name(self : Series) -> String {
+///|
+pub fn Series::name(self : Series) -> String {
   self.name
 }
 
-pub fn Series :: data(self : Series) -> SeriesData {
+///|
+pub fn Series::data(self : Series) -> SeriesData {
   self.data
 }
 
@@ -39,4 +42,3 @@ test "series" {
   assert_eq!(series.name(), "test")
   assert_eq!(series.data(), SeriesData::Int([1, 2, 3, 4, 5]))
 }
-
