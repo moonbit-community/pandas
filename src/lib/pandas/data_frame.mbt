@@ -5,7 +5,13 @@ pub(all) struct DataFrame {
 }
 
 ///|
-pub fn DataFrame::new(data : Array[Series]) -> DataFrame {
+type! InconsistentSeriesLength String derive(Show)
+pub fn DataFrame::new(data : Array[Series]) -> DataFrame!InconsistentSeriesLength {
+  for i = 1; i < data.length(); i=i+1 {
+    if data[i].data().length() != data[0].data().length() {
+      raise InconsistentSeriesLength("Could not create a new DataFrame. The Series lengths are not equal.")
+    }
+  }
   DataFrame::{ data, shape: [data[0].data().length(), data.length()] }
 }
 
@@ -66,7 +72,7 @@ pub fn DataFrame::head(self : DataFrame) -> Unit {
 }
 
 test "data_frame" {
-  let df = DataFrame::new([
+  let df = DataFrame::new!([
     Series::new("A", SeriesData::Int([1, 2, 3, 4, 5, 6])),
     Series::new("B", SeriesData::Float([1.5, 2.0, 3.5, 4.0, 5.5, 6.0])),
     Series::new("C", SeriesData::Bool([true, false, true, false, true, false])),
