@@ -18,6 +18,12 @@ let df = DataFrame::new([col1, col2])
 df.head()
 ```
 
+### Print the DataFrame structure
+You can use the `Show` trait to print the structure of the DataFrame:
+```moonbit
+println(df)
+```
+
 ### Add a new column
 ```moonbit
 let new_col = Series::new("C", SeriesData::Bool([true, false, true, false, true, false]))
@@ -52,12 +58,6 @@ df.add_row([DType::Int(7), DType::Float(7.5), DType::Bool(true), DType::Str("g")
 ### Select specific rows
 ```moonbit
 let row_selected = df.select_rows(1, 3)
-```
-
-## Testing
-Run the following command to execute tests:
-```sh
-moonbit test
 ```
 
 ## Contributing
