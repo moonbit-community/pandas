@@ -253,6 +253,131 @@ pub fn DataFrame::select_columns(
   }
 }
 
+///| Drop a row from the DataFrame
+///
+/// # Parameters
+///
+/// - `self` : An instance of the DataFrame
+/// - `row` : The index of the row to be dropped
+///
+/// # Returns
+///
+/// - `Unit` : This function drops a row from the DataFrame
+///
+/// # Errors
+///
+/// - `abort` : Raised if the row index is out of bounds
+///
+/// # Example
+/// ```
+/// df.drop_row(0)
+/// ```
+pub fn DataFrame::drop_row(self : DataFrame, row_index : Int) -> Unit {
+  if row_index < 0 || row_index >= self.shape()[0] {
+    abort("Row index out of bounds")
+  }
+  for col in self.data {
+    col.data.erase(row_index)
+  }
+  self.shape[0] = self.shape[0] - 1
+}
+
+///| Add a new row to the DataFrame
+///
+/// # Parameters
+///
+/// - `self` : An instance of the DataFrame
+/// - `row` : An array of DType representing the new row to be added
+///
+/// # Returns
+///
+/// - `Unit` : This function adds a new row to the DataFrame
+///
+/// # Errors
+///
+/// - `abort` : Raised if the row length does not match the DataFrame column length or if there is a type mismatch
+///
+/// # Example
+/// ```
+/// let mut df = DataFrame::new([
+///   Series::new("A", SeriesData::Int([1, 2, 3])), 
+///   Series::new("B", SeriesData::Float([1.1, 2.2, 3.3]))
+/// ])
+/// df.add_row([DType::Int(4), DType::Float(4.4)])
+/// ```
+pub fn DataFrame::add_row(self : DataFrame, row : Array[DType]) -> Unit {
+  if row.length() != self.shape()[1] {
+    abort("Row length does not match DataFrame column length")
+  }
+  for i = 0; i < row.length(); i = i + 1 {
+    match self.data[i].data {
+      SeriesData::Int(data) =>
+        match row[i] {
+          DType::Int(value) => data.push(value)
+          _ => abort("Type mismatch")
+        }
+      SeriesData::Float(data) =>
+        match row[i] {
+          DType::Float(value) => data.push(value)
+          _ => abort("Type mismatch")
+        }
+      SeriesData::Bool(data) =>
+        match row[i] {
+          DType::Bool(value) => data.push(value)
+          _ => abort("Type mismatch")
+        }
+      SeriesData::Str(data) =>
+        match row[i] {
+          DType::Str(value) => data.push(value)
+          _ => abort("Type mismatch")
+        }
+    }
+  }
+  self.shape[0] = self.shape[0] + 1
+}
+
+///| Select specific rows from the DataFrame
+///
+/// # Parameters
+///
+/// - `self` : An instance of the DataFrame
+/// - `begin` : The starting index of the rows to be selected (inclusive)
+/// - `end` : The ending index of the rows to be selected (exclusive)
+///
+/// # Returns
+///
+/// - `DataFrame` : A new DataFrame containing only the selected rows
+///
+/// # Example
+/// ```
+/// let df_selected = df.select_rows(2, 4)
+/// ```
+pub fn DataFrame::select_rows(
+  self : DataFrame,
+  begin : Int,
+  end : Int
+) -> DataFrame {
+  let selected_rows : Array[Series] = []
+  for col in self.data {
+    let select_data = match col.data() {
+      SeriesData::Int(data) =>
+        SeriesData::Int(data.split_at(begin).1.split_at(end - begin).0)
+      SeriesData::Float(data) =>
+        SeriesData::Float(data.split_at(begin).1.split_at(end - begin).0)
+      SeriesData::Bool(data) =>
+        SeriesData::Bool(data.split_at(begin).1.split_at(end - begin).0)
+      SeriesData::Str(data) =>
+        SeriesData::Str(data.split_at(begin).1.split_at(end - begin).0)
+    }
+    selected_rows.push(Series::new(col.name(), select_data))
+  }
+  DataFrame::{
+    data: selected_rows,
+    shape: [selected_rows[0].data().length(), self.shape()[1]],
+    index: self.index,
+  }
+}
+
 test "data_frame" {
   let df = DataFrame::new!([
     Series::new("A", SeriesData::Int([1, 2, 3, 4, 5, 6])),
@@ -268,4 +393,14 @@ test "data_frame" {
   df.rename_column("A", "A1")
   println(df)
   inspect!(df.data()[0].name(), content="A1")
+  df.drop_row(0)
+  df.add_row([
+    DType::Int(7),
+    DType::Float(7.5),
+    DType::Bool(true),
+    DType::Str("g"),
+  ])
+  println(df)
+  let row_selected = df.select_rows(1, 3)
+  inspect!(row_selected.shape(), content="[2, 4]")
 }

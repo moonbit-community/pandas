@@ -1,4 +1,12 @@
 ///|
+pub(all) enum DType {
+  Int(Int)
+  Float(Float)
+  Bool(Bool)
+  Str(String)
+}
+
+///|
 pub(all) enum SeriesData {
   Int(Array[Int])
   Float(Array[Float])
@@ -24,6 +32,28 @@ pub fn SeriesData::length(self : SeriesData) -> Int {
     SeriesData::Float(data) => data.length()
     SeriesData::Bool(data) => data.length()
     SeriesData::Str(data) => data.length()
+  }
+}
+
+///|
+pub fn SeriesData::erase(self : SeriesData, index : Int) -> Unit {
+  match self {
+    SeriesData::Int(data) => {
+      let _ = data.remove(index)
+
+    }
+    SeriesData::Float(data) => {
+      let _ = data.remove(index)
+
+    }
+    SeriesData::Bool(data) => {
+      let _ = data.remove(index)
+
+    }
+    SeriesData::Str(data) => {
+      let _ = data.remove(index)
+
+    }
   }
 }
 
