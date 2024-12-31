@@ -19,7 +19,7 @@ df.head()
 ```
 
 ### Print the DataFrame structure
-You can use the `Show` trait to print the structure of the DataFrame:
+DataFrame already trait the `Show`, can print the structure of the DataFrame directly:
 ```moonbit
 println(df)
 ```
