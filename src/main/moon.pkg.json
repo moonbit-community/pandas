@@ -1,6 +1,5 @@
 {
   "is-main": true,
   "import": [
-    "smallbearrr/pandas/lib"
   ]
 }
