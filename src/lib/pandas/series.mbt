@@ -8,8 +8,8 @@ pub(all) enum SeriesData {
 
 ///|
 pub(all) struct Series {
-  name : String
-  data : SeriesData
+  mut name : String
+  mut data : SeriesData
 } derive(Show, Eq)
 
 ///|
