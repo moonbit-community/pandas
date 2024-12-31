@@ -64,4 +64,4 @@ let row_selected = df.select_rows(1, 3)
 Issues and pull requests are welcome. Please make sure to run all tests before submitting.
 
 ## License
-This project is licensed under the MIT License. See the LICENSE file for details.
+This project is licensed under the Apache License. See the LICENSE file for details.
