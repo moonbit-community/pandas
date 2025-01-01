@@ -6,6 +6,13 @@ pub(all) struct DataFrame {
 }
 
 ///|
+let emptyDataFrame : DataFrame = DataFrame::{
+  data: [],
+  shape: [0, 0],
+  index: {},
+}
+
+///|
 type! InconsistentSeriesLength String derive(Show)
 
 ///| Create a new DataFrame
@@ -25,7 +32,7 @@ type! InconsistentSeriesLength String derive(Show)
 pub fn DataFrame::new(
   data : Array[Series]
 ) -> DataFrame!InconsistentSeriesLength {
-  let index : Map[String, Int] = Map::new()
+  let index : Map[String, Int] = {}
   for i = 0; i < data.length(); i = i + 1 {
     if data[i].data().length() != data[0].data().length() {
       raise InconsistentSeriesLength(
@@ -236,7 +243,7 @@ pub fn DataFrame::select_columns(
   cols : Array[String]
 ) -> DataFrame {
   let selected_cols : Array[Series] = []
-  let index : Map[String, Int] = Map::new()
+  let index : Map[String, Int] = {}
   for name in cols {
     match self.index.get(name) {
       Some(idx) => {
@@ -341,8 +348,8 @@ pub fn DataFrame::add_row(self : DataFrame, row : Array[DType]) -> Unit {
 /// # Parameters
 ///
 /// - `self` : An instance of the DataFrame
-/// - `begin` : The starting index of the rows to be selected (inclusive)
-/// - `end` : The ending index of the rows to be selected (exclusive)
+/// - `range` : An optional tuple representing the range of rows to be selected (inclusive start, exclusive end)
+/// - `indices` : An optional array of row indices to be selected
 ///
 /// # Returns
 ///
@@ -350,35 +357,153 @@ pub fn DataFrame::add_row(self : DataFrame, row : Array[DType]) -> Unit {
 ///
 /// # Example
 /// ```
-/// let df_selected = df.select_rows(2, 4)
+/// let df_selected_range = df.select_rows(range=(1, 4))
+/// inspect!(df_selected_range.shape(), content="[3, 4]")
+/// let df_selected_indices = df.select_rows(indices=[1, 3, 5])
 /// ```
 pub fn DataFrame::select_rows(
   self : DataFrame,
-  begin : Int,
-  end : Int
+  range? : (Int, Int),
+  indices? : Array[Int]
 ) -> DataFrame {
-  let selected_rows : Array[Series] = []
-  for col in self.data {
-    let select_data = match col.data() {
-      SeriesData::Int(data) =>
-        SeriesData::Int(data.split_at(begin).1.split_at(end - begin).0)
-      SeriesData::Float(data) =>
-        SeriesData::Float(data.split_at(begin).1.split_at(end - begin).0)
-      SeriesData::Bool(data) =>
-        SeriesData::Bool(data.split_at(begin).1.split_at(end - begin).0)
-      SeriesData::Str(data) =>
-        SeriesData::Str(data.split_at(begin).1.split_at(end - begin).0)
+  match range {
+    Some(_) => {
+      let selected_rows : Array[Series] = []
+      for col in self.data {
+        let (begin, end) = match range {
+          Some(r) => r
+          None => abort("Range is None")
+        }
+        let select_data = match col.data() {
+          SeriesData::Int(data) =>
+            SeriesData::Int(data.split_at(begin).1.split_at(end - begin).0)
+          SeriesData::Float(data) =>
+            SeriesData::Float(data.split_at(begin).1.split_at(end - begin).0)
+          SeriesData::Bool(data) =>
+            SeriesData::Bool(data.split_at(begin).1.split_at(end - begin).0)
+          SeriesData::Str(data) =>
+            SeriesData::Str(data.split_at(begin).1.split_at(end - begin).0)
+        }
+        selected_rows.push(Series::new(col.name(), select_data))
+      }
+      DataFrame::{
+        data: selected_rows,
+        shape: [selected_rows[0].data.length(), self.shape()[1]],
+        index: self.index,
+      }
     }
-    selected_rows.push(Series::new(col.name(), select_data))
-  }
-  DataFrame::{
-    data: selected_rows,
-    shape: [selected_rows[0].data().length(), self.shape()[1]],
-    index: self.index,
+    None =>
+      match indices {
+        Some(i) => {
+          for idx in i {
+            if idx < 0 || idx >= self.shape()[0] {
+              abort("Row index out of bounds")
+            }
+          }
+          i.sort()
+          let selected_rows : Array[Series] = []
+          for col in self.data {
+            match col.data {
+              SeriesData::Int(data) => {
+                let col_data = []
+                for idx in i {
+                  col_data.push(data[idx])
+                }
+                selected_rows.push(
+                  Series::new(col.name(), SeriesData::Int(col_data)),
+                )
+              }
+              SeriesData::Float(data) => {
+                let col_data = []
+                for idx in i {
+                  col_data.push(data[idx])
+                }
+                selected_rows.push(
+                  Series::new(col.name(), SeriesData::Float(col_data)),
+                )
+              }
+              SeriesData::Bool(data) => {
+                let col_data = []
+                for idx in i {
+                  col_data.push(data[idx])
+                }
+                selected_rows.push(
+                  Series::new(col.name(), SeriesData::Bool(col_data)),
+                )
+              }
+              SeriesData::Str(data) => {
+                let col_data = []
+                for idx in i {
+                  col_data.push(data[idx])
+                }
+                selected_rows.push(
+                  Series::new(col.name(), SeriesData::Str(col_data)),
+                )
+              }
+            }
+          }
+          DataFrame::{
+            data: selected_rows,
+            shape: [selected_rows[0].data().length(), self.shape()[1]],
+            index: self.index,
+          }
+        }
+        None => emptyDataFrame
+      }
   }
 }
 
-test "data_frame" {
+///| Filter rows in the DataFrame based on a condition
+///
+/// # Parameters
+///
+/// - `self` : An instance of the DataFrame
+/// - `name` : The name of the column to apply the filter on
+/// - `f` : A function that takes a `DType` and returns a `Bool` indicating whether the row should be included
+///
+/// # Returns
+///
+/// - `DataFrame` : A new DataFrame containing only the rows that satisfy the condition
+///
+/// # Example
+/// ```
+/// let df = DataFrame::new([Series::new("A", SeriesData::Int([1, 2, 3, 4, 5, 6]))])
+/// let filtered = df.filter("A", fn(x) -> Bool { x < DType::Int(3) })
+/// ```
+pub fn DataFrame::filter(
+  self : DataFrame,
+  name : String,
+  f : (DType) -> Bool
+) -> DataFrame {
+  match self.index.get(name) {
+    Some(index) =>
+      match self.data[index].data() {
+        SeriesData::Int(data) => {
+          let rows = Array::new()
+          for i = 0; i < data.length(); i = i + 1 {
+            if f(DType::Int(data[i])) {
+              rows.push(i)
+            }
+          }
+          self.select_rows(indices=rows)
+        }
+        SeriesData::Float(data) => {
+          let rows = Array::new()
+          for i = 0; i < data.length(); i = i + 1 {
+            if f(DType::Float(data[i])) {
+              rows.push(i)
+            }
+          }
+          self.select_rows(indices=rows)
+        }
+        SeriesData::Bool(_) => abort("Filtering not supported for Bool data")
+        SeriesData::Str(_) => abort("Filtering not supported for String data")
+      }
+    None => emptyDataFrame
+  }
+}
+
+test "new" {
   let df = DataFrame::new!([
     Series::new("A", SeriesData::Int([1, 2, 3, 4, 5, 6])),
     Series::new("B", SeriesData::Float([1.5, 2.0, 3.5, 4.0, 5.5, 6.0])),
@@ -386,12 +511,20 @@ test "data_frame" {
     Series::new("D", SeriesData::Str(["a", "b", "c", "d", "e", "f"])),
   ])
   inspect!(df.shape(), content="[6, 4]")
+}
+
+test "add_drop_rename" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesData::Int([1, 2, 3, 4, 5, 6])),
+    Series::new("B", SeriesData::Float([1.5, 2.0, 3.5, 4.0, 5.5, 6.0])),
+    Series::new("C", SeriesData::Bool([true, false, true, false, true, false])),
+    Series::new("D", SeriesData::Str(["a", "b", "c", "d", "e", "f"])),
+  ])
   df.add_column!(Series::new("E", SeriesData::Int([7, 8, 9, 10, 11, 12])))
   inspect!(df.shape(), content="[6, 5]")
   df.drop_column("E")
   inspect!(df.shape(), content="[6, 4]")
   df.rename_column("A", "A1")
-  println(df)
   inspect!(df.data()[0].name(), content="A1")
   df.drop_row(0)
   df.add_row([
@@ -400,7 +533,31 @@ test "data_frame" {
     DType::Bool(true),
     DType::Str("g"),
   ])
-  println(df)
-  let row_selected = df.select_rows(1, 3)
+  inspect!(df.shape(), content="[6, 4]")
+}
+
+test "select" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesData::Int([1, 2, 3, 4, 5, 6])),
+    Series::new("B", SeriesData::Float([1.5, 2.0, 3.5, 4.0, 5.5, 6.0])),
+    Series::new("C", SeriesData::Bool([true, false, true, false, true, false])),
+    Series::new("D", SeriesData::Str(["a", "b", "c", "d", "e", "f"])),
+  ])
+  let col_selected = df.select_columns(["A", "B"])
+  inspect!(col_selected.shape(), content="[6, 2]")
+  let row_selected = df.select_rows(range=(1, 3))
   inspect!(row_selected.shape(), content="[2, 4]")
+  let row_selected = df.select_rows(indices=[1, 3, 5])
+  inspect!(row_selected.shape(), content="[3, 4]")
+}
+
+test "filter" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesData::Int([1, 1, 3, 1, 1, 6])),
+    Series::new("B", SeriesData::Float([1.5, 2.0, 3.5, 4.0, 5.5, 6.0])),
+    Series::new("C", SeriesData::Bool([true, false, true, false, true, false])),
+    Series::new("D", SeriesData::Str(["a", "b", "c", "d", "e", "f"])),
+  ])
+  let filtered = df.filter("A", fn(x) -> Bool { x < DType::Int(3) })
+  inspect!(filtered.shape(), content="[4, 4]")
 }
