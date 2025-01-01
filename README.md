@@ -1,7 +1,7 @@
 # Pandas In Moonbit
 
 ## Introduction
-This is a data processing library written in Moonbit, similar to Python's pandas library. It provides a DataFrame data structure for efficient data manipulation and analysis.
+This is a data processing library written in Moonbit. It provides a DataFrame data structure for efficient data manipulation and analysis.
 
 ## Usage Examples
 Here are some basic usage examples:
@@ -72,5 +72,8 @@ let filtered = df.filter("A", fn(x) -> Bool { x < DType::Int(3) })
 ## Contributing
 Issues and pull requests are welcome. Please make sure to run all tests before submitting.
 
+## Contact
+If you have questions, feel free to open an issue in the repository. For other inquiries, contact me via email: [2421342308a@gmail.com].
+
 ## License
-This project is licensed under the Apache-2.0 License. See the LICENSE file for details.
+This project is licensed under the Apache License 2.0. See the LICENSE file for details.
