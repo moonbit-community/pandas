@@ -1,4 +1,4 @@
-# smallbearrr/pandas
+# Pandas In Moonbit
 
 ## Introduction
 This is a data processing library written in Moonbit, similar to Python's pandas library. It provides a DataFrame data structure for efficient data manipulation and analysis.
@@ -19,7 +19,7 @@ df.head()
 ```
 
 ### Print the DataFrame structure
-DataFrame already trait the `Show`, can print the structure of the DataFrame directly:
+DataFrame already traits the `Show`, so you can print the structure of the DataFrame directly:
 ```moonbit
 println(df)
 ```
@@ -56,12 +56,21 @@ df.add_row([DType::Int(7), DType::Float(7.5), DType::Bool(true), DType::Str("g")
 ```
 
 ### Select specific rows
+Select rows by range or by specific indices:
 ```moonbit
-let row_selected = df.select_rows(1, 3)
+let row_selected_range = df.select_rows(range=(1, 3))
+
+let row_selected_indices = df.select_rows(indices=[1, 3, 5])
+```
+
+### Filter rows based on a condition
+Filter rows based on a condition applied to a specific column:
+```moonbit
+let filtered = df.filter("A", fn(x) -> Bool { x < DType::Int(3) })
 ```
 
 ## Contributing
 Issues and pull requests are welcome. Please make sure to run all tests before submitting.
 
 ## License
-This project is licensed under the Apache License. See the LICENSE file for details.
+This project is licensed under the Apache-2.0 License. See the LICENSE file for details.
