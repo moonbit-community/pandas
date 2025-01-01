@@ -4,7 +4,7 @@ pub(all) enum DType {
   Float(Float)
   Bool(Bool)
   Str(String)
-}
+} derive(Show, Eq, Compare)
 
 ///|
 pub(all) enum SeriesData {
