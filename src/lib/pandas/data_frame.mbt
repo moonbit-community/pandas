@@ -15,6 +15,18 @@ let emptyDataFrame : DataFrame = DataFrame::{
 ///|
 type! InconsistentSeriesLength String derive(Show)
 
+///|
+type! AddColumnError String derive(Show)
+
+///|
+type! ColumnNotFoundError String derive(Show)
+
+///|
+type! IndexOutOfBounds String derive(Show)
+
+///|
+type! InvalidType String derive(Show)
+
 ///| Create a new DataFrame
 ///
 /// # Parameters
@@ -122,9 +134,6 @@ pub fn DataFrame::head(self : DataFrame) -> Unit {
   println(row_str)
 }
 
-///|
-type! AddColumnError String derive(Show)
-
 ///| Add a new column to the DataFrame
 ///
 /// # Parameters
@@ -215,10 +224,10 @@ pub fn DataFrame::rename_column(
   self : DataFrame,
   old_name : String,
   new_name : String
-) -> Unit {
+) -> Unit!ColumnNotFoundError {
   match self.index.get(old_name) {
     Some(idx) => self.data[idx].name = new_name
-    None => ()
+    None => raise ColumnNotFoundError("Column '\{old_name}' not found")
   }
 }
 
@@ -240,7 +249,7 @@ pub fn DataFrame::rename_column(
 pub fn DataFrame::select_columns(
   self : DataFrame,
   cols : Array[String]
-) -> DataFrame {
+) -> DataFrame!ColumnNotFoundError {
   let selected_cols : Array[Series] = []
   let index : Map[String, Int] = {}
   for name in cols {
@@ -249,7 +258,7 @@ pub fn DataFrame::select_columns(
         selected_cols.push(self.data[idx])
         index[name] = selected_cols.length() - 1
       }
-      None => ()
+      None => raise ColumnNotFoundError("Column '\{name}' not found")
     }
   }
   DataFrame::{
@@ -278,12 +287,12 @@ pub fn DataFrame::select_columns(
 /// ```
 /// df.drop_row(0)
 /// ```
-pub fn DataFrame::drop_row(self : DataFrame, row_index : Int) -> Unit {
+pub fn DataFrame::drop_row(self : DataFrame, row_index : Int) -> Unit! {
   if row_index < 0 || row_index >= self.shape()[0] {
-    abort("Row index out of bounds")
+    raise IndexOutOfBounds("Row index out of bounds")
   }
   for col in self.data {
-    col.data.erase(row_index)
+    col.data.erase!(row_index)
   }
   self.shape[0] = self.shape[0] - 1
 }
@@ -311,31 +320,33 @@ pub fn DataFrame::drop_row(self : DataFrame, row_index : Int) -> Unit {
 /// ])
 /// df.add_row([DType::Int(4), DType::Float(4.4)])
 /// ```
-pub fn DataFrame::add_row(self : DataFrame, row : Array[DType]) -> Unit {
+pub fn DataFrame::add_row(self : DataFrame, row : Array[DType]) -> Unit! {
   if row.length() != self.shape()[1] {
-    abort("Row length does not match DataFrame column length")
+    raise InconsistentSeriesLength(
+      "Row length does not match DataFrame column length",
+    )
   }
   for i = 0; i < row.length(); i = i + 1 {
     match self.data[i].data {
       SeriesData::Int(data) =>
         match row[i] {
           DType::Int(value) => data.push(value)
-          _ => abort("Type mismatch")
+          _ => raise InvalidType("Type mismatch")
         }
       SeriesData::Float(data) =>
         match row[i] {
           DType::Float(value) => data.push(value)
-          _ => abort("Type mismatch")
+          _ => raise InvalidType("Type mismatch")
         }
       SeriesData::Bool(data) =>
         match row[i] {
           DType::Bool(value) => data.push(value)
-          _ => abort("Type mismatch")
+          _ => raise InvalidType("Type mismatch")
         }
       SeriesData::Str(data) =>
         match row[i] {
           DType::Str(value) => data.push(value)
-          _ => abort("Type mismatch")
+          _ => raise InvalidType("Type mismatch")
         }
     }
   }
@@ -364,7 +375,7 @@ pub fn DataFrame::select_rows(
   self : DataFrame,
   range? : (Int, Int),
   indices? : Array[Int]
-) -> DataFrame {
+) -> DataFrame!IndexOutOfBounds {
   match (range, indices) {
     (Some(_), Some(_)) | (Some(_), None) => {
       let selected_rows : Array[Series] = []
@@ -394,12 +405,10 @@ pub fn DataFrame::select_rows(
     (None, Some(_)) =>
       match indices {
         Some(i) => {
-          for idx in i {
-            if idx < 0 || idx >= self.shape()[0] {
-              abort("Row index out of bounds")
-            }
-          }
           i.sort()
+          if i[0] < 0 || i[i.length() - 1] >= self.shape()[0] {
+            raise IndexOutOfBounds("Row index out of bounds")
+          }
           let selected_rows : Array[Series] = []
           for col in self.data {
             match col.data {
@@ -474,7 +483,7 @@ pub fn DataFrame::filter(
   self : DataFrame,
   name : String,
   f : (DType) -> Bool
-) -> DataFrame {
+) -> DataFrame! {
   match self.index.get(name) {
     Some(index) =>
       match self.data[index].data() {
@@ -485,7 +494,7 @@ pub fn DataFrame::filter(
               rows.push(i)
             }
           }
-          self.select_rows(indices=rows)
+          self.select_rows!(indices=rows)
         }
         SeriesData::Float(data) => {
           let rows = Array::new()
@@ -494,7 +503,7 @@ pub fn DataFrame::filter(
               rows.push(i)
             }
           }
-          self.select_rows(indices=rows)
+          self.select_rows!(indices=rows)
         }
         SeriesData::Bool(_) => abort("Filtering not supported for Bool data")
         SeriesData::Str(_) => abort("Filtering not supported for String data")
@@ -524,10 +533,10 @@ test "add_drop_rename" {
   inspect!(df.shape(), content="[6, 5]")
   df.drop_column("E")
   inspect!(df.shape(), content="[6, 4]")
-  df.rename_column("A", "A1")
+  df.rename_column!("A", "A1")
   inspect!(df.data()[0].name(), content="A1")
-  df.drop_row(0)
-  df.add_row([
+  df.drop_row!(0)
+  df.add_row!([
     DType::Int(7),
     DType::Float(7.5),
     DType::Bool(true),
@@ -543,11 +552,11 @@ test "select" {
     Series::new("C", SeriesData::Bool([true, false, true, false, true, false])),
     Series::new("D", SeriesData::Str(["a", "b", "c", "d", "e", "f"])),
   ])
-  let col_selected = df.select_columns(["A", "B"])
+  let col_selected = df.select_columns!(["A", "B"])
   inspect!(col_selected.shape(), content="[6, 2]")
-  let row_selected = df.select_rows(range=(1, 3))
+  let row_selected = df.select_rows!(range=(1, 3))
   inspect!(row_selected.shape(), content="[2, 4]")
-  let row_selected = df.select_rows(indices=[1, 3, 5])
+  let row_selected = df.select_rows!(indices=[1, 3, 5])
   inspect!(row_selected.shape(), content="[3, 4]")
 }
 
@@ -558,6 +567,6 @@ test "filter" {
     Series::new("C", SeriesData::Bool([true, false, true, false, true, false])),
     Series::new("D", SeriesData::Str(["a", "b", "c", "d", "e", "f"])),
   ])
-  let filtered = df.filter("A", fn(x) -> Bool { x < DType::Int(3) })
+  let filtered = df.filter!("A", fn(x) -> Bool { x < DType::Int(3) })
   inspect!(filtered.shape(), content="[4, 4]")
 }

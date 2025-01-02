@@ -36,24 +36,26 @@ pub fn SeriesData::length(self : SeriesData) -> Int {
 }
 
 ///|
-pub fn SeriesData::erase(self : SeriesData, index : Int) -> Unit {
+pub fn SeriesData::empty(self : SeriesData) -> Bool {
+  self.length() == 0
+}
+
+///|
+type! EmptyArrayError String derive(Show)
+
+///|
+pub fn SeriesData::erase(
+  self : SeriesData,
+  index : Int
+) -> Unit!EmptyArrayError {
+  if self.empty() {
+    raise EmptyArrayError("Cannot erase from an empty array")
+  }
   match self {
-    SeriesData::Int(data) => {
-      let _ = data.remove(index)
-
-    }
-    SeriesData::Float(data) => {
-      let _ = data.remove(index)
-
-    }
-    SeriesData::Bool(data) => {
-      let _ = data.remove(index)
-
-    }
-    SeriesData::Str(data) => {
-      let _ = data.remove(index)
-
-    }
+    SeriesData::Int(data) => data.remove(index) |> ignore
+    SeriesData::Float(data) => data.remove(index) |> ignore
+    SeriesData::Bool(data) => data.remove(index) |> ignore
+    SeriesData::Str(data) => data.remove(index) |> ignore
   }
 }
 
