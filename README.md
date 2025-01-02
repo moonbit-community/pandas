@@ -3,8 +3,7 @@
 ## Introduction
 This is a data processing library written in Moonbit. It provides a DataFrame data structure for efficient data manipulation and analysis.
 
-## Usage Examples
-Here are some basic usage examples:
+## Usage
 
 ### Create a DataFrame
 ```moonbit
@@ -76,4 +75,4 @@ Issues and pull requests are welcome. Please make sure to run all tests before s
 If you have questions, feel free to open an issue in the repository. For other inquiries, contact me via email: [2421342308a@gmail.com].
 
 ## License
-This project is licensed under the Apache License 2.0. See the LICENSE file for details.
+This project is licensed under the Apache-2.0 License. See the LICENSE file for details.
