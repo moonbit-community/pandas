@@ -16,7 +16,7 @@ let emptyDataFrame : DataFrame = DataFrame::{
 type! InconsistentSeriesLength String derive(Show)
 
 ///|
-type! AddColumnError String derive(Show)
+type! DuplicateColumnError String derive(Show)
 
 ///|
 type! ColumnNotFoundError String derive(Show)
@@ -26,6 +26,9 @@ type! IndexOutOfBounds String derive(Show)
 
 ///|
 type! InvalidType String derive(Show)
+
+///|
+type! FilterTypeNotSupported String derive(Show)
 
 ///| Create a new DataFrame
 ///
@@ -143,28 +146,26 @@ pub fn DataFrame::head(self : DataFrame) -> Unit {
 ///
 /// # Returns
 ///
-/// - `Unit!AddColumnError` : This function adds a new column to the DataFrame or raises an error
+/// - `Unit!` : This function adds a new column to the DataFrame or raises an error
 ///
 /// # Errors
 ///
-/// - `AddColumnError` : Raised if the Series length is not equal to the DataFrame length or if the Series name already exists
+/// - `InconsistentSeriesLength`: Series length is not equal to the DataFrame length
+/// - `DuplicateColumnError`: Series name already exists
 ///
 /// # Example
 /// ```
 /// let new_column = Series::new("B", SeriesData::Int([1, 2, 3]))
 /// df.add_column(new_column)
 /// ```
-pub fn DataFrame::add_column(
-  self : DataFrame,
-  col : Series
-) -> Unit!AddColumnError {
+pub fn DataFrame::add_column(self : DataFrame, col : Series) -> Unit! {
   if col.data().length() != self.shape()[0] {
-    raise AddColumnError(
-      "Could not add a new column to the DataFrame. The Series length is not equal to the DataFrame length.",
+    raise InconsistentSeriesLength(
+      "Could not add a new column to the DataFrame. The Series lengths are not equal.",
     )
   }
   if self.index.contains(col.name()) {
-    raise AddColumnError(
+    raise DuplicateColumnError(
       "Could not add a new column to the DataFrame. The Series name already exists.",
     )
   }
@@ -188,7 +189,10 @@ pub fn DataFrame::add_column(
 /// ```
 /// df.drop_column("column_name")
 /// ```
-pub fn DataFrame::drop_column(self : DataFrame, col_name : String) -> Unit {
+pub fn DataFrame::drop_column(
+  self : DataFrame,
+  col_name : String
+) -> Unit!ColumnNotFoundError {
   match self.index.get(col_name) {
     Some(idx) => {
       let _ = self.data.remove(idx)
@@ -196,7 +200,7 @@ pub fn DataFrame::drop_column(self : DataFrame, col_name : String) -> Unit {
       self.shape = [self.shape()[0], self.shape()[1] - 1]
       self.index.each(fn(k, v) { if v > idx { self.index[k] = v - 1 } })
     }
-    None => ()
+    None => raise ColumnNotFoundError("Column '\{col_name}' not found")
   }
 }
 
@@ -211,6 +215,10 @@ pub fn DataFrame::drop_column(self : DataFrame, col_name : String) -> Unit {
 /// # Returns
 ///
 /// - `Unit` : This function renames a column in the DataFrame
+/// 
+/// # Errors
+/// 
+/// - `ColumnNotFoundError` : Raised if the column is not found
 ///
 /// # Example
 /// ```
@@ -241,6 +249,10 @@ pub fn DataFrame::rename_column(
 /// # Returns
 ///
 /// - `DataFrame` : A new DataFrame containing only the selected columns
+/// 
+/// # Errors
+/// 
+/// - `ColumnNotFoundError` : Raised if a column is not found
 ///
 /// # Example
 /// ```
@@ -281,7 +293,7 @@ pub fn DataFrame::select_columns(
 ///
 /// # Errors
 ///
-/// - `abort` : Raised if the row index is out of bounds
+/// - `IndexOutOfBounds` : Raised if the row index is out of bounds
 ///
 /// # Example
 /// ```
@@ -310,7 +322,8 @@ pub fn DataFrame::drop_row(self : DataFrame, row_index : Int) -> Unit! {
 ///
 /// # Errors
 ///
-/// - `abort` : Raised if the row length does not match the DataFrame column length or if there is a type mismatch
+/// - `InconsistentSeriesLength` : Raised if the row length does not match the DataFrame column length
+/// - `InvalidType` : if there is a type mismatch
 ///
 /// # Example
 /// ```
@@ -364,6 +377,10 @@ pub fn DataFrame::add_row(self : DataFrame, row : Array[DType]) -> Unit! {
 /// # Returns
 ///
 /// - `DataFrame` : A new DataFrame containing only the selected rows
+/// 
+/// # Errors
+/// 
+/// - `IndexOutOfBounds` : Raised if the row index is out of bounds
 ///
 /// # Example
 /// ```
@@ -505,8 +522,10 @@ pub fn DataFrame::filter(
           }
           self.select_rows!(indices=rows)
         }
-        SeriesData::Bool(_) => abort("Filtering not supported for Bool data")
-        SeriesData::Str(_) => abort("Filtering not supported for String data")
+        SeriesData::Bool(_) =>
+          raise FilterTypeNotSupported("Filtering not supported for Bool data")
+        SeriesData::Str(_) =>
+          raise FilterTypeNotSupported("Filtering not supported for Str data")
       }
     None => emptyDataFrame
   }
@@ -531,7 +550,7 @@ test "add_drop_rename" {
   ])
   df.add_column!(Series::new("E", SeriesData::Int([7, 8, 9, 10, 11, 12])))
   inspect!(df.shape(), content="[6, 5]")
-  df.drop_column("E")
+  df.drop_column!("E")
   inspect!(df.shape(), content="[6, 4]")
   df.rename_column!("A", "A1")
   inspect!(df.data()[0].name(), content="A1")
@@ -569,4 +588,64 @@ test "filter" {
   ])
   let filtered = df.filter!("A", fn(x) -> Bool { x < DType::Int(3) })
   inspect!(filtered.shape(), content="[4, 4]")
+}
+
+test "new_error" {
+  let col1 = Series::new("A", SeriesData::Int([1, 2, 3, 4, 5, 6]))
+  let col2 = Series::new("B", SeriesData::Float([1.5, 2.0, 3.5]))
+  let res = DataFrame::new?([col1, col2])
+  inspect!(
+    res,
+    content="Err(InconsistentSeriesLength(\"Could not create a new DataFrame. The Series lengths are not equal.\"))",
+  )
+}
+
+test "add_column_error" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesData::Int([1, 2, 3, 4, 5, 6])),
+    Series::new("B", SeriesData::Float([1.5, 2.0, 3.5, 4.0, 5.5, 6.0])),
+  ])
+  let col = Series::new("B", SeriesData::Int([1, 2, 3, 4, 5, 6]))
+  let res = df.add_column?(col)
+  inspect!(
+    res,
+    content="Err(DuplicateColumnError(\"Could not add a new column to the DataFrame. The Series name already exists.\"))",
+  )
+  let res = df.add_column?(Series::new("C", SeriesData::Int([1, 2, 3])))
+  inspect!(
+    res,
+    content="Err(InconsistentSeriesLength(\"Could not add a new column to the DataFrame. The Series lengths are not equal.\"))",
+  )
+}
+
+test "drop_column_error" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesData::Int([1, 2, 3, 4, 5, 6])),
+    Series::new("B", SeriesData::Float([1.5, 2.0, 3.5, 4.0, 5.5, 6.0])),
+  ])
+  let res = df.drop_column?("C")
+  inspect!(res, content="Err(ColumnNotFoundError(\"Column 'C' not found\"))")
+}
+
+test "rename_column_error" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesData::Int([1, 2, 3, 4, 5, 6])),
+    Series::new("B", SeriesData::Float([1.5, 2.0, 3.5, 4.0, 5.5, 6.0])),
+  ])
+  let res = df.rename_column?("C", "D")
+  inspect!(res, content="Err(ColumnNotFoundError(\"Column 'C' not found\"))")
+}
+
+test "filter_error" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesData::Int([1, 1, 3, 1, 1, 6])),
+    Series::new("B", SeriesData::Float([1.5, 2.0, 3.5, 4.0, 5.5, 6.0])),
+    Series::new("C", SeriesData::Bool([true, false, true, false, true, false])),
+    Series::new("D", SeriesData::Str(["a", "b", "c", "d", "e", "f"])),
+  ])
+  let res = df.filter?("D", fn(x) -> Bool { x == DType::Str("a") })
+  inspect!(
+    res,
+    content="Err(FilterTypeNotSupported(\"Filtering not supported for Str data\"))",
+  )
 }
