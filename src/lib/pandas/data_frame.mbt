@@ -29,6 +29,15 @@ type! InconsistentSeriesLength String derive(Show)
 ///
 /// - `InconsistentSeriesLength` : Raised if the lengths of the Series are not equal
 ///
+/// # Example
+/// ```
+/// let df = DataFrame::new!([
+///   Series::new("A", SeriesData::Int([1, 1, 3, 1, 1, 6])),
+///   Series::new("B", SeriesData::Float([1.5, 2.0, 3.5, 4.0, 5.5, 6.0])),
+///   Series::new("C", SeriesData::Bool([true, false, true, false, true, false])),
+///   Series::new("D", SeriesData::Str(["a", "b", "c", "d", "e", "f"])),
+/// ])
+/// ```
 pub fn DataFrame::new(
   data : Array[Series]
 ) -> DataFrame!InconsistentSeriesLength {
@@ -89,12 +98,7 @@ pub impl Show for DataFrame with output(self, logger) {
 ///
 /// # Example
 /// ```
-/// test {
-///   let col1 = Series::new("A", SeriesData::Int([1, 2, 3, 4, 5, 6]))
-///   let col2 = Series::new("B", SeriesData::Float([1.1, 2.2, 3.3, 4.4, 5.5, 6.6]))
-///   let df = DataFrame::new([col1, col2])
-///   df.head()
-/// }
+/// df.head()
 /// ```
 pub fn DataFrame::head(self : DataFrame) -> Unit {
   let mut row_str = "\t"
@@ -138,6 +142,7 @@ type! AddColumnError String derive(Show)
 ///
 /// # Example
 /// ```
+/// let new_column = Series::new("B", SeriesData::Int([1, 2, 3]))
 /// df.add_column(new_column)
 /// ```
 pub fn DataFrame::add_column(
@@ -201,8 +206,7 @@ pub fn DataFrame::drop_column(self : DataFrame, col_name : String) -> Unit {
 /// # Example
 /// ```
 /// test {
-///   let col1 = Series::new("A", SeriesData::Int([1, 2, 3]))
-///   let mut df = DataFrame::new([col1])
+///   let mut df = DataFrame::new([Series::new("A", SeriesData::Int([1, 2]))])
 ///   df.rename("A", "B")
 ///   inspect!(df.data()[0].name(), context="B")
 /// }
@@ -231,12 +235,7 @@ pub fn DataFrame::rename_column(
 ///
 /// # Example
 /// ```
-/// test {
-///   let col1 = Series::new("A", SeriesData::Int([1, 2, 3]))
-///   let col2 = Series::new("B", SeriesData::Float([1.1, 2.2, 3.3]))
-///   let df = DataFrame::new([col1, col2])
-///   let df_selected = df.select_columns(["A", "B"])
-/// }
+/// let df_selected = df.select_columns(["col_name1", "col_name2"])
 /// ```
 pub fn DataFrame::select_columns(
   self : DataFrame,
@@ -358,7 +357,7 @@ pub fn DataFrame::add_row(self : DataFrame, row : Array[DType]) -> Unit {
 /// # Example
 /// ```
 /// let df_selected_range = df.select_rows(range=(1, 4))
-/// inspect!(df_selected_range.shape(), content="[3, 4]")
+/// 
 /// let df_selected_indices = df.select_rows(indices=[1, 3, 5])
 /// ```
 pub fn DataFrame::select_rows(
