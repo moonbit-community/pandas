@@ -366,8 +366,8 @@ pub fn DataFrame::select_rows(
   range? : (Int, Int),
   indices? : Array[Int]
 ) -> DataFrame {
-  match range {
-    Some(_) => {
+  match (range, indices) {
+    (Some(_), Some(_)) | (Some(_), None) => {
       let selected_rows : Array[Series] = []
       for col in self.data {
         let (begin, end) = match range {
@@ -392,7 +392,7 @@ pub fn DataFrame::select_rows(
         index: self.index,
       }
     }
-    None =>
+    (None, Some(_)) =>
       match indices {
         Some(i) => {
           for idx in i {
@@ -450,6 +450,7 @@ pub fn DataFrame::select_rows(
         }
         None => emptyDataFrame
       }
+    (None, None) => emptyDataFrame
   }
 }
 
