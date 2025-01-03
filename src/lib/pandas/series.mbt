@@ -20,12 +20,26 @@ pub(all) struct Series {
   mut data : SeriesData
 } derive(Show, Eq)
 
-///|
+///| Create a new Series
+///
+/// # Parameters
+///
+/// - `name` : The name of the Series
+/// - `values` : The data contained in the Series
+///
+/// # Returns
+///
+/// - `Series` : A new Series instance
+///
+/// # Example
+/// ```
+/// let series = Series::new("A", SeriesData::Int([1, 2, 3]))
+/// ```
 pub fn Series::new(name : String, values : SeriesData) -> Series {
   Series::{ name: name.to_string(), data: values }
 }
 
-///|
+///| Get the length of the SeriesData
 pub fn SeriesData::length(self : SeriesData) -> Int {
   match self {
     SeriesData::Int(data) => data.length()
@@ -35,7 +49,7 @@ pub fn SeriesData::length(self : SeriesData) -> Int {
   }
 }
 
-///|
+///| Check if the SeriesData is empty
 pub fn SeriesData::empty(self : SeriesData) -> Bool {
   self.length() == 0
 }
@@ -43,7 +57,7 @@ pub fn SeriesData::empty(self : SeriesData) -> Bool {
 ///|
 type! EmptyArrayError String derive(Show)
 
-///|
+///| erase the element at the given index
 pub fn SeriesData::erase(
   self : SeriesData,
   index : Int
@@ -59,7 +73,7 @@ pub fn SeriesData::erase(
   }
 }
 
-///|
+///| Sort the SeriesData
 pub fn SeriesData::sort(self : SeriesData) -> Unit {
   match self {
     SeriesData::Int(data) => data.sort()
@@ -69,22 +83,79 @@ pub fn SeriesData::sort(self : SeriesData) -> Unit {
   }
 }
 
-///|
-pub fn SeriesData::argsort(self: SeriesData) -> Array[Int] {
-  let indices = Array::makei(self.length(), fn(i) {i})
+///| get the indices of the sorted elements
+fn SeriesData::get_argsort_indices(
+  self : SeriesData,
+  decrease~ : Bool = false
+) -> Array[Int] {
+  let indices = Array::makei(self.length(), fn(i) { i })
   match self {
-    SeriesData::Int(data) => indices.sort_by_key(fn(i) {data[i]})
-    SeriesData::Float(data) => indices.sort_by_key(fn(i) {data[i]})
-    SeriesData::Bool(data) => indices.sort_by_key(fn(i) {data[i]})
-    SeriesData::Str(data) => indices.sort_by_key(fn(i) {data[i]})
+    SeriesData::Int(data) => indices.sort_by_key(fn(i) { data[i] })
+    SeriesData::Float(data) => indices.sort_by_key(fn(i) { data[i] })
+    SeriesData::Bool(data) => indices.sort_by_key(fn(i) { data[i] })
+    SeriesData::Str(data) => indices.sort_by_key(fn(i) { data[i] })
+  }
+  if decrease {
+    indices.rev_inplace()
   }
   indices
 }
 
-///|
-pub fn Series::argsort(self : Series) -> Array[Int] {
-  self.data.argsort()
+///| Sort the SeriesData by the indices
+fn SeriesData::argsort_indices(self : SeriesData, indices : Array[Int]) -> Unit {
+  match self {
+    SeriesData::Int(data) => indices_sort(data, indices)
+    SeriesData::Float(data) => indices_sort(data, indices)
+    SeriesData::Bool(data) => indices_sort(data, indices)
+    SeriesData::Str(data) => indices_sort(data, indices)
+  }
 }
+
+///| Sort the SeriesData and return the indices of the sorted elements
+///
+/// # Parameters
+///
+/// - `self` : An instance of the SeriesData
+/// - `decrease` : A boolean indicating whether to sort in descending order (default is false)
+///
+/// # Returns
+///
+/// - `Array[Int]` : An array of indices representing the sorted order of the elements
+///
+/// # Example
+/// ```
+/// let data = SeriesData::Int([3, 1, 2])
+/// let sorted_indices = data.argsort()
+/// ```
+pub fn SeriesData::argsort(
+  self : SeriesData,
+  decrease~ : Bool = false
+) -> Array[Int] {
+  let indices = self.get_argsort_indices(decrease~)
+  self.argsort_indices(indices)
+  indices
+}
+
+///| Sort the SeriesData in Series and return the indices of the sorted elements
+///
+/// # Parameters
+///
+/// - `self` : An instance of the SeriesData
+/// - `decrease` : A boolean indicating whether to sort in descending order (default is false)
+///
+/// # Returns
+///
+/// - `Array[Int]` : An array of indices representing the sorted order of the elements
+///
+/// # Example
+/// ```
+/// let series = Series :: { name: "A", data: SeriesData::Int([3, 1, 2]) }
+/// let sorted_indices = series.argsort()
+/// ```
+pub fn Series::argsort(self : Series, decrease~ : Bool = false) -> Array[Int] {
+  self.data.argsort(decrease~)
+}
+
 ///|
 pub fn Series::name(self : Series) -> String {
   self.name
@@ -101,8 +172,16 @@ test "series" {
   assert_eq!(series.data(), SeriesData::Int([1, 2, 3, 4, 5]))
 }
 
+test "argsort_indices" {
+  let series = Series::new("test", SeriesData::Int([2, 1, 3, 5, 4]))
+  let indices = series.data.get_argsort_indices()
+  inspect!(indices, content="[1, 0, 2, 4, 3]")
+  let series = Series::new("test", SeriesData::Str(["a", "b", "c", "d", "e"]))
+  inspect!(series.data.get_argsort_indices(), content="[0, 1, 2, 3, 4]")
+}
+
 test "argsort" {
   let series = Series::new("test", SeriesData::Int([2, 1, 3, 5, 4]))
-  let indices = series.argsort()
+  let indices = series.data.argsort()
   inspect!(indices, content="[1, 0, 2, 4, 3]")
 }

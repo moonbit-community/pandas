@@ -27,9 +27,6 @@ type! IndexOutOfBounds String derive(Show)
 ///|
 type! InvalidType String derive(Show)
 
-///|
-type! FilterTypeNotSupported String derive(Show)
-
 ///| Create a new DataFrame
 ///
 /// # Parameters
@@ -521,31 +518,68 @@ pub fn DataFrame::filter(
           }
           self.select_rows!(indices=rows)
         }
-        SeriesData::Bool(_) =>
-          raise FilterTypeNotSupported("Filtering not supported for Bool data")
-        SeriesData::Str(_) =>
-          raise FilterTypeNotSupported("Filtering not supported for Str data")
+        SeriesData::Bool(data) => {
+          let rows = Array::new()
+          for i = 0; i < data.length(); i = i + 1 {
+            if f(DType::Bool(data[i])) {
+              rows.push(i)
+            }
+          }
+          self.select_rows!(indices=rows)
+        }
+        SeriesData::Str(data) => {
+          let rows = Array::new()
+          for i = 0; i < data.length(); i = i + 1 {
+            if f(DType::Str(data[i])) {
+              rows.push(i)
+            }
+          }
+          self.select_rows!(indices=rows)
+        }
       }
     None => emptyDataFrame
   }
 }
 
-///|
-pub fn DataFrame::sort(self:DataFrame, col_name : String, decrease~ : Bool = false) -> Unit! {
-    match self.index.get(col_name) {
-        Some(name) => {
-            let indices = self.data[name].data().argsort()
-            match decrease {
-                true => {
-                    ...
-                }
-                false => {
-                    ...
-                }
-            }
-        }
-        None => raise ColumnNotFoundError("Column '\{col_name}' not found.")
+///| Sort the DataFrame by a specified column
+///
+/// # Parameters
+///
+/// - `self` : An instance of the DataFrame
+/// - `col_name` : The name of the column to sort by
+/// - `decrease` : A boolean indicating whether to sort in descending order (default is false)
+///
+/// # Returns
+///
+/// - `Unit` : This function sorts the DataFrame in place
+///
+/// # Errors
+///
+/// - `ColumnNotFoundError` : Raised if the specified column is not found
+///
+/// # Example
+/// ```
+/// let df = DataFrame::new([
+///   Series::new("A", SeriesData::Int([3, 1, 2])), 
+///   Series::new("B", SeriesData::Float([3.3, 1.1, 2.2]))
+/// ])
+/// df.sort("A", decrease=true)
+/// inspect!(df.data()[0].data(), content="Int([1, 2, 3])")
+/// ```
+pub fn DataFrame::sort(
+  self : DataFrame,
+  col_name : String,
+  decrease~ : Bool = false
+) -> Unit!ColumnNotFoundError {
+  match self.index.get(col_name) {
+    Some(index) => {
+      let indices = self.data[index].data.get_argsort_indices(decrease~)
+      for item in self.data {
+        item.data.argsort_indices(indices)
+      }
     }
+    None => raise ColumnNotFoundError("Column '\{col_name}' not found.")
+  }
 }
 
 ///| Tests
@@ -608,6 +642,24 @@ test "filter" {
   inspect!(filtered.shape(), content="[4, 4]")
 }
 
+test "sort" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesData::Int([2, 1, 3, 5, 4])),
+    Series::new("B", SeriesData::Float([2.2, 1.1, 3.3, 5.5, 4.4])),
+    Series::new("C", SeriesData::Bool([true, false, true, false, true])),
+    Series::new("D", SeriesData::Str(["b", "a", "c", "e", "d"])),
+  ])
+  df.sort!("A")
+  inspect!(df.data()[0].data(), content="Int([1, 2, 3, 4, 5])")
+  df.sort!("A", decrease=true)
+  inspect!(df.data()[0].data(), content="Int([5, 4, 3, 2, 1])")
+  inspect!(
+    df.data()[3].data(),
+    content="Str([\"e\", \"d\", \"c\", \"b\", \"a\"])",
+  )
+}
+
+///|
 test "new_error" {
   let col1 = Series::new("A", SeriesData::Int([1, 2, 3, 4, 5, 6]))
   let col2 = Series::new("B", SeriesData::Float([1.5, 2.0, 3.5]))
@@ -652,18 +704,4 @@ test "rename_column_error" {
   ])
   let res = df.rename_column?("C", "D")
   inspect!(res, content="Err(ColumnNotFoundError(\"Column 'C' not found\"))")
-}
-
-test "filter_error" {
-  let df = DataFrame::new!([
-    Series::new("A", SeriesData::Int([1, 1, 3, 1, 1, 6])),
-    Series::new("B", SeriesData::Float([1.5, 2.0, 3.5, 4.0, 5.5, 6.0])),
-    Series::new("C", SeriesData::Bool([true, false, true, false, true, false])),
-    Series::new("D", SeriesData::Str(["a", "b", "c", "d", "e", "f"])),
-  ])
-  let res = df.filter?("D", fn(x) -> Bool { x == DType::Str("a") })
-  inspect!(
-    res,
-    content="Err(FilterTypeNotSupported(\"Filtering not supported for Str data\"))",
-  )
 }
