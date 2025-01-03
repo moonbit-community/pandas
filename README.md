@@ -68,6 +68,12 @@ Filter rows based on a condition applied to a specific column:
 let filtered = df.filter!("A", fn(x) -> Bool { x < DType::Int(3) })
 ```
 
+### Sort the DataFrame by a specified column
+Sort the DataFrame by a specified column in ascending or descending order:
+```moonbit
+df.sort!("A")
+df.sort!("B", decrease=true)
+
 ## Contributing
 Issues and pull requests are welcome. Please make sure to run all tests before submitting.
 

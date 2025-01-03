@@ -547,7 +547,7 @@ pub fn DataFrame::filter(
 ///
 /// - `self` : An instance of the DataFrame
 /// - `col_name` : The name of the column to sort by
-/// - `decrease` : A boolean indicating whether to sort in descending order (default is false)
+/// - `decrease~` : Whether to sort in descending order (default is false)
 ///
 /// # Returns
 ///
