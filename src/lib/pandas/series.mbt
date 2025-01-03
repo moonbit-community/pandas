@@ -166,6 +166,35 @@ pub fn Series::data(self : Series) -> SeriesData {
   self.data
 }
 
+// type! TypeError String derive(Show)
+///| SeriesData add
+pub fn op_add(self : SeriesData, other : SeriesData) -> SeriesData {
+  match (self, other) {
+    (SeriesData::Int(a), SeriesData::Int(b)) => {
+      let res = a
+      res.eachi(fn(i, v){ res[i] = v + b[i] })
+      SeriesData::Int(res)
+    }
+    (SeriesData::Float(a), SeriesData::Float(b)) => {
+      let res = a
+      res.eachi(fn(i, v){ res[i] = v + b[i] })
+      SeriesData::Float(res)
+    }
+    (SeriesData::Str(a), SeriesData::Str(b)) => SeriesData::Str(a + b)
+    (SeriesData::Int(a), SeriesData::Float(b)) | (SeriesData::Float(b), SeriesData::Int(a)) => {
+      let res = b
+      res.eachi(fn(i, v){ res[i] = v + a[i].to_float() })
+      SeriesData::Float(res)
+    }
+    _ => self
+  }
+}
+
+///| Series add
+pub fn op_add(self : Series, other : Series) -> Series {
+  Series::new(self.name(), self.data() + other.data())
+}
+
 test "series" {
   let series = Series::new("test", SeriesData::Int([1, 2, 3, 4, 5]))
   assert_eq!(series.name(), "test")
@@ -184,4 +213,13 @@ test "argsort" {
   let series = Series::new("test", SeriesData::Int([2, 1, 3, 5, 4]))
   let indices = series.data.argsort()
   inspect!(indices, content="[1, 0, 2, 4, 3]")
+}
+
+test "series_add" {
+  let a = Series::new("a", SeriesData::Float([1.5, 2, 3.5]))
+  let b = Series::new("b", SeriesData::Int([4, 5, 6]))
+  let c = a.data + b.data
+  inspect!(c, content="Float([5.5, 7, 9.5])")
+  let c = a + b
+  inspect!(c, content="Series { name: \"a\", data: Float([5.5, 7, 9.5]) }")
 }

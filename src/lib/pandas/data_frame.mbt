@@ -235,6 +235,35 @@ pub fn DataFrame::rename_column(
   }
 }
 
+///| Select a column from the DataFrame
+///
+/// # Parameters
+///
+/// - `self` : An instance of the DataFrame
+/// - `col_name` : Column name to be selected
+///
+/// # Returns
+///
+/// - `Series` : Series contain selected columns
+/// 
+/// # Errors
+/// 
+/// - `ColumnNotFoundError` : Raised if a column is not found
+///
+/// # Example
+/// ```
+/// let col_selected = df.column("col_name")
+/// ```
+pub fn DataFrame::column(
+  self : DataFrame,
+  col_name : String
+) -> Series!ColumnNotFoundError {
+  match self.index.get(col_name) {
+    Some(idx) => self.data[idx]
+    None => raise ColumnNotFoundError("Column '\{col_name}' not found")
+  }
+}
+
 ///| Select specific columns from the DataFrame
 ///
 /// # Parameters

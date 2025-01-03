@@ -39,9 +39,14 @@ Rename a column
 df.rename_column!("A", "A1")
 ```
 
+Select a column
+```moonbit
+let df_col = df.column("A")
+```
+
 Select specific columns
 ```moonbit
-let df_selected = df.select_columns!(["A1", "B"])
+let df_cols = df.select_columns!(["A1", "B"])
 ```
 
 Drop a row
@@ -60,7 +65,6 @@ let row_selected_range = df.select_rows!(range=(1, 3))
 let row_selected_indices = df.select_rows!(indices=[1, 3, 5])
 ```
 
-Filter rows based on a condition
 Filter rows based on a condition applied to a specific column:
 ```moonbit
 let filtered = df.filter!("A", fn(x) -> Bool { x < DType::Int(3) })
@@ -70,6 +74,25 @@ Sort the DataFrame by a specified column in ascending or descending order:
 ```moonbit
 df.sort!("A")
 df.sort!("B", decrease=true)
+```
+
+### Series
+Create a Series
+```moonbit
+let series_int = Series::new("IntColumn", SeriesData::Int([1, 2, 3, 4, 5]))
+let series_float = Series::new("FloatColumn", SeriesData::Float([1.1, 2.2, 3.3, 4.4, 5.5]))
+let series_bool = Series::new("BoolColumn", SeriesData::Bool([true, false, true, false, true]))
+let series_str = Series::new("StrColumn", SeriesData::Str(["a", "b", "c", "d", "e"]))
+```
+
+Erase element
+```moonbit
+series.erase(1)
+```
+
+Sort the SeriesData in Series and return the indices of the sorted elements
+```moonbit
+let indices = series.sort()
 ```
 
 ## Contributing
