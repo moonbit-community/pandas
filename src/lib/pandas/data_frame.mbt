@@ -120,8 +120,7 @@ pub fn DataFrame::head(self : DataFrame) -> Unit {
   for col in self.data {
     row_str = row_str + col.name() + "\t"
   }
-  println(row_str)
-  row_str = ""
+  row_str += "\n"
   for i = 0; i < @math.minimum(5, self.shape()[0]); i = i + 1 {
     row_str += i.to_string() + "\t"
     for col in self.data {
@@ -531,6 +530,25 @@ pub fn DataFrame::filter(
   }
 }
 
+///|
+pub fn DataFrame::sort(self:DataFrame, col_name : String, decrease~ : Bool = false) -> Unit! {
+    match self.index.get(col_name) {
+        Some(name) => {
+            let indices = self.data[name].data().argsort()
+            match decrease {
+                true => {
+                    ...
+                }
+                false => {
+                    ...
+                }
+            }
+        }
+        None => raise ColumnNotFoundError("Column '\{col_name}' not found.")
+    }
+}
+
+///| Tests
 test "new" {
   let df = DataFrame::new!([
     Series::new("A", SeriesData::Int([1, 2, 3, 4, 5, 6])),

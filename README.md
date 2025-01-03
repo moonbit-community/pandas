@@ -41,7 +41,7 @@ df.rename_column!("A", "A1")
 
 ### Select specific columns
 ```moonbit
-let df_selected = df.select_columns(["A1", "B"])
+let df_selected = df.select_columns!(["A1", "B"])
 ```
 
 ### Drop a row
