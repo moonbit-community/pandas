@@ -611,6 +611,92 @@ pub fn DataFrame::sort(
   }
 }
 
+///| Vertically stack two DataFrames
+///
+/// # Parameters
+///
+/// - `self` : An instance of the DataFrame
+/// - `other` : Another DataFrame to be stacked vertically
+///
+/// # Returns
+///
+/// - `DataFrame` : A new DataFrame resulting from the vertical stacking of the two DataFrames
+///
+/// # Errors
+///
+/// - `InconsistentSeriesLength` : Raised if the number of columns in the two DataFrames is not the same
+/// - `InvalidType` : Raised if the data types of the corresponding columns in the two DataFrames are not the same
+///
+/// # Example
+/// ```
+/// let df1 = DataFrame::new!([
+///   Series::new("A", SeriesData::Int([1, 2, 3]))
+/// ])
+/// let df2 = DataFrame::new!([
+///   Series::new("A", SeriesData::Int([4, 5, 6]))
+/// ])
+/// let df_stacked = df1.vstack!(df2)
+/// ```
+pub fn vstack(self : DataFrame, other : DataFrame) -> DataFrame! {
+  if self.shape()[1] != other.shape()[1] {
+    raise InconsistentSeriesLength("The number of columns must be the same.")
+  }
+  let data : Array[Series] = []
+  for series in self.data {
+    match (series.data, other.column!(series.name).data) {
+      (SeriesData::Int(data1), SeriesData::Int(data2)) => {
+        let new_data = data1 + data2
+        data.push(Series::new(series.name, SeriesData::Int(new_data)))
+      }
+      (SeriesData::Float(data1), SeriesData::Float(data2)) => {
+        let new_data = data1 + data2
+        data.push(Series::new(series.name, SeriesData::Float(new_data)))
+      }
+      (SeriesData::Bool(data1), SeriesData::Bool(data2)) => {
+        let new_data = data1 + data2
+        data.push(Series::new(series.name, SeriesData::Bool(new_data)))
+      }
+      (SeriesData::Str(data1), SeriesData::Str(data2)) => {
+        let new_data = data1 + data2
+        data.push(Series::new(series.name, SeriesData::Str(new_data)))
+      }
+      _ => raise InvalidType("The data types must be the same.")
+    }
+  }
+  DataFrame::new!(data)
+}
+
+///| Horizontally stack two DataFrames
+///
+/// # Parameters
+///
+/// - `self` : An instance of the DataFrame
+/// - `other` : Another DataFrame to be stacked horizontally
+///
+/// # Returns
+///
+/// - `DataFrame` : A new DataFrame resulting from the horizontal stacking of the two DataFrames
+///
+/// # Example
+/// ```
+/// let df1 = DataFrame::new!([
+///   Series::new("A", SeriesData::Int([1, 2, 3]))
+/// ])
+/// let df2 = DataFrame::new!([
+///   Series::new("B", SeriesData::Int([4, 5, 6]))
+/// ])
+/// let df_stacked = df1.hstack!(df2)
+/// ```
+pub fn hstack(self : DataFrame, other : DataFrame) -> DataFrame! {
+  let data : Array[Series] = other.data.copy()
+  for series in self.data {
+    if other.index.contains(series.name()) == false {
+      data.push(series)
+    }
+  }
+  DataFrame::new!(data)
+}
+
 ///| Tests
 test "new" {
   let df = DataFrame::new!([
@@ -733,4 +819,35 @@ test "rename_column_error" {
   ])
   let res = df.rename_column?("C", "D")
   inspect!(res, content="Err(ColumnNotFoundError(\"Column 'C' not found\"))")
+}
+
+test "vstack" {
+  let df1 = DataFrame::new!([
+    Series::new("A", SeriesData::Int([1, 2, 3])),
+    Series::new("B", SeriesData::Str(["a", "b", "c"])),
+  ])
+  let df2 = DataFrame::new!([
+    Series::new("A", SeriesData::Int([4, 5, 6])),
+    Series::new("B", SeriesData::Str(["d", "e", "f"])),
+  ])
+  let res = df1.vstack!(df2)
+  inspect!(res.shape(), content="[6, 2]")
+  inspect!(res.data()[0].data(), content="Int([1, 2, 3, 4, 5, 6])")
+  inspect!(res.data()[1].data(), content="Str([\"a\", \"b\", \"c\", \"d\", \"e\", \"f\"])")
+}
+
+test "hstack" {
+  let df1 = DataFrame::new!([
+    Series::new("A", SeriesData::Int([1, 2, 3])),
+    Series::new("B", SeriesData::Str(["a", "b", "c"])),
+  ])
+  let df2 = DataFrame::new!([
+    Series::new("A", SeriesData::Int([4, 5, 6])),
+    Series::new("C", SeriesData::Str(["d", "e", "f"])),
+  ])
+  let res = df1.hstack!(df2)
+  inspect!(res.shape(), content="[3, 3]")
+  inspect!(res.column!("A"), content="{name: \"A\", data: Int([4, 5, 6])}")
+  inspect!(res.column!("B"), content="{name: \"B\", data: Str([\"a\", \"b\", \"c\"])}")
+  inspect!(res.column!("C"), content="{name: \"C\", data: Str([\"d\", \"e\", \"f\"])}")
 }
