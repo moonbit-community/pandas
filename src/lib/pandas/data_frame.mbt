@@ -224,7 +224,7 @@ pub fn DataFrame::drop_column(
 ///   inspect!(df.data()[0].name(), context="B")
 /// }
 /// ```
-pub fn DataFrame::rename_column(
+pub fn DataFrame::rename(
   self : DataFrame,
   old_name : String,
   new_name : String
@@ -719,7 +719,7 @@ test "add_drop_rename" {
   inspect!(df.shape(), content="[6, 5]")
   df.drop_column!("E")
   inspect!(df.shape(), content="[6, 4]")
-  df.rename_column!("A", "A1")
+  df.rename!("A", "A1")
   inspect!(df.data()[0].name(), content="A1")
   df.drop_row!(0)
   df.add_row!([
@@ -817,7 +817,7 @@ test "rename_column_error" {
     Series::new("A", SeriesData::Int([1, 2, 3, 4, 5, 6])),
     Series::new("B", SeriesData::Float([1.5, 2.0, 3.5, 4.0, 5.5, 6.0])),
   ])
-  let res = df.rename_column?("C", "D")
+  let res = df.rename?("C", "D")
   inspect!(res, content="Err(ColumnNotFoundError(\"Column 'C' not found\"))")
 }
 
@@ -833,7 +833,10 @@ test "vstack" {
   let res = df1.vstack!(df2)
   inspect!(res.shape(), content="[6, 2]")
   inspect!(res.data()[0].data(), content="Int([1, 2, 3, 4, 5, 6])")
-  inspect!(res.data()[1].data(), content="Str([\"a\", \"b\", \"c\", \"d\", \"e\", \"f\"])")
+  inspect!(
+    res.data()[1].data(),
+    content="Str([\"a\", \"b\", \"c\", \"d\", \"e\", \"f\"])",
+  )
 }
 
 test "hstack" {
@@ -848,6 +851,12 @@ test "hstack" {
   let res = df1.hstack!(df2)
   inspect!(res.shape(), content="[3, 3]")
   inspect!(res.column!("A"), content="{name: \"A\", data: Int([4, 5, 6])}")
-  inspect!(res.column!("B"), content="{name: \"B\", data: Str([\"a\", \"b\", \"c\"])}")
-  inspect!(res.column!("C"), content="{name: \"C\", data: Str([\"d\", \"e\", \"f\"])}")
+  inspect!(
+    res.column!("B"),
+    content="{name: \"B\", data: Str([\"a\", \"b\", \"c\"])}",
+  )
+  inspect!(
+    res.column!("C"),
+    content="{name: \"C\", data: Str([\"d\", \"e\", \"f\"])}",
+  )
 }

@@ -36,7 +36,7 @@ df.drop_column!("C")
 
 Rename a column
 ```moonbit
-df.rename_column!("A", "A1")
+df.rename!("A", "A1")
 ```
 
 Select a column
@@ -76,14 +76,6 @@ df.sort!("A")
 df.sort!("B", decrease=true)
 ```
 
-Operation of add, subtract, multiply and divide
-```moonbit
-let add_df = df1 + df2
-let sub_df = df1 - df2
-let mul_df = df1 * df2
-let div_df = df1 / df2
-```
-
 Vertically stack two DataFrame
 ```moonbit
 let new_df = df1.vstack!(df2)
@@ -120,6 +112,13 @@ let series2 = Series::new("B", SeriesData::Float([1.5, 2.0, 3.5]))
 let add = series1 + series2
 ```
 
+Operation of add, subtract, multiply and divide
+```moonbit
+let add_op = series1 + series2
+let sub_op = series1 - series2
+let mul_op = series1 * series2
+let div_op = series1 / series2
+```
 
 ## Contributing
 Issues and pull requests are welcome. Please make sure to run all tests before submitting.

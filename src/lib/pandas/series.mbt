@@ -172,18 +172,19 @@ pub fn op_add(self : SeriesData, other : SeriesData) -> SeriesData {
   match (self, other) {
     (SeriesData::Int(a), SeriesData::Int(b)) => {
       let res = a.copy()
-      res.eachi(fn(i, v){ res[i] = v + b[i] })
+      res.eachi(fn(i, v) { res[i] = v + b[i] })
       SeriesData::Int(res)
     }
     (SeriesData::Float(a), SeriesData::Float(b)) => {
       let res = a.copy()
-      res.eachi(fn(i, v){ res[i] = v + b[i] })
+      res.eachi(fn(i, v) { res[i] = v + b[i] })
       SeriesData::Float(res)
     }
     (SeriesData::Str(a), SeriesData::Str(b)) => SeriesData::Str(a + b)
-    (SeriesData::Int(a), SeriesData::Float(b)) | (SeriesData::Float(b), SeriesData::Int(a)) => {
+    (SeriesData::Int(a), SeriesData::Float(b))
+    | (SeriesData::Float(b), SeriesData::Int(a)) => {
       let res = b.copy()
-      res.eachi(fn(i, v){ res[i] = v + a[i].to_float() })
+      res.eachi(fn(i, v) { res[i] = v + a[i].to_float() })
       SeriesData::Float(res)
     }
     _ => abort("unsupported types")
@@ -200,17 +201,18 @@ pub fn op_sub(self : SeriesData, other : SeriesData) -> SeriesData {
   match (self, other) {
     (SeriesData::Int(a), SeriesData::Int(b)) => {
       let res = a.copy()
-      res.eachi(fn(i, v){ res[i] = v - b[i] })
+      res.eachi(fn(i, v) { res[i] = v - b[i] })
       SeriesData::Int(res)
     }
     (SeriesData::Float(a), SeriesData::Float(b)) => {
       let res = a.copy()
-      res.eachi(fn(i, v){ res[i] = v - b[i] })
+      res.eachi(fn(i, v) { res[i] = v - b[i] })
       SeriesData::Float(res)
     }
-    (SeriesData::Int(a), SeriesData::Float(b)) | (SeriesData::Float(b), SeriesData::Int(a)) => {
+    (SeriesData::Int(a), SeriesData::Float(b))
+    | (SeriesData::Float(b), SeriesData::Int(a)) => {
       let res = b.copy()
-      res.eachi(fn(i, v){ res[i] = v - a[i].to_float() })
+      res.eachi(fn(i, v) { res[i] = v - a[i].to_float() })
       SeriesData::Float(res)
     }
     _ => abort("unsupported types")
@@ -227,17 +229,18 @@ pub fn op_mul(self : SeriesData, other : SeriesData) -> SeriesData {
   match (self, other) {
     (SeriesData::Int(a), SeriesData::Int(b)) => {
       let res = a.copy()
-      res.eachi(fn(i, v){ res[i] = v * b[i] })
+      res.eachi(fn(i, v) { res[i] = v * b[i] })
       SeriesData::Int(res)
     }
     (SeriesData::Float(a), SeriesData::Float(b)) => {
       let res = a.copy()
-      res.eachi(fn(i, v){ res[i] = v * b[i] })
+      res.eachi(fn(i, v) { res[i] = v * b[i] })
       SeriesData::Float(res)
     }
-    (SeriesData::Int(a), SeriesData::Float(b)) | (SeriesData::Float(b), SeriesData::Int(a)) => {
+    (SeriesData::Int(a), SeriesData::Float(b))
+    | (SeriesData::Float(b), SeriesData::Int(a)) => {
       let res = b.copy()
-      res.eachi(fn(i, v){ res[i] = v * a[i].to_float() })
+      res.eachi(fn(i, v) { res[i] = v * a[i].to_float() })
       SeriesData::Float(res)
     }
     _ => abort("unsupported types")
@@ -254,17 +257,18 @@ pub fn op_div(self : SeriesData, other : SeriesData) -> SeriesData {
   match (self, other) {
     (SeriesData::Int(a), SeriesData::Int(b)) => {
       let res = a.copy()
-      res.eachi(fn(i, v){ res[i] = v / b[i] })
+      res.eachi(fn(i, v) { res[i] = v / b[i] })
       SeriesData::Int(res)
     }
     (SeriesData::Float(a), SeriesData::Float(b)) => {
       let res = a.copy()
-      res.eachi(fn(i, v){ res[i] = v / b[i] })
+      res.eachi(fn(i, v) { res[i] = v / b[i] })
       SeriesData::Float(res)
     }
-    (SeriesData::Int(a), SeriesData::Float(b)) | (SeriesData::Float(b), SeriesData::Int(a)) => {
+    (SeriesData::Int(a), SeriesData::Float(b))
+    | (SeriesData::Float(b), SeriesData::Int(a)) => {
       let res = b.copy()
-      res.eachi(fn(i, v){ res[i] = v / a[i].to_float() })
+      res.eachi(fn(i, v) { res[i] = v / a[i].to_float() })
       SeriesData::Float(res)
     }
     _ => abort("unsupported types")
@@ -276,6 +280,7 @@ pub fn op_div(self : Series, other : Series) -> Series {
   Series::new(self.name(), self.data() / other.data())
 }
 
+///| Tests
 test "series" {
   let series = Series::new("test", SeriesData::Int([1, 2, 3, 4, 5]))
   assert_eq!(series.name(), "test")
