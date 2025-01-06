@@ -76,6 +76,24 @@ df.sort!("A")
 df.sort!("B", decrease=true)
 ```
 
+Operation of add, subtract, multiply and divide
+```moonbit
+let add_df = df1 + df2
+let sub_df = df1 - df2
+let mul_df = df1 * df2
+let div_df = df1 / df2
+```
+
+Vertically stack two DataFrame
+```moonbit
+let new_df = df1.vstack!(df2)
+```
+
+Horizontally stack two DataFra
+```moonbit
+let new_df = df1.hstack!(df2)
+```
+
 ### Series
 Create a Series
 ```moonbit
