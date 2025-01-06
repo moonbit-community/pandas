@@ -95,6 +95,14 @@ Sort the SeriesData in Series and return the indices of the sorted elements
 let indices = series.sort()
 ```
 
+Add two Series
+```moonbit
+let series1 = Series::new("A", SeriesData::Int([1, 2, 3]))
+let series2 = Series::new("B", SeriesData::Float([1.5, 2.0, 3.5]))
+let add = series1 + series2
+```
+
+
 ## Contributing
 Issues and pull requests are welcome. Please make sure to run all tests before submitting.
 

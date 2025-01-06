@@ -171,28 +171,109 @@ pub fn Series::data(self : Series) -> SeriesData {
 pub fn op_add(self : SeriesData, other : SeriesData) -> SeriesData {
   match (self, other) {
     (SeriesData::Int(a), SeriesData::Int(b)) => {
-      let res = a
+      let res = a.copy()
       res.eachi(fn(i, v){ res[i] = v + b[i] })
       SeriesData::Int(res)
     }
     (SeriesData::Float(a), SeriesData::Float(b)) => {
-      let res = a
+      let res = a.copy()
       res.eachi(fn(i, v){ res[i] = v + b[i] })
       SeriesData::Float(res)
     }
     (SeriesData::Str(a), SeriesData::Str(b)) => SeriesData::Str(a + b)
     (SeriesData::Int(a), SeriesData::Float(b)) | (SeriesData::Float(b), SeriesData::Int(a)) => {
-      let res = b
+      let res = b.copy()
       res.eachi(fn(i, v){ res[i] = v + a[i].to_float() })
       SeriesData::Float(res)
     }
-    _ => self
+    _ => abort("unsupported types")
   }
 }
 
 ///| Series add
 pub fn op_add(self : Series, other : Series) -> Series {
   Series::new(self.name(), self.data() + other.data())
+}
+
+///| SeriesData sub
+pub fn op_sub(self : SeriesData, other : SeriesData) -> SeriesData {
+  match (self, other) {
+    (SeriesData::Int(a), SeriesData::Int(b)) => {
+      let res = a.copy()
+      res.eachi(fn(i, v){ res[i] = v - b[i] })
+      SeriesData::Int(res)
+    }
+    (SeriesData::Float(a), SeriesData::Float(b)) => {
+      let res = a.copy()
+      res.eachi(fn(i, v){ res[i] = v - b[i] })
+      SeriesData::Float(res)
+    }
+    (SeriesData::Int(a), SeriesData::Float(b)) | (SeriesData::Float(b), SeriesData::Int(a)) => {
+      let res = b.copy()
+      res.eachi(fn(i, v){ res[i] = v - a[i].to_float() })
+      SeriesData::Float(res)
+    }
+    _ => abort("unsupported types")
+  }
+}
+
+///| Series sub
+pub fn op_sub(self : Series, other : Series) -> Series {
+  Series::new(self.name(), self.data() - other.data())
+}
+
+///| SeriesData mul
+pub fn op_mul(self : SeriesData, other : SeriesData) -> SeriesData {
+  match (self, other) {
+    (SeriesData::Int(a), SeriesData::Int(b)) => {
+      let res = a.copy()
+      res.eachi(fn(i, v){ res[i] = v * b[i] })
+      SeriesData::Int(res)
+    }
+    (SeriesData::Float(a), SeriesData::Float(b)) => {
+      let res = a.copy()
+      res.eachi(fn(i, v){ res[i] = v * b[i] })
+      SeriesData::Float(res)
+    }
+    (SeriesData::Int(a), SeriesData::Float(b)) | (SeriesData::Float(b), SeriesData::Int(a)) => {
+      let res = b.copy()
+      res.eachi(fn(i, v){ res[i] = v * a[i].to_float() })
+      SeriesData::Float(res)
+    }
+    _ => abort("unsupported types")
+  }
+}
+
+///| Series mul
+pub fn op_mul(self : Series, other : Series) -> Series {
+  Series::new(self.name(), self.data() * other.data())
+}
+
+///| SeriesData div
+pub fn op_div(self : SeriesData, other : SeriesData) -> SeriesData {
+  match (self, other) {
+    (SeriesData::Int(a), SeriesData::Int(b)) => {
+      let res = a.copy()
+      res.eachi(fn(i, v){ res[i] = v / b[i] })
+      SeriesData::Int(res)
+    }
+    (SeriesData::Float(a), SeriesData::Float(b)) => {
+      let res = a.copy()
+      res.eachi(fn(i, v){ res[i] = v / b[i] })
+      SeriesData::Float(res)
+    }
+    (SeriesData::Int(a), SeriesData::Float(b)) | (SeriesData::Float(b), SeriesData::Int(a)) => {
+      let res = b.copy()
+      res.eachi(fn(i, v){ res[i] = v / a[i].to_float() })
+      SeriesData::Float(res)
+    }
+    _ => abort("unsupported types")
+  }
+}
+
+///| Series div
+pub fn op_div(self : Series, other : Series) -> Series {
+  Series::new(self.name(), self.data() / other.data())
 }
 
 test "series" {
@@ -221,5 +302,32 @@ test "series_add" {
   let c = a.data + b.data
   inspect!(c, content="Float([5.5, 7, 9.5])")
   let c = a + b
-  inspect!(c, content="Series { name: \"a\", data: Float([5.5, 7, 9.5]) }")
+  inspect!(c, content="{name: \"a\", data: Float([5.5, 7, 9.5])}")
+}
+
+test "series_sub" {
+  let a = Series::new("a", SeriesData::Float([1.5, 2, 3.5]))
+  let b = Series::new("b", SeriesData::Int([4, 5, 6]))
+  let c = a.data - b.data
+  inspect!(c, content="Float([-2.5, -3, -2.5])")
+  let c = a - b
+  inspect!(c, content="{name: \"a\", data: Float([-2.5, -3, -2.5])}")
+}
+
+test "series_mul" {
+  let a = Series::new("a", SeriesData::Float([1.5, 2, 3.5]))
+  let b = Series::new("b", SeriesData::Int([4, 5, 6]))
+  let c = a.data * b.data
+  inspect!(c, content="Float([6, 10, 21])")
+  let c = a * b
+  inspect!(c, content="{name: \"a\", data: Float([6, 10, 21])}")
+}
+
+test "series_div" {
+  let a = Series::new("a", SeriesData::Int([2, 4, 9]))
+  let b = Series::new("b", SeriesData::Int([1, 2, 3]))
+  let c = a.data / b.data
+  inspect!(c, content="Int([2, 2, 3])")
+  let c = a / b
+  inspect!(c, content="{name: \"a\", data: Int([2, 2, 3])}")
 }
