@@ -2,5 +2,5 @@ target/
 .mooncakes/
 .DS_Store
 
-test.mbt
+*.mbt
 Todo_list.txt

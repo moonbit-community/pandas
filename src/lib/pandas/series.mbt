@@ -57,7 +57,21 @@ pub fn SeriesData::empty(self : SeriesData) -> Bool {
 ///|
 type! EmptyArrayError String derive(Show)
 
-///| erase the element at the given index
+///| Erase an element from the SeriesData at a specified index
+///
+/// # Parameters
+///
+/// - `self` : An instance of the SeriesData
+/// - `index` : The index of the element to be erased
+///
+/// # Errors
+///
+/// - `EmptyArrayError` : Raised if the SeriesData is empty
+///
+/// # Example
+/// ```
+/// data.erase(1)
+/// ```
 pub fn SeriesData::erase(
   self : SeriesData,
   index : Int
@@ -86,7 +100,7 @@ pub fn SeriesData::sort(self : SeriesData) -> Unit {
 ///| get the indices of the sorted elements
 fn SeriesData::get_argsort_indices(
   self : SeriesData,
-  decrease~ : Bool = false
+  descending~ : Bool = false
 ) -> Array[Int] {
   let indices = Array::makei(self.length(), fn(i) { i })
   match self {
@@ -95,7 +109,7 @@ fn SeriesData::get_argsort_indices(
     SeriesData::Bool(data) => indices.sort_by_key(fn(i) { data[i] })
     SeriesData::Str(data) => indices.sort_by_key(fn(i) { data[i] })
   }
-  if decrease {
+  if descending {
     indices.rev_inplace()
   }
   indices
@@ -116,7 +130,7 @@ fn SeriesData::argsort_indices(self : SeriesData, indices : Array[Int]) -> Unit 
 /// # Parameters
 ///
 /// - `self` : An instance of the SeriesData
-/// - `decrease` : A boolean indicating whether to sort in descending order (default is false)
+/// - `descending~` : A boolean indicating whether to sort in descending order (default is false)
 ///
 /// # Returns
 ///
@@ -129,9 +143,9 @@ fn SeriesData::argsort_indices(self : SeriesData, indices : Array[Int]) -> Unit 
 /// ```
 pub fn SeriesData::argsort(
   self : SeriesData,
-  decrease~ : Bool = false
+  descending~ : Bool = false
 ) -> Array[Int] {
-  let indices = self.get_argsort_indices(decrease~)
+  let indices = self.get_argsort_indices(descending~)
   self.argsort_indices(indices)
   indices
 }
@@ -141,7 +155,7 @@ pub fn SeriesData::argsort(
 /// # Parameters
 ///
 /// - `self` : An instance of the SeriesData
-/// - `decrease` : A boolean indicating whether to sort in descending order (default is false)
+/// - `descending~` : A boolean indicating whether to sort in descending order (default is false)
 ///
 /// # Returns
 ///
@@ -152,8 +166,8 @@ pub fn SeriesData::argsort(
 /// let series = Series :: { name: "A", data: SeriesData::Int([3, 1, 2]) }
 /// let sorted_indices = series.argsort()
 /// ```
-pub fn Series::argsort(self : Series, decrease~ : Bool = false) -> Array[Int] {
-  self.data.argsort(decrease~)
+pub fn Series::argsort(self : Series, descending~ : Bool = false) -> Array[Int] {
+  self.data.argsort(descending~)
 }
 
 ///|

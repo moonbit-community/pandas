@@ -1,0 +1,99 @@
+package smallbearrr/pandas/lib/pandas
+
+// Values
+
+// Types and methods
+type ColumnNotFoundError
+impl Show for ColumnNotFoundError
+
+pub(all) enum DType {
+  Int(Int)
+  Float(Float)
+  Bool(Bool)
+  Str(String)
+}
+impl Compare for DType
+impl Eq for DType
+impl Show for DType
+
+pub(all) struct DataFrame {
+  data : Array[Series]
+  shape : Array[Int]
+  index : Map[String, Int]
+}
+impl DataFrame {
+  add_column(Self, Series) -> Unit!
+  add_row(Self, Array[DType]) -> Unit!
+  column(Self, String) -> Series!ColumnNotFoundError
+  data(Self) -> Array[Series]
+  drop_column(Self, String) -> Unit!ColumnNotFoundError
+  drop_row(Self, Int) -> Unit!
+  filter(Self, String, (DType) -> Bool) -> Self!
+  head(Self) -> Unit
+  hstack(Self, Self) -> Self!
+  new(Array[Series]) -> Self!InconsistentSeriesLength
+  rename(Self, String, String) -> Unit!ColumnNotFoundError
+  select_columns(Self, Array[String]) -> Self!ColumnNotFoundError
+  select_rows(Self, range? : (Int, Int), indices? : Array[Int]) -> Self!IndexOutOfBounds
+  shape(Self) -> Array[Int]
+  sort(Self, String, descending~ : Bool = ..) -> Unit!ColumnNotFoundError
+  vstack(Self, Self) -> Self!
+}
+impl Show for DataFrame
+
+type DuplicateColumnError
+impl Show for DuplicateColumnError
+
+type EmptyArrayError
+impl Show for EmptyArrayError
+
+type InconsistentSeriesLength
+impl Show for InconsistentSeriesLength
+
+type IndexOutOfBounds
+impl Show for IndexOutOfBounds
+
+type InvalidType
+impl Show for InvalidType
+
+pub(all) struct Series {
+  name : String
+  data : SeriesData
+}
+impl Series {
+  argsort(Self, descending~ : Bool = ..) -> Array[Int]
+  data(Self) -> SeriesData
+  name(Self) -> String
+  new(String, SeriesData) -> Self
+  op_add(Self, Self) -> Self
+  op_div(Self, Self) -> Self
+  op_mul(Self, Self) -> Self
+  op_sub(Self, Self) -> Self
+}
+impl Eq for Series
+impl Show for Series
+
+pub(all) enum SeriesData {
+  Int(Array[Int])
+  Float(Array[Float])
+  Bool(Array[Bool])
+  Str(Array[String])
+}
+impl SeriesData {
+  argsort(Self, descending~ : Bool = ..) -> Array[Int]
+  empty(Self) -> Bool
+  erase(Self, Int) -> Unit!EmptyArrayError
+  length(Self) -> Int
+  op_add(Self, Self) -> Self
+  op_div(Self, Self) -> Self
+  op_mul(Self, Self) -> Self
+  op_sub(Self, Self) -> Self
+  sort(Self) -> Unit
+}
+impl Eq for SeriesData
+impl Show for SeriesData
+
+// Type aliases
+
+// Traits
+

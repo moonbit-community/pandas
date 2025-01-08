@@ -576,7 +576,7 @@ pub fn DataFrame::filter(
 ///
 /// - `self` : An instance of the DataFrame
 /// - `col_name` : The name of the column to sort by
-/// - `decrease~` : Whether to sort in descending order (default is false)
+/// - `descending~` : Whether to sort in descending order (default is false)
 ///
 /// # Returns
 ///
@@ -592,17 +592,17 @@ pub fn DataFrame::filter(
 ///   Series::new("A", SeriesData::Int([3, 1, 2])), 
 ///   Series::new("B", SeriesData::Float([3.3, 1.1, 2.2]))
 /// ])
-/// df.sort("A", decrease=true)
+/// df.sort("A", descending=true)
 /// inspect!(df.data()[0].data(), content="Int([1, 2, 3])")
 /// ```
 pub fn DataFrame::sort(
   self : DataFrame,
   col_name : String,
-  decrease~ : Bool = false
+  descending~ : Bool = false
 ) -> Unit!ColumnNotFoundError {
   match self.index.get(col_name) {
     Some(index) => {
-      let indices = self.data[index].data.get_argsort_indices(decrease~)
+      let indices = self.data[index].data.get_argsort_indices(descending~)
       for item in self.data {
         item.data.argsort_indices(indices)
       }
@@ -766,7 +766,7 @@ test "sort" {
   ])
   df.sort!("A")
   inspect!(df.data()[0].data(), content="Int([1, 2, 3, 4, 5])")
-  df.sort!("A", decrease=true)
+  df.sort!("A", descending=true)
   inspect!(df.data()[0].data(), content="Int([5, 4, 3, 2, 1])")
   inspect!(
     df.data()[3].data(),

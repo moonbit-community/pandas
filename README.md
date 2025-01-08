@@ -73,7 +73,7 @@ let filtered = df.filter!("A", fn(x) -> Bool { x < DType::Int(3) })
 Sort the DataFrame by a specified column in ascending or descending order:
 ```moonbit
 df.sort!("A")
-df.sort!("B", decrease=true)
+df.sort!("B", descending=true)
 ```
 
 Vertically stack two DataFrame
