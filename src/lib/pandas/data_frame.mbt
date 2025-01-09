@@ -827,7 +827,7 @@ pub fn limit(self : DataFrame, n : Int) -> DataFrame!Error {
   let mut count = 0
   for series in self.data {
     let new_data = match series.data {
-	    SeriesData::Int(data) => SeriesData::Int(data.split_at(n).0)
+      SeriesData::Int(data) => SeriesData::Int(data.split_at(n).0)
       SeriesData::Float(data) => SeriesData::Float(data.split_at(n).0)
       SeriesData::Bool(data) => SeriesData::Bool(data.split_at(n).0)
       SeriesData::Str(data) => SeriesData::Str(data.split_at(n).0)
@@ -866,10 +866,65 @@ pub fn tail(self : DataFrame, n : Int) -> DataFrame!Error {
   let n = @math.minimum(n, self.shape()[0])
   for series in self.data {
     let new_data = match series.data {
-      SeriesData::Int(data) => SeriesData::Int(data.split_at(data.length() - n).1)
-      SeriesData::Float(data) => SeriesData::Float(data.split_at(data.length() - n).1)
-      SeriesData::Bool(data) => SeriesData::Bool(data.split_at(data.length() - n).1)
-      SeriesData::Str(data) => SeriesData::Str(data.split_at(data.length() - n).1)
+      SeriesData::Int(data) =>
+        SeriesData::Int(data.split_at(data.length() - n).1)
+      SeriesData::Float(data) =>
+        SeriesData::Float(data.split_at(data.length() - n).1)
+      SeriesData::Bool(data) =>
+        SeriesData::Bool(data.split_at(data.length() - n).1)
+      SeriesData::Str(data) =>
+        SeriesData::Str(data.split_at(data.length() - n).1)
+    }
+    data.push(Series::new(series.name, new_data))
+  }
+  DataFrame::new!(data)
+}
+
+///|
+/// Creates a new DataFrame containing a slice of rows from the original
+/// DataFrame, starting from the specified offset.
+///
+/// Parameters:
+///
+/// * `self` : The DataFrame to slice.
+/// * `offset` : The starting index of the slice (zero-based).
+/// * `length` : Optional parameter specifying the number of rows to include in
+/// the slice. If not provided, includes all remaining rows after the offset.
+///
+/// Returns a new DataFrame containing the specified slice of rows from the
+/// original DataFrame.
+///
+/// Throws an error of type `Error` if creating the new DataFrame fails.
+///
+/// Example:
+///
+/// ```moonbit
+///   let df = DataFrame::new!([
+///     Series::new("A", SeriesData::Int([1, 2, 3, 4, 5])),
+///     Series::new("B", SeriesData::Float([1.1, 2.2, 3.3, 4.4, 5.5])),
+///   ])
+///   let sliced = df.slice!(1, Some(2))
+/// ```
+pub fn DataFrame::slice(
+  self : DataFrame,
+  offset : Int,
+  length : Int?
+) -> DataFrame!Error {
+  let data : Array[Series] = []
+  let len = match length {
+    Some(l) => l
+    None => self.shape()[0] - offset
+  }
+  for series in self.data {
+    let new_data = match series.data {
+      SeriesData::Int(data) =>
+        SeriesData::Int(data.split_at(offset).1.split_at(len).0)
+      SeriesData::Float(data) =>
+        SeriesData::Float(data.split_at(offset).1.split_at(len).0)
+      SeriesData::Bool(data) =>
+        SeriesData::Bool(data.split_at(offset).1.split_at(len).0)
+      SeriesData::Str(data) =>
+        SeriesData::Str(data.split_at(offset).1.split_at(len).0)
     }
     data.push(Series::new(series.name, new_data))
   }
