@@ -801,6 +801,71 @@ pub fn DataFrame::item(
   self.data[col][row]
 }
 
+///|
+/// Creates a new DataFrame containing only the first N rows of the original
+/// DataFrame. If N is larger than the number of rows in the DataFrame, returns a
+/// DataFrame with all rows from the original DataFrame.
+///
+/// Parameters:
+///
+/// * `self` : The DataFrame to limit.
+/// * `n` : The maximum number of rows to include in the new DataFrame.
+///
+/// Returns a new DataFrame containing at most N rows from the original
+/// DataFrame.
+///
+/// Throws an error of type `Error` if creating the new DataFrame fails.
+///
+/// Example:
+///
+/// ```moonbit
+/// let df = DataFrame::new!([
+///   Series::new("A", SeriesData::Int([1, 2, 3, 4, 5])),
+///   Series::new("B", SeriesData::Float([1.1, 2.2, 3.3, 4.4, 5.5])),
+/// ])
+/// let limited = df.limit!(3)
+/// ```
+pub fn limit(self : DataFrame, n : Int) -> DataFrame!Error {
+  let data : Array[Series] = []
+  let n = @math.minimum(n, self.shape()[0])
+  let mut count = 0
+  for series in self.data {
+    let new_data = match series.data {
+      SeriesData::Int(data) => {
+        data.resize(n, 0)
+        SeriesData::Int(data)
+      }
+      SeriesData::Float(data) => {
+        data.resize(n, 0.0)
+        SeriesData::Float(data)
+      }
+      SeriesData::Bool(data) => {
+        data.resize(n, false)
+        SeriesData::Bool(data)
+      }
+      SeriesData::Str(data) => {
+        data.resize(n, "")
+        SeriesData::Str(data)
+      }
+      SeriesData::List(data) => {
+        data.resize(
+          n,
+          match data {
+            [SeriesData::Int(_)] => SeriesData::Int([])
+            [SeriesData::Float(_)] => SeriesData::Float([])
+            [SeriesData::Bool(_)] => SeriesData::Bool([])
+            [SeriesData::Str(_)] => SeriesData::Str([])
+            _ => SeriesData::List([])
+          },
+        )
+        SeriesData::List(data)
+      }
+    }
+    data.push(Series::new(series.name, new_data))
+  }
+  DataFrame::new!(data)
+}
+
 ///| Tests
 test "new" {
   let df = DataFrame::new!([
