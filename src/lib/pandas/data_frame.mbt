@@ -29,19 +29,19 @@ type! InvalidType String derive(Show)
 
 ///| Create a new DataFrame
 ///
-/// # Parameters
+/// ### Parameters
 ///
 /// - `data` : Array of Series
 ///
-/// # Returns
+/// ### Returns
 ///
 /// - `DataFrame!InconsistentSeriesLength` : A new DataFrame instance
 ///
-/// # Errors
+/// ### Errors
 ///
 /// - `InconsistentSeriesLength` : Raised if the lengths of the Series are not equal
 ///
-/// # Example
+/// ### Example
 /// ```
 /// let df = DataFrame::new!([
 ///   Series::new("A", SeriesData::Int([1, 1, 3, 1, 1, 6])),
@@ -100,31 +100,27 @@ pub impl Show for DataFrame with output(self, logger) {
 
 ///| Display the first few rows of the DataFrame
 ///
-/// # Parameters
+/// ### Parameters
 ///
 /// - `self` : An instance of the DataFrame
 /// - `num` : The number of rows to display (default is 5)
 ///
-/// # Returns
+/// ### Returns
 ///
 /// - `Unit` : This function prints the first few rows of the DataFrame
 ///
-/// # Example
+/// ### Example
 /// ```
 /// df.head()
-/// df.head(num=3)
+/// df.head(rows=3)
 /// ```
-pub fn DataFrame::head(self : DataFrame, num? : Int) -> Unit {
+pub fn DataFrame::head(self : DataFrame, rows~ : Int = 5) -> Unit {
   let mut row_str = "\t"
   for col in self.data {
     row_str = row_str + col.name() + "\t"
   }
   row_str += "\n"
-  let n = match num {
-    Some(n) => n
-    None => 5
-  }
-  for i = 0; i < @math.minimum(n, self.shape()[0]); i = i + 1 {
+  for i = 0; i < @math.minimum(rows, self.shape()[0]); i = i + 1 {
     row_str += i.to_string() + "\t"
     for col in self.data {
       match col.data() {
@@ -141,21 +137,21 @@ pub fn DataFrame::head(self : DataFrame, num? : Int) -> Unit {
 
 ///| Add a new column to the DataFrame
 ///
-/// # Parameters
+/// ### Parameters
 ///
 /// - `self` : An instance of the DataFrame
 /// - `col` : The Series to be added as a new column
 ///
-/// # Returns
+/// ### Returns
 ///
 /// - `Unit!` : This function adds a new column to the DataFrame or raises an error
 ///
-/// # Errors
+/// ### Errors
 ///
 /// - `InconsistentSeriesLength`: Series length is not equal to the DataFrame length
 /// - `DuplicateColumnError`: Series name already exists
 ///
-/// # Example
+/// ### Example
 /// ```
 /// let new_column = Series::new("B", SeriesData::Int([1, 2, 3]))
 /// df.add_column(new_column)
@@ -178,16 +174,16 @@ pub fn DataFrame::add_column(self : DataFrame, col : Series) -> Unit! {
 
 ///| Drop a column from the DataFrame
 ///
-/// # Parameters
+/// ### Parameters
 ///
 /// - `self` : An instance of the DataFrame
 /// - `col_name` : The name of the column to be dropped
 ///
-/// # Returns
+/// ### Returns
 ///
 /// - `Unit` : This function drops a column from the DataFrame
 ///
-/// # Example
+/// ### Example
 /// ```
 /// df.drop_column("column_name")
 /// ```
@@ -208,21 +204,21 @@ pub fn DataFrame::drop_column(
 
 ///| Rename a column in the DataFrame
 ///
-/// # Parameters
+/// ### Parameters
 ///
 /// - `self` : An instance of the DataFrame
 /// - `old_name` : The current name of the column to be renamed
 /// - `new_name` : The new name for the column
 ///
-/// # Returns
+/// ### Returns
 ///
 /// - `Unit` : This function renames a column in the DataFrame
 /// 
-/// # Errors
+/// ### Errors
 /// 
 /// - `ColumnNotFoundError` : Raised if the column is not found
 ///
-/// # Example
+/// ### Example
 /// ```
 /// test {
 ///   let mut df = DataFrame::new([Series::new("A", SeriesData::Int([1, 2]))])
@@ -243,20 +239,20 @@ pub fn DataFrame::rename(
 
 ///| Select a column from the DataFrame
 ///
-/// # Parameters
+/// ### Parameters
 ///
 /// - `self` : An instance of the DataFrame
 /// - `col_name` : Column name to be selected
 ///
-/// # Returns
+/// ### Returns
 ///
 /// - `Series` : Series contain selected columns
 /// 
-/// # Errors
+/// ### Errors
 /// 
 /// - `ColumnNotFoundError` : Raised if a column is not found
 ///
-/// # Example
+/// ### Example
 /// ```
 /// let col_selected = df.column("col_name")
 /// ```
@@ -272,20 +268,20 @@ pub fn DataFrame::column(
 
 ///| Select specific columns from the DataFrame
 ///
-/// # Parameters
+/// ### Parameters
 ///
 /// - `self` : An instance of the DataFrame
 /// - `cols` : An array of column names to be selected
 ///
-/// # Returns
+/// ### Returns
 ///
 /// - `DataFrame` : A new DataFrame containing only the selected columns
 /// 
-/// # Errors
+/// ### Errors
 /// 
 /// - `ColumnNotFoundError` : Raised if a column is not found
 ///
-/// # Example
+/// ### Example
 /// ```
 /// let df_selected = df.select_columns(["col_name1", "col_name2"])
 /// ```
@@ -313,20 +309,20 @@ pub fn DataFrame::select_columns(
 
 ///| Drop a row from the DataFrame
 ///
-/// # Parameters
+/// ### Parameters
 ///
 /// - `self` : An instance of the DataFrame
 /// - `row` : The index of the row to be dropped
 ///
-/// # Returns
+/// ### Returns
 ///
 /// - `Unit` : This function drops a row from the DataFrame
 ///
-/// # Errors
+/// ### Errors
 ///
 /// - `IndexOutOfBounds` : Raised if the row index is out of bounds
 ///
-/// # Example
+/// ### Example
 /// ```
 /// df.drop_row(0)
 /// ```
@@ -342,21 +338,21 @@ pub fn DataFrame::drop_row(self : DataFrame, row_index : Int) -> Unit! {
 
 ///| Add a new row to the DataFrame
 ///
-/// # Parameters
+/// ### Parameters
 ///
 /// - `self` : An instance of the DataFrame
 /// - `row` : An array of DType representing the new row to be added
 ///
-/// # Returns
+/// ### Returns
 ///
 /// - `Unit` : This function adds a new row to the DataFrame
 ///
-/// # Errors
+/// ### Errors
 ///
 /// - `InconsistentSeriesLength` : Raised if the row length does not match the DataFrame column length
 /// - `InvalidType` : if there is a type mismatch
 ///
-/// # Example
+/// ### Example
 /// ```
 /// let mut df = DataFrame::new([
 ///   Series::new("A", SeriesData::Int([1, 2, 3])), 
@@ -399,21 +395,21 @@ pub fn DataFrame::add_row(self : DataFrame, row : Array[DType]) -> Unit! {
 
 ///| Select specific rows from the DataFrame
 ///
-/// # Parameters
+/// ### Parameters
 ///
 /// - `self` : An instance of the DataFrame
 /// - `range` : An optional tuple representing the range of rows to be selected (inclusive start, exclusive end)
 /// - `indices` : An optional array of row indices to be selected
 ///
-/// # Returns
+/// ### Returns
 ///
 /// - `DataFrame` : A new DataFrame containing only the selected rows
 /// 
-/// # Errors
+/// ### Errors
 /// 
 /// - `IndexOutOfBounds` : Raised if the row index is out of bounds
 ///
-/// # Example
+/// ### Example
 /// ```
 /// let df_selected_range = df.select_rows(range=(1, 4))
 /// 
@@ -512,17 +508,17 @@ pub fn DataFrame::select_rows(
 
 ///| Filter rows in the DataFrame based on a condition
 ///
-/// # Parameters
+/// ### Parameters
 ///
 /// - `self` : An instance of the DataFrame
 /// - `name` : The name of the column to apply the filter on
 /// - `f` : A function that takes a `DType` and returns a `Bool` indicating whether the row should be included
 ///
-/// # Returns
+/// ### Returns
 ///
 /// - `DataFrame` : A new DataFrame containing only the rows that satisfy the condition
 ///
-/// # Example
+/// ### Example
 /// ```
 /// let df = DataFrame::new([Series::new("A", SeriesData::Int([1, 2, 3, 4, 5, 6]))])
 /// let filtered = df.filter("A", fn(x) -> Bool { x < DType::Int(3) })
@@ -578,21 +574,21 @@ pub fn DataFrame::filter(
 
 ///| Sort the DataFrame by a specified column
 ///
-/// # Parameters
+/// ### Parameters
 ///
 /// - `self` : An instance of the DataFrame
 /// - `col_name` : The name of the column to sort by
 /// - `descending~` : Whether to sort in descending order (default is false)
 ///
-/// # Returns
+/// ### Returns
 ///
 /// - `Unit` : This function sorts the DataFrame in place
 ///
-/// # Errors
+/// ### Errors
 ///
 /// - `ColumnNotFoundError` : Raised if the specified column is not found
 ///
-/// # Example
+/// ### Example
 /// ```
 /// let df = DataFrame::new([
 ///   Series::new("A", SeriesData::Int([3, 1, 2])), 
@@ -619,21 +615,21 @@ pub fn DataFrame::sort(
 
 ///| Vertically stack two DataFrames
 ///
-/// # Parameters
+/// ### Parameters
 ///
 /// - `self` : An instance of the DataFrame
 /// - `other` : Another DataFrame to be stacked vertically
 ///
-/// # Returns
+/// ### Returns
 ///
 /// - `DataFrame` : A new DataFrame resulting from the vertical stacking of the two DataFrames
 ///
-/// # Errors
+/// ### Errors
 ///
 /// - `InconsistentSeriesLength` : Raised if the number of columns in the two DataFrames is not the same
 /// - `InvalidType` : Raised if the data types of the corresponding columns in the two DataFrames are not the same
 ///
-/// # Example
+/// ### Example
 /// ```
 /// let df1 = DataFrame::new!([
 ///   Series::new("A", SeriesData::Int([1, 2, 3]))
@@ -674,16 +670,16 @@ pub fn vstack(self : DataFrame, other : DataFrame) -> DataFrame! {
 
 ///| Horizontally stack two DataFrames
 ///
-/// # Parameters
+/// ### Parameters
 ///
 /// - `self` : An instance of the DataFrame
 /// - `other` : Another DataFrame to be stacked horizontally
 ///
-/// # Returns
+/// ### Returns
 ///
 /// - `DataFrame` : A new DataFrame resulting from the horizontal stacking of the two DataFrames
 ///
-/// # Example
+/// ### Example
 /// ```
 /// let df1 = DataFrame::new!([
 ///   Series::new("A", SeriesData::Int([1, 2, 3]))
@@ -706,13 +702,13 @@ pub fn hstack(self : DataFrame, other : DataFrame) -> DataFrame! {
 ///|
 /// Clears all data in the DataFrame, resetting it to an empty state.
 ///
-/// Parameters:
+/// ### Parameters:
 ///
-/// * `self` : The DataFrame to be cleared.
-/// * `n` : Optional parameter that specifies a size hint for clearing (default
+/// - `self` : The DataFrame to be cleared.
+/// - `n` : Optional parameter that specifies a size hint for clearing (default
 /// is 0). Currently not used.
 ///
-/// Example:
+/// ### Example:
 ///
 /// ```moonbit
 /// df.clear()
