@@ -21,21 +21,24 @@ pub(all) struct Series {
 } derive(Show, Eq)
 
 ///|
-pub fn array_hash[T : Hash](data : Array[T]) -> Int {
-  let hasher = Hasher::new()
-  for value in data {
-    hasher.combine(value)
-  }
-  hasher.finalize()
-}
-
-///|
 pub impl Hash for SeriesData with hash_combine(self, hasher) {
   match self {
-    SeriesData::Int(data) => hasher.combine(array_hash(data))
-    SeriesData::Float(data) => hasher.combine(array_hash(data))
-    SeriesData::Bool(data) => hasher.combine(array_hash(data))
-    SeriesData::Str(data) => hasher.combine(array_hash(data))
+    SeriesData::Int(data) =>
+      for value in data {
+        hasher.combine(value)
+      }
+    SeriesData::Float(data) =>
+      for value in data {
+        hasher.combine(value)
+      }
+    SeriesData::Bool(data) =>
+      for value in data {
+        hasher.combine(value)
+      }
+    SeriesData::Str(data) =>
+      for value in data {
+        hasher.combine(value)
+      }
   }
 }
 
