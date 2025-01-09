@@ -908,7 +908,7 @@ pub fn tail(self : DataFrame, n : Int) -> DataFrame!Error {
 pub fn DataFrame::slice(
   self : DataFrame,
   offset : Int,
-  length : Int?
+  length? : Int
 ) -> DataFrame!Error {
   let data : Array[Series] = []
   let len = match length {
