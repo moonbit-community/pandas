@@ -24,16 +24,16 @@ pub(all) struct Series {
 
 ///| Create a new Series
 ///
-/// # Parameters
+/// ### Parameters
 ///
 /// - `name` : The name of the Series
 /// - `values` : The data contained in the Series
 ///
-/// # Returns
+/// ### Returns
 ///
 /// - `Series` : A new Series instance
 ///
-/// # Example
+/// ### Example
 /// ```
 /// let series = Series::new("A", SeriesData::Int([1, 2, 3]))
 /// ```
@@ -61,16 +61,16 @@ type! EmptyArrayError String derive(Show)
 
 ///| Erase an element from the SeriesData at a specified index
 ///
-/// # Parameters
+/// ### Parameters
 ///
 /// - `self` : An instance of the SeriesData
 /// - `index` : The index of the element to be erased
 ///
-/// # Errors
+/// ### Errors
 ///
 /// - `EmptyArrayError` : Raised if the SeriesData is empty
 ///
-/// # Example
+/// ### Example
 /// ```
 /// data.erase(1)
 /// ```
@@ -129,16 +129,16 @@ fn SeriesData::argsort_indices(self : SeriesData, indices : Array[Int]) -> Unit 
 
 ///| Sort the SeriesData and return the indices of the sorted elements
 ///
-/// # Parameters
+/// ### Parameters
 ///
 /// - `self` : An instance of the SeriesData
 /// - `descending~` : A boolean indicating whether to sort in descending order (default is false)
 ///
-/// # Returns
+/// ### Returns
 ///
 /// - `Array[Int]` : An array of indices representing the sorted order of the elements
 ///
-/// # Example
+/// ### Example
 /// ```
 /// let data = SeriesData::Int([3, 1, 2])
 /// let sorted_indices = data.argsort()
@@ -154,16 +154,16 @@ pub fn SeriesData::argsort(
 
 ///| Sort the SeriesData in Series and return the indices of the sorted elements
 ///
-/// # Parameters
+/// ### Parameters
 ///
 /// - `self` : An instance of the SeriesData
 /// - `descending~` : A boolean indicating whether to sort in descending order (default is false)
 ///
-/// # Returns
+/// ### Returns
 ///
 /// - `Array[Int]` : An array of indices representing the sorted order of the elements
 ///
-/// # Example
+/// ### Example
 /// ```
 /// let series = Series :: { name: "A", data: SeriesData::Int([3, 1, 2]) }
 /// let sorted_indices = series.argsort()
