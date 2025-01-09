@@ -33,7 +33,7 @@ type! InvalidType String derive(Show)
 ///
 /// - `data` : Array of Series
 ///
-/// ### Returns
+/// ### Return
 ///
 /// - `DataFrame!InconsistentSeriesLength` : A new DataFrame instance
 ///
@@ -105,7 +105,7 @@ pub impl Show for DataFrame with output(self, logger) {
 /// - `self` : An instance of the DataFrame
 /// - `num` : The number of rows to display (default is 5)
 ///
-/// ### Returns
+/// ### Return
 ///
 /// - `Unit` : This function prints the first few rows of the DataFrame
 ///
@@ -142,7 +142,7 @@ pub fn DataFrame::head(self : DataFrame, rows~ : Int = 5) -> Unit {
 /// - `self` : An instance of the DataFrame
 /// - `col` : The Series to be added as a new column
 ///
-/// ### Returns
+/// ### Return
 ///
 /// - `Unit!` : This function adds a new column to the DataFrame or raises an error
 ///
@@ -179,7 +179,7 @@ pub fn DataFrame::add_column(self : DataFrame, col : Series) -> Unit! {
 /// - `self` : An instance of the DataFrame
 /// - `col_name` : The name of the column to be dropped
 ///
-/// ### Returns
+/// ### Return
 ///
 /// - `Unit` : This function drops a column from the DataFrame
 ///
@@ -210,7 +210,7 @@ pub fn DataFrame::drop_column(
 /// - `old_name` : The current name of the column to be renamed
 /// - `new_name` : The new name for the column
 ///
-/// ### Returns
+/// ### Return
 ///
 /// - `Unit` : This function renames a column in the DataFrame
 /// 
@@ -244,7 +244,7 @@ pub fn DataFrame::rename(
 /// - `self` : An instance of the DataFrame
 /// - `col_name` : Column name to be selected
 ///
-/// ### Returns
+/// ### Return
 ///
 /// - `Series` : Series contain selected columns
 /// 
@@ -273,7 +273,7 @@ pub fn DataFrame::column(
 /// - `self` : An instance of the DataFrame
 /// - `cols` : An array of column names to be selected
 ///
-/// ### Returns
+/// ### Return
 ///
 /// - `DataFrame` : A new DataFrame containing only the selected columns
 /// 
@@ -314,7 +314,7 @@ pub fn DataFrame::select_columns(
 /// - `self` : An instance of the DataFrame
 /// - `row` : The index of the row to be dropped
 ///
-/// ### Returns
+/// ### Return
 ///
 /// - `Unit` : This function drops a row from the DataFrame
 ///
@@ -343,7 +343,7 @@ pub fn DataFrame::drop_row(self : DataFrame, row_index : Int) -> Unit! {
 /// - `self` : An instance of the DataFrame
 /// - `row` : An array of DType representing the new row to be added
 ///
-/// ### Returns
+/// ### Return
 ///
 /// - `Unit` : This function adds a new row to the DataFrame
 ///
@@ -401,7 +401,7 @@ pub fn DataFrame::add_row(self : DataFrame, row : Array[DType]) -> Unit! {
 /// - `range` : An optional tuple representing the range of rows to be selected (inclusive start, exclusive end)
 /// - `indices` : An optional array of row indices to be selected
 ///
-/// ### Returns
+/// ### Return
 ///
 /// - `DataFrame` : A new DataFrame containing only the selected rows
 /// 
@@ -514,7 +514,7 @@ pub fn DataFrame::select_rows(
 /// - `name` : The name of the column to apply the filter on
 /// - `f` : A function that takes a `DType` and returns a `Bool` indicating whether the row should be included
 ///
-/// ### Returns
+/// ### Return
 ///
 /// - `DataFrame` : A new DataFrame containing only the rows that satisfy the condition
 ///
@@ -580,7 +580,7 @@ pub fn DataFrame::filter(
 /// - `col_name` : The name of the column to sort by
 /// - `descending~` : Whether to sort in descending order (default is false)
 ///
-/// ### Returns
+/// ### Return
 ///
 /// - `Unit` : This function sorts the DataFrame in place
 ///
@@ -620,7 +620,7 @@ pub fn DataFrame::sort(
 /// - `self` : An instance of the DataFrame
 /// - `other` : Another DataFrame to be stacked vertically
 ///
-/// ### Returns
+/// ### Return
 ///
 /// - `DataFrame` : A new DataFrame resulting from the vertical stacking of the two DataFrames
 ///
@@ -675,7 +675,7 @@ pub fn vstack(self : DataFrame, other : DataFrame) -> DataFrame! {
 /// - `self` : An instance of the DataFrame
 /// - `other` : Another DataFrame to be stacked horizontally
 ///
-/// ### Returns
+/// ### Return
 ///
 /// - `DataFrame` : A new DataFrame resulting from the horizontal stacking of the two DataFrames
 ///
@@ -726,7 +726,8 @@ pub fn DataFrame::clear(self : DataFrame, n~ : Int = 0) -> Unit {
 ///
 /// - `self` : The DataFrame to be cloned.
 ///
-/// Returns a new DataFrame with the same data, shape, and index as the original
+/// ### Return:
+/// Return a new DataFrame with the same data, shape, and index as the original
 /// DataFrame. All internal data structures are deeply copied.
 /// THIS METHOD Under Consideration...
 ///
@@ -749,6 +750,10 @@ pub fn DataFrame::clone(self : DataFrame) -> DataFrame {
   DataFrame::{ data, shape: self.shape.copy(), index: map }
 }
 
+pub(all) enum ColumnSelector {
+  Int(Int)
+  Str(String)
+}
 ///|
 /// Retrieves a single item from the DataFrame at the specified row and column.
 ///
@@ -757,8 +762,8 @@ pub fn DataFrame::clone(self : DataFrame) -> DataFrame {
 /// - `self` : The DataFrame to retrieve the item from.
 /// - `row` : The index of the row (zero-based).
 /// - `column` : The column identifier, can be either:
-///  * `DType::Int`: A zero-based index of the column
-///  * `DType::Str`: The name of the column
+///  * `ColumnSelector::Int`: A zero-based index of the column
+///  * `ColumnSelector::Str`: The name of the column
 ///
 /// Returns a `DType` value representing the item at the specified position.
 ///
@@ -775,17 +780,17 @@ pub fn DataFrame::clone(self : DataFrame) -> DataFrame {
 ///   Series::new("A", SeriesData::Int([1, 2, 3])),
 ///   Series::new("B", SeriesData::Float([1.5, 2.0, 3.5])),
 /// ])
-/// df.item!(1, DType::Str("A"))
-/// df.item!(0, DType::Int(1))
+/// df.item!(1, ColumnSelector::Str("A"))
+/// df.item!(0, ColumnSelector::Int(1))
 /// ```
 pub fn DataFrame::item(
   self : DataFrame,
   row : Int,
-  column : DType
+  column : ColumnSelector
 ) -> DType!Error {
   let col = match column {
-    DType::Int(value) => value
-    DType::Str(value) =>
+    ColumnSelector::Int(value) => value
+    ColumnSelector::Str(value) =>
       match self.index.get(value) {
         Some(idx) => idx
         None => raise ColumnNotFoundError("Column '\{value}' not found")
@@ -807,7 +812,9 @@ pub fn DataFrame::item(
 /// - `self` : The DataFrame to limit.
 /// - `n` : The maximum number of rows to include in the new DataFrame.
 ///
-/// Returns a new DataFrame containing at most N rows from the original
+/// ### Return:
+/// 
+/// Return a new DataFrame containing at most N rows from the original
 /// DataFrame.
 ///
 /// Throws an error of type `Error` if creating the new DataFrame fails.
@@ -846,6 +853,8 @@ pub fn limit(self : DataFrame, n : Int) -> DataFrame!Error {
 /// - `self` : The DataFrame to extract rows from.
 /// - `n` : The number of rows to include from the end of the DataFrame.
 ///
+/// ### Return:
+/// 
 /// Returns a new DataFrame containing at most N rows from the end of the
 /// original DataFrame.
 ///
