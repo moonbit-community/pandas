@@ -827,35 +827,49 @@ pub fn limit(self : DataFrame, n : Int) -> DataFrame!Error {
   let mut count = 0
   for series in self.data {
     let new_data = match series.data {
-      SeriesData::Int(data) => {
-        data.resize(n, 0)
-        SeriesData::Int(data)
-      }
-      SeriesData::Float(data) => {
-        data.resize(n, 0.0)
-        SeriesData::Float(data)
-      }
-      SeriesData::Bool(data) => {
-        data.resize(n, false)
-        SeriesData::Bool(data)
-      }
-      SeriesData::Str(data) => {
-        data.resize(n, "")
-        SeriesData::Str(data)
-      }
-      SeriesData::List(data) => {
-        data.resize(
-          n,
-          match data {
-            [SeriesData::Int(_)] => SeriesData::Int([])
-            [SeriesData::Float(_)] => SeriesData::Float([])
-            [SeriesData::Bool(_)] => SeriesData::Bool([])
-            [SeriesData::Str(_)] => SeriesData::Str([])
-            _ => SeriesData::List([])
-          },
-        )
-        SeriesData::List(data)
-      }
+	    SeriesData::Int(data) => SeriesData::Int(data.split_at(n).0)
+      SeriesData::Float(data) => SeriesData::Float(data.split_at(n).0)
+      SeriesData::Bool(data) => SeriesData::Bool(data.split_at(n).0)
+      SeriesData::Str(data) => SeriesData::Str(data.split_at(n).0)
+    }
+    data.push(Series::new(series.name, new_data))
+  }
+  DataFrame::new!(data)
+}
+
+///|
+/// Creates a new DataFrame containing only the last N rows of the original
+/// DataFrame. If N is larger than the number of rows in the DataFrame, returns a
+/// DataFrame with all rows from the original DataFrame.
+///
+/// Parameters:
+///
+/// * `self` : The DataFrame to extract rows from.
+/// * `n` : The number of rows to include from the end of the DataFrame.
+///
+/// Returns a new DataFrame containing at most N rows from the end of the
+/// original DataFrame.
+///
+/// Throws an error of type `Error` if creating the new DataFrame fails.
+///
+/// Example:
+///
+/// ```moonbit
+/// let df = DataFrame::new!([
+///   Series::new("A", SeriesData::Int([1, 2, 3, 4, 5])),
+///   Series::new("B", SeriesData::Float([1.1, 2.2, 3.3, 4.4, 5.5])),
+/// ])
+/// let last_three = df.tail!(3)
+/// ```
+pub fn tail(self : DataFrame, n : Int) -> DataFrame!Error {
+  let data : Array[Series] = []
+  let n = @math.minimum(n, self.shape()[0])
+  for series in self.data {
+    let new_data = match series.data {
+      SeriesData::Int(data) => SeriesData::Int(data.split_at(data.length() - n).1)
+      SeriesData::Float(data) => SeriesData::Float(data.split_at(data.length() - n).1)
+      SeriesData::Bool(data) => SeriesData::Bool(data.split_at(data.length() - n).1)
+      SeriesData::Str(data) => SeriesData::Str(data.split_at(data.length() - n).1)
     }
     data.push(Series::new(series.name, new_data))
   }
