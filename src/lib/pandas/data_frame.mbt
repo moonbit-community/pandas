@@ -722,15 +722,15 @@ pub fn DataFrame::clear(self : DataFrame, n~ : Int = 0) -> Unit {
 ///|
 /// Creates a deep copy of the DataFrame.
 ///
-/// Parameters:
+/// ### Parameters:
 ///
-/// * `self` : The DataFrame to be cloned.
+/// - `self` : The DataFrame to be cloned.
 ///
 /// Returns a new DataFrame with the same data, shape, and index as the original
 /// DataFrame. All internal data structures are deeply copied.
 /// THIS METHOD Under Consideration...
 ///
-/// Example:
+/// ### Example:
 ///
 /// ```moonbit
 /// let df = DataFrame::new!([
@@ -752,11 +752,11 @@ pub fn DataFrame::clone(self : DataFrame) -> DataFrame {
 ///|
 /// Retrieves a single item from the DataFrame at the specified row and column.
 ///
-/// Parameters:
+/// ### Parameters:
 ///
-/// * `self` : The DataFrame to retrieve the item from.
-/// * `row` : The index of the row (zero-based).
-/// * `column` : The column identifier, can be either:
+/// - `self` : The DataFrame to retrieve the item from.
+/// - `row` : The index of the row (zero-based).
+/// - `column` : The column identifier, can be either:
 ///  * `DType::Int`: A zero-based index of the column
 ///  * `DType::Str`: The name of the column
 ///
@@ -764,11 +764,11 @@ pub fn DataFrame::clone(self : DataFrame) -> DataFrame {
 ///
 /// Throws:
 ///
-/// * `ColumnNotFoundError` : If the specified column name does not exist in the
+/// - `ColumnNotFoundError` : If the specified column name does not exist in the
 /// DataFrame
-/// * `IndexOutOfBounds` : If the row index is out of range
+/// - `IndexOutOfBounds` : If the row index is out of range
 ///
-/// Example:
+/// ### Example:
 ///
 /// ```moonbit
 /// let df = DataFrame::new!([
@@ -802,17 +802,17 @@ pub fn DataFrame::item(
 /// DataFrame. If N is larger than the number of rows in the DataFrame, returns a
 /// DataFrame with all rows from the original DataFrame.
 ///
-/// Parameters:
+/// ### Parameters:
 ///
-/// * `self` : The DataFrame to limit.
-/// * `n` : The maximum number of rows to include in the new DataFrame.
+/// - `self` : The DataFrame to limit.
+/// - `n` : The maximum number of rows to include in the new DataFrame.
 ///
 /// Returns a new DataFrame containing at most N rows from the original
 /// DataFrame.
 ///
 /// Throws an error of type `Error` if creating the new DataFrame fails.
 ///
-/// Example:
+/// ### Example:
 ///
 /// ```moonbit
 /// let df = DataFrame::new!([
@@ -824,10 +824,9 @@ pub fn DataFrame::item(
 pub fn limit(self : DataFrame, n : Int) -> DataFrame!Error {
   let data : Array[Series] = []
   let n = @math.minimum(n, self.shape()[0])
-  let mut count = 0
   for series in self.data {
     let new_data = match series.data {
-	    SeriesData::Int(data) => SeriesData::Int(data.split_at(n).0)
+      SeriesData::Int(data) => SeriesData::Int(data.split_at(n).0)
       SeriesData::Float(data) => SeriesData::Float(data.split_at(n).0)
       SeriesData::Bool(data) => SeriesData::Bool(data.split_at(n).0)
       SeriesData::Str(data) => SeriesData::Str(data.split_at(n).0)
@@ -842,17 +841,17 @@ pub fn limit(self : DataFrame, n : Int) -> DataFrame!Error {
 /// DataFrame. If N is larger than the number of rows in the DataFrame, returns a
 /// DataFrame with all rows from the original DataFrame.
 ///
-/// Parameters:
+/// ### Parameters:
 ///
-/// * `self` : The DataFrame to extract rows from.
-/// * `n` : The number of rows to include from the end of the DataFrame.
+/// - `self` : The DataFrame to extract rows from.
+/// - `n` : The number of rows to include from the end of the DataFrame.
 ///
 /// Returns a new DataFrame containing at most N rows from the end of the
 /// original DataFrame.
 ///
 /// Throws an error of type `Error` if creating the new DataFrame fails.
 ///
-/// Example:
+/// ### Example:
 ///
 /// ```moonbit
 /// let df = DataFrame::new!([
@@ -866,10 +865,14 @@ pub fn tail(self : DataFrame, n : Int) -> DataFrame!Error {
   let n = @math.minimum(n, self.shape()[0])
   for series in self.data {
     let new_data = match series.data {
-      SeriesData::Int(data) => SeriesData::Int(data.split_at(data.length() - n).1)
-      SeriesData::Float(data) => SeriesData::Float(data.split_at(data.length() - n).1)
-      SeriesData::Bool(data) => SeriesData::Bool(data.split_at(data.length() - n).1)
-      SeriesData::Str(data) => SeriesData::Str(data.split_at(data.length() - n).1)
+      SeriesData::Int(data) =>
+        SeriesData::Int(data.split_at(data.length() - n).1)
+      SeriesData::Float(data) =>
+        SeriesData::Float(data.split_at(data.length() - n).1)
+      SeriesData::Bool(data) =>
+        SeriesData::Bool(data.split_at(data.length() - n).1)
+      SeriesData::Str(data) =>
+        SeriesData::Str(data.split_at(data.length() - n).1)
     }
     data.push(Series::new(series.name, new_data))
   }

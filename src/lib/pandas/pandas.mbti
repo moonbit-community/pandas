@@ -24,19 +24,24 @@ pub(all) struct DataFrame {
 impl DataFrame {
   add_column(Self, Series) -> Unit!
   add_row(Self, Array[DType]) -> Unit!
+  clear(Self, n~ : Int = ..) -> Unit
+  clone(Self) -> Self
   column(Self, String) -> Series!ColumnNotFoundError
   data(Self) -> Array[Series]
   drop_column(Self, String) -> Unit!ColumnNotFoundError
   drop_row(Self, Int) -> Unit!
   filter(Self, String, (DType) -> Bool) -> Self!
-  head(Self) -> Unit
+  head(Self, rows~ : Int = ..) -> Unit
   hstack(Self, Self) -> Self!
+  item(Self, Int, DType) -> DType!
+  limit(Self, Int) -> Self!
   new(Array[Series]) -> Self!InconsistentSeriesLength
   rename(Self, String, String) -> Unit!ColumnNotFoundError
   select_columns(Self, Array[String]) -> Self!ColumnNotFoundError
   select_rows(Self, range? : (Int, Int), indices? : Array[Int]) -> Self!IndexOutOfBounds
   shape(Self) -> Array[Int]
   sort(Self, String, descending~ : Bool = ..) -> Unit!ColumnNotFoundError
+  tail(Self, Int) -> Self!
   vstack(Self, Self) -> Self!
 }
 impl Show for DataFrame
@@ -62,11 +67,14 @@ pub(all) struct Series {
 }
 impl Series {
   argsort(Self, descending~ : Bool = ..) -> Array[Int]
+  copy(Self) -> Self
   data(Self) -> SeriesData
+  merge(Self, Self) -> Self!InvalidType
   name(Self) -> String
   new(String, SeriesData) -> Self
   op_add(Self, Self) -> Self
   op_div(Self, Self) -> Self
+  op_get(Self, Int) -> DType
   op_mul(Self, Self) -> Self
   op_sub(Self, Self) -> Self
 }
