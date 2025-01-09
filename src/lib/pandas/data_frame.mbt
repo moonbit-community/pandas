@@ -112,7 +112,7 @@ pub impl Show for DataFrame with output(self, logger) {
 /// # Example
 /// ```
 /// df.head()
-/// df.head(3)
+/// df.head(num=3)
 /// ```
 pub fn DataFrame::head(self : DataFrame, num? : Int) -> Unit {
   let mut row_str = "\t"
