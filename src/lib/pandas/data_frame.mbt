@@ -103,6 +103,7 @@ pub impl Show for DataFrame with output(self, logger) {
 /// # Parameters
 ///
 /// - `self` : An instance of the DataFrame
+/// - `num` : The number of rows to display (default is 5)
 ///
 /// # Returns
 ///
@@ -111,6 +112,7 @@ pub impl Show for DataFrame with output(self, logger) {
 /// # Example
 /// ```
 /// df.head()
+/// df.head(3)
 /// ```
 pub fn DataFrame::head(self : DataFrame, num? : Int) -> Unit {
   let mut row_str = "\t"
