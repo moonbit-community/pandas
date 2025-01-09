@@ -703,6 +703,26 @@ pub fn hstack(self : DataFrame, other : DataFrame) -> DataFrame! {
   DataFrame::new!(data)
 }
 
+///|
+/// Clears all data in the DataFrame, resetting it to an empty state.
+///
+/// Parameters:
+///
+/// * `self` : The DataFrame to be cleared.
+/// * `n` : Optional parameter that specifies a size hint for clearing (default
+/// is 0). Currently not used.
+///
+/// Example:
+///
+/// ```moonbit
+/// df.clear()
+/// ```
+pub fn DataFrame::clear(self : DataFrame, n~ : Int = 0) -> Unit {
+  self.data.clear()
+  self.shape = [0, 0]
+  self.index.clear()
+}
+
 ///| Tests
 test "new" {
   let df = DataFrame::new!([
