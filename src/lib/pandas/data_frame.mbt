@@ -732,6 +732,7 @@ pub fn DataFrame::clear(self : DataFrame, n~ : Int = 0) -> Unit {
 ///
 /// Returns a new DataFrame with the same data, shape, and index as the original
 /// DataFrame. All internal data structures are deeply copied.
+/// THIS METHOD Under Consideration...
 ///
 /// Example:
 ///
@@ -750,6 +751,26 @@ pub fn DataFrame::clone(self : DataFrame) -> DataFrame {
     map[idx.0] = idx.1
   }
   DataFrame::{ data, shape: self.shape.copy(), index: map }
+}
+
+///|
+pub fn DataFrame::item(
+  self : DataFrame,
+  row : Int,
+  column : DType
+) -> DType!Error {
+  let col = match column {
+    DType::Int(value) => value
+    DType::Str(value) =>
+      match self.index.get(value) {
+        Some(idx) => idx
+        None => raise ColumnNotFoundError("Column '\{value}' not found")
+      }
+  }
+  if row < 0 || row >= self.shape()[0] {
+    raise IndexOutOfBounds("Row index out of bounds")
+  }
+  self.data[col][row]
 }
 
 ///| Tests
