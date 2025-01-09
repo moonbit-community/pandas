@@ -4,7 +4,7 @@ pub(all) enum DType {
   Float(Float)
   Bool(Bool)
   Str(String)
-} derive(Show, Eq, Compare)
+} derive(Show, Eq, Compare, Hash)
 
 ///|
 pub(all) enum SeriesData {
@@ -292,6 +292,17 @@ pub fn op_div(self : SeriesData, other : SeriesData) -> SeriesData {
 ///| Series div
 pub fn op_div(self : Series, other : Series) -> Series {
   Series::new(self.name(), self.data() / other.data())
+}
+
+pub fn merge(self : Series, other : Series) -> Series!InvalidType {
+  let data = match (self.data, other.data) {
+    (SeriesData::Int(a), SeriesData::Int(b)) => SeriesData::Int(a + b)
+    (SeriesData::Float(a), SeriesData::Float(b)) => SeriesData::Float(a + b)
+    (SeriesData::Bool(a), SeriesData::Bool(b)) => SeriesData::Bool(a + b)
+    (SeriesData::Str(a), SeriesData::Str(b)) => SeriesData::Str(a + b)
+    _ => raise InvalidType("unsupported types")
+  }
+  Series::new(self.name, data)
 }
 
 ///| Tests

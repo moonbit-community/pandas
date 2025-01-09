@@ -103,6 +103,7 @@ pub impl Show for DataFrame with output(self, logger) {
 /// # Parameters
 ///
 /// - `self` : An instance of the DataFrame
+/// - `num` : The number of rows to display (default is 5)
 ///
 /// # Returns
 ///
@@ -111,14 +112,19 @@ pub impl Show for DataFrame with output(self, logger) {
 /// # Example
 /// ```
 /// df.head()
+/// df.head(num=3)
 /// ```
-pub fn DataFrame::head(self : DataFrame) -> Unit {
+pub fn DataFrame::head(self : DataFrame, num? : Int) -> Unit {
   let mut row_str = "\t"
   for col in self.data {
     row_str = row_str + col.name() + "\t"
   }
   row_str += "\n"
-  for i = 0; i < @math.minimum(5, self.shape()[0]); i = i + 1 {
+  let n = match num {
+    Some(n) => n
+    None => 5
+  }
+  for i = 0; i < @math.minimum(n, self.shape()[0]); i = i + 1 {
     row_str += i.to_string() + "\t"
     for col in self.data {
       match col.data() {
@@ -695,6 +701,26 @@ pub fn hstack(self : DataFrame, other : DataFrame) -> DataFrame! {
     }
   }
   DataFrame::new!(data)
+}
+
+///|
+/// Clears all data in the DataFrame, resetting it to an empty state.
+///
+/// Parameters:
+///
+/// * `self` : The DataFrame to be cleared.
+/// * `n` : Optional parameter that specifies a size hint for clearing (default
+/// is 0). Currently not used.
+///
+/// Example:
+///
+/// ```moonbit
+/// df.clear()
+/// ```
+pub fn DataFrame::clear(self : DataFrame, n~ : Int = 0) -> Unit {
+  self.data.clear()
+  self.shape = [0, 0]
+  self.index.clear()
 }
 
 ///| Tests
