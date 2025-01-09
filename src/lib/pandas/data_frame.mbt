@@ -112,13 +112,17 @@ pub impl Show for DataFrame with output(self, logger) {
 /// ```
 /// df.head()
 /// ```
-pub fn DataFrame::head(self : DataFrame) -> Unit {
+pub fn DataFrame::head(self : DataFrame, num? : Int) -> Unit {
   let mut row_str = "\t"
   for col in self.data {
     row_str = row_str + col.name() + "\t"
   }
   row_str += "\n"
-  for i = 0; i < @math.minimum(5, self.shape()[0]); i = i + 1 {
+  let n = match num {
+    Some(n) => n
+    None => 5
+  }
+  for i = 0; i < @math.minimum(n, self.shape()[0]); i = i + 1 {
     row_str += i.to_string() + "\t"
     for col in self.data {
       match col.data() {
