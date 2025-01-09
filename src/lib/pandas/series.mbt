@@ -294,6 +294,7 @@ pub fn op_div(self : Series, other : Series) -> Series {
   Series::new(self.name(), self.data() / other.data())
 }
 
+///|
 pub fn merge(self : Series, other : Series) -> Series!InvalidType {
   let data = match (self.data, other.data) {
     (SeriesData::Int(a), SeriesData::Int(b)) => SeriesData::Int(a + b)
@@ -303,6 +304,21 @@ pub fn merge(self : Series, other : Series) -> Series!InvalidType {
     _ => raise InvalidType("unsupported types")
   }
   Series::new(self.name, data)
+}
+
+///|
+fn copy(self : SeriesData) -> SeriesData {
+  match self {
+    SeriesData::Int(data) => SeriesData::Int(data.copy())
+    SeriesData::Float(data) => SeriesData::Float(data.copy())
+    SeriesData::Bool(data) => SeriesData::Bool(data.copy())
+    SeriesData::Str(data) => SeriesData::Str(data.copy())
+  }
+}
+
+///|
+pub fn copy(self : Series) -> Series {
+  Series::new(self.name(), self.data().copy())
 }
 
 ///| Tests

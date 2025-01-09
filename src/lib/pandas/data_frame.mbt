@@ -723,6 +723,35 @@ pub fn DataFrame::clear(self : DataFrame, n~ : Int = 0) -> Unit {
   self.index.clear()
 }
 
+///|
+/// Creates a deep copy of the DataFrame.
+///
+/// Parameters:
+///
+/// * `self` : The DataFrame to be cloned.
+///
+/// Returns a new DataFrame with the same data, shape, and index as the original
+/// DataFrame. All internal data structures are deeply copied.
+///
+/// Example:
+///
+/// ```moonbit
+/// let df = DataFrame::new!([
+///   Series::new("A", SeriesData::Int([1, 2, 3])),
+///   Series::new("B", SeriesData::Float([1.0, 2.0, 3.0])),
+/// ])
+/// let cloned = df.clone()
+/// ```
+pub fn DataFrame::clone(self : DataFrame) -> DataFrame {
+  let data = self.data.map(fn(series : Series) { series.copy() })
+  let index = self.index.iter().collect()
+  let map : Map[String, Int] = {}
+  for idx in index {
+    map[idx.0] = idx.1
+  }
+  DataFrame::{ data, shape: self.shape.copy(), index: map }
+}
+
 ///| Tests
 test "new" {
   let df = DataFrame::new!([
