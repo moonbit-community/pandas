@@ -754,6 +754,34 @@ pub fn DataFrame::clone(self : DataFrame) -> DataFrame {
 }
 
 ///|
+/// Retrieves a single item from the DataFrame at the specified row and column.
+///
+/// Parameters:
+///
+/// * `self` : The DataFrame to retrieve the item from.
+/// * `row` : The index of the row (zero-based).
+/// * `column` : The column identifier, can be either:
+///  * `DType::Int`: A zero-based index of the column
+///  * `DType::Str`: The name of the column
+///
+/// Returns a `DType` value representing the item at the specified position.
+///
+/// Throws:
+///
+/// * `ColumnNotFoundError` : If the specified column name does not exist in the
+/// DataFrame
+/// * `IndexOutOfBounds` : If the row index is out of range
+///
+/// Example:
+///
+/// ```moonbit
+/// let df = DataFrame::new!([
+///   Series::new("A", SeriesData::Int([1, 2, 3])),
+///   Series::new("B", SeriesData::Float([1.5, 2.0, 3.5])),
+/// ])
+/// df.item!(1, DType::Str("A"))
+/// df.item!(0, DType::Int(1))
+/// ```
 pub fn DataFrame::item(
   self : DataFrame,
   row : Int,

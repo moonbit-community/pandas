@@ -235,19 +235,21 @@ pub fn op_sub(self : SeriesData, other : SeriesData) -> SeriesData {
   }
 }
 
+///|
 pub fn op_get(self : Series, other : Int) -> DType {
   match self.data {
     SeriesData::Int(data) => DType::Int(data[other])
     SeriesData::Float(data) => DType::Float(data[other])
     SeriesData::Bool(data) => DType::Bool(data[other])
     SeriesData::Str(data) => DType::Str(data[other])
-    SeriesData::List(data) => match data {
-      [SeriesData::Int(arr)] => DType::Int(arr[other])
-      [SeriesData::Float(arr)] => DType::Float(arr[other])
-      [SeriesData::Bool(arr)] => DType::Bool(arr[other])
-      [SeriesData::Str(arr)] => DType::Str(arr[other])
-      _ => abort("unsupported types")
-    }
+    SeriesData::List(data) =>
+      match data {
+        [SeriesData::Int(arr)] => DType::Int(arr[other])
+        [SeriesData::Float(arr)] => DType::Float(arr[other])
+        [SeriesData::Bool(arr)] => DType::Bool(arr[other])
+        [SeriesData::Str(arr)] => DType::Str(arr[other])
+        _ => abort("unsupported types")
+      }
   }
 }
 
