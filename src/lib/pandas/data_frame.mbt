@@ -1196,6 +1196,126 @@ pub fn DataFrame::with_row_index(
   }
 }
 
+///| Transpose a DataFrame over the diagonal
+///
+/// ### Parameters
+///
+/// - `self` : An instance of the DataFrame
+/// - `include_header~` : If set, the column names will be added as first column. (default is false)
+/// - `header_name~` : If include_header is set, this determines the name of the column that will be inserted. (default is "column")
+/// - `column_names?` : Optional iterable yielding strings or a string naming an existing column. These will name the value (non-header) columns in the transposed data.
+///
+/// ### Returns
+///
+/// - `DataFrame` : A new transposed DataFrame
+///
+/// ### Errors
+///
+/// - `InvalidType` : Raised if the columns have different data types
+///
+/// ### Example
+/// ```
+/// let df = DataFrame::new!([
+///   Series::new("A", SeriesData::Int([1, 2, 3])),
+///   Series::new("B", SeriesData::Int([4, 5, 6]))
+/// ])
+/// let df_transposed = df.transpose()
+/// let df_transposed = df.transpose(include_header=true)
+/// let df_transposed = df.transpose(include_header=true, header_name="header")
+/// let df_transposed = df.transpose(column_names=["x","y"])
+/// ```
+pub fn DataFrame::transpose(
+  self : DataFrame,
+  include_header~ : Bool = false,
+  header_name~ : String = "column",
+  column_names? : Array[String]
+) -> DataFrame! {
+  for series in self.data {
+    if series.get_type() != self.data[0].get_type() {
+      raise InvalidType("All columns must have the same data type")
+    }
+  }
+  let new_data : Array[Series] = []
+  match include_header {
+    true => {
+      let header = Series::new(
+        header_name,
+        SeriesData::Str(
+          Array::makei(self.shape[1], fn(i) { self.data[i].name }),
+        ),
+      )
+      new_data.push(header)
+    }
+    false => ()
+  }
+  match self.data[0][0] {
+    Int(_) =>
+      for i = 0; i < self.shape[0]; i = i + 1 {
+        let col_data = []
+        for j = 0; j < self.shape[1]; j = j + 1 {
+          match self.data[j][i] {
+            DType::Int(value) => col_data.push(value)
+            _ => ()
+          }
+        }
+        let col_name = "column_" + i.to_string()
+        new_data.push(Series::new(col_name, SeriesData::Int(col_data)))
+      }
+    Float(_) =>
+      for i = 0; i < self.shape[0]; i = i + 1 {
+        let col_data = []
+        for j = 0; j < self.shape[1]; j = j + 1 {
+          match self.data[j][i] {
+            DType::Float(value) => col_data.push(value)
+            _ => ()
+          }
+        }
+        let col_name = "column_" + i.to_string()
+        new_data.push(Series::new(col_name, SeriesData::Float(col_data)))
+      }
+    Bool(_) =>
+      for i = 0; i < self.shape[0]; i = i + 1 {
+        let col_data = []
+        for j = 0; j < self.shape[1]; j = j + 1 {
+          match self.data[j][i] {
+            DType::Bool(value) => col_data.push(value)
+            _ => ()
+          }
+        }
+        let col_name = "column_" + i.to_string()
+        new_data.push(Series::new(col_name, SeriesData::Bool(col_data)))
+      }
+    Str(_) =>
+      for i = 0; i < self.shape[0]; i = i + 1 {
+        let col_data = []
+        for j = 0; j < self.shape[1]; j = j + 1 {
+          match self.data[j][i] {
+            DType::Str(value) => col_data.push(value)
+            _ => ()
+          }
+        }
+        let col_name = "column_" + i.to_string()
+        new_data.push(Series::new(col_name, SeriesData::Str(col_data)))
+      }
+  }
+  match column_names {
+    Some(names) =>
+      for i = 0; i < @math.minimum(names.length(), new_data.length()); i = i + 1 {
+        new_data[i].name = names[i]
+      }
+    None => ()
+  }
+  let new_index : Map[String, Int] = {}
+  for i = 0; i < new_data.length(); i = i + 1 {
+    new_index[new_data[i].name] = i
+  }
+  DataFrame::{
+    data: new_data,
+    shape: [new_data[0].data.length(), new_data.length()],
+    index: new_index,
+  }
+}
+
 ///| Tests
 test "new" {
   let df = DataFrame::new!([
@@ -1430,4 +1550,20 @@ test "row_index" {
   let new_df = df.with_row_index(offset=1000)
   inspect!(new_df.shape, content="[3, 2]")
   inspect!(new_df.data[0].data, content="Int([1000, 1001, 1002])")
+}
+
+test "transpose" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesData::Int([1, 2, 3])),
+    Series::new("B", SeriesData::Int([4, 5, 6])),
+  ])
+  let trans_df = df.transpose!()
+  inspect!(trans_df.shape(), content="[2, 3]")
+  let trans_df = df.transpose!(include_header=true)
+  inspect!(trans_df.data[0].data(), content="Str([\"A\", \"B\"])")
+  let trans_df = df.transpose!(include_header=true, header_name="header")
+  inspect!(trans_df.data[0].data(), content="Str([\"A\", \"B\"])")
+  inspect!(trans_df.data[0].name, content="header")
+  let trans_df = df.transpose!(include_header=true, column_names=["x", "y", "z"])
+  inspect!(trans_df.data[1].name, content="y")
 }

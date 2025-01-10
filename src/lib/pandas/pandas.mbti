@@ -3,6 +3,9 @@ package smallbearrr/pandas/lib/pandas
 // Values
 
 // Types and methods
+type BasicType
+impl Eq for BasicType
+
 type ColumnNotFoundError
 impl Show for ColumnNotFoundError
 
@@ -36,6 +39,7 @@ impl DataFrame {
   drop_column(Self, String) -> Unit!ColumnNotFoundError
   drop_row(Self, Int) -> Unit!
   filter(Self, String, (DType) -> Bool) -> Self!
+  get_column_index(Self, String) -> Int!
   head(Self, rows~ : Int = ..) -> Unit
   hstack(Self, Self) -> Self!
   item(Self, Int, ColumnSelector) -> DType!
@@ -52,9 +56,10 @@ impl DataFrame {
   sort(Self, String, descending~ : Bool = ..) -> Unit!ColumnNotFoundError
   tail(Self, Int) -> Self!
   to_series(Self, Int) -> Series
+  transpose(Self, include_header~ : Bool = .., header_name~ : String = .., column_names? : Array[String]) -> Self!
   unique(Self, Array[String], keep~ : String = ..) -> Self!
   vstack(Self, Self) -> Self!
-  with_row_index(Self) -> Self
+  with_row_index(Self, offset~ : Int = ..) -> Self
 }
 impl Eq for DataFrame
 impl Hash for DataFrame

@@ -384,6 +384,24 @@ pub fn Series::reverse(self : Series) -> Unit {
   self.data.reverse()
 }
 
+///|
+enum BasicType {
+  Int
+  Float
+  Bool
+  Str
+} derive(Eq)
+
+///|
+fn get_type(self : Series) -> BasicType {
+  match self.data {
+    SeriesData::Int(_) => BasicType::Int
+    SeriesData::Float(_) => BasicType::Float
+    SeriesData::Bool(_) => BasicType::Bool
+    SeriesData::Str(_) => BasicType::Str
+  }
+}
+
 ///| Tests
 test "series" {
   let series = Series::new("test", SeriesData::Int([1, 2, 3, 4, 5]))
