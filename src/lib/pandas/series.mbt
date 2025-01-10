@@ -234,10 +234,7 @@ pub fn op_sub(self : SeriesData, other : SeriesData) -> SeriesData {
 }
 
 ///| 
-pub fn get(self : Series, index : Int) -> DType!IndexOutOfBounds {
-  if index < 0 || index >= self.data.length() {
-    raise IndexOutOfBounds("Index out of bounds")
-  }
+pub fn op_get(self : Series, index : Int) -> DType {
   match self.data {
     SeriesData::Int(data) => DType::Int(data[index])
     SeriesData::Float(data) => DType::Float(data[index])
@@ -391,11 +388,4 @@ test "series_div" {
   inspect!(c, content="{name: \"a\", data: Int([2, 2, 3])}")
 }
 
-test "get" {
-  let series = Series::new("test", SeriesData::Int([1, 2, 3, 4, 5]))
-  inspect!(series.get?(2), content="Ok(Int(3))")
-  inspect!(
-    series.get?(5),
-    content="Err(IndexOutOfBounds(\"Index out of bounds\"))",
-  )
-}
+

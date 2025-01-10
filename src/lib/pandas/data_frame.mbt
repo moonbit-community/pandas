@@ -801,7 +801,7 @@ pub fn DataFrame::item(
   if row < 0 || row >= self.shape()[0] || col < 0 || col >= self.shape()[1] {
     raise IndexOutOfBounds("Row index out of bounds")
   }
-  self.data[col].get!(row)
+  self.data[col][row]
 }
 
 ///|
@@ -1052,4 +1052,12 @@ test "hstack" {
     res.column!("C"),
     content="{name: \"C\", data: Str([\"d\", \"e\", \"f\"])}",
   )
+}
+
+test "item" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesData::Int([1, 2, 3])),
+  ])
+  inspect!(df.item?(1, ColumnSelector::Str("A")), content="Ok(Int(2))")
+  inspect!(df.item?(0, ColumnSelector::Int(2)), content="Err(IndexOutOfBounds(\"Row index out of bounds\"))")
 }
