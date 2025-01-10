@@ -255,13 +255,13 @@ pub fn op_sub(self : SeriesData, other : SeriesData) -> SeriesData {
   }
 }
 
-///|
-pub fn op_get(self : Series, other : Int) -> DType {
+///| 
+pub fn op_get(self : Series, index : Int) -> DType {
   match self.data {
-    SeriesData::Int(data) => DType::Int(data[other])
-    SeriesData::Float(data) => DType::Float(data[other])
-    SeriesData::Bool(data) => DType::Bool(data[other])
-    SeriesData::Str(data) => DType::Str(data[other])
+    SeriesData::Int(data) => DType::Int(data[index])
+    SeriesData::Float(data) => DType::Float(data[index])
+    SeriesData::Bool(data) => DType::Bool(data[index])
+    SeriesData::Str(data) => DType::Str(data[index])
   }
 }
 
@@ -409,3 +409,5 @@ test "series_div" {
   let c = a / b
   inspect!(c, content="{name: \"a\", data: Int([2, 2, 3])}")
 }
+
+
