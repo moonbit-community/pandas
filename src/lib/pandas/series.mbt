@@ -42,6 +42,12 @@ pub impl Hash for SeriesData with hash_combine(self, hasher) {
   }
 }
 
+///|
+pub impl Hash for Series with hash_combine(self, hasher) {
+  self.name.hash_combine(hasher)
+  self.data.hash_combine(hasher)
+}
+
 ///| Create a new Series
 ///
 /// ### Parameters
