@@ -1138,6 +1138,64 @@ pub fn DataFrame::reverse(self : DataFrame) -> Unit {
   }
 }
 
+///| Get the index of a column by its name
+///
+/// ### Parameters
+///
+/// - `self` : An instance of the DataFrame
+/// - `name` : The name of the column
+///
+/// ### Errors
+///
+/// - `ColumnNotFoundError` : Raised if the specified column is not found
+///
+/// ### Example
+/// ```moonbit
+/// let index = df.get_column_index("A")
+/// ```
+pub fn DataFrame::get_column_index(self : DataFrame, name : String) -> Int! {
+  match self.index.get(name) {
+    Some(index) => index
+    None => raise ColumnNotFoundError("Column '\{name}' not found")
+  }
+}
+
+///| Add a row index column to the DataFrame
+///
+/// ### Parameters
+///
+/// - `self` : An instance of the DataFrame
+/// - `offset` : An optional integer offset to start the row index (default is 0)
+///
+/// ### Returns
+///
+/// - `DataFrame` : A new DataFrame with an added row index column
+///
+/// ### Example
+/// ```
+/// let df_with_index = df.with_row_index()
+/// ```
+pub fn DataFrame::with_row_index(
+  self : DataFrame,
+  offset~ : Int = 0
+) -> DataFrame {
+  let new_data = self.data.copy()
+  let idx = Series::new(
+    "index",
+    SeriesData::Int(Array::makei(self.shape[0], fn(i) { i + offset })),
+  )
+  new_data.insert(0, idx)
+  let new_index = { "row_nr": 0 }
+  for item in self.index {
+    new_index[item.0] = item.1 + 1
+  }
+  DataFrame::{
+    data: new_data,
+    shape: [self.shape[0], self.shape[1] + 1],
+    index: new_index,
+  }
+}
+
 ///| Tests
 test "new" {
   let df = DataFrame::new!([
@@ -1215,7 +1273,6 @@ test "sort" {
   )
 }
 
-///|
 test "new_error" {
   let col1 = Series::new("A", SeriesData::Int([1, 2, 3, 4, 5, 6]))
   let col2 = Series::new("B", SeriesData::Float([1.5, 2.0, 3.5]))
@@ -1366,4 +1423,11 @@ test "reverse" {
   df.reverse()
   inspect!(df.data[0].data, content="Int([3, 2, 1])")
   inspect!(df.data[1].data, content="Str([\"c\", \"b\", \"a\"])")
+}
+
+test "row_index" {
+  let df = DataFrame::new!([Series::new("A", SeriesData::Int([1, 2, 3]))])
+  let new_df = df.with_row_index(offset=1000)
+  inspect!(new_df.shape, content="[3, 2]")
+  inspect!(new_df.data[0].data, content="Int([1000, 1001, 1002])")
 }

@@ -370,25 +370,6 @@ pub fn copy(self : Series) -> Series {
 }
 
 ///|
-pub fn DataFrame::with_row_index(self : DataFrame) -> DataFrame {
-  let new_data = self.data.copy()
-  let idx = Series::new(
-    "index",
-    SeriesData::Int(Array::makei(self.shape[0], fn(i) { i })),
-  )
-  new_data.insert(0, idx)
-  let new_index = { "row_nr": 0 }
-  for item in self.index {
-    new_index[item.0] = item.1 + 1
-  }
-  DataFrame::{
-    data: new_data,
-    shape: [self.shape[0], self.shape[1] + 1],
-    index: new_index,
-  }
-}
-
-///|
 fn SeriesData::reverse(self : SeriesData) -> Unit {
   match self {
     SeriesData::Int(data) => data.rev_inplace()
@@ -458,10 +439,4 @@ test "series_div" {
   inspect!(c, content="Int([2, 2, 3])")
   let c = a / b
   inspect!(c, content="{name: \"a\", data: Int([2, 2, 3])}")
-}
-
-test "row_index" {
-  let df = DataFrame::new!([Series::new("A", SeriesData::Int([1, 2, 3]))])
-  let new_df = df.with_row_index()
-  inspect!(new_df.shape, content="[3, 2]")
 }
