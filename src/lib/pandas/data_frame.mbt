@@ -1026,7 +1026,7 @@ pub fn unique(
       "first" => unique_indices.push(indices[0])
       "last" => unique_indices.push(indices[indices.length() - 1])
       "any" => unique_indices.push(indices[0])
-      "none" => {
+      _ => {
         if indices.length() == 1 {
           unique_indices.push(indices[0])
         }
@@ -1038,6 +1038,34 @@ pub fn unique(
     0 => emptyDataFrame
     _ => self.select_rows!(indices=unique_indices)
   }
+}
+
+test "unique/basic" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesData::Int([1, 1, 2, 2])),
+    Series::new("B", SeriesData::Int([1, 1, 2, 3])),
+  ])
+  let unique_first = df.unique!(["A"], keep="first")
+  inspect!(unique_first.shape(), content="[2, 2]")
+  inspect!(unique_first.data()[0].data(), content="Int([1, 2])")
+}
+
+test "unique/empty" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesData::Int([])),
+    Series::new("B", SeriesData::Int([])),
+  ])
+  let unique_df = df.unique!(["A"])
+  inspect!(unique_df.shape(), content="[0, 0]")
+}
+
+test "panic unique/invalid_keep" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesData::Int([1, 1, 2, 2])),
+    Series::new("B", SeriesData::Int([1, 1, 2, 3])),
+  ])
+  df.unique!(["A"], keep="invalid")
+  |> ignore
 }
 
 ///| Tests
