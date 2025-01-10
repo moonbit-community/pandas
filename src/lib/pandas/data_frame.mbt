@@ -3,6 +3,17 @@ pub(all) struct DataFrame {
   mut data : Array[Series]
   mut shape : Array[Int]
   mut index : Map[String, Int]
+} derive(Eq)
+
+///|
+pub impl Hash for DataFrame with hash_combine(self, hasher) {
+  for idx in self.index {
+    hasher.combine(idx.0)
+    hasher.combine(idx.1)
+    for col in self.data {
+      hasher.combine(col)
+    }
+  }
 }
 
 ///|
@@ -890,11 +901,192 @@ pub fn tail(self : DataFrame, n : Int) -> DataFrame!Error {
   DataFrame::new!(data)
 }
 
+///|
+/// Creates a new DataFrame containing a slice of rows from the original
+/// DataFrame, starting from the specified offset.
+///
+/// Parameters:
+///
+/// * `self` : The DataFrame to slice.
+/// * `offset` : The starting index of the slice (zero-based).
+/// * `length` : Optional parameter specifying the number of rows to include in
+/// the slice. If not provided, includes all remaining rows after the offset.
+///
+/// Returns a new DataFrame containing the specified slice of rows from the
+/// original DataFrame.
+///
+/// Throws an error of type `Error` if creating the new DataFrame fails.
+///
+/// Example:
+///
+/// ```moonbit
+///   let df = DataFrame::new!([
+///     Series::new("A", SeriesData::Int([1, 2, 3, 4, 5])),
+///     Series::new("B", SeriesData::Float([1.1, 2.2, 3.3, 4.4, 5.5])),
+///   ])
+///   let sliced = df.slice!(1, Some(2))
+/// ```
+pub fn DataFrame::slice(
+  self : DataFrame,
+  offset : Int,
+  length? : Int
+) -> DataFrame!Error {
+  let data : Array[Series] = []
+  let len = match length {
+    Some(l) => l
+    None => self.shape()[0] - offset
+  }
+  for series in self.data {
+    let new_data = match series.data {
+      SeriesData::Int(data) =>
+        SeriesData::Int(data.split_at(offset).1.split_at(len).0)
+      SeriesData::Float(data) =>
+        SeriesData::Float(data.split_at(offset).1.split_at(len).0)
+      SeriesData::Bool(data) =>
+        SeriesData::Bool(data.split_at(offset).1.split_at(len).0)
+      SeriesData::Str(data) =>
+        SeriesData::Str(data.split_at(offset).1.split_at(len).0)
+    }
+    data.push(Series::new(series.name, new_data))
+  }
+  DataFrame::new!(data)
+}
+
+///|
+/// Converts a column of the DataFrame to a Series by its index.
+///
+/// Parameters:
+///
+/// * `self` : The DataFrame from which to extract the Series.
+/// * `column_index` : The zero-based index of the column to convert to a Series.
+///
+/// Returns the Series at the specified column index.
+///
+/// Example:
+///
+/// ```moonbit
+/// let df = DataFrame::new!([
+///   Series::new("A", SeriesData::Int([1, 2, 3])),
+///   Series::new("B", SeriesData::Float([1.5, 2.0, 2.5])),
+/// ])
+/// df.to_series(0)
+/// ```
+pub fn to_series(self : DataFrame, index : Int) -> Series {
+  self.data[index]
+}
+
+///|
+/// Removes duplicate rows from the DataFrame based on specified columns, with
+/// control over which duplicates to keep.
+///
+/// Parameters:
+///
+/// * `df` : The DataFrame to remove duplicates from.
+/// * `columns` : An array of column names to consider when identifying
+/// duplicates. Rows are considered duplicates if they have the same values in
+/// all specified columns.
+/// * `keep~` : A string specifying which duplicates to retain. Valid values are:
+///  * "first": Keep the first occurrence of each duplicate
+///  * "last": Keep the last occurrence of each duplicate
+///  * "any": Keep any occurrence of each duplicate (defaults to first)
+///  * "none": Keep only rows that have no duplicates
+///
+/// Returns a new DataFrame with duplicates removed according to the specified
+/// criteria.
+///
+/// Throws:
+///
+/// * `InvalidType` : If an invalid value is provided for the `keep` parameter
+/// * `ColumnNotFoundError` : If any of the specified columns do not exist in the
+/// DataFrame
+///
+/// Example:
+///
+/// ```moonbit
+/// let df = DataFrame::new!([
+///   Series::new("A", SeriesData::Int([1, 1, 2, 2])),
+///   Series::new("B", SeriesData::Int([1, 1, 2, 3])),
+/// ])
+/// let unique_df = df.unique!(["A"], keep="first")
+/// ```
+pub fn unique(
+  self : DataFrame,
+  subset : Array[String],
+  keep~ : String = "any"
+) -> DataFrame!Error {
+  if not(["first", "last", "any", "none"].contains(keep)) {
+    raise InvalidType(
+      "Invalid keep parameter. Must be one of: first, last, any, none",
+    )
+  }
+  let selected_cols = []
+  for item in subset {
+    selected_cols.push(self.column!(item))
+  }
+  let df = DataFrame::new!(selected_cols)
+  let unique_map = Map::new() // key: row_string, value: Array[Int]
+  for i = 0; i < df.shape()[0]; i = i + 1 {
+    let row_key = df.select_rows!(range=(i, i + 1)).to_string()
+    if unique_map.contains(row_key) {
+      let current_indices = match unique_map.get(row_key) {
+        Some(indices) => indices
+        None => []
+      }
+      let new_indices = current_indices + [i]
+      unique_map.set(row_key, new_indices)
+    } else {
+      unique_map.set(row_key, [i])
+    }
+  }
+  let unique_indices = Array::new()
+  for indice in unique_map {
+    let indices = indice.1
+    match keep {
+      "first" => unique_indices.push(indices[0])
+      "last" => unique_indices.push(indices[indices.length() - 1])
+      "any" => unique_indices.push(indices[0])
+      _ => if indices.length() == 1 { unique_indices.push(indices[0]) }
+    }
+  }
+  unique_indices.sort()
+  match unique_indices.length() {
+    0 => emptyDataFrame
+    _ => self.select_rows!(indices=unique_indices)
+  }
+}
+
+test "unique/basic" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesData::Int([1, 1, 2, 2])),
+    Series::new("B", SeriesData::Int([1, 1, 2, 3])),
+  ])
+  let unique_first = df.unique!(["A"], keep="first")
+  inspect!(unique_first.shape(), content="[2, 2]")
+  inspect!(unique_first.data()[0].data(), content="Int([1, 2])")
+}
+
+test "unique/empty" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesData::Int([])),
+    Series::new("B", SeriesData::Int([])),
+  ])
+  let unique_df = df.unique!(["A"])
+  inspect!(unique_df.shape(), content="[0, 0]")
+}
+
+test "panic unique/invalid_keep" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesData::Int([1, 1, 2, 2])),
+    Series::new("B", SeriesData::Int([1, 1, 2, 3])),
+  ])
+  df.unique!(["A"], keep="invalid") |> ignore
+}
+
 ///| Tests
 test "new" {
   let df = DataFrame::new!([
     Series::new("A", SeriesData::Int([1, 2, 3, 4, 5, 6])),
-    Series::new("B", SeriesData::Float([1.5, 2.0, 3.5, 4.0, 5.5, 6.0])),
+    Series::new("B", SeriesData::Float([1.5, 2.0, 3.5, 6.0, 6.0, 6.0])),
     Series::new("C", SeriesData::Bool([true, false, true, false, true, false])),
     Series::new("D", SeriesData::Str(["a", "b", "c", "d", "e", "f"])),
   ])
@@ -1055,9 +1247,10 @@ test "hstack" {
 }
 
 test "item" {
-  let df = DataFrame::new!([
-    Series::new("A", SeriesData::Int([1, 2, 3])),
-  ])
+  let df = DataFrame::new!([Series::new("A", SeriesData::Int([1, 2, 3]))])
   inspect!(df.item?(1, ColumnSelector::Str("A")), content="Ok(Int(2))")
-  inspect!(df.item?(0, ColumnSelector::Int(2)), content="Err(IndexOutOfBounds(\"Row index out of bounds\"))")
+  inspect!(
+    df.item?(0, ColumnSelector::Int(2)),
+    content="Err(IndexOutOfBounds(\"Row index out of bounds\"))",
+  )
 }

@@ -20,6 +20,34 @@ pub(all) struct Series {
   mut data : SeriesData
 } derive(Show, Eq)
 
+///|
+pub impl Hash for SeriesData with hash_combine(self, hasher) {
+  match self {
+    SeriesData::Int(data) =>
+      for value in data {
+        hasher.combine(value)
+      }
+    SeriesData::Float(data) =>
+      for value in data {
+        hasher.combine(value)
+      }
+    SeriesData::Bool(data) =>
+      for value in data {
+        hasher.combine(value)
+      }
+    SeriesData::Str(data) =>
+      for value in data {
+        hasher.combine(value)
+      }
+  }
+}
+
+///|
+pub impl Hash for Series with hash_combine(self, hasher) {
+  self.name.hash_combine(hasher)
+  self.data.hash_combine(hasher)
+}
+
 ///| Create a new Series
 ///
 /// ### Parameters
@@ -387,5 +415,3 @@ test "series_div" {
   let c = a / b
   inspect!(c, content="{name: \"a\", data: Int([2, 2, 3])}")
 }
-
-
