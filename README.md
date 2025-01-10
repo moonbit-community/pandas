@@ -3,6 +3,55 @@
 ## Introduction
 This is a data processing library written in Moonbit. It provides a DataFrame data structure for efficient data manipulation and analysis.
 
+## Feature
+
+### DataFrame Methods
+
+| Method             | Description                                                                 |
+|--------------------|-----------------------------------------------------------------------------|
+| `new`              | Create a new DataFrame                                                      |
+| `shape`            | Get the shape of the DataFrame                                              |
+| `data`             | Get the data of the DataFrame                                               |
+| `head`             | Display the first few rows of the DataFrame                                 |
+| `add_column`       | Add a new column to the DataFrame                                           |
+| `drop_column`      | Drop a column from the DataFrame                                            |
+| `rename`           | Rename a column in the DataFrame                                            |
+| `column`           | Select a column from the DataFrame                                          |
+| `select_columns`   | Select specific columns from the DataFrame                                  |
+| `drop_row`         | Drop a row from the DataFrame                                               |
+| `add_row`          | Add a new row to the DataFrame                                              |
+| `select_rows`      | Select specific rows from the DataFrame                                     |
+| `filter`           | Filter rows in the DataFrame based on a condition                           |
+| `sort`             | Sort the DataFrame by a specified column                                    |
+| `vstack`           | Vertically stack two DataFrames                                             |
+| `hstack`           | Horizontally stack two DataFrames                                           |
+| `clear`            | Clear all data in the DataFrame                                             |
+| `clone`            | Create a deep copy of the DataFrame                                         |
+| `item`             | Retrieve a single item from the DataFrame                                   |
+| `limit`            | Create a new DataFrame containing only the first N rows                     |
+| `tail`             | Create a new DataFrame containing only the last N rows                      |
+| `slice`            | Create a new DataFrame containing a slice of rows                           |
+| `to_series`        | Convert a column of the DataFrame to a Series                               |
+| `unique`           | Remove duplicate rows from the DataFrame                                    |
+| `replace_column`   | Replace a column in the DataFrame                                           |
+| `reverse`          | Reverse the order of rows in the DataFrame                                  |
+| `get_column_index` | Get the index of a column by its name                                       |
+| `with_row_index`   | Add a row index column to the DataFrame                                     |
+| `transpose`        | Transpose the DataFrame over the diagonal                                   |
+
+### Series Methods
+
+| Method             | Description                                                                 |
+|--------------------|-----------------------------------------------------------------------------|
+| `new`              | Create a new Series                                                         |
+| `data`             | Get the data of the Series                                                  |
+| `erase`            | Erase an element from the Series                                            |
+| `sort`             | Sort the SeriesData in Series and return the indices of the sorted elements |
+| `+`                | Add two Series                                                              |
+| `-`                | Subtract two Series                                                         |
+| `*`                | Multiply two Series                                                         |
+| `/`                | Divide two Series                                                           |
+
 ## Usage
 
 ### DataFrame
