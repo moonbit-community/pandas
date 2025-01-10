@@ -409,5 +409,3 @@ test "series_div" {
   let c = a / b
   inspect!(c, content="{name: \"a\", data: Int([2, 2, 3])}")
 }
-
-

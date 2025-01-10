@@ -876,10 +876,14 @@ pub fn tail(self : DataFrame, n : Int) -> DataFrame!Error {
   let n = @math.minimum(n, self.shape()[0])
   for series in self.data {
     let new_data = match series.data {
-      SeriesData::Int(data) => SeriesData::Int(data.split_at(data.length() - n).1)
-      SeriesData::Float(data) => SeriesData::Float(data.split_at(data.length() - n).1)
-      SeriesData::Bool(data) => SeriesData::Bool(data.split_at(data.length() - n).1)
-      SeriesData::Str(data) => SeriesData::Str(data.split_at(data.length() - n).1)
+      SeriesData::Int(data) =>
+        SeriesData::Int(data.split_at(data.length() - n).1)
+      SeriesData::Float(data) =>
+        SeriesData::Float(data.split_at(data.length() - n).1)
+      SeriesData::Bool(data) =>
+        SeriesData::Bool(data.split_at(data.length() - n).1)
+      SeriesData::Str(data) =>
+        SeriesData::Str(data.split_at(data.length() - n).1)
     }
     data.push(Series::new(series.name, new_data))
   }
@@ -936,6 +940,7 @@ pub fn DataFrame::slice(
   }
   DataFrame::new!(data)
 }
+
 ///| Tests
 test "new" {
   let df = DataFrame::new!([
@@ -1101,9 +1106,10 @@ test "hstack" {
 }
 
 test "item" {
-  let df = DataFrame::new!([
-    Series::new("A", SeriesData::Int([1, 2, 3])),
-  ])
+  let df = DataFrame::new!([Series::new("A", SeriesData::Int([1, 2, 3]))])
   inspect!(df.item?(1, ColumnSelector::Str("A")), content="Ok(Int(2))")
-  inspect!(df.item?(0, ColumnSelector::Int(2)), content="Err(IndexOutOfBounds(\"Row index out of bounds\"))")
+  inspect!(
+    df.item?(0, ColumnSelector::Int(2)),
+    content="Err(IndexOutOfBounds(\"Row index out of bounds\"))",
+  )
 }
