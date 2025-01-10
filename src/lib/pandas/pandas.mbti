@@ -6,6 +6,11 @@ package smallbearrr/pandas/lib/pandas
 type ColumnNotFoundError
 impl Show for ColumnNotFoundError
 
+pub(all) enum ColumnSelector {
+  Int(Int)
+  Str(String)
+}
+
 pub(all) enum DType {
   Int(Int)
   Float(Float)
@@ -24,7 +29,7 @@ pub(all) struct DataFrame {
 impl DataFrame {
   add_column(Self, Series) -> Unit!
   add_row(Self, Array[DType]) -> Unit!
-  clear(Self, n~ : Int = ..) -> Unit
+  clear(Self) -> Unit
   clone(Self) -> Self
   column(Self, String) -> Series!ColumnNotFoundError
   data(Self) -> Array[Series]
@@ -33,17 +38,26 @@ impl DataFrame {
   filter(Self, String, (DType) -> Bool) -> Self!
   head(Self, rows~ : Int = ..) -> Unit
   hstack(Self, Self) -> Self!
-  item(Self, Int, DType) -> DType!
+  item(Self, Int, ColumnSelector) -> DType!
   limit(Self, Int) -> Self!
   new(Array[Series]) -> Self!InconsistentSeriesLength
+  op_get(Self, Int) -> Self
   rename(Self, String, String) -> Unit!ColumnNotFoundError
+  replace_column(Self, Int, Series) -> Unit!
+  reverse(Self) -> Unit
   select_columns(Self, Array[String]) -> Self!ColumnNotFoundError
   select_rows(Self, range? : (Int, Int), indices? : Array[Int]) -> Self!IndexOutOfBounds
   shape(Self) -> Array[Int]
+  slice(Self, Int, length? : Int) -> Self!
   sort(Self, String, descending~ : Bool = ..) -> Unit!ColumnNotFoundError
   tail(Self, Int) -> Self!
+  to_series(Self, Int) -> Series
+  unique(Self, Array[String], keep~ : String = ..) -> Self!
   vstack(Self, Self) -> Self!
+  with_row_index(Self) -> Self
 }
+impl Eq for DataFrame
+impl Hash for DataFrame
 impl Show for DataFrame
 
 type DuplicateColumnError
@@ -77,8 +91,10 @@ impl Series {
   op_get(Self, Int) -> DType
   op_mul(Self, Self) -> Self
   op_sub(Self, Self) -> Self
+  reverse(Self) -> Unit
 }
 impl Eq for Series
+impl Hash for Series
 impl Show for Series
 
 pub(all) enum SeriesData {
@@ -89,6 +105,7 @@ pub(all) enum SeriesData {
 }
 impl SeriesData {
   argsort(Self, descending~ : Bool = ..) -> Array[Int]
+  clear(Self) -> Unit
   empty(Self) -> Bool
   erase(Self, Int) -> Unit!EmptyArrayError
   length(Self) -> Int
@@ -99,6 +116,7 @@ impl SeriesData {
   sort(Self) -> Unit
 }
 impl Eq for SeriesData
+impl Hash for SeriesData
 impl Show for SeriesData
 
 // Type aliases

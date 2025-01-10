@@ -86,6 +86,7 @@ pub fn SeriesData::clear(self : SeriesData) -> Unit {
     SeriesData::Str(data) => data.clear()
   }
 }
+
 ///| Check if the SeriesData is empty
 pub fn SeriesData::empty(self : SeriesData) -> Bool {
   self.length() == 0
@@ -371,14 +372,37 @@ pub fn copy(self : Series) -> Series {
 ///|
 pub fn DataFrame::with_row_index(self : DataFrame) -> DataFrame {
   let new_data = self.data.copy()
-  let idx = Series::new("index", SeriesData::Int(Array::makei(self.shape[0], fn(i) { i })))
+  let idx = Series::new(
+    "index",
+    SeriesData::Int(Array::makei(self.shape[0], fn(i) { i })),
+  )
   new_data.insert(0, idx)
-  let new_index = {"row_nr": 0}
+  let new_index = { "row_nr": 0 }
   for item in self.index {
     new_index[item.0] = item.1 + 1
   }
-  DataFrame :: { data: new_data, shape: [self.shape[0], self.shape[1]+1],index: new_index }
+  DataFrame::{
+    data: new_data,
+    shape: [self.shape[0], self.shape[1] + 1],
+    index: new_index,
+  }
 }
+
+///|
+fn SeriesData::reverse(self : SeriesData) -> Unit {
+  match self {
+    SeriesData::Int(data) => data.rev_inplace()
+    SeriesData::Float(data) => data.rev_inplace()
+    SeriesData::Bool(data) => data.rev_inplace()
+    SeriesData::Str(data) => data.rev_inplace()
+  }
+}
+
+///|
+pub fn Series::reverse(self : Series) -> Unit {
+  self.data.reverse()
+}
+
 ///| Tests
 test "series" {
   let series = Series::new("test", SeriesData::Int([1, 2, 3, 4, 5]))
@@ -437,9 +461,7 @@ test "series_div" {
 }
 
 test "row_index" {
-  let df = DataFrame::new!([
-    Series::new("A", SeriesData::Int([1, 2, 3])),
-  ])
+  let df = DataFrame::new!([Series::new("A", SeriesData::Int([1, 2, 3]))])
   let new_df = df.with_row_index()
   inspect!(new_df.shape, content="[3, 2]")
 }

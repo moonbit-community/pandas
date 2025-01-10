@@ -522,14 +522,31 @@ pub fn op_get(self : DataFrame, index : Int) -> DataFrame {
   let row = []
   for col in self.data {
     match col.data {
-      SeriesData::Int(data) => row.push(Series::{name: col.name, data: SeriesData::Int([data[index]])})
-      SeriesData::Float(data) => row.push(Series::{name: col.name, data: SeriesData::Float([data[index]])})
-      SeriesData::Bool(data) => row.push(Series::{name: col.name, data: SeriesData::Bool([data[index]])})
-      SeriesData::Str(data) => row.push(Series::{name: col.name, data: SeriesData::Str([data[index]])})
+      SeriesData::Int(data) =>
+        row.push(Series::{
+          name: col.name,
+          data: SeriesData::Int([data[index]]),
+        })
+      SeriesData::Float(data) =>
+        row.push(Series::{
+          name: col.name,
+          data: SeriesData::Float([data[index]]),
+        })
+      SeriesData::Bool(data) =>
+        row.push(Series::{
+          name: col.name,
+          data: SeriesData::Bool([data[index]]),
+        })
+      SeriesData::Str(data) =>
+        row.push(Series::{
+          name: col.name,
+          data: SeriesData::Str([data[index]]),
+        })
     }
   }
-  DataFrame::{data: row, shape: [1, self.shape()[1]], index: self.index}
+  DataFrame::{ data: row, shape: [1, self.shape()[1]], index: self.index }
 }
+
 ///| Filter rows in the DataFrame based on a condition
 ///
 /// ### Parameters
@@ -1069,6 +1086,58 @@ pub fn unique(
   }
 }
 
+///| Replace a column in the DataFrame at a specified index
+///
+/// ### Parameters
+///
+/// - `self` : An instance of the DataFrame
+/// - `index` : The index of the column to be replaced
+/// - `series` : The new Series to replace the existing column
+///
+/// ### Errors
+///
+/// - `IndexOutOfBounds` : Raised if the specified index is out of bounds
+/// - `InconsistentSeriesLength` : Raised if the length of the new Series does not match the number of rows in the DataFrame
+///
+/// ### Example
+/// ```
+/// let df = DataFrame::new!([
+///   Series::new("A", SeriesData::Int([1, 2, 3])),
+///   Series::new("B", SeriesData::Float([1.1, 2.2, 3.3]))
+/// ])
+/// let new_series = Series::new("C", SeriesData::Int([4, 5, 6]))
+/// df.replace_column(1, new_series)
+/// ```
+pub fn DataFrame::replace_column(
+  self : DataFrame,
+  index : Int,
+  series : Series
+) -> Unit! {
+  guard index >= 0 && index < self.shape[1] else {
+    raise IndexOutOfBounds("Index out of bounds")
+  }
+  guard series.data.length() == self.shape[0] else {
+    raise InconsistentSeriesLength("The number of columns must be the same")
+  }
+  self.data[index] = series
+}
+
+///| Reverse the order of rows in the DataFrame
+///
+/// ### Parameters
+///
+/// - `self` : An instance of the DataFrame
+///
+/// ### Example
+/// ```moonbit
+/// df.reverse()
+/// ```
+pub fn DataFrame::reverse(self : DataFrame) -> Unit {
+  for series in self.data {
+    series.reverse()
+  }
+}
+
 ///| Tests
 test "new" {
   let df = DataFrame::new!([
@@ -1278,4 +1347,23 @@ test "op_get" {
   inspect!(res.shape(), content="[1, 2]")
   inspect!(res.data()[0].data(), content="Int([2])")
   inspect!(res.data()[1].data(), content="Str([\"b\"])")
+}
+
+test "replace_column" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesData::Int([1, 2, 3])),
+    Series::new("B", SeriesData::Str(["a", "b", "c"])),
+  ])
+  df.replace_column!(1, Series::new("C", SeriesData::Int([4, 5, 6])))
+  inspect!(df.data()[1].data(), content="Int([4, 5, 6])")
+}
+
+test "reverse" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesData::Int([1, 2, 3])),
+    Series::new("B", SeriesData::Str(["a", "b", "c"])),
+  ])
+  df.reverse()
+  inspect!(df.data[0].data, content="Int([3, 2, 1])")
+  inspect!(df.data[1].data, content="Str([\"c\", \"b\", \"a\"])")
 }
