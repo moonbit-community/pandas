@@ -713,7 +713,7 @@ pub fn hstack(self : DataFrame, other : DataFrame) -> DataFrame! {
 /// ```moonbit
 /// df.clear()
 /// ```
-pub fn DataFrame::clear(self : DataFrame, n~ : Int = 0) -> Unit {
+pub fn DataFrame::clear(self : DataFrame) -> Unit {
   self.data.clear()
   self.shape = [0, 0]
   self.index.clear()
@@ -799,7 +799,7 @@ pub fn DataFrame::item(
   if row < 0 || row >= self.shape()[0] {
     raise IndexOutOfBounds("Row index out of bounds")
   }
-  self.data[col][row]
+  self.data[col].op_get!(row)
 }
 
 ///|
