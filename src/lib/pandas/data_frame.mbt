@@ -713,7 +713,7 @@ pub fn hstack(self : DataFrame, other : DataFrame) -> DataFrame! {
 /// ```moonbit
 /// df.clear()
 /// ```
-pub fn DataFrame::clear(self : DataFrame, n~ : Int = 0) -> Unit {
+pub fn DataFrame::clear(self : DataFrame) -> Unit {
   self.data.clear()
   self.shape = [0, 0]
   self.index.clear()
