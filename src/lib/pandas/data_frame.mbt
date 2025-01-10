@@ -953,6 +953,24 @@ pub fn DataFrame::slice(
 }
 
 ///|
+/// Converts a column of the DataFrame to a Series by its index.
+///
+/// Parameters:
+///
+/// * `self` : The DataFrame from which to extract the Series.
+/// * `column_index` : The zero-based index of the column to convert to a Series.
+///
+/// Returns the Series at the specified column index.
+///
+/// Example:
+///
+/// ```moonbit
+/// let df = DataFrame::new!([
+///   Series::new("A", SeriesData::Int([1, 2, 3])),
+///   Series::new("B", SeriesData::Float([1.5, 2.0, 2.5])),
+/// ])
+/// df.to_series(0)
+/// ```
 pub fn to_series(self : DataFrame, index : Int) -> Series {
   self.data[index]
 }
@@ -992,12 +1010,14 @@ pub fn to_series(self : DataFrame, index : Int) -> Series {
 /// let unique_df = df.unique!(["A"], keep="first")
 /// ```
 pub fn unique(
-  self: DataFrame,
-  subset: Array[String],
-  keep~: String = "any"
+  self : DataFrame,
+  subset : Array[String],
+  keep~ : String = "any"
 ) -> DataFrame!Error {
   if not(["first", "last", "any", "none"].contains(keep)) {
-    raise InvalidType("Invalid keep parameter. Must be one of: first, last, any, none")
+    raise InvalidType(
+      "Invalid keep parameter. Must be one of: first, last, any, none",
+    )
   }
   let selected_cols = []
   for item in subset {
@@ -1005,7 +1025,6 @@ pub fn unique(
   }
   let df = DataFrame::new!(selected_cols)
   let unique_map = Map::new() // key: row_string, value: Array[Int]
-  
   for i = 0; i < df.shape()[0]; i = i + 1 {
     let row_key = df.select_rows!(range=(i, i + 1)).to_string()
     if unique_map.contains(row_key) {
@@ -1026,11 +1045,7 @@ pub fn unique(
       "first" => unique_indices.push(indices[0])
       "last" => unique_indices.push(indices[indices.length() - 1])
       "any" => unique_indices.push(indices[0])
-      _ => {
-        if indices.length() == 1 {
-          unique_indices.push(indices[0])
-        }
-      }
+      _ => if indices.length() == 1 { unique_indices.push(indices[0]) }
     }
   }
   unique_indices.sort()
@@ -1064,8 +1079,7 @@ test "panic unique/invalid_keep" {
     Series::new("A", SeriesData::Int([1, 1, 2, 2])),
     Series::new("B", SeriesData::Int([1, 1, 2, 3])),
   ])
-  df.unique!(["A"], keep="invalid")
-  |> ignore
+  df.unique!(["A"], keep="invalid") |> ignore
 }
 
 ///| Tests
