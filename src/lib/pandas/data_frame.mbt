@@ -799,7 +799,7 @@ pub fn DataFrame::item(
   if row < 0 || row >= self.shape()[0] {
     raise IndexOutOfBounds("Row index out of bounds")
   }
-  self.data[col].op_get!(row)
+  self.data[col][row]
 }
 
 ///|
