@@ -77,6 +77,15 @@ pub fn SeriesData::length(self : SeriesData) -> Int {
   }
 }
 
+///| SeriesData clear
+pub fn SeriesData::clear(self : SeriesData) -> Unit {
+  match self {
+    SeriesData::Int(data) => data.clear()
+    SeriesData::Float(data) => data.clear()
+    SeriesData::Bool(data) => data.clear()
+    SeriesData::Str(data) => data.clear()
+  }
+}
 ///| Check if the SeriesData is empty
 pub fn SeriesData::empty(self : SeriesData) -> Bool {
   self.length() == 0
@@ -359,6 +368,17 @@ pub fn copy(self : Series) -> Series {
   Series::new(self.name(), self.data().copy())
 }
 
+///|
+pub fn DataFrame::with_row_index(self : DataFrame) -> DataFrame {
+  let new_data = self.data.copy()
+  let idx = Series::new("index", SeriesData::Int(Array::makei(self.shape[0], fn(i) { i })))
+  new_data.insert(0, idx)
+  let new_index = {"row_nr": 0}
+  for item in self.index {
+    new_index[item.0] = item.1 + 1
+  }
+  DataFrame :: { data: new_data, shape: [self.shape[0], self.shape[1]+1],index: new_index }
+}
 ///| Tests
 test "series" {
   let series = Series::new("test", SeriesData::Int([1, 2, 3, 4, 5]))
@@ -414,4 +434,12 @@ test "series_div" {
   inspect!(c, content="Int([2, 2, 3])")
   let c = a / b
   inspect!(c, content="{name: \"a\", data: Int([2, 2, 3])}")
+}
+
+test "row_index" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesData::Int([1, 2, 3])),
+  ])
+  let new_df = df.with_row_index()
+  inspect!(new_df.shape, content="[3, 2]")
 }

@@ -517,6 +517,19 @@ pub fn DataFrame::select_rows(
   }
 }
 
+///|
+pub fn op_get(self : DataFrame, index : Int) -> DataFrame {
+  let row = []
+  for col in self.data {
+    match col.data {
+      SeriesData::Int(data) => row.push(Series::{name: col.name, data: SeriesData::Int([data[index]])})
+      SeriesData::Float(data) => row.push(Series::{name: col.name, data: SeriesData::Float([data[index]])})
+      SeriesData::Bool(data) => row.push(Series::{name: col.name, data: SeriesData::Bool([data[index]])})
+      SeriesData::Str(data) => row.push(Series::{name: col.name, data: SeriesData::Str([data[index]])})
+    }
+  }
+  DataFrame::{data: row, shape: [1, self.shape()[1]], index: self.index}
+}
 ///| Filter rows in the DataFrame based on a condition
 ///
 /// ### Parameters
@@ -722,12 +735,13 @@ pub fn hstack(self : DataFrame, other : DataFrame) -> DataFrame! {
 /// ### Example:
 ///
 /// ```moonbit
-/// df.clear()
+/// df.clear!()
 /// ```
 pub fn DataFrame::clear(self : DataFrame) -> Unit {
-  self.data.clear()
-  self.shape = [0, 0]
-  self.index.clear()
+  for item in self.data {
+    item.data.clear()
+  }
+  self.shape[0] = 0
 }
 
 ///|
@@ -1055,33 +1069,6 @@ pub fn unique(
   }
 }
 
-test "unique/basic" {
-  let df = DataFrame::new!([
-    Series::new("A", SeriesData::Int([1, 1, 2, 2])),
-    Series::new("B", SeriesData::Int([1, 1, 2, 3])),
-  ])
-  let unique_first = df.unique!(["A"], keep="first")
-  inspect!(unique_first.shape(), content="[2, 2]")
-  inspect!(unique_first.data()[0].data(), content="Int([1, 2])")
-}
-
-test "unique/empty" {
-  let df = DataFrame::new!([
-    Series::new("A", SeriesData::Int([])),
-    Series::new("B", SeriesData::Int([])),
-  ])
-  let unique_df = df.unique!(["A"])
-  inspect!(unique_df.shape(), content="[0, 0]")
-}
-
-test "panic unique/invalid_keep" {
-  let df = DataFrame::new!([
-    Series::new("A", SeriesData::Int([1, 1, 2, 2])),
-    Series::new("B", SeriesData::Int([1, 1, 2, 3])),
-  ])
-  df.unique!(["A"], keep="invalid") |> ignore
-}
-
 ///| Tests
 test "new" {
   let df = DataFrame::new!([
@@ -1253,4 +1240,42 @@ test "item" {
     df.item?(0, ColumnSelector::Int(2)),
     content="Err(IndexOutOfBounds(\"Row index out of bounds\"))",
   )
+}
+
+test "unique/basic" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesData::Int([1, 1, 2, 2])),
+    Series::new("B", SeriesData::Int([1, 1, 2, 3])),
+  ])
+  let unique_first = df.unique!(["A"], keep="first")
+  inspect!(unique_first.shape(), content="[2, 2]")
+  inspect!(unique_first.data()[0].data(), content="Int([1, 2])")
+}
+
+test "unique/empty" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesData::Int([])),
+    Series::new("B", SeriesData::Int([])),
+  ])
+  let unique_df = df.unique!(["A"])
+  inspect!(unique_df.shape(), content="[0, 0]")
+}
+
+test "panic unique/invalid_keep" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesData::Int([1, 1, 2, 2])),
+    Series::new("B", SeriesData::Int([1, 1, 2, 3])),
+  ])
+  df.unique!(["A"], keep="invalid") |> ignore
+}
+
+test "op_get" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesData::Int([1, 2, 3])),
+    Series::new("B", SeriesData::Str(["a", "b", "c"])),
+  ])
+  let res = df[1]
+  inspect!(res.shape(), content="[1, 2]")
+  inspect!(res.data()[0].data(), content="Int([2])")
+  inspect!(res.data()[1].data(), content="Str([\"b\"])")
 }
