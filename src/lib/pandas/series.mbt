@@ -233,24 +233,16 @@ pub fn op_sub(self : SeriesData, other : SeriesData) -> SeriesData {
   }
 }
 
-///|
-
-pub fn check_bounds(self: Series, index: Int) -> Unit!IndexOutOfBounds {
+///| 
+pub fn get(self : Series, index : Int) -> DType!IndexOutOfBounds {
   if index < 0 || index >= self.data.length() {
-    raise IndexOutOfBounds(
-      "Index \{index} is out of bounds"
-    )
+    raise IndexOutOfBounds("Index out of bounds")
   }
-}
-
-pub fn op_get(self: Series, other: Int) -> DType!IndexOutOfBounds {
-  Series::check_bounds!(self, other)
-
   match self.data {
-    SeriesData::Int(data) => DType::Int(data[other])
-    SeriesData::Float(data) => DType::Float(data[other])
-    SeriesData::Bool(data) => DType::Bool(data[other])
-    SeriesData::Str(data) => DType::Str(data[other])
+    SeriesData::Int(data) => DType::Int(data[index])
+    SeriesData::Float(data) => DType::Float(data[index])
+    SeriesData::Bool(data) => DType::Bool(data[index])
+    SeriesData::Str(data) => DType::Str(data[index])
   }
 }
 
@@ -399,52 +391,11 @@ test "series_div" {
   inspect!(c, content="{name: \"a\", data: Int([2, 2, 3])}")
 }
 
-test "op_get" {
-  // Int
-  let series_int = Series::new("IntSeries", SeriesData::Int([10, 20, 30, 40, 50]))
-  assert_eq!(series_int.op_get!(0), DType::Int(10))
-  assert_eq!(series_int.op_get!(4), DType::Int(50))
-
-  // Float
-  let series_float = Series::new("FloatSeries", SeriesData::Float([1.1, 2.2, 3.3]))
-  assert_eq!(series_float.op_get!(1), DType::Float(2.2))
-  assert_eq!(series_float.op_get!(2), DType::Float(3.3))
-
-  // Bool
-  let series_bool = Series::new("BoolSeries", SeriesData::Bool([true, false, true]))
-  assert_eq!(series_bool.op_get!(0), DType::Bool(true))
-  assert_eq!(series_bool.op_get!(1), DType::Bool(false))
-
-  // Str 
-  let series_str = Series::new("StrSeries", SeriesData::Str(["hello", "world"]))
-  assert_eq!(series_str.op_get!(0), DType::Str("hello"))
-  assert_eq!(series_str.op_get!(1), DType::Str("world"))
-
-  // over bounds
-  match series_int.op_get?(5) {
-    Err(IndexOutOfBounds(msg)) => {
-      println("Caught error: \{msg}")
-      assert_eq!(msg, "Index 5 is out of bounds")
-    }
-    _ => abort("Expected IndexOutOfBounds error for out-of-bounds index")
-  }
-
-  // negative index
-  match series_int.op_get?(-1) {
-    Err(IndexOutOfBounds(msg)) => {
-      println("Caught error: \{msg}")
-      assert_eq!(msg, "Index -1 is out of bounds")
-    }
-    _ => abort("Expected IndexOutOfBounds error for negative index")
-  }
-
-  // empty series
-  let empty_series = Series::new("EmptySeries", SeriesData::Int([]))
-  match empty_series.op_get?(0) {
-    Err(IndexOutOfBounds(msg)) => {
-      println("Caught error: \{msg}")
-      assert_eq!(msg, "Index 0 is out of bounds")
-    }
-    _ => abort("Expected IndexOutOfBounds error for empty Series")
-  }
+test "get" {
+  let series = Series::new("test", SeriesData::Int([1, 2, 3, 4, 5]))
+  inspect!(series.get?(2), content="Ok(Int(3))")
+  inspect!(
+    series.get?(5),
+    content="Err(IndexOutOfBounds(\"Index out of bounds\"))",
+  )
 }

@@ -750,10 +750,12 @@ pub fn DataFrame::clone(self : DataFrame) -> DataFrame {
   DataFrame::{ data, shape: self.shape.copy(), index: map }
 }
 
+///|
 pub(all) enum ColumnSelector {
   Int(Int)
   Str(String)
 }
+
 ///|
 /// Retrieves a single item from the DataFrame at the specified row and column.
 ///
@@ -796,10 +798,10 @@ pub fn DataFrame::item(
         None => raise ColumnNotFoundError("Column '\{value}' not found")
       }
   }
-  if row < 0 || row >= self.shape()[0] {
+  if row < 0 || row >= self.shape()[0] || col < 0 || col >= self.shape()[1] {
     raise IndexOutOfBounds("Row index out of bounds")
   }
-  self.data[col][row]
+  self.data[col].get!(row)
 }
 
 ///|
