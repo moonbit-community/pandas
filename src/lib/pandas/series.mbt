@@ -482,6 +482,11 @@ pub fn Series::arg_min(self : Series) -> Int!Error {
   }
 }
 
+///|
+pub fn Series::count(self : Series) -> Int {
+  self.data.length()
+}
+
 ///| Tests
 test "series" {
   let series = Series::new("test", SeriesData::Int([1, 2, 3, 4, 5]))
