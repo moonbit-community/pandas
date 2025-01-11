@@ -423,20 +423,15 @@ fn get_type(self : Series) -> BasicType {
 /// let series = Series::new("test", SeriesData::Int([1, 3, 2]))
 /// series.arg_max!()
 /// ```
-pub fn Series::arg_max(self : Series) -> Int!Error {
+pub fn Series::max(self : Series) -> Int!Error {
   match self.data {
     SeriesData::Int(data) =>
       match data {
         [] => raise EmptyArrayError("Cannot find the maximum of an empty array")
-        _ => {
-          let mut max = data[0]
-          for value in data {
-            if value > max {
-              max = value
-            }
-          }
-          max
-        }
+        _ =>
+          data
+          .iter()
+          .fold(init=data[0], fn(acc, x) { if x > acc { x } else { acc } })
       }
     _ => raise InvalidType("unsupported type")
   }
@@ -463,20 +458,37 @@ pub fn Series::arg_max(self : Series) -> Int!Error {
 ///   let series = Series::new("test", SeriesData::Int([3, 1, 2]))
 ///   series.arg_min!()
 /// ```
-pub fn Series::arg_min(self : Series) -> Int!Error {
+pub fn Series::min(self : Series) -> Int!Error {
   match self.data {
     SeriesData::Int(data) =>
       match data {
         [] => raise EmptyArrayError("Cannot find the minimum of an empty array")
+        _ =>
+          data
+          .iter()
+          .fold(init=data[0], fn(acc, x) { if x < acc { x } else { acc } })
+      }
+    _ => raise InvalidType("unsupported type")
+  }
+}
+
+///|
+pub fn Series::mean(self : Series) -> Float!Error {
+  match self.data {
+    SeriesData::Int(data) =>
+      match data {
+        [] => raise EmptyArrayError("Cannot find the mean of an empty array")
         _ => {
-          let mut min = data[0]
-          for value in data {
-            if value < min {
-              min = value
-            }
-          }
-          min
+          let sum = data.iter().fold(init=0, fn(acc, x) { acc + x })
+          sum.to_float() / data.length().to_float()
         }
+      }
+    SeriesData::Float(data) =>
+      match data {
+        [] => raise EmptyArrayError("Cannot find the mean of an empty array")
+        _ =>
+          data.iter().fold(init=Double::to_float(0.0), fn(acc, x) { acc + x }) /
+          data.length().to_float()
       }
     _ => raise InvalidType("unsupported type")
   }
@@ -486,6 +498,8 @@ pub fn Series::arg_min(self : Series) -> Int!Error {
 pub fn Series::count(self : Series) -> Int {
   self.data.length()
 }
+
+///|
 
 ///| Tests
 test "series" {
