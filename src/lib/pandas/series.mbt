@@ -518,6 +518,86 @@ pub fn Series::mean(self : Series) -> Float!Error {
 }
 
 ///|
+/// Calculates the variance of a Series using ddof (delta degrees of freedom) for
+/// unbiased estimation.
+///
+/// Parameters:
+///
+/// * `self` : The Series to calculate variance from. Supports numeric types
+/// (Int, Float) and Bool values.
+/// * `ddof` : Delta degrees of freedom (default is 1). The divisor used in
+/// calculations is `n - ddof`, where n is the number of elements.
+///
+/// Returns a floating-point number representing the variance of the Series.
+///
+/// Throws:
+///
+/// * `EmptyArrayError` : If there are not enough observations for the specified
+/// ddof value
+/// * `InvalidType` : If the Series contains unsupported data types (e.g.,
+/// String)
+///
+/// Example:
+///
+/// ```moonbit
+/// test "Series::var" {
+///   let series = Series::new("test", SeriesData::Int([1, 2, 3, 4, 5]))
+///   series.var!()
+///   let bool_series = Series::new("test", SeriesData::Bool([true, false, true]))
+///   series.var!()
+/// }
+/// ```
+pub fn Series::var(self : Series, ddof~ : Int = 1) -> Float!Error {
+  let float_data : Array[Float] = match self.data {
+    SeriesData::Int(arr) => arr.map(fn(x) { x.to_float() })
+    SeriesData::Float(arr) => arr
+    SeriesData::Bool(arr) => arr.map(fn(x) { if x { 1.0 } else { 0.0 } })
+    _ => raise InvalidType("unsupported type")
+  }
+  let n = float_data.length()
+  if n <= ddof {
+    raise EmptyArrayError("Not enough observations for specified ddof")
+  }
+  let mean = float_data
+    .iter()
+    .fold(init=Double::to_float(0.0), fn(acc, x) { acc + x }) /
+    n.to_float()
+  
+  let sum_squared_diff = float_data.iter().fold(init=Double::to_float(0.0), fn(acc, x) {
+    let diff = x - mean
+    acc + diff * diff
+  })
+  sum_squared_diff / (n - ddof).to_float()
+}
+
+test "Series::var/int" {
+  let series = Series::new("test", SeriesData::Int([1, 2, 3, 4, 5]))
+  inspect!(series.var!(), content="2.5")
+}
+
+test "Series::var/float" {
+  let series = Series::new("test", SeriesData::Float([1.5, 2.0, 3.5, 4.0, 5.5]))
+  series.var!() |> println
+  // 2.575
+}
+
+test "Series::var/ddof" {
+  let series = Series::new("test", SeriesData::Float([1.5, 2.0, 3.5, 4.0, 5.0]))
+  series.var!(ddof=1) |> println
+  // 2.075
+}
+
+test "panic Series::var/invalid_type" {
+  let series = Series::new("test", SeriesData::Str(["a", "b", "c"]))
+  ignore(series.var!())
+}
+
+test "panic Series::var/empty_array" {
+  let series = Series::new("test", SeriesData::Int([]))
+  ignore(series.var!())
+}
+
+///|
 pub fn Series::count(self : Series) -> Int {
   self.data.length()
 }
