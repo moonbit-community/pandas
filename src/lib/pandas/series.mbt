@@ -473,6 +473,29 @@ pub fn Series::min(self : Series) -> Int!Error {
 }
 
 ///|
+/// Calculates the arithmetic mean of all elements in the Series.
+///
+/// Parameters:
+///
+/// * `self` : The Series to calculate the mean from.
+///
+/// Returns a floating-point number representing the arithmetic mean of the
+/// Series.
+///
+/// Throws:
+///
+/// * `EmptyArrayError` : Raised if the Series is empty
+/// * `InvalidType` : Raised if the Series contains data types that don't support
+/// mean calculation (e.g., Boolean or String)
+///
+/// Example:
+///
+/// ```moonbit
+/// let series = Series::new("test", SeriesData::Int([1, 2, 3, 4, 5]))
+/// series.mean!()
+/// let float_series = Series::new("test", SeriesData::Float([1.5, 2.5, 3.5]))
+/// float_series.mean!()
+/// ```
 pub fn Series::mean(self : Series) -> Float!Error {
   match self.data {
     SeriesData::Int(data) =>
