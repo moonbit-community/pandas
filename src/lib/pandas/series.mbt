@@ -402,6 +402,86 @@ fn get_type(self : Series) -> BasicType {
   }
 }
 
+///|
+/// Returns the maximum value in the Series. Currently only works for Series with
+/// integer values.
+///
+/// Parameters:
+///
+/// * `self` : The Series to find the maximum value from.
+///
+/// Returns the maximum value in the Series.
+///
+/// Throws:
+///
+/// * `EmptyArrayError` : Raised if the Series is empty
+/// * `InvalidType` : Raised if the Series contains non-integer values
+///
+/// Example:
+///
+/// ```moonbit
+/// let series = Series::new("test", SeriesData::Int([1, 3, 2]))
+/// series.arg_max!()
+/// ```
+pub fn Series::arg_max(self : Series) -> Int!Error {
+  match self.data {
+    SeriesData::Int(data) =>
+      match data {
+        [] => raise EmptyArrayError("Cannot find the maximum of an empty array")
+        _ => {
+          let mut max = data[0]
+          for value in data {
+            if value > max {
+              max = value
+            }
+          }
+          max
+        }
+      }
+    _ => raise InvalidType("unsupported type")
+  }
+}
+
+///|
+/// Returns the minimum value in the Series. Currently only works for Series with
+/// integer values.
+///
+/// Parameters:
+///
+/// * `self` : The Series to find the minimum value from.
+///
+/// Returns the minimum value in the Series.
+///
+/// Throws:
+///
+/// * `EmptyArrayError` : Raised if the Series is empty
+/// * `InvalidType` : Raised if the Series contains non-integer values
+///
+/// Example:
+///
+/// ```moonbit
+///   let series = Series::new("test", SeriesData::Int([3, 1, 2]))
+///   series.arg_min!()
+/// ```
+pub fn Series::arg_min(self : Series) -> Int!Error {
+  match self.data {
+    SeriesData::Int(data) =>
+      match data {
+        [] => raise EmptyArrayError("Cannot find the minimum of an empty array")
+        _ => {
+          let mut min = data[0]
+          for value in data {
+            if value < min {
+              min = value
+            }
+          }
+          min
+        }
+      }
+    _ => raise InvalidType("unsupported type")
+  }
+}
+
 ///| Tests
 test "series" {
   let series = Series::new("test", SeriesData::Int([1, 2, 3, 4, 5]))
