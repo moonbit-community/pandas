@@ -1316,6 +1316,70 @@ pub fn DataFrame::transpose(
   }
 }
 
+///| Aggregate the columns of this DataFrame to their minimum value
+///
+/// ### Parameters
+///
+/// - `self` : An instance of the DataFrame
+///
+/// ### Returns
+///
+/// - `DataFrame` : A new DataFrame containing the minimum value of each column
+///
+/// ### Example
+/// ```
+/// let df_min = df.min()
+/// ```
+pub fn DataFrame::min(self : DataFrame) -> DataFrame! {
+  let data : Array[Series] = []
+  for series in self.data {
+    let min = series.min!()
+    match min {
+      DType::Float(value) =>
+        data.push(Series::new(series.name, SeriesData::Float([value])))
+      DType::Int(value) =>
+        data.push(Series::new(series.name, SeriesData::Int([value])))
+      DType::Bool(value) =>
+        data.push(Series::new(series.name, SeriesData::Bool([value])))
+      DType::Str(value) =>
+        data.push(Series::new(series.name, SeriesData::Str([value])))
+    }
+  }
+  DataFrame::{ data, shape: [1, self.shape[1]], index: self.index }
+}
+
+///| Aggregate the columns of this DataFrame to their maximum value
+///
+/// ### Parameters
+///
+/// - `self` : An instance of the DataFrame
+///
+/// ### Returns
+///
+/// - `DataFrame` : A new DataFrame containing the maximum value of each column
+///
+/// ### Example
+/// ```
+/// let df_min = df.max()
+/// ```
+pub fn DataFrame::max(self : DataFrame) -> DataFrame! {
+  let data : Array[Series] = []
+  for series in self.data {
+    let max = series.max!()
+    match max {
+      DType::Float(value) =>
+        data.push(Series::new(series.name, SeriesData::Float([value])))
+      DType::Int(value) =>
+        data.push(Series::new(series.name, SeriesData::Int([value])))
+      DType::Bool(value) =>
+        data.push(Series::new(series.name, SeriesData::Bool([value])))
+      DType::Str(value) =>
+        data.push(Series::new(series.name, SeriesData::Str([value])))
+    }
+  }
+  DataFrame::{ data, shape: [1, self.shape[1]], index: self.index }
+}
+
 ///| Tests
 test "new" {
   let df = DataFrame::new!([
@@ -1566,4 +1630,23 @@ test "transpose" {
   inspect!(trans_df.data[0].name, content="header")
   let trans_df = df.transpose!(include_header=true, column_names=["x", "y", "z"])
   inspect!(trans_df.data[1].name, content="y")
+}
+
+test "min/max" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesData::Int([1, 2, 3])),
+    Series::new("B", SeriesData::Float([1.5, 2.0, 3.5])),
+    Series::new("C", SeriesData::Bool([true, false, true])),
+    Series::new("D", SeriesData::Str(["a", "b", "c"])),
+  ])
+  let min = df.min!()
+  inspect!(
+    min.data,
+    content="[{name: \"A\", data: Int([1])}, {name: \"B\", data: Float([1.5])}, {name: \"C\", data: Bool([false])}, {name: \"D\", data: Str([\"a\"])}]",
+  )
+  let max = df.max!()
+  inspect!(
+    max.data,
+    content="[{name: \"A\", data: Int([3])}, {name: \"B\", data: Float([3.5])}, {name: \"C\", data: Bool([true])}, {name: \"D\", data: Str([\"c\"])}]",
+  )
 }

@@ -5,6 +5,6 @@
   "repository": "https://github.com/smallbearrr/pandas",
   "license": "Apache-2.0",
   "keywords": ["pandas", "polars", "dataframe", "data cleaning", "data manipulation"],
-  "description": "Moonbit-based DataFrame library for efficient data manipulation and analysis.",
+  "description": "Efficient data manipulation and analysis",
   "source": "src"
 }

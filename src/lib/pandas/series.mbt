@@ -403,8 +403,7 @@ fn get_type(self : Series) -> BasicType {
 }
 
 ///|
-/// Returns the maximum value in the Series. Currently only works for Series with
-/// integer values.
+/// Returns the maximum value in the Series.
 ///
 /// Parameters:
 ///
@@ -423,23 +422,52 @@ fn get_type(self : Series) -> BasicType {
 /// let series = Series::new("test", SeriesData::Int([1, 3, 2]))
 /// series.arg_max!()
 /// ```
-pub fn Series::max(self : Series) -> Int!Error {
+pub fn Series::max(self : Series) -> DType!Error {
+  if self.data.empty() {
+    raise EmptyArrayError("Cannot find the maximum of an empty array")
+  }
   match self.data {
     SeriesData::Int(data) =>
       match data {
-        [] => raise EmptyArrayError("Cannot find the maximum of an empty array")
         _ =>
-          data
-          .iter()
-          .fold(init=data[0], fn(acc, x) { if x > acc { x } else { acc } })
+          DType::Int(
+            data
+            .iter()
+            .fold(init=data[0], fn(acc, x) { if x > acc { x } else { acc } }),
+          )
       }
-    _ => raise InvalidType("unsupported type")
+    SeriesData::Float(data) =>
+      match data {
+        _ =>
+          DType::Float(
+            data
+            .iter()
+            .fold(init=data[0], fn(acc, x) { if x > acc { x } else { acc } }),
+          )
+      }
+    SeriesData::Bool(data) =>
+      match data {
+        _ =>
+          DType::Bool(
+            data
+            .iter()
+            .fold(init=data[0], fn(acc, x) { if x > acc { x } else { acc } }),
+          )
+      }
+    SeriesData::Str(data) =>
+      match data {
+        _ =>
+          DType::Str(
+            data
+            .iter()
+            .fold(init=data[0], fn(acc, x) { if x > acc { x } else { acc } }),
+          )
+      }
   }
 }
 
 ///|
-/// Returns the minimum value in the Series. Currently only works for Series with
-/// integer values.
+/// Returns the minimum value in the Series
 ///
 /// Parameters:
 ///
@@ -458,17 +486,47 @@ pub fn Series::max(self : Series) -> Int!Error {
 ///   let series = Series::new("test", SeriesData::Int([3, 1, 2]))
 ///   series.arg_min!()
 /// ```
-pub fn Series::min(self : Series) -> Int!Error {
+pub fn Series::min(self : Series) -> DType!Error {
+  if self.data.empty() {
+    raise EmptyArrayError("Cannot find the minimum of an empty array")
+  }
   match self.data {
     SeriesData::Int(data) =>
       match data {
-        [] => raise EmptyArrayError("Cannot find the minimum of an empty array")
         _ =>
-          data
-          .iter()
-          .fold(init=data[0], fn(acc, x) { if x < acc { x } else { acc } })
+          DType::Int(
+            data
+            .iter()
+            .fold(init=data[0], fn(acc, x) { if x < acc { x } else { acc } }),
+          )
       }
-    _ => raise InvalidType("unsupported type")
+    SeriesData::Float(data) =>
+      match data {
+        _ =>
+          DType::Float(
+            data
+            .iter()
+            .fold(init=data[0], fn(acc, x) { if x < acc { x } else { acc } }),
+          )
+      }
+    SeriesData::Bool(data) =>
+      match data {
+        _ =>
+          DType::Bool(
+            data
+            .iter()
+            .fold(init=data[0], fn(acc, x) { if x < acc { x } else { acc } }),
+          )
+      }
+    SeriesData::Str(data) =>
+      match data {
+        _ =>
+          DType::Str(
+            data
+            .iter()
+            .fold(init=data[0], fn(acc, x) { if x < acc { x } else { acc } }),
+          )
+      }
   }
 }
 
@@ -562,39 +620,13 @@ pub fn Series::var(self : Series, ddof~ : Int = 1) -> Float!Error {
     .iter()
     .fold(init=Double::to_float(0.0), fn(acc, x) { acc + x }) /
     n.to_float()
-  
-  let sum_squared_diff = float_data.iter().fold(init=Double::to_float(0.0), fn(acc, x) {
-    let diff = x - mean
-    acc + diff * diff
-  })
+  let sum_squared_diff = float_data
+    .iter()
+    .fold(init=Double::to_float(0.0), fn(acc, x) {
+      let diff = x - mean
+      acc + diff * diff
+    })
   sum_squared_diff / (n - ddof).to_float()
-}
-
-test "Series::var/int" {
-  let series = Series::new("test", SeriesData::Int([1, 2, 3, 4, 5]))
-  inspect!(series.var!(), content="2.5")
-}
-
-test "Series::var/float" {
-  let series = Series::new("test", SeriesData::Float([1.5, 2.0, 3.5, 4.0, 5.5]))
-  series.var!() |> println
-  // 2.575
-}
-
-test "Series::var/ddof" {
-  let series = Series::new("test", SeriesData::Float([1.5, 2.0, 3.5, 4.0, 5.0]))
-  series.var!(ddof=1) |> println
-  // 2.075
-}
-
-test "panic Series::var/invalid_type" {
-  let series = Series::new("test", SeriesData::Str(["a", "b", "c"]))
-  ignore(series.var!())
-}
-
-test "panic Series::var/empty_array" {
-  let series = Series::new("test", SeriesData::Int([]))
-  ignore(series.var!())
 }
 
 ///|
@@ -659,4 +691,33 @@ test "series_div" {
   inspect!(c, content="Int([2, 2, 3])")
   let c = a / b
   inspect!(c, content="{name: \"a\", data: Int([2, 2, 3])}")
+}
+
+test "Series::var/int" {
+  let series = Series::new("test", SeriesData::Int([1, 2, 3, 4, 5]))
+  inspect!(series.var!(), content="2.5")
+}
+
+test "Series::var/float" {
+  let series = Series::new("test", SeriesData::Float([1.5, 2.0, 3.5, 4.0, 5.5]))
+  series.var!() |> ignore
+  // series.var!() |> println
+  // 2.575
+}
+
+test "Series::var/ddof" {
+  let series = Series::new("test", SeriesData::Float([1.5, 2.0, 3.5, 4.0, 5.0]))
+  series.var!(ddof=1) |> ignore
+  // series.var!(ddof=1) |> println
+  // 2.075
+}
+
+test "panic Series::var/invalid_type" {
+  let series = Series::new("test", SeriesData::Str(["a", "b", "c"]))
+  ignore(series.var!())
+}
+
+test "panic Series::var/empty_array" {
+  let series = Series::new("test", SeriesData::Int([]))
+  ignore(series.var!())
 }

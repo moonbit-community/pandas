@@ -44,6 +44,8 @@ impl DataFrame {
   hstack(Self, Self) -> Self!
   item(Self, Int, ColumnSelector) -> DType!
   limit(Self, Int) -> Self!
+  max(Self) -> Self!
+  min(Self) -> Self!
   new(Array[Series]) -> Self!InconsistentSeriesLength
   op_get(Self, Int) -> Self
   rename(Self, String, String) -> Unit!ColumnNotFoundError
@@ -87,8 +89,12 @@ pub(all) struct Series {
 impl Series {
   argsort(Self, descending~ : Bool = ..) -> Array[Int]
   copy(Self) -> Self
+  count(Self) -> Int
   data(Self) -> SeriesData
+  max(Self) -> DType!
+  mean(Self) -> Float!
   merge(Self, Self) -> Self!InvalidType
+  min(Self) -> DType!
   name(Self) -> String
   new(String, SeriesData) -> Self
   op_add(Self, Self) -> Self
@@ -97,6 +103,7 @@ impl Series {
   op_mul(Self, Self) -> Self
   op_sub(Self, Self) -> Self
   reverse(Self) -> Unit
+  var(Self, ddof~ : Int = ..) -> Float!
 }
 impl Eq for Series
 impl Hash for Series
