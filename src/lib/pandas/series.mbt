@@ -667,6 +667,32 @@ pub fn Series::count(self : Series) -> Int {
 }
 
 ///|
+fn SeriesData::min(self : SeriesData, other : SeriesData) -> Unit {
+  match (self, other) {
+    (SeriesData::Int(a), SeriesData::Int(b)) =>
+      a.eachi(fn(i, v) { a[i] = @math.minimum(v, b[i]) })
+    (SeriesData::Float(a), SeriesData::Float(b)) =>
+      a.eachi(fn(i, v) { a[i] = @math.minimum(v, b[i]) })
+    (SeriesData::Float(a), SeriesData::Int(b))
+    | (SeriesData::Int(b), SeriesData::Float(a)) =>
+      a.eachi(fn(i, v) { a[i] = @math.minimum(v, b[i].to_float()) })
+    _ => abort("unsupported types")
+  }
+}
+
+///|
+fn SeriesData::max(self : SeriesData, other : SeriesData) -> Unit {
+  match (self, other) {
+    (SeriesData::Int(a), SeriesData::Int(b)) =>
+      a.eachi(fn(i, v) { a[i] = @math.maximum(v, b[i]) })
+    (SeriesData::Float(a), SeriesData::Float(b)) =>
+      a.eachi(fn(i, v) { a[i] = @math.maximum(v, b[i]) })
+    (SeriesData::Float(a), SeriesData::Int(b))
+    | (SeriesData::Int(b), SeriesData::Float(a)) =>
+      a.eachi(fn(i, v) { a[i] = @math.maximum(v, b[i].to_float()) })
+    _ => abort("unsupported types")
+  }
+}
 
 ///| Tests
 test "series" {

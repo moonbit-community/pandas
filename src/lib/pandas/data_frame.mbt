@@ -1349,6 +1349,42 @@ pub fn DataFrame::min(self : DataFrame) -> DataFrame! {
   DataFrame::{ data, shape: [1, self.shape[1]], index: self.index }
 }
 
+///| Get the minimum value horizontally across columns.
+///
+/// ### Parameters
+///
+/// - `self` : An instance of the DataFrame
+///
+/// ### Returns
+///
+/// - `Series` : A Series containing the minimum value of each column
+///
+/// ### Errors
+///
+/// - `InvalidType` : Raised if the DataFrame contains unsupported data types
+///
+/// ### Example
+/// ```
+/// let max = df.min_horizontal()
+/// ```
+pub fn DataFrame::min_horizontal(self : DataFrame) -> Series! {
+  for series in self.data {
+    match series.get_type() {
+      BasicType::Int => ()
+      BasicType::Float => ()
+      _ => raise InvalidType("Contains unsupported data type")
+    }
+  }
+  let data = Series::{
+    name: "sum",
+    data: SeriesData::Float(Array::make(self.shape[0], @float.max_value)),
+  }
+  for series in self.data {
+    data.data.min(series.data)
+  }
+  data
+}
+
 ///| Aggregate the columns of this DataFrame to their maximum value
 ///
 /// ### Parameters
@@ -1379,6 +1415,42 @@ pub fn DataFrame::max(self : DataFrame) -> DataFrame! {
     }
   }
   DataFrame::{ data, shape: [1, self.shape[1]], index: self.index }
+}
+
+///| Get the maximum value horizontally across columns.
+///
+/// ### Parameters
+///
+/// - `self` : An instance of the DataFrame
+///
+/// ### Returns
+///
+/// - `Series` : A Series containing the maximum value of each column
+///
+/// ### Errors
+///
+/// - `InvalidType` : Raised if the DataFrame contains unsupported data types
+///
+/// ### Example
+/// ```
+/// let max = df.max_horizontal()
+/// ```
+pub fn DataFrame::max_horizontal(self : DataFrame) -> Series! {
+  for series in self.data {
+    match series.get_type() {
+      BasicType::Int => ()
+      BasicType::Float => ()
+      _ => raise InvalidType("Contains unsupported data type")
+    }
+  }
+  let data = Series::{
+    name: "sum",
+    data: SeriesData::Float(Array::make(self.shape[0], @float.min_value)),
+  }
+  for series in self.data {
+    data.data.max(series.data)
+  }
+  data
 }
 
 ///| Calculate the sum of each column in the DataFrame
@@ -1452,6 +1524,11 @@ pub fn DataFrame::sum_horizontal(self : DataFrame) -> Series! {
     data += series
   }
   data
+}
+
+///|
+pub fn DataFrame::count(self : DataFrame) -> (Int, Int) {
+  (self.shape[0], self.shape[1])
 }
 
 ///| Tests
@@ -1742,4 +1819,22 @@ test "sum_horizontal" {
   ])
   let sum = df.sum_horizontal!()
   inspect!(sum.data(), content="Float([2.5, 4.5, 6])")
+}
+
+test "min_horizontal" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesData::Int([1, 2, 3])),
+    Series::new("B", SeriesData::Float([1.5, 2.0, 1.5])),
+  ])
+  let min = df.min_horizontal!()
+  inspect!(min.data, content="Float([1, 2, 1.5])")
+}
+
+test "max_horizontal" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesData::Int([1, 2, 3])),
+    Series::new("B", SeriesData::Float([1.5, 2.0, 1.5])),
+  ])
+  let max = df.max_horizontal!()
+  inspect!(max.data, content="Float([1.5, 2, 3])")
 }

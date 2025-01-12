@@ -40,6 +40,7 @@ impl DataFrame {
   clear(Self) -> Unit
   clone(Self) -> Self
   column(Self, String) -> Series!ColumnNotFoundError
+  count(Self) -> (Int, Int)
   data(Self) -> Array[Series]
   drop_column(Self, String) -> Unit!ColumnNotFoundError
   drop_row(Self, Int) -> Unit!
@@ -50,7 +51,9 @@ impl DataFrame {
   item(Self, Int, ColumnSelector) -> DType!
   limit(Self, Int) -> Self!
   max(Self) -> Self!
+  max_horizontal(Self) -> Series!
   min(Self) -> Self!
+  min_horizontal(Self) -> Series!
   new(Array[Series]) -> Self!InconsistentSeriesLength
   op_get(Self, Int) -> Self
   rename(Self, String, String) -> Unit!ColumnNotFoundError
