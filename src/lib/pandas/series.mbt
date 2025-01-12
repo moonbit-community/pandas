@@ -402,6 +402,208 @@ fn get_type(self : Series) -> BasicType {
   }
 }
 
+///|
+/// Returns the maximum value in the Series. Currently only works for Series with
+/// integer values.
+///
+/// Parameters:
+///
+/// * `self` : The Series to find the maximum value from.
+///
+/// Returns the maximum value in the Series.
+///
+/// Throws:
+///
+/// * `EmptyArrayError` : Raised if the Series is empty
+/// * `InvalidType` : Raised if the Series contains non-integer values
+///
+/// Example:
+///
+/// ```moonbit
+/// let series = Series::new("test", SeriesData::Int([1, 3, 2]))
+/// series.arg_max!()
+/// ```
+pub fn Series::max(self : Series) -> Int!Error {
+  match self.data {
+    SeriesData::Int(data) =>
+      match data {
+        [] => raise EmptyArrayError("Cannot find the maximum of an empty array")
+        _ =>
+          data
+          .iter()
+          .fold(init=data[0], fn(acc, x) { if x > acc { x } else { acc } })
+      }
+    _ => raise InvalidType("unsupported type")
+  }
+}
+
+///|
+/// Returns the minimum value in the Series. Currently only works for Series with
+/// integer values.
+///
+/// Parameters:
+///
+/// * `self` : The Series to find the minimum value from.
+///
+/// Returns the minimum value in the Series.
+///
+/// Throws:
+///
+/// * `EmptyArrayError` : Raised if the Series is empty
+/// * `InvalidType` : Raised if the Series contains non-integer values
+///
+/// Example:
+///
+/// ```moonbit
+///   let series = Series::new("test", SeriesData::Int([3, 1, 2]))
+///   series.arg_min!()
+/// ```
+pub fn Series::min(self : Series) -> Int!Error {
+  match self.data {
+    SeriesData::Int(data) =>
+      match data {
+        [] => raise EmptyArrayError("Cannot find the minimum of an empty array")
+        _ =>
+          data
+          .iter()
+          .fold(init=data[0], fn(acc, x) { if x < acc { x } else { acc } })
+      }
+    _ => raise InvalidType("unsupported type")
+  }
+}
+
+///|
+/// Calculates the arithmetic mean of all elements in the Series.
+///
+/// Parameters:
+///
+/// * `self` : The Series to calculate the mean from.
+///
+/// Returns a floating-point number representing the arithmetic mean of the
+/// Series.
+///
+/// Throws:
+///
+/// * `EmptyArrayError` : Raised if the Series is empty
+/// * `InvalidType` : Raised if the Series contains data types that don't support
+/// mean calculation (e.g., Boolean or String)
+///
+/// Example:
+///
+/// ```moonbit
+/// let series = Series::new("test", SeriesData::Int([1, 2, 3, 4, 5]))
+/// series.mean!()
+/// let float_series = Series::new("test", SeriesData::Float([1.5, 2.5, 3.5]))
+/// float_series.mean!()
+/// ```
+pub fn Series::mean(self : Series) -> Float!Error {
+  match self.data {
+    SeriesData::Int(data) =>
+      match data {
+        [] => raise EmptyArrayError("Cannot find the mean of an empty array")
+        _ => {
+          let sum = data.iter().fold(init=0, fn(acc, x) { acc + x })
+          sum.to_float() / data.length().to_float()
+        }
+      }
+    SeriesData::Float(data) =>
+      match data {
+        [] => raise EmptyArrayError("Cannot find the mean of an empty array")
+        _ =>
+          data.iter().fold(init=Double::to_float(0.0), fn(acc, x) { acc + x }) /
+          data.length().to_float()
+      }
+    _ => raise InvalidType("unsupported type")
+  }
+}
+
+///|
+/// Calculates the variance of a Series using ddof (delta degrees of freedom) for
+/// unbiased estimation.
+///
+/// Parameters:
+///
+/// * `self` : The Series to calculate variance from. Supports numeric types
+/// (Int, Float) and Bool values.
+/// * `ddof` : Delta degrees of freedom (default is 1). The divisor used in
+/// calculations is `n - ddof`, where n is the number of elements.
+///
+/// Returns a floating-point number representing the variance of the Series.
+///
+/// Throws:
+///
+/// * `EmptyArrayError` : If there are not enough observations for the specified
+/// ddof value
+/// * `InvalidType` : If the Series contains unsupported data types (e.g.,
+/// String)
+///
+/// Example:
+///
+/// ```moonbit
+/// test "Series::var" {
+///   let series = Series::new("test", SeriesData::Int([1, 2, 3, 4, 5]))
+///   series.var!()
+///   let bool_series = Series::new("test", SeriesData::Bool([true, false, true]))
+///   series.var!()
+/// }
+/// ```
+pub fn Series::var(self : Series, ddof~ : Int = 1) -> Float!Error {
+  let float_data : Array[Float] = match self.data {
+    SeriesData::Int(arr) => arr.map(fn(x) { x.to_float() })
+    SeriesData::Float(arr) => arr
+    SeriesData::Bool(arr) => arr.map(fn(x) { if x { 1.0 } else { 0.0 } })
+    _ => raise InvalidType("unsupported type")
+  }
+  let n = float_data.length()
+  if n <= ddof {
+    raise EmptyArrayError("Not enough observations for specified ddof")
+  }
+  let mean = float_data
+    .iter()
+    .fold(init=Double::to_float(0.0), fn(acc, x) { acc + x }) /
+    n.to_float()
+  
+  let sum_squared_diff = float_data.iter().fold(init=Double::to_float(0.0), fn(acc, x) {
+    let diff = x - mean
+    acc + diff * diff
+  })
+  sum_squared_diff / (n - ddof).to_float()
+}
+
+test "Series::var/int" {
+  let series = Series::new("test", SeriesData::Int([1, 2, 3, 4, 5]))
+  inspect!(series.var!(), content="2.5")
+}
+
+test "Series::var/float" {
+  let series = Series::new("test", SeriesData::Float([1.5, 2.0, 3.5, 4.0, 5.5]))
+  series.var!() |> println
+  // 2.575
+}
+
+test "Series::var/ddof" {
+  let series = Series::new("test", SeriesData::Float([1.5, 2.0, 3.5, 4.0, 5.0]))
+  series.var!(ddof=1) |> println
+  // 2.075
+}
+
+test "panic Series::var/invalid_type" {
+  let series = Series::new("test", SeriesData::Str(["a", "b", "c"]))
+  ignore(series.var!())
+}
+
+test "panic Series::var/empty_array" {
+  let series = Series::new("test", SeriesData::Int([]))
+  ignore(series.var!())
+}
+
+///|
+pub fn Series::count(self : Series) -> Int {
+  self.data.length()
+}
+
+///|
+
 ///| Tests
 test "series" {
   let series = Series::new("test", SeriesData::Int([1, 2, 3, 4, 5]))
