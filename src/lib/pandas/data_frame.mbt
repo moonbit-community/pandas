@@ -1380,6 +1380,39 @@ pub fn DataFrame::max(self : DataFrame) -> DataFrame! {
   DataFrame::{ data, shape: [1, self.shape[1]], index: self.index }
 }
 
+///| Calculate the sum of each column in the DataFrame
+///
+/// ### Parameters
+///
+/// - `self` : An instance of the DataFrame
+///
+/// ### Returns
+///
+/// - `DataFrame` : A new DataFrame containing the sum of each column
+///
+/// ### Errors
+///
+/// - `InvalidType` : Raised if the Series data type is not supported
+///
+/// ### Example
+/// ```
+/// let df_sum = df.sum()
+/// ```
+pub fn DataFrame::sum(self : DataFrame) -> DataFrame!InvalidType {
+  let data : Array[Series] = []
+  for series in self.data {
+    let sum = series.sum!()
+    match sum {
+      DType::Float(value) =>
+        data.push(Series::new(series.name, SeriesData::Float([value])))
+      DType::Int(value) =>
+        data.push(Series::new(series.name, SeriesData::Int([value])))
+      _ => ()
+    }
+  }
+  DataFrame::{ data, shape: [1, self.shape[1]], index: self.index }
+}
+
 ///| Tests
 test "new" {
   let df = DataFrame::new!([
@@ -1649,4 +1682,14 @@ test "min/max" {
     max.data,
     content="[{name: \"A\", data: Int([3])}, {name: \"B\", data: Float([3.5])}, {name: \"C\", data: Bool([true])}, {name: \"D\", data: Str([\"c\"])}]",
   )
+}
+
+test "sum" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesData::Int([1, 2, 3])),
+    Series::new("B", SeriesData::Float([1.5, 2.0, 3.5])),
+  ])
+  let df_sum = df.sum!()
+  inspect!(df_sum.data[0].data, content="Int([6])")
+  inspect!(df_sum.data[1].data, content="Float([7])")
 }

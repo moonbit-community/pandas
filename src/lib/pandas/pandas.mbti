@@ -56,6 +56,7 @@ impl DataFrame {
   shape(Self) -> Array[Int]
   slice(Self, Int, length? : Int) -> Self!
   sort(Self, String, descending~ : Bool = ..) -> Unit!ColumnNotFoundError
+  sum(Self) -> Self!InvalidType
   tail(Self, Int) -> Self!
   to_series(Self, Int) -> Series
   transpose(Self, include_header~ : Bool = .., header_name~ : String = .., column_names? : Array[String]) -> Self!
@@ -103,6 +104,7 @@ impl Series {
   op_mul(Self, Self) -> Self
   op_sub(Self, Self) -> Self
   reverse(Self) -> Unit
+  sum(Self) -> DType!InvalidType
   var(Self, ddof~ : Int = ..) -> Float!
 }
 impl Eq for Series

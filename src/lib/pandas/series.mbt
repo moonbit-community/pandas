@@ -530,6 +530,38 @@ pub fn Series::min(self : Series) -> DType!Error {
   }
 }
 
+///| Calculate the sum of the Series
+///
+/// ### Parameters
+///
+/// - `self` : An instance of the Series
+///
+/// ### Returns
+///
+/// - `DType` : The sum of the Series
+///
+/// ### Errors
+///
+/// - `InvalidType` : Raised if the Series data type is not supported
+///
+/// ### Example
+/// ```
+/// let sum = series.sum()
+/// ```
+pub fn Series::sum(self : Series) -> DType!InvalidType {
+  match self.data {
+    SeriesData::Int(data) =>
+      match data {
+        _ => DType::Int(data.iter().fold(init=0, fn(acc, x) { acc + x }))
+      }
+    SeriesData::Float(data) =>
+      match data {
+        _ => DType::Float(data.iter().fold(init=0.0, fn(acc, x) { acc + x }))
+      }
+    _ => raise InvalidType("unsupported type")
+  }
+}
+
 ///|
 /// Calculates the arithmetic mean of all elements in the Series.
 ///
