@@ -3,7 +3,12 @@ package smallbearrr/pandas/lib/pandas
 // Values
 
 // Types and methods
-type BasicType
+pub(all) enum BasicType {
+  Int
+  Float
+  Bool
+  Str
+}
 impl Eq for BasicType
 
 type ColumnNotFoundError
@@ -57,6 +62,7 @@ impl DataFrame {
   slice(Self, Int, length? : Int) -> Self!
   sort(Self, String, descending~ : Bool = ..) -> Unit!ColumnNotFoundError
   sum(Self) -> Self!InvalidType
+  sum_horizontal(Self) -> Series!
   tail(Self, Int) -> Self!
   to_series(Self, Int) -> Series
   transpose(Self, include_header~ : Bool = .., header_name~ : String = .., column_names? : Array[String]) -> Self!
@@ -92,6 +98,7 @@ impl Series {
   copy(Self) -> Self
   count(Self) -> Int
   data(Self) -> SeriesData
+  get_type(Self) -> BasicType
   max(Self) -> DType!
   mean(Self) -> Float!
   merge(Self, Self) -> Self!InvalidType

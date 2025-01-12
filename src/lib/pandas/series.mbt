@@ -385,7 +385,7 @@ pub fn Series::reverse(self : Series) -> Unit {
 }
 
 ///|
-enum BasicType {
+pub(all) enum BasicType {
   Int
   Float
   Bool
@@ -393,7 +393,7 @@ enum BasicType {
 } derive(Eq)
 
 ///|
-fn get_type(self : Series) -> BasicType {
+pub fn get_type(self : Series) -> BasicType {
   match self.data {
     SeriesData::Int(_) => BasicType::Int
     SeriesData::Float(_) => BasicType::Float

@@ -758,7 +758,8 @@ pub fn DataFrame::clear(self : DataFrame) -> Unit {
   for item in self.data {
     item.data.clear()
   }
-  self.shape[0] = 0
+  self.shape = [0, 0]
+  self.index.clear()
 }
 
 ///|
@@ -1413,6 +1414,46 @@ pub fn DataFrame::sum(self : DataFrame) -> DataFrame!InvalidType {
   DataFrame::{ data, shape: [1, self.shape[1]], index: self.index }
 }
 
+///| Sum all values horizontally across columns
+///
+/// ### Parameters
+///
+/// - `self` : An instance of the DataFrame
+///
+/// ### Returns
+///
+/// - `Series` : A Series containing the sum of each row
+///
+/// ### Errors
+///
+/// - `InvalidType` : Raised if the DataFrame contains unsupported data types
+///
+/// ### Example
+/// ```
+/// let df = DataFrame::new!([
+///   Series::new("A", SeriesData::Int([1, 2, 3])),
+///   Series::new("B", SeriesData::Float([1.5, 2.5, 3.0]))
+/// ])
+/// let sum = df.sum_horizontal!()
+/// ```
+pub fn DataFrame::sum_horizontal(self : DataFrame) -> Series! {
+  for series in self.data {
+    match series.get_type() {
+      BasicType::Int => ()
+      BasicType::Float => ()
+      _ => raise InvalidType("Contains unsupported data type")
+    }
+  }
+  let mut data = Series::{
+    name: "sum",
+    data: SeriesData::Float(Array::make(self.shape[0], (0.0 : Float))),
+  }
+  for series in self.data {
+    data += series
+  }
+  data
+}
+
 ///| Tests
 test "new" {
   let df = DataFrame::new!([
@@ -1692,4 +1733,13 @@ test "sum" {
   let df_sum = df.sum!()
   inspect!(df_sum.data[0].data, content="Int([6])")
   inspect!(df_sum.data[1].data, content="Float([7])")
+}
+
+test "sum_horizontal" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesData::Int([1, 2, 3])),
+    Series::new("B", SeriesData::Float([1.5, 2.5, 3.0])),
+  ])
+  let sum = df.sum_horizontal!()
+  inspect!(sum.data(), content="Float([2.5, 4.5, 6])")
 }
