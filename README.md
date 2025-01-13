@@ -38,6 +38,15 @@ This is a data processing library written in Moonbit. It provides a DataFrame da
 | `get_column_index` | Get the index of a column by its name                                       |
 | `with_row_index`   | Add a row index column to the DataFrame                                     |
 | `transpose`        | Transpose the DataFrame over the diagonal                                   |
+| `mean`             | Calculate the mean of each column in the DataFrame                          |
+| `var`              | Calculate the variance of each column in the DataFrame                      |
+| `count`            | Count the number of rows and columns in the DataFrame                       |
+| `max`              | Get the maximum value of each column in the DataFrame                       |
+| `max_horizontal`   | Get the maximum value of each row in the DataFrame                          |
+| `min`              | Get the minimum value of each column in the DataFrame                       |
+| `min_horizontal`   | Get the minimum value of each row in the DataFrame                          |
+| `sum`              | Calculate the sum of each column in the DataFrame                           |
+| `sum_horizontal`   | Calculate the sum of each row in the DataFrame                              |
 
 ### Series Methods
 
@@ -51,6 +60,18 @@ This is a data processing library written in Moonbit. It provides a DataFrame da
 | `-`                | Subtract two Series                                                         |
 | `*`                | Multiply two Series                                                         |
 | `/`                | Divide two Series                                                           |
+| `mean`             | Calculate the mean of the Series                                            |
+| `var`              | Calculate the variance of the Series                                        |
+| `argsort`          | Return the indices that would sort the Series                               |
+| `copy`             | Create a copy of the Series                                                 |
+| `count`            | Count the number of elements in the Series                                  |
+| `get_type`         | Get the type of the Series                                                  |
+| `max`              | Get the maximum value of the Series                                         |
+| `merge`            | Merge two Series                                                            |
+| `min`              | Get the minimum value of the Series                                         |
+| `name`             | Get the name of the Series                                                  |
+| `reverse`          | Reverse the order of elements in the Series                                 |
+| `sum`              | Calculate the sum of the Series                                             |
 
 ## Usage
 
