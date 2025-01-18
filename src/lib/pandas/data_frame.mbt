@@ -1531,6 +1531,52 @@ pub fn DataFrame::count(self : DataFrame) -> (Int, Int) {
   (self.shape[0], self.shape[1])
 }
 
+///| Get the number of rows
+pub fn DataFrame::height(self : DataFrame) -> Int {
+  self.shape[0]
+}
+
+///| Get the number of columns
+pub fn DataFrame::width(self : DataFrame) -> Int {
+  self.shape[1]
+}
+
+///| Get an ordered mapping of column names to their data type
+/// 
+/// Example:
+/// ```
+/// let schema = df.schema()
+/// ```
+pub fn DataFrame::schema(self : DataFrame) -> Map[String, String] {
+  let schema : Map[String, String] = {}
+  for series in self.data {
+    schema[series.name] = series.get_type().to_string()
+  }
+  schema
+}
+
+///| Aggregate the columns of this DataFrame to their product values
+/// 
+/// Example:
+/// ```
+/// let df_product = df.product()
+/// ```
+pub fn DataFrame::product(self : DataFrame) -> DataFrame {
+  let data : Array[Series] = []
+  for series in self.data {
+    match series.data {
+      SeriesData::Int(arr) =>
+        data.push(Series::new(series.name, SeriesData::Int([arr.iter().fold(init=1, fn(acc, x) { acc * x })])))
+      SeriesData::Float(arr) =>
+        data.push(Series::new(series.name, SeriesData::Float([arr.iter().fold(init=1, fn(acc, x) { acc * x })])))
+      _ => 
+        data.push(Series::new(series.name, SeriesData::Int([0])))
+    }
+  }
+  DataFrame::{ data, shape: [1, self.shape[1]], index: self.index }
+}
+
+
 ///| Tests
 test "new" {
   let df = DataFrame::new!([
@@ -1837,4 +1883,25 @@ test "max_horizontal" {
   ])
   let max = df.max_horizontal!()
   inspect!(max.data, content="Float([1.5, 2, 3])")
+}
+
+test "schema" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesData::Int([1, 2, 3])),
+    Series::new("B", SeriesData::Float([1.5, 2.5, 3.5])),
+    Series::new("C", SeriesData::Bool([true, false, true])),
+    Series::new("D", SeriesData::Str(["a", "b", "c"])),
+  ])
+  let schema = df.schema()
+  inspect!(schema, content="{\"A\": \"Int\", \"B\": \"Float\", \"C\": \"Bool\", \"D\": \"Str\"}")
+}
+
+test "product" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesData::Int([1, 2, 3])),
+    Series::new("B", SeriesData::Float([1.5, 2, 3.0])),
+  ])
+  let df_product = df.product()
+  inspect!(df_product.data[0].data, content="Int([6])")
+  inspect!(df_product.data[1].data, content="Float([9])")
 }

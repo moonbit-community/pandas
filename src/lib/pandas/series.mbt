@@ -392,6 +392,15 @@ pub(all) enum BasicType {
   Str
 } derive(Eq)
 
+fn to_string(self : BasicType) -> String {
+  match self {
+    BasicType::Int => "Int"
+    BasicType::Float => "Float"
+    BasicType::Bool => "Bool"
+    BasicType::Str => "Str"
+  }
+}
+
 ///|
 pub fn get_type(self : Series) -> BasicType {
   match self.data {
