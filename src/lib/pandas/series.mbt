@@ -392,6 +392,7 @@ pub(all) enum BasicType {
   Str
 } derive(Eq)
 
+///|
 fn to_string(self : BasicType) -> String {
   match self {
     BasicType::Int => "Int"
