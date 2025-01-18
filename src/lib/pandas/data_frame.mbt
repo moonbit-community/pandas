@@ -1566,16 +1566,29 @@ pub fn DataFrame::product(self : DataFrame) -> DataFrame {
   for series in self.data {
     match series.data {
       SeriesData::Int(arr) =>
-        data.push(Series::new(series.name, SeriesData::Int([arr.iter().fold(init=1, fn(acc, x) { acc * x })])))
+        data.push(
+          Series::new(
+            series.name,
+            SeriesData::Int([arr.iter().fold(init=1, fn(acc, x) { acc * x })]),
+          ),
+        )
       SeriesData::Float(arr) =>
-        data.push(Series::new(series.name, SeriesData::Float([arr.iter().fold(init=1, fn(acc, x) { acc * x })])))
-      _ => 
-        data.push(Series::new(series.name, SeriesData::Int([0])))
+        data.push(
+          Series::new(
+            series.name,
+            SeriesData::Float([arr.iter().fold(init=1, fn(acc, x) { acc * x })]),
+          ),
+        )
+      _ => data.push(Series::new(series.name, SeriesData::Int([0])))
     }
   }
   DataFrame::{ data, shape: [1, self.shape[1]], index: self.index }
 }
 
+///| Get the column data types
+pub fn DataFrame::dtypes(self : DataFrame) -> Array[String] {
+  self.data.map(fn(series) { series.get_type().to_string() })
+}
 
 ///| Tests
 test "new" {
@@ -1893,7 +1906,10 @@ test "schema" {
     Series::new("D", SeriesData::Str(["a", "b", "c"])),
   ])
   let schema = df.schema()
-  inspect!(schema, content="{\"A\": \"Int\", \"B\": \"Float\", \"C\": \"Bool\", \"D\": \"Str\"}")
+  inspect!(
+    schema,
+    content="{\"A\": \"Int\", \"B\": \"Float\", \"C\": \"Bool\", \"D\": \"Str\"}",
+  )
 }
 
 test "product" {
@@ -1904,4 +1920,14 @@ test "product" {
   let df_product = df.product()
   inspect!(df_product.data[0].data, content="Int([6])")
   inspect!(df_product.data[1].data, content="Float([9])")
+}
+
+test "dtypes" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesData::Int([1, 2, 3])),
+    Series::new("B", SeriesData::Float([1.5, 2.0, 3.5])),
+    Series::new("C", SeriesData::Bool([true, false, true])),
+    Series::new("D", SeriesData::Str(["a", "b", "c"])),
+  ])
+  inspect!(df.dtypes(), content="[\"Int\", \"Float\", \"Bool\", \"Str\"]")
 }
