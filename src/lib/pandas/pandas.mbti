@@ -44,9 +44,11 @@ impl DataFrame {
   data(Self) -> Array[Series]
   drop_column(Self, String) -> Unit!ColumnNotFoundError
   drop_row(Self, Int) -> Unit!
+  dtypes(Self) -> Array[String]
   filter(Self, String, (DType) -> Bool) -> Self!
   get_column_index(Self, String) -> Int!
   head(Self, rows~ : Int = ..) -> Unit
+  height(Self) -> Int
   hstack(Self, Self) -> Self!
   item(Self, Int, ColumnSelector) -> DType!
   limit(Self, Int) -> Self!
@@ -56,9 +58,11 @@ impl DataFrame {
   min_horizontal(Self) -> Series!
   new(Array[Series]) -> Self!InconsistentSeriesLength
   op_get(Self, Int) -> Self
+  product(Self) -> Self
   rename(Self, String, String) -> Unit!ColumnNotFoundError
   replace_column(Self, Int, Series) -> Unit!
   reverse(Self) -> Unit
+  schema(Self) -> Map[String, String]
   select_columns(Self, Array[String]) -> Self!ColumnNotFoundError
   select_rows(Self, range? : (Int, Int), indices? : Array[Int]) -> Self!IndexOutOfBounds
   shape(Self) -> Array[Int]
@@ -71,6 +75,7 @@ impl DataFrame {
   transpose(Self, include_header~ : Bool = .., header_name~ : String = .., column_names? : Array[String]) -> Self!
   unique(Self, Array[String], keep~ : String = ..) -> Self!
   vstack(Self, Self) -> Self!
+  width(Self) -> Int
   with_row_index(Self, offset~ : Int = ..) -> Self
 }
 impl Eq for DataFrame
