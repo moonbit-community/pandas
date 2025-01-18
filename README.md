@@ -47,6 +47,11 @@ This is a data processing library written in Moonbit. It provides a DataFrame da
 | `min_horizontal`   | Get the minimum value of each row in the DataFrame                          |
 | `sum`              | Calculate the sum of each column in the DataFrame                           |
 | `sum_horizontal`   | Calculate the sum of each row in the DataFrame                              |
+| `dtypes`           | Get the data types of each column in the DataFrame                          |
+| `height`           | Get the number of rows in the DataFrame                                     |
+| `width`            | Get the number of columns in the DataFrame                                  |
+| `product`          | Calculate the product of each column in the DataFrame                       |
+| `schema`           | Get the schema of the DataFrame                                             |
 
 ### Series Methods
 
