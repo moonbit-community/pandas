@@ -66,7 +66,7 @@ impl DataFrame {
   select_columns(Self, Array[String]) -> Self!ColumnNotFoundError
   select_rows(Self, range? : (Int, Int), indices? : Array[Int]) -> Self!IndexOutOfBounds
   shape(Self) -> Array[Int]
-  slice(Self, Int, length? : Int) -> Self!
+  slice(Self, Int, length~ : Int = ..) -> Self!
   sort(Self, String, descending~ : Bool = ..) -> Unit!ColumnNotFoundError
   sum(Self) -> Self!InvalidType
   sum_horizontal(Self) -> Series!

@@ -941,7 +941,7 @@ pub fn tail(self : DataFrame, n : Int) -> DataFrame!Error {
 ///
 /// * `self` : The DataFrame to slice.
 /// * `offset` : The starting index of the slice (zero-based).
-/// * `length` : Optional parameter specifying the number of rows to include in
+/// * `length` : Specifying the number of rows to include in
 /// the slice. If not provided, includes all remaining rows after the offset.
 ///
 /// Returns a new DataFrame containing the specified slice of rows from the
@@ -956,32 +956,33 @@ pub fn tail(self : DataFrame, n : Int) -> DataFrame!Error {
 ///     Series::new("A", SeriesData::Int([1, 2, 3, 4, 5])),
 ///     Series::new("B", SeriesData::Float([1.1, 2.2, 3.3, 4.4, 5.5])),
 ///   ])
-///   let sliced = df.slice!(1, Some(2))
+///   let sliced = df.slice!(1, length=2)
 /// ```
 pub fn DataFrame::slice(
   self : DataFrame,
   offset : Int,
-  length? : Int
+  length~ : Int = self.shape()[0] - offset
 ) -> DataFrame!Error {
-  let data : Array[Series] = []
-  let len = match length {
-    Some(l) => l
-    None => self.shape()[0] - offset
-  }
-  for series in self.data {
-    let new_data = match series.data {
-      SeriesData::Int(data) =>
-        SeriesData::Int(data.split_at(offset).1.split_at(len).0)
-      SeriesData::Float(data) =>
-        SeriesData::Float(data.split_at(offset).1.split_at(len).0)
-      SeriesData::Bool(data) =>
-        SeriesData::Bool(data.split_at(offset).1.split_at(len).0)
-      SeriesData::Str(data) =>
-        SeriesData::Str(data.split_at(offset).1.split_at(len).0)
+  if length < 0 || offset + length > self.shape()[0] {
+    raise IndexOutOfBounds("length cannot be negative")
+  } else {
+    let data : Array[Series] = []
+    let len = length
+    for series in self.data {
+      let new_data = match series.data {
+        SeriesData::Int(data) =>
+          SeriesData::Int(data.split_at(offset).1.split_at(len).0)
+        SeriesData::Float(data) =>
+          SeriesData::Float(data.split_at(offset).1.split_at(len).0)
+        SeriesData::Bool(data) =>
+          SeriesData::Bool(data.split_at(offset).1.split_at(len).0)
+        SeriesData::Str(data) =>
+          SeriesData::Str(data.split_at(offset).1.split_at(len).0)
+      }
+      data.push(Series::new(series.name, new_data))
     }
-    data.push(Series::new(series.name, new_data))
+    DataFrame::new!(data)
   }
-  DataFrame::new!(data)
 }
 
 ///|
@@ -1930,4 +1931,17 @@ test "dtypes" {
     Series::new("D", SeriesData::Str(["a", "b", "c"])),
   ])
   inspect!(df.dtypes(), content="[\"Int\", \"Float\", \"Bool\", \"Str\"]")
+}
+
+test "DataFrame::slice" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesData::Int([1, 2, 3, 4, 5])),
+    Series::new("B", SeriesData::Float([1.0, 2.0, 3.0, 4.0, 5.0])),
+  ])
+  let sliced = df.slice!(1, length=2)
+  // sliced |> println
+  // sliced.data()[1].data() |> println
+  inspect!(sliced.shape(), content="[2, 2]")
+  inspect!(sliced.data()[0].data(), content="Int([2, 3])")
+  inspect!(sliced.data()[1].data(), content="Float([2, 3])")
 }
