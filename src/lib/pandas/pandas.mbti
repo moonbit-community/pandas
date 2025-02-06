@@ -137,6 +137,7 @@ impl SeriesData {
   clear(Self) -> Unit
   empty(Self) -> Bool
   erase(Self, Int) -> Unit!EmptyArrayError
+  get_argsort_indices(Self, descending~ : Bool = ..) -> Array[Int]
   length(Self) -> Int
   op_add(Self, Self) -> Self
   op_div(Self, Self) -> Self

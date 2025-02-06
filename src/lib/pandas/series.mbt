@@ -136,7 +136,7 @@ pub fn SeriesData::sort(self : SeriesData) -> Unit {
 }
 
 ///| get the indices of the sorted elements
-fn SeriesData::get_argsort_indices(
+pub fn SeriesData::get_argsort_indices(
   self : SeriesData,
   descending~ : Bool = false
 ) -> Array[Int] {
@@ -244,7 +244,7 @@ pub fn op_add(self : SeriesData, other : SeriesData) -> SeriesData {
 }
 
 ///| Series add
-pub fn op_add(self : Series, other : Series) -> Series {
+pub fn Series::op_add(self : Series, other : Series) -> Series {
   Series::new(self.name(), self.data() + other.data())
 }
 
@@ -272,7 +272,7 @@ pub fn op_sub(self : SeriesData, other : SeriesData) -> SeriesData {
 }
 
 ///| 
-pub fn op_get(self : Series, index : Int) -> DType {
+pub fn Series::op_get(self : Series, index : Int) -> DType {
   match self.data {
     SeriesData::Int(data) => DType::Int(data[index])
     SeriesData::Float(data) => DType::Float(data[index])
@@ -282,12 +282,12 @@ pub fn op_get(self : Series, index : Int) -> DType {
 }
 
 ///| Series sub
-pub fn op_sub(self : Series, other : Series) -> Series {
+pub fn Series::op_sub(self : Series, other : Series) -> Series {
   Series::new(self.name(), self.data() - other.data())
 }
 
 ///| SeriesData mul
-pub fn op_mul(self : SeriesData, other : SeriesData) -> SeriesData {
+pub fn SeriesData::op_mul(self : SeriesData, other : SeriesData) -> SeriesData {
   match (self, other) {
     (SeriesData::Int(a), SeriesData::Int(b)) => {
       let res = a.copy()
@@ -310,12 +310,12 @@ pub fn op_mul(self : SeriesData, other : SeriesData) -> SeriesData {
 }
 
 ///| Series mul
-pub fn op_mul(self : Series, other : Series) -> Series {
+pub fn Series::op_mul(self : Series, other : Series) -> Series {
   Series::new(self.name(), self.data() * other.data())
 }
 
 ///| SeriesData div
-pub fn op_div(self : SeriesData, other : SeriesData) -> SeriesData {
+pub fn SeriesData::op_div(self : SeriesData, other : SeriesData) -> SeriesData {
   match (self, other) {
     (SeriesData::Int(a), SeriesData::Int(b)) => {
       let res = a.copy()
@@ -338,7 +338,7 @@ pub fn op_div(self : SeriesData, other : SeriesData) -> SeriesData {
 }
 
 ///| Series div
-pub fn op_div(self : Series, other : Series) -> Series {
+pub fn Series::op_div(self : Series, other : Series) -> Series {
   Series::new(self.name(), self.data() / other.data())
 }
 
@@ -365,7 +365,7 @@ fn copy(self : SeriesData) -> SeriesData {
 }
 
 ///|
-pub fn copy(self : Series) -> Series {
+pub fn Series::copy(self : Series) -> Series {
   Series::new(self.name(), self.data().copy())
 }
 
@@ -702,90 +702,4 @@ fn SeriesData::max(self : SeriesData, other : SeriesData) -> Unit {
       a.eachi(fn(i, v) { a[i] = @math.maximum(v, b[i].to_float()) })
     _ => abort("unsupported types")
   }
-}
-
-///| Tests
-test "series" {
-  let series = Series::new("test", SeriesData::Int([1, 2, 3, 4, 5]))
-  assert_eq!(series.name(), "test")
-  assert_eq!(series.data(), SeriesData::Int([1, 2, 3, 4, 5]))
-}
-
-test "argsort_indices" {
-  let series = Series::new("test", SeriesData::Int([2, 1, 3, 5, 4]))
-  let indices = series.data.get_argsort_indices()
-  inspect!(indices, content="[1, 0, 2, 4, 3]")
-  let series = Series::new("test", SeriesData::Str(["a", "b", "c", "d", "e"]))
-  inspect!(series.data.get_argsort_indices(), content="[0, 1, 2, 3, 4]")
-}
-
-test "argsort" {
-  let series = Series::new("test", SeriesData::Int([2, 1, 3, 5, 4]))
-  let indices = series.data.argsort()
-  inspect!(indices, content="[1, 0, 2, 4, 3]")
-}
-
-test "series_add" {
-  let a = Series::new("a", SeriesData::Float([1.5, 2, 3.5]))
-  let b = Series::new("b", SeriesData::Int([4, 5, 6]))
-  let c = a.data + b.data
-  inspect!(c, content="Float([5.5, 7, 9.5])")
-  let c = a + b
-  inspect!(c, content="{name: \"a\", data: Float([5.5, 7, 9.5])}")
-}
-
-test "series_sub" {
-  let a = Series::new("a", SeriesData::Float([1.5, 2, 3.5]))
-  let b = Series::new("b", SeriesData::Int([4, 5, 6]))
-  let c = a.data - b.data
-  inspect!(c, content="Float([-2.5, -3, -2.5])")
-  let c = a - b
-  inspect!(c, content="{name: \"a\", data: Float([-2.5, -3, -2.5])}")
-}
-
-test "series_mul" {
-  let a = Series::new("a", SeriesData::Float([1.5, 2, 3.5]))
-  let b = Series::new("b", SeriesData::Int([4, 5, 6]))
-  let c = a.data * b.data
-  inspect!(c, content="Float([6, 10, 21])")
-  let c = a * b
-  inspect!(c, content="{name: \"a\", data: Float([6, 10, 21])}")
-}
-
-test "series_div" {
-  let a = Series::new("a", SeriesData::Int([2, 4, 9]))
-  let b = Series::new("b", SeriesData::Int([1, 2, 3]))
-  let c = a.data / b.data
-  inspect!(c, content="Int([2, 2, 3])")
-  let c = a / b
-  inspect!(c, content="{name: \"a\", data: Int([2, 2, 3])}")
-}
-
-test "Series::var/int" {
-  let series = Series::new("test", SeriesData::Int([1, 2, 3, 4, 5]))
-  inspect!(series.var!(), content="2.5")
-}
-
-test "Series::var/float" {
-  let series = Series::new("test", SeriesData::Float([1.5, 2.0, 3.5, 4.0, 5.5]))
-  series.var!() |> ignore
-  // series.var!() |> println
-  // 2.575
-}
-
-test "Series::var/ddof" {
-  let series = Series::new("test", SeriesData::Float([1.5, 2.0, 3.5, 4.0, 5.0]))
-  series.var!(ddof=1) |> ignore
-  // series.var!(ddof=1) |> println
-  // 2.075
-}
-
-test "panic Series::var/invalid_type" {
-  let series = Series::new("test", SeriesData::Str(["a", "b", "c"]))
-  ignore(series.var!())
-}
-
-test "panic Series::var/empty_array" {
-  let series = Series::new("test", SeriesData::Int([]))
-  ignore(series.var!())
 }
