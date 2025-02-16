@@ -18,6 +18,7 @@ pub(all) enum SeriesData {
 pub(all) struct Series {
   mut name : String
   mut data : SeriesData
+  mut data_type : DataType
 } derive(Show, Eq)
 
 ///|
@@ -64,7 +65,16 @@ pub impl Hash for Series with hash_combine(self, hasher) {
 /// let series = Series::new("A", SeriesData::Int([1, 2, 3]))
 /// ```
 pub fn Series::new(name : String, values : SeriesData) -> Series {
-  Series::{ name: name.to_string(), data: values }
+  Series::{ name: name.to_string(), data: values, data_type: get_dtype(values) }
+}
+
+fn get_dtype(data : SeriesData) -> DataType {
+  match data {
+    SeriesData::Int(_) => DataType::Int32
+    SeriesData::Float(_) => DataType::Float32
+    SeriesData::Bool(_) => DataType::Bool
+    SeriesData::Str(_) => DataType::String
+  }
 }
 
 ///| Get the length of the SeriesData
@@ -702,4 +712,14 @@ fn SeriesData::max(self : SeriesData, other : SeriesData) -> Unit {
       a.eachi(fn(i, v) { a[i] = @math.maximum(v, b[i].to_float()) })
     _ => abort("unsupported types")
   }
+}
+
+impl Compare for SeriesData with compare(self, other) -> Int {
+    match (self, other) {
+        (SeriesData::Int(a), SeriesData::Int(b)) => a.compare(b)
+        (SeriesData::Float(a), SeriesData::Float(b)) => a.compare(b)
+        (SeriesData::Bool(a), SeriesData::Bool(b)) => a.compare(b)
+        (SeriesData::Str(a), SeriesData::Str(b)) => a.compare(b)
+        _ => abort("unsupported types")
+    }
 }
