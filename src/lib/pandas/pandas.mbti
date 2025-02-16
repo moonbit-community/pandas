@@ -3,13 +3,9 @@ package smallbearrr/pandas/lib/pandas
 // Values
 
 // Types and methods
-pub(all) enum BasicType {
-  Int
-  Float
-  Bool
-  Str
-}
-impl Eq for BasicType
+type BitMap
+impl Eq for BitMap
+impl Show for BitMap
 
 type ColumnNotFoundError
 impl Show for ColumnNotFoundError
@@ -19,16 +15,6 @@ pub(all) enum ColumnSelector {
   Str(String)
 }
 
-pub(all) enum DType {
-  Int(Int)
-  Float(Float)
-  Bool(Bool)
-  Str(String)
-}
-impl Compare for DType
-impl Eq for DType
-impl Show for DType
-
 pub(all) struct DataFrame {
   data : Array[Series]
   shape : Array[Int]
@@ -36,7 +22,7 @@ pub(all) struct DataFrame {
 }
 impl DataFrame {
   add_column(Self, Series) -> Unit!
-  add_row(Self, Array[DType]) -> Unit!
+  add_row(Self, Array[SeriesValue]) -> Unit!
   clear(Self) -> Unit
   clone(Self) -> Self
   column(Self, String) -> Series!ColumnNotFoundError
@@ -45,12 +31,12 @@ impl DataFrame {
   drop_column(Self, String) -> Unit!ColumnNotFoundError
   drop_row(Self, Int) -> Unit!
   dtypes(Self) -> Array[String]
-  filter(Self, String, (DType) -> Bool) -> Self!
+  filter(Self, String, (SeriesValue) -> Bool) -> Self!
   get_column_index(Self, String) -> Int!
   head(Self, rows~ : Int = ..) -> Unit
   height(Self) -> Int
   hstack(Self, Self) -> Self!
-  item(Self, Int, ColumnSelector) -> DType!
+  item(Self, Int, ColumnSelector) -> SeriesValue!
   limit(Self, Int) -> Self!
   max(Self) -> Self!
   max_horizontal(Self) -> Series!
@@ -82,6 +68,16 @@ impl Eq for DataFrame
 impl Hash for DataFrame
 impl Show for DataFrame
 
+pub(all) enum DataType {
+  Int32
+  Float32
+  String
+  Bool
+}
+impl Eq for DataType
+impl Hash for DataType
+impl Show for DataType
+
 type DuplicateColumnError
 impl Show for DuplicateColumnError
 
@@ -100,26 +96,28 @@ impl Show for InvalidType
 pub(all) struct Series {
   name : String
   data : SeriesData
+  data_type : DataType
+  bitmap : BitMap
 }
 impl Series {
   argsort(Self, descending~ : Bool = ..) -> Array[Int]
   copy(Self) -> Self
   count(Self) -> Int
   data(Self) -> SeriesData
-  get_type(Self) -> BasicType
-  max(Self) -> DType!
+  get_type(Self) -> DataType
+  max(Self) -> SeriesValue!
   mean(Self) -> Float!
   merge(Self, Self) -> Self!InvalidType
-  min(Self) -> DType!
+  min(Self) -> SeriesValue!
   name(Self) -> String
-  new(String, SeriesData) -> Self
+  new(String, SeriesInput) -> Self
   op_add(Self, Self) -> Self
   op_div(Self, Self) -> Self
-  op_get(Self, Int) -> DType
+  op_get(Self, Int) -> SeriesValue
   op_mul(Self, Self) -> Self
   op_sub(Self, Self) -> Self
   reverse(Self) -> Unit
-  sum(Self) -> DType!InvalidType
+  sum(Self) -> SeriesValue!InvalidType
   var(Self, ddof~ : Int = ..) -> Float!
 }
 impl Eq for Series
@@ -148,6 +146,27 @@ impl SeriesData {
 impl Eq for SeriesData
 impl Hash for SeriesData
 impl Show for SeriesData
+
+pub(all) enum SeriesInput {
+  Int32(Array[Int])
+  Float32(Array[Float])
+  Bool(Array[Bool])
+  Str(Array[String])
+  Int32_Nullable(Array[Int?])
+  Float32_Nullable(Array[Float?])
+  Bool_Nullable(Array[Bool?])
+  Str_Nullable(Array[String?])
+}
+
+pub(all) enum SeriesValue {
+  Int(Int)
+  Float(Float)
+  Bool(Bool)
+  Str(String)
+}
+impl Compare for SeriesValue
+impl Eq for SeriesValue
+impl Show for SeriesValue
 
 // Type aliases
 

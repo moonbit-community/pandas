@@ -337,7 +337,10 @@ test "dtypes" {
     Series::new("C", SeriesInput::Bool([true, false, true])),
     Series::new("D", SeriesInput::Str(["a", "b", "c"])),
   ])
-  inspect!(df.dtypes(), content="[\"int32\", \"float32\", \"bool\", \"string\"]")
+  inspect!(
+    df.dtypes(),
+    content="[\"int32\", \"float32\", \"bool\", \"string\"]",
+  )
 }
 
 test "DataFrame::slice" {

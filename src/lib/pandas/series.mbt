@@ -65,41 +65,64 @@ pub fn Series::new(name : String, values : SeriesInput) -> Series {
     SeriesInput::Bool(data) => SeriesData::Bool(data)
     SeriesInput::Str(data) => SeriesData::Str(data)
     SeriesInput::Int32_Nullable(data) => {
-      bit_map = BitMap::new(data=data)
-      SeriesData::Int(Array::makei(data.length(), fn(i) { match data[i] { 
-        None => 0
-        Some(x) => x 
-      } }))
+      bit_map = BitMap::new(data~)
+      SeriesData::Int(
+        Array::makei(data.length(), fn(i) {
+          match data[i] {
+            None => 0
+            Some(x) => x
+          }
+        }),
+      )
     }
     SeriesInput::Float32_Nullable(data) => {
-      bit_map = BitMap::new(data=data)
-      SeriesData::Float(Array::makei(data.length(), fn(i) { match data[i] { 
-        None => 0.0
-        Some(x) => x 
-      } }))
+      bit_map = BitMap::new(data~)
+      SeriesData::Float(
+        Array::makei(data.length(), fn(i) {
+          match data[i] {
+            None => 0.0
+            Some(x) => x
+          }
+        }),
+      )
     }
     SeriesInput::Bool_Nullable(data) => {
-      bit_map = BitMap::new(data=data)
-      SeriesData::Bool(Array::makei(data.length(), fn(i) { match data[i] { 
-        None => false
-        Some(x) => x 
-      } }))
+      bit_map = BitMap::new(data~)
+      SeriesData::Bool(
+        Array::makei(data.length(), fn(i) {
+          match data[i] {
+            None => false
+            Some(x) => x
+          }
+        }),
+      )
     }
     SeriesInput::Str_Nullable(data) => {
-      bit_map = BitMap::new(data=data)
-      SeriesData::Str(Array::makei(data.length(), fn(i) { match data[i] { 
-        None => ""
-        Some(x) => x 
-      } }))
+      bit_map = BitMap::new(data~)
+      SeriesData::Str(
+        Array::makei(data.length(), fn(i) {
+          match data[i] {
+            None => ""
+            Some(x) => x
+          }
+        }),
+      )
     }
   }
-  Series::{ name: name.to_string(), data: data, data_type: get_dtype(data), bitmap: bit_map }
+  Series::{
+    name: name.to_string(),
+    data,
+    data_type: get_dtype(data),
+    bitmap: bit_map,
+  }
 }
 
+///|
 fn Series::new_by_SeriesData(name : String, data : SeriesData) -> Series {
-  Series::{ name: name, data: data, data_type: get_dtype(data), bitmap: emptyBitMap }
+  Series::{ name, data, data_type: get_dtype(data), bitmap: emptyBitMap }
 }
 
+///|
 fn get_dtype(data : SeriesData) -> DataType {
   match data {
     SeriesData::Int(_) => DataType::Int32
@@ -291,7 +314,7 @@ pub fn Series::op_add(self : Series, other : Series) -> Series {
     name: self.name(),
     data: self.data() + other.data(),
     data_type: get_dtype(self.data()),
-    bitmap: self.bitmap + other.bitmap
+    bitmap: self.bitmap + other.bitmap,
   }
 }
 
@@ -334,7 +357,7 @@ pub fn Series::op_sub(self : Series, other : Series) -> Series {
     name: self.name(),
     data: self.data() - other.data(),
     data_type: get_dtype(self.data()),
-    bitmap: self.bitmap + other.bitmap
+    bitmap: self.bitmap + other.bitmap,
   }
 }
 
@@ -367,7 +390,7 @@ pub fn Series::op_mul(self : Series, other : Series) -> Series {
     name: self.name(),
     data: self.data() * other.data(),
     data_type: get_dtype(self.data()),
-    bitmap: self.bitmap + other.bitmap
+    bitmap: self.bitmap + other.bitmap,
   }
 }
 
@@ -400,7 +423,7 @@ pub fn Series::op_div(self : Series, other : Series) -> Series {
     name: self.name(),
     data: self.data() / other.data(),
     data_type: get_dtype(self.data()),
-    bitmap: self.bitmap + other.bitmap
+    bitmap: self.bitmap + other.bitmap,
   }
 }
 
@@ -415,9 +438,9 @@ pub fn merge(self : Series, other : Series) -> Series!InvalidType {
   }
   Series::{
     name: self.name(),
-    data: data,
+    data,
     data_type: get_dtype(data),
-    bitmap: self.bitmap + other.bitmap
+    bitmap: self.bitmap + other.bitmap,
   }
 }
 
@@ -437,7 +460,7 @@ pub fn Series::copy(self : Series) -> Series {
     name: self.name(),
     data: self.data.copy(),
     data_type: self.data_type,
-    bitmap: self.bitmap
+    bitmap: self.bitmap,
   }
 }
 
@@ -455,7 +478,6 @@ fn SeriesData::reverse(self : SeriesData) -> Unit {
 pub fn Series::reverse(self : Series) -> Unit {
   self.data.reverse()
 }
-
 
 ///|
 fn to_string(self : DataType) -> String {
@@ -631,7 +653,8 @@ pub fn Series::sum(self : Series) -> SeriesValue!InvalidType {
       }
     SeriesData::Float(data) =>
       match data {
-        _ => SeriesValue::Float(data.iter().fold(init=0.0, fn(acc, x) { acc + x }))
+        _ =>
+          SeriesValue::Float(data.iter().fold(init=0.0, fn(acc, x) { acc + x }))
       }
     _ => raise InvalidType("unsupported type")
   }
@@ -769,12 +792,13 @@ fn SeriesData::max(self : SeriesData, other : SeriesData) -> Unit {
   }
 }
 
+///|
 impl Compare for SeriesData with compare(self, other) -> Int {
-    match (self, other) {
-        (SeriesData::Int(a), SeriesData::Int(b)) => a.compare(b)
-        (SeriesData::Float(a), SeriesData::Float(b)) => a.compare(b)
-        (SeriesData::Bool(a), SeriesData::Bool(b)) => a.compare(b)
-        (SeriesData::Str(a), SeriesData::Str(b)) => a.compare(b)
-        _ => abort("unsupported types")
-    }
+  match (self, other) {
+    (SeriesData::Int(a), SeriesData::Int(b)) => a.compare(b)
+    (SeriesData::Float(a), SeriesData::Float(b)) => a.compare(b)
+    (SeriesData::Bool(a), SeriesData::Bool(b)) => a.compare(b)
+    (SeriesData::Str(a), SeriesData::Str(b)) => a.compare(b)
+    _ => abort("unsupported types")
+  }
 }

@@ -139,7 +139,6 @@ pub fn DataFrame::head(self : DataFrame, rows~ : Int = 5) -> Unit {
         SeriesData::Float(vals) => row_str += vals[i].to_string() + "\t"
         SeriesData::Bool(vals) => row_str += vals[i].to_string() + "\t"
         SeriesData::Str(vals) => row_str += vals[i] + "\t"
-
       }
     }
     row_str += "\n"
@@ -474,7 +473,10 @@ pub fn DataFrame::select_rows(
                   col_data.push(data[idx])
                 }
                 selected_rows.push(
-                  Series::new_by_SeriesData(col.name(), SeriesData::Int(col_data)),
+                  Series::new_by_SeriesData(
+                    col.name(),
+                    SeriesData::Int(col_data),
+                  ),
                 )
               }
               SeriesData::Float(data) => {
@@ -483,7 +485,10 @@ pub fn DataFrame::select_rows(
                   col_data.push(data[idx])
                 }
                 selected_rows.push(
-                  Series::new_by_SeriesData(col.name(), SeriesData::Float(col_data)),
+                  Series::new_by_SeriesData(
+                    col.name(),
+                    SeriesData::Float(col_data),
+                  ),
                 )
               }
               SeriesData::Bool(data) => {
@@ -492,7 +497,10 @@ pub fn DataFrame::select_rows(
                   col_data.push(data[idx])
                 }
                 selected_rows.push(
-                  Series::new_by_SeriesData(col.name(), SeriesData::Bool(col_data)),
+                  Series::new_by_SeriesData(
+                    col.name(),
+                    SeriesData::Bool(col_data),
+                  ),
                 )
               }
               SeriesData::Str(data) => {
@@ -501,7 +509,10 @@ pub fn DataFrame::select_rows(
                   col_data.push(data[idx])
                 }
                 selected_rows.push(
-                  Series::new_by_SeriesData(col.name(), SeriesData::Str(col_data)),
+                  Series::new_by_SeriesData(
+                    col.name(),
+                    SeriesData::Str(col_data),
+                  ),
                 )
               }
             }
@@ -527,29 +538,29 @@ pub fn op_get(self : DataFrame, index : Int) -> DataFrame {
         row.push(Series::{
           name: col.name,
           data: SeriesData::Int([data[index]]),
-          data_type : col.data_type,
-          bitmap : col.bitmap.slice(index, length=1) 
+          data_type: col.data_type,
+          bitmap: col.bitmap.slice(index, length=1),
         })
       SeriesData::Float(data) =>
         row.push(Series::{
           name: col.name,
           data: SeriesData::Float([data[index]]),
-          data_type : col.data_type,
-          bitmap : col.bitmap.slice(index, length=1) 
+          data_type: col.data_type,
+          bitmap: col.bitmap.slice(index, length=1),
         })
       SeriesData::Bool(data) =>
         row.push(Series::{
           name: col.name,
           data: SeriesData::Bool([data[index]]),
-          data_type : col.data_type,
-          bitmap : col.bitmap.slice(index, length=1) 
+          data_type: col.data_type,
+          bitmap: col.bitmap.slice(index, length=1),
         })
       SeriesData::Str(data) =>
         row.push(Series::{
           name: col.name,
           data: SeriesData::Str([data[index]]),
-          data_type : col.data_type,
-          bitmap : col.bitmap.slice(index, length=1) 
+          data_type: col.data_type,
+          bitmap: col.bitmap.slice(index, length=1),
         })
     }
   }
@@ -698,19 +709,27 @@ pub fn vstack(self : DataFrame, other : DataFrame) -> DataFrame! {
     match (series.data, other.column!(series.name).data) {
       (SeriesData::Int(data1), SeriesData::Int(data2)) => {
         let new_data = data1 + data2
-        data.push(Series::new_by_SeriesData(series.name, SeriesData::Int(new_data)))
+        data.push(
+          Series::new_by_SeriesData(series.name, SeriesData::Int(new_data)),
+        )
       }
       (SeriesData::Float(data1), SeriesData::Float(data2)) => {
         let new_data = data1 + data2
-        data.push(Series::new_by_SeriesData(series.name, SeriesData::Float(new_data)))
+        data.push(
+          Series::new_by_SeriesData(series.name, SeriesData::Float(new_data)),
+        )
       }
       (SeriesData::Bool(data1), SeriesData::Bool(data2)) => {
         let new_data = data1 + data2
-        data.push(Series::new_by_SeriesData(series.name, SeriesData::Bool(new_data)))
+        data.push(
+          Series::new_by_SeriesData(series.name, SeriesData::Bool(new_data)),
+        )
       }
       (SeriesData::Str(data1), SeriesData::Str(data2)) => {
         let new_data = data1 + data2
-        data.push(Series::new_by_SeriesData(series.name, SeriesData::Str(new_data)))
+        data.push(
+          Series::new_by_SeriesData(series.name, SeriesData::Str(new_data)),
+        )
       }
       _ => raise InvalidType("The data types must be the same.")
     }
@@ -1270,7 +1289,9 @@ pub fn DataFrame::transpose(
           }
         }
         let col_name = "column_" + i.to_string()
-        new_data.push(Series::new_by_SeriesData(col_name, SeriesData::Int(col_data)))
+        new_data.push(
+          Series::new_by_SeriesData(col_name, SeriesData::Int(col_data)),
+        )
       }
     Float(_) =>
       for i = 0; i < self.shape[0]; i = i + 1 {
@@ -1282,7 +1303,9 @@ pub fn DataFrame::transpose(
           }
         }
         let col_name = "column_" + i.to_string()
-        new_data.push(Series::new_by_SeriesData(col_name, SeriesData::Float(col_data)))
+        new_data.push(
+          Series::new_by_SeriesData(col_name, SeriesData::Float(col_data)),
+        )
       }
     Bool(_) =>
       for i = 0; i < self.shape[0]; i = i + 1 {
@@ -1294,7 +1317,9 @@ pub fn DataFrame::transpose(
           }
         }
         let col_name = "column_" + i.to_string()
-        new_data.push(Series::new_by_SeriesData(col_name, SeriesData::Bool(col_data)))
+        new_data.push(
+          Series::new_by_SeriesData(col_name, SeriesData::Bool(col_data)),
+        )
       }
     Str(_) =>
       for i = 0; i < self.shape[0]; i = i + 1 {
@@ -1306,7 +1331,9 @@ pub fn DataFrame::transpose(
           }
         }
         let col_name = "column_" + i.to_string()
-        new_data.push(Series::new_by_SeriesData(col_name, SeriesData::Str(col_data)))
+        new_data.push(
+          Series::new_by_SeriesData(col_name, SeriesData::Str(col_data)),
+        )
       }
   }
   match column_names {
@@ -1347,13 +1374,21 @@ pub fn DataFrame::min(self : DataFrame) -> DataFrame! {
     let min = series.min!()
     match min {
       SeriesValue::Float(value) =>
-        data.push(Series::new_by_SeriesData(series.name, SeriesData::Float([value])))
+        data.push(
+          Series::new_by_SeriesData(series.name, SeriesData::Float([value])),
+        )
       SeriesValue::Int(value) =>
-        data.push(Series::new_by_SeriesData(series.name, SeriesData::Int([value])))
+        data.push(
+          Series::new_by_SeriesData(series.name, SeriesData::Int([value])),
+        )
       SeriesValue::Bool(value) =>
-        data.push(Series::new_by_SeriesData(series.name, SeriesData::Bool([value])))
+        data.push(
+          Series::new_by_SeriesData(series.name, SeriesData::Bool([value])),
+        )
       SeriesValue::Str(value) =>
-        data.push(Series::new_by_SeriesData(series.name, SeriesData::Str([value])))
+        data.push(
+          Series::new_by_SeriesData(series.name, SeriesData::Str([value])),
+        )
     }
   }
   DataFrame::{ data, shape: [1, self.shape[1]], index: self.index }
@@ -1417,13 +1452,21 @@ pub fn DataFrame::max(self : DataFrame) -> DataFrame! {
     let max = series.max!()
     match max {
       SeriesValue::Float(value) =>
-        data.push(Series::new_by_SeriesData(series.name, SeriesData::Float([value])))
+        data.push(
+          Series::new_by_SeriesData(series.name, SeriesData::Float([value])),
+        )
       SeriesValue::Int(value) =>
-        data.push(Series::new_by_SeriesData(series.name, SeriesData::Int([value])))
+        data.push(
+          Series::new_by_SeriesData(series.name, SeriesData::Int([value])),
+        )
       SeriesValue::Bool(value) =>
-        data.push(Series::new_by_SeriesData(series.name, SeriesData::Bool([value])))
+        data.push(
+          Series::new_by_SeriesData(series.name, SeriesData::Bool([value])),
+        )
       SeriesValue::Str(value) =>
-        data.push(Series::new_by_SeriesData(series.name, SeriesData::Str([value])))
+        data.push(
+          Series::new_by_SeriesData(series.name, SeriesData::Str([value])),
+        )
     }
   }
   DataFrame::{ data, shape: [1, self.shape[1]], index: self.index }
@@ -1491,9 +1534,13 @@ pub fn DataFrame::sum(self : DataFrame) -> DataFrame!InvalidType {
     let sum = series.sum!()
     match sum {
       SeriesValue::Float(value) =>
-        data.push(Series::new_by_SeriesData(series.name, SeriesData::Float([value])))
+        data.push(
+          Series::new_by_SeriesData(series.name, SeriesData::Float([value])),
+        )
       SeriesValue::Int(value) =>
-        data.push(Series::new_by_SeriesData(series.name, SeriesData::Int([value])))
+        data.push(
+          Series::new_by_SeriesData(series.name, SeriesData::Int([value])),
+        )
       _ => ()
     }
   }
@@ -1595,7 +1642,8 @@ pub fn DataFrame::product(self : DataFrame) -> DataFrame {
             SeriesData::Float([arr.iter().fold(init=1, fn(acc, x) { acc * x })]),
           ),
         )
-      _ => data.push(Series::new_by_SeriesData(series.name, SeriesData::Int([0])))
+      _ =>
+        data.push(Series::new_by_SeriesData(series.name, SeriesData::Int([0])))
     }
   }
   DataFrame::{ data, shape: [1, self.shape[1]], index: self.index }

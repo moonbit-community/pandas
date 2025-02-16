@@ -1,4 +1,5 @@
-pub(all) enum DataType{
+///|
+pub(all) enum DataType {
   Int32
   Float32
   String
@@ -13,13 +14,14 @@ pub(all) enum SeriesValue {
   Str(String)
 } derive(Show, Eq, Compare)
 
+///|
 pub(all) enum SeriesInput {
   Int32(Array[Int])
   Float32(Array[Float])
   Bool(Array[Bool])
   Str(Array[String])
-  Int32_Nullable(Array[Option[Int]])
-  Float32_Nullable(Array[Option[Float]])
-  Bool_Nullable(Array[Option[Bool]])
-  Str_Nullable(Array[Option[String]])
+  Int32_Nullable(Array[Int?])
+  Float32_Nullable(Array[Float?])
+  Bool_Nullable(Array[Bool?])
+  Str_Nullable(Array[String?])
 }

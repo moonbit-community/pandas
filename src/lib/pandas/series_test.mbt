@@ -61,14 +61,20 @@ test "Series::var/int" {
 }
 
 test "Series::var/float" {
-  let series = Series::new("test", SeriesInput::Float32([1.5, 2.0, 3.5, 4.0, 5.5]))
+  let series = Series::new(
+    "test",
+    SeriesInput::Float32([1.5, 2.0, 3.5, 4.0, 5.5]),
+  )
   series.var!() |> ignore
   // series.var!() |> println
   // 2.575
 }
 
 test "Series::var/ddof" {
-  let series = Series::new("test", SeriesInput::Float32([1.5, 2.0, 3.5, 4.0, 5.0]))
+  let series = Series::new(
+    "test",
+    SeriesInput::Float32([1.5, 2.0, 3.5, 4.0, 5.0]),
+  )
   series.var!(ddof=1) |> ignore
   // series.var!(ddof=1) |> println
   // 2.075
