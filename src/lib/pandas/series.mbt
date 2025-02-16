@@ -1,12 +1,4 @@
 ///|
-pub(all) enum DType {
-  Int(Int)
-  Float(Float)
-  Bool(Bool)
-  Str(String)
-} derive(Show, Eq, Compare)
-
-///|
 pub(all) enum SeriesData {
   Int(Array[Int])
   Float(Array[Float])
@@ -18,6 +10,8 @@ pub(all) enum SeriesData {
 pub(all) struct Series {
   mut name : String
   mut data : SeriesData
+  mut data_type : DataType
+  mut bitmap : BitMap
 } derive(Show, Eq)
 
 ///|
@@ -61,10 +55,58 @@ pub impl Hash for Series with hash_combine(self, hasher) {
 ///
 /// ### Example
 /// ```
-/// let series = Series::new("A", SeriesData::Int([1, 2, 3]))
+/// let series = Series::new("A", SeriesInput::Int32([1, 2, 3]))
 /// ```
-pub fn Series::new(name : String, values : SeriesData) -> Series {
-  Series::{ name: name.to_string(), data: values }
+pub fn Series::new(name : String, values : SeriesInput) -> Series {
+  let mut bit_map = emptyBitMap
+  let data = match values {
+    SeriesInput::Int32(data) => SeriesData::Int(data)
+    SeriesInput::Float32(data) => SeriesData::Float(data)
+    SeriesInput::Bool(data) => SeriesData::Bool(data)
+    SeriesInput::Str(data) => SeriesData::Str(data)
+    SeriesInput::Int32_Nullable(data) => {
+      bit_map = BitMap::new(data=data)
+      SeriesData::Int(Array::makei(data.length(), fn(i) { match data[i] { 
+        None => 0
+        Some(x) => x 
+      } }))
+    }
+    SeriesInput::Float32_Nullable(data) => {
+      bit_map = BitMap::new(data=data)
+      SeriesData::Float(Array::makei(data.length(), fn(i) { match data[i] { 
+        None => 0.0
+        Some(x) => x 
+      } }))
+    }
+    SeriesInput::Bool_Nullable(data) => {
+      bit_map = BitMap::new(data=data)
+      SeriesData::Bool(Array::makei(data.length(), fn(i) { match data[i] { 
+        None => false
+        Some(x) => x 
+      } }))
+    }
+    SeriesInput::Str_Nullable(data) => {
+      bit_map = BitMap::new(data=data)
+      SeriesData::Str(Array::makei(data.length(), fn(i) { match data[i] { 
+        None => ""
+        Some(x) => x 
+      } }))
+    }
+  }
+  Series::{ name: name.to_string(), data: data, data_type: get_dtype(data), bitmap: bit_map }
+}
+
+fn Series::new_by_SeriesData(name : String, data : SeriesData) -> Series {
+  Series::{ name: name, data: data, data_type: get_dtype(data), bitmap: emptyBitMap }
+}
+
+fn get_dtype(data : SeriesData) -> DataType {
+  match data {
+    SeriesData::Int(_) => DataType::Int32
+    SeriesData::Float(_) => DataType::Float32
+    SeriesData::Bool(_) => DataType::Bool
+    SeriesData::Str(_) => DataType::String
+  }
 }
 
 ///| Get the length of the SeriesData
@@ -245,7 +287,12 @@ pub fn op_add(self : SeriesData, other : SeriesData) -> SeriesData {
 
 ///| Series add
 pub fn Series::op_add(self : Series, other : Series) -> Series {
-  Series::new(self.name(), self.data() + other.data())
+  Series::{
+    name: self.name(),
+    data: self.data() + other.data(),
+    data_type: get_dtype(self.data()),
+    bitmap: self.bitmap + other.bitmap
+  }
 }
 
 ///| SeriesData sub
@@ -272,18 +319,23 @@ pub fn op_sub(self : SeriesData, other : SeriesData) -> SeriesData {
 }
 
 ///| 
-pub fn Series::op_get(self : Series, index : Int) -> DType {
+pub fn Series::op_get(self : Series, index : Int) -> SeriesValue {
   match self.data {
-    SeriesData::Int(data) => DType::Int(data[index])
-    SeriesData::Float(data) => DType::Float(data[index])
-    SeriesData::Bool(data) => DType::Bool(data[index])
-    SeriesData::Str(data) => DType::Str(data[index])
+    SeriesData::Int(data) => SeriesValue::Int(data[index])
+    SeriesData::Float(data) => SeriesValue::Float(data[index])
+    SeriesData::Bool(data) => SeriesValue::Bool(data[index])
+    SeriesData::Str(data) => SeriesValue::Str(data[index])
   }
 }
 
 ///| Series sub
 pub fn Series::op_sub(self : Series, other : Series) -> Series {
-  Series::new(self.name(), self.data() - other.data())
+  Series::{
+    name: self.name(),
+    data: self.data() - other.data(),
+    data_type: get_dtype(self.data()),
+    bitmap: self.bitmap + other.bitmap
+  }
 }
 
 ///| SeriesData mul
@@ -311,7 +363,12 @@ pub fn SeriesData::op_mul(self : SeriesData, other : SeriesData) -> SeriesData {
 
 ///| Series mul
 pub fn Series::op_mul(self : Series, other : Series) -> Series {
-  Series::new(self.name(), self.data() * other.data())
+  Series::{
+    name: self.name(),
+    data: self.data() * other.data(),
+    data_type: get_dtype(self.data()),
+    bitmap: self.bitmap + other.bitmap
+  }
 }
 
 ///| SeriesData div
@@ -339,7 +396,12 @@ pub fn SeriesData::op_div(self : SeriesData, other : SeriesData) -> SeriesData {
 
 ///| Series div
 pub fn Series::op_div(self : Series, other : Series) -> Series {
-  Series::new(self.name(), self.data() / other.data())
+  Series::{
+    name: self.name(),
+    data: self.data() / other.data(),
+    data_type: get_dtype(self.data()),
+    bitmap: self.bitmap + other.bitmap
+  }
 }
 
 ///|
@@ -351,7 +413,12 @@ pub fn merge(self : Series, other : Series) -> Series!InvalidType {
     (SeriesData::Str(a), SeriesData::Str(b)) => SeriesData::Str(a + b)
     _ => raise InvalidType("unsupported types")
   }
-  Series::new(self.name, data)
+  Series::{
+    name: self.name(),
+    data: data,
+    data_type: get_dtype(data),
+    bitmap: self.bitmap + other.bitmap
+  }
 }
 
 ///|
@@ -366,7 +433,12 @@ fn copy(self : SeriesData) -> SeriesData {
 
 ///|
 pub fn Series::copy(self : Series) -> Series {
-  Series::new(self.name(), self.data().copy())
+  Series::{
+    name: self.name(),
+    data: self.data.copy(),
+    data_type: self.data_type,
+    bitmap: self.bitmap
+  }
 }
 
 ///|
@@ -384,31 +456,24 @@ pub fn Series::reverse(self : Series) -> Unit {
   self.data.reverse()
 }
 
-///|
-pub(all) enum BasicType {
-  Int
-  Float
-  Bool
-  Str
-} derive(Eq)
 
 ///|
-fn to_string(self : BasicType) -> String {
+fn to_string(self : DataType) -> String {
   match self {
-    BasicType::Int => "Int"
-    BasicType::Float => "Float"
-    BasicType::Bool => "Bool"
-    BasicType::Str => "Str"
+    DataType::Int32 => "int32"
+    DataType::Float32 => "float32"
+    DataType::Bool => "bool"
+    DataType::String => "string"
   }
 }
 
 ///|
-pub fn get_type(self : Series) -> BasicType {
+pub fn get_type(self : Series) -> DataType {
   match self.data {
-    SeriesData::Int(_) => BasicType::Int
-    SeriesData::Float(_) => BasicType::Float
-    SeriesData::Bool(_) => BasicType::Bool
-    SeriesData::Str(_) => BasicType::Str
+    SeriesData::Int(_) => DataType::Int32
+    SeriesData::Float(_) => DataType::Float32
+    SeriesData::Bool(_) => DataType::Bool
+    SeriesData::Str(_) => DataType::String
   }
 }
 
@@ -432,7 +497,7 @@ pub fn get_type(self : Series) -> BasicType {
 /// let series = Series::new("test", SeriesData::Int([1, 3, 2]))
 /// series.arg_max!()
 /// ```
-pub fn Series::max(self : Series) -> DType!Error {
+pub fn Series::max(self : Series) -> SeriesValue!Error {
   if self.data.empty() {
     raise EmptyArrayError("Cannot find the maximum of an empty array")
   }
@@ -440,7 +505,7 @@ pub fn Series::max(self : Series) -> DType!Error {
     SeriesData::Int(data) =>
       match data {
         _ =>
-          DType::Int(
+          SeriesValue::Int(
             data
             .iter()
             .fold(init=data[0], fn(acc, x) { if x > acc { x } else { acc } }),
@@ -449,7 +514,7 @@ pub fn Series::max(self : Series) -> DType!Error {
     SeriesData::Float(data) =>
       match data {
         _ =>
-          DType::Float(
+          SeriesValue::Float(
             data
             .iter()
             .fold(init=data[0], fn(acc, x) { if x > acc { x } else { acc } }),
@@ -458,7 +523,7 @@ pub fn Series::max(self : Series) -> DType!Error {
     SeriesData::Bool(data) =>
       match data {
         _ =>
-          DType::Bool(
+          SeriesValue::Bool(
             data
             .iter()
             .fold(init=data[0], fn(acc, x) { if x > acc { x } else { acc } }),
@@ -467,7 +532,7 @@ pub fn Series::max(self : Series) -> DType!Error {
     SeriesData::Str(data) =>
       match data {
         _ =>
-          DType::Str(
+          SeriesValue::Str(
             data
             .iter()
             .fold(init=data[0], fn(acc, x) { if x > acc { x } else { acc } }),
@@ -496,7 +561,7 @@ pub fn Series::max(self : Series) -> DType!Error {
 ///   let series = Series::new("test", SeriesData::Int([3, 1, 2]))
 ///   series.arg_min!()
 /// ```
-pub fn Series::min(self : Series) -> DType!Error {
+pub fn Series::min(self : Series) -> SeriesValue!Error {
   if self.data.empty() {
     raise EmptyArrayError("Cannot find the minimum of an empty array")
   }
@@ -504,7 +569,7 @@ pub fn Series::min(self : Series) -> DType!Error {
     SeriesData::Int(data) =>
       match data {
         _ =>
-          DType::Int(
+          SeriesValue::Int(
             data
             .iter()
             .fold(init=data[0], fn(acc, x) { if x < acc { x } else { acc } }),
@@ -513,7 +578,7 @@ pub fn Series::min(self : Series) -> DType!Error {
     SeriesData::Float(data) =>
       match data {
         _ =>
-          DType::Float(
+          SeriesValue::Float(
             data
             .iter()
             .fold(init=data[0], fn(acc, x) { if x < acc { x } else { acc } }),
@@ -522,7 +587,7 @@ pub fn Series::min(self : Series) -> DType!Error {
     SeriesData::Bool(data) =>
       match data {
         _ =>
-          DType::Bool(
+          SeriesValue::Bool(
             data
             .iter()
             .fold(init=data[0], fn(acc, x) { if x < acc { x } else { acc } }),
@@ -531,7 +596,7 @@ pub fn Series::min(self : Series) -> DType!Error {
     SeriesData::Str(data) =>
       match data {
         _ =>
-          DType::Str(
+          SeriesValue::Str(
             data
             .iter()
             .fold(init=data[0], fn(acc, x) { if x < acc { x } else { acc } }),
@@ -548,7 +613,7 @@ pub fn Series::min(self : Series) -> DType!Error {
 ///
 /// ### Returns
 ///
-/// - `DType` : The sum of the Series
+/// - `SeriesValue` : The sum of the Series
 ///
 /// ### Errors
 ///
@@ -558,15 +623,15 @@ pub fn Series::min(self : Series) -> DType!Error {
 /// ```
 /// let sum = series.sum()
 /// ```
-pub fn Series::sum(self : Series) -> DType!InvalidType {
+pub fn Series::sum(self : Series) -> SeriesValue!InvalidType {
   match self.data {
     SeriesData::Int(data) =>
       match data {
-        _ => DType::Int(data.iter().fold(init=0, fn(acc, x) { acc + x }))
+        _ => SeriesValue::Int(data.iter().fold(init=0, fn(acc, x) { acc + x }))
       }
     SeriesData::Float(data) =>
       match data {
-        _ => DType::Float(data.iter().fold(init=0.0, fn(acc, x) { acc + x }))
+        _ => SeriesValue::Float(data.iter().fold(init=0.0, fn(acc, x) { acc + x }))
       }
     _ => raise InvalidType("unsupported type")
   }
@@ -702,4 +767,14 @@ fn SeriesData::max(self : SeriesData, other : SeriesData) -> Unit {
       a.eachi(fn(i, v) { a[i] = @math.maximum(v, b[i].to_float()) })
     _ => abort("unsupported types")
   }
+}
+
+impl Compare for SeriesData with compare(self, other) -> Int {
+    match (self, other) {
+        (SeriesData::Int(a), SeriesData::Int(b)) => a.compare(b)
+        (SeriesData::Float(a), SeriesData::Float(b)) => a.compare(b)
+        (SeriesData::Bool(a), SeriesData::Bool(b)) => a.compare(b)
+        (SeriesData::Str(a), SeriesData::Str(b)) => a.compare(b)
+        _ => abort("unsupported types")
+    }
 }
