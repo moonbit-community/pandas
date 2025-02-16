@@ -1,35 +1,3 @@
-struct BitMap {
-    optional : Bool
-    bitmap : Array[Bool]
-    length : Int
-    offset : Int
-} derive(Show, Eq)
-
-fn BitMap::new(length? : Int) -> BitMap {
-    match length {
-        None => BitMap::{ optional: false, bitmap: [], length: 0, offset: 0 }
-        Some(length) => BitMap::{ optional: false, bitmap: Array::make(length, false), length: length, offset: 0 }
-    }
-}
-
-fn BitMap::op_get(self : BitMap, index : Int) -> Bool {
-    self.bitmap[index]
-}
-
-fn BitMap::slice(self : BitMap, start : Int, length? : Int) -> BitMap {
-    match length {
-        None => {
-            let bitmap = self.bitmap.split_at(start).1
-            BitMap::{ optional: self.optional, bitmap: bitmap, length: self.length - start, offset: self.offset + start }
-        }
-        Some(length) => {
-            let length = @math.minimum(length, self.length - start)
-            let bitmap = self.bitmap.split_at(start).1.split_at(length).0
-            BitMap::{ optional: self.optional, bitmap: bitmap, length: length, offset: self.offset + start }
-        }
-    }
-}
-
 ///|
 pub(all) enum SeriesData {
   Int(Array[Int])
@@ -87,10 +55,49 @@ pub impl Hash for Series with hash_combine(self, hasher) {
 ///
 /// ### Example
 /// ```
-/// let series = Series::new("A", SeriesData::Int([1, 2, 3]))
+/// let series = Series::new("A", SeriesInput::Int32([1, 2, 3]))
 /// ```
-pub fn Series::new(name : String, values : SeriesData) -> Series {
-  Series::{ name: name.to_string(), data: values, data_type: get_dtype(values), bitmap: BitMap::new(length=values.length()) }
+pub fn Series::new(name : String, values : SeriesInput) -> Series {
+  let mut bit_map = emptyBitMap
+  let data = match values {
+    SeriesInput::Int32(data) => SeriesData::Int(data)
+    SeriesInput::Float32(data) => SeriesData::Float(data)
+    SeriesInput::Bool(data) => SeriesData::Bool(data)
+    SeriesInput::Str(data) => SeriesData::Str(data)
+    SeriesInput::Int32_Nullable(data) => {
+      bit_map = BitMap::new(data=data)
+      SeriesData::Int(Array::makei(data.length(), fn(i) { match data[i] { 
+        None => 0
+        Some(x) => x 
+      } }))
+    }
+    SeriesInput::Float32_Nullable(data) => {
+      bit_map = BitMap::new(data=data)
+      SeriesData::Float(Array::makei(data.length(), fn(i) { match data[i] { 
+        None => 0.0
+        Some(x) => x 
+      } }))
+    }
+    SeriesInput::Bool_Nullable(data) => {
+      bit_map = BitMap::new(data=data)
+      SeriesData::Bool(Array::makei(data.length(), fn(i) { match data[i] { 
+        None => false
+        Some(x) => x 
+      } }))
+    }
+    SeriesInput::Str_Nullable(data) => {
+      bit_map = BitMap::new(data=data)
+      SeriesData::Str(Array::makei(data.length(), fn(i) { match data[i] { 
+        None => ""
+        Some(x) => x 
+      } }))
+    }
+  }
+  Series::{ name: name.to_string(), data: data, data_type: get_dtype(data), bitmap: bit_map }
+}
+
+fn Series::new_by_SeriesData(name : String, data : SeriesData) -> Series {
+  Series::{ name: name, data: data, data_type: get_dtype(data), bitmap: emptyBitMap }
 }
 
 fn get_dtype(data : SeriesData) -> DataType {
@@ -280,7 +287,12 @@ pub fn op_add(self : SeriesData, other : SeriesData) -> SeriesData {
 
 ///| Series add
 pub fn Series::op_add(self : Series, other : Series) -> Series {
-  Series::new(self.name(), self.data() + other.data())
+  Series::{
+    name: self.name(),
+    data: self.data() + other.data(),
+    data_type: get_dtype(self.data()),
+    bitmap: self.bitmap + other.bitmap
+  }
 }
 
 ///| SeriesData sub
@@ -318,7 +330,12 @@ pub fn Series::op_get(self : Series, index : Int) -> SeriesValue {
 
 ///| Series sub
 pub fn Series::op_sub(self : Series, other : Series) -> Series {
-  Series::new(self.name(), self.data() - other.data())
+  Series::{
+    name: self.name(),
+    data: self.data() - other.data(),
+    data_type: get_dtype(self.data()),
+    bitmap: self.bitmap + other.bitmap
+  }
 }
 
 ///| SeriesData mul
@@ -346,7 +363,12 @@ pub fn SeriesData::op_mul(self : SeriesData, other : SeriesData) -> SeriesData {
 
 ///| Series mul
 pub fn Series::op_mul(self : Series, other : Series) -> Series {
-  Series::new(self.name(), self.data() * other.data())
+  Series::{
+    name: self.name(),
+    data: self.data() * other.data(),
+    data_type: get_dtype(self.data()),
+    bitmap: self.bitmap + other.bitmap
+  }
 }
 
 ///| SeriesData div
@@ -374,7 +396,12 @@ pub fn SeriesData::op_div(self : SeriesData, other : SeriesData) -> SeriesData {
 
 ///| Series div
 pub fn Series::op_div(self : Series, other : Series) -> Series {
-  Series::new(self.name(), self.data() / other.data())
+  Series::{
+    name: self.name(),
+    data: self.data() / other.data(),
+    data_type: get_dtype(self.data()),
+    bitmap: self.bitmap + other.bitmap
+  }
 }
 
 ///|
@@ -386,7 +413,12 @@ pub fn merge(self : Series, other : Series) -> Series!InvalidType {
     (SeriesData::Str(a), SeriesData::Str(b)) => SeriesData::Str(a + b)
     _ => raise InvalidType("unsupported types")
   }
-  Series::new(self.name, data)
+  Series::{
+    name: self.name(),
+    data: data,
+    data_type: get_dtype(data),
+    bitmap: self.bitmap + other.bitmap
+  }
 }
 
 ///|
@@ -401,7 +433,12 @@ fn copy(self : SeriesData) -> SeriesData {
 
 ///|
 pub fn Series::copy(self : Series) -> Series {
-  Series::new(self.name(), self.data().copy())
+  Series::{
+    name: self.name(),
+    data: self.data.copy(),
+    data_type: self.data_type,
+    bitmap: self.bitmap
+  }
 }
 
 ///|

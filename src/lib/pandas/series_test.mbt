@@ -1,20 +1,20 @@
 ///| Tests
 test "series" {
-  let series = Series::new("test", SeriesData::Int([1, 2, 3, 4, 5]))
+  let series = Series::new("test", SeriesInput::Int32([1, 2, 3, 4, 5]))
   assert_eq!(series.name(), "test")
   assert_eq!(series.data(), SeriesData::Int([1, 2, 3, 4, 5]))
 }
 
 test "argsort_indices" {
-  let series = Series::new("test", SeriesData::Int([2, 1, 3, 5, 4]))
+  let series = Series::new("test", SeriesInput::Int32([2, 1, 3, 5, 4]))
   let indices = series.data.get_argsort_indices()
   inspect!(indices, content="[1, 0, 2, 4, 3]")
-  let series = Series::new("test", SeriesData::Str(["a", "b", "c", "d", "e"]))
+  let series = Series::new("test", SeriesInput::Str(["a", "b", "c", "d", "e"]))
   inspect!(series.data.get_argsort_indices(), content="[0, 1, 2, 3, 4]")
 }
 
 test "argsort" {
-  let series = Series::new("test", SeriesData::Int([2, 1, 3, 5, 4]))
+  let series = Series::new("test", SeriesInput::Int32([2, 1, 3, 5, 4]))
   let indices = series.data.argsort()
   inspect!(indices, content="[1, 0, 2, 4, 3]")
 }
@@ -56,30 +56,30 @@ test "argsort" {
 // }
 
 test "Series::var/int" {
-  let series = Series::new("test", SeriesData::Int([1, 2, 3, 4, 5]))
+  let series = Series::new("test", SeriesInput::Int32([1, 2, 3, 4, 5]))
   inspect!(series.var!(), content="2.5")
 }
 
 test "Series::var/float" {
-  let series = Series::new("test", SeriesData::Float([1.5, 2.0, 3.5, 4.0, 5.5]))
+  let series = Series::new("test", SeriesInput::Float32([1.5, 2.0, 3.5, 4.0, 5.5]))
   series.var!() |> ignore
   // series.var!() |> println
   // 2.575
 }
 
 test "Series::var/ddof" {
-  let series = Series::new("test", SeriesData::Float([1.5, 2.0, 3.5, 4.0, 5.0]))
+  let series = Series::new("test", SeriesInput::Float32([1.5, 2.0, 3.5, 4.0, 5.0]))
   series.var!(ddof=1) |> ignore
   // series.var!(ddof=1) |> println
   // 2.075
 }
 
 test "panic Series::var/invalid_type" {
-  let series = Series::new("test", SeriesData::Str(["a", "b", "c"]))
+  let series = Series::new("test", SeriesInput::Str(["a", "b", "c"]))
   ignore(series.var!())
 }
 
 test "panic Series::var/empty_array" {
-  let series = Series::new("test", SeriesData::Int([]))
+  let series = Series::new("test", SeriesInput::Int32([]))
   ignore(series.var!())
 }

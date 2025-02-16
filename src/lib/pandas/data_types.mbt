@@ -12,3 +12,14 @@ pub(all) enum SeriesValue {
   Bool(Bool)
   Str(String)
 } derive(Show, Eq, Compare)
+
+pub(all) enum SeriesInput {
+  Int32(Array[Int])
+  Float32(Array[Float])
+  Bool(Array[Bool])
+  Str(Array[String])
+  Int32_Nullable(Array[Option[Int]])
+  Float32_Nullable(Array[Option[Float]])
+  Bool_Nullable(Array[Option[Bool]])
+  Str_Nullable(Array[Option[String]])
+}
