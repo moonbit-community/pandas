@@ -316,7 +316,7 @@ test "schema" {
   let schema = df.schema()
   inspect!(
     schema,
-    content="{\"A\": \"Int\", \"B\": \"Float\", \"C\": \"Bool\", \"D\": \"Str\"}",
+    content="{\"A\": \"int32\", \"B\": \"float32\", \"C\": \"bool\", \"D\": \"string\"}",
   )
 }
 
@@ -337,7 +337,7 @@ test "dtypes" {
     Series::new("C", SeriesInput::Bool([true, false, true])),
     Series::new("D", SeriesInput::Str(["a", "b", "c"])),
   ])
-  inspect!(df.dtypes(), content="[\"Int\", \"Float\", \"Bool\", \"Str\"]")
+  inspect!(df.dtypes(), content="[\"int32\", \"float32\", \"bool\", \"string\"]")
 }
 
 test "DataFrame::slice" {

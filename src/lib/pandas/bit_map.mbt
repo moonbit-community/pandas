@@ -27,19 +27,27 @@ fn BitMap::op_add(self : BitMap, other : BitMap) -> BitMap {
 }
 
 fn BitMap::op_get(self : BitMap, index : Int) -> Bool {
+    if self.optional == false {
+        return false
+    }
     self.bitmap[index]
 }
 
 fn BitMap::slice(self : BitMap, start : Int, length? : Int) -> BitMap {
-    match length {
-        None => {
-            let bitmap = self.bitmap.split_at(start).1
-            BitMap::{ optional: self.optional, bitmap: bitmap, length: self.length - start, offset: self.offset + start }
-        }
-        Some(length) => {
-            let length = @math.minimum(length, self.length - start)
-            let bitmap = self.bitmap.split_at(start).1.split_at(length).0
-            BitMap::{ optional: self.optional, bitmap: bitmap, length: length, offset: self.offset + start }
-        }
+  match self.optional {
+    false => emptyBitMap
+    true => {
+      match length {
+          None => {
+              let bitmap = self.bitmap.split_at(start).1
+              BitMap::{ optional: self.optional, bitmap: bitmap, length: self.length - start, offset: self.offset + start }
+          }
+          Some(length) => {
+              let length = @math.minimum(length, self.length - start)
+              let bitmap = self.bitmap.split_at(start).1.split_at(length).0
+              BitMap::{ optional: self.optional, bitmap: bitmap, length: length, offset: self.offset + start }
+          }
+      }
     }
+  }
 }
