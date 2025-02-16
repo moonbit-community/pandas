@@ -1,10 +1,26 @@
-///|
-pub(all) enum DType {
-  Int(Int)
-  Float(Float)
-  Bool(Bool)
-  Str(String)
-} derive(Show, Eq, Compare)
+struct BitMap {
+    optional : Bool
+    bitmap : Array[Bool]
+    length : Int
+    offset : Int
+} derive(Show, Eq)
+
+fn BitMap::new(length? : Int) -> BitMap {
+    match length {
+        None => BitMap::{ optional: false, bitmap: [], length: 0, offset: 0 }
+        Some(length) => BitMap::{ optional: false, bitmap: Array::make(length, false), length: length, offset: 0 }
+    }
+}
+
+fn BitMap::op_get(self : BitMap, index : Int) -> Bool {
+    self.bitmap[index]
+}
+
+fn BitMap::slice(self : BitMap, start : Int, length~ : Int) -> BitMap {
+    let length = @math.minimum(length, self.length - start)
+    let bitmap = self.bitmap.split_at(start).1.split_at(length).0
+    BitMap::{ optional: self.optional, bitmap: bitmap, length: length, offset: self.offset + start }
+}
 
 ///|
 pub(all) enum SeriesData {
@@ -19,6 +35,7 @@ pub(all) struct Series {
   mut name : String
   mut data : SeriesData
   mut data_type : DataType
+  mut bitmap : BitMap
 } derive(Show, Eq)
 
 ///|
@@ -65,7 +82,7 @@ pub impl Hash for Series with hash_combine(self, hasher) {
 /// let series = Series::new("A", SeriesData::Int([1, 2, 3]))
 /// ```
 pub fn Series::new(name : String, values : SeriesData) -> Series {
-  Series::{ name: name.to_string(), data: values, data_type: get_dtype(values) }
+  Series::{ name: name.to_string(), data: values, data_type: get_dtype(values), bitmap: BitMap::new() }
 }
 
 fn get_dtype(data : SeriesData) -> DataType {
