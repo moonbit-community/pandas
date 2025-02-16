@@ -526,28 +526,28 @@ pub fn op_get(self : DataFrame, index : Int) -> DataFrame {
         row.push(Series::{
           name: col.name,
           data: SeriesData::Int([data[index]]),
-          data_type : DataType::Int32,
+          data_type : col.data_type,
           bitmap : col.bitmap.slice(index, length=1) 
         })
       SeriesData::Float(data) =>
         row.push(Series::{
           name: col.name,
           data: SeriesData::Float([data[index]]),
-          data_type : DataType::Float32,
+          data_type : col.data_type,
           bitmap : col.bitmap.slice(index, length=1) 
         })
       SeriesData::Bool(data) =>
         row.push(Series::{
           name: col.name,
           data: SeriesData::Bool([data[index]]),
-          data_type : DataType::Bool,
+          data_type : col.data_type,
           bitmap : col.bitmap.slice(index, length=1) 
         })
       SeriesData::Str(data) =>
         row.push(Series::{
           name: col.name,
           data: SeriesData::Str([data[index]]),
-          data_type : DataType::String,
+          data_type : col.data_type,
           bitmap : col.bitmap.slice(index, length=1) 
         })
     }

@@ -16,10 +16,18 @@ fn BitMap::op_get(self : BitMap, index : Int) -> Bool {
     self.bitmap[index]
 }
 
-fn BitMap::slice(self : BitMap, start : Int, length~ : Int) -> BitMap {
-    let length = @math.minimum(length, self.length - start)
-    let bitmap = self.bitmap.split_at(start).1.split_at(length).0
-    BitMap::{ optional: self.optional, bitmap: bitmap, length: length, offset: self.offset + start }
+fn BitMap::slice(self : BitMap, start : Int, length? : Int) -> BitMap {
+    match length {
+        None => {
+            let bitmap = self.bitmap.split_at(start).1
+            BitMap::{ optional: self.optional, bitmap: bitmap, length: self.length - start, offset: self.offset + start }
+        }
+        Some(length) => {
+            let length = @math.minimum(length, self.length - start)
+            let bitmap = self.bitmap.split_at(start).1.split_at(length).0
+            BitMap::{ optional: self.optional, bitmap: bitmap, length: length, offset: self.offset + start }
+        }
+    }
 }
 
 ///|
@@ -82,7 +90,7 @@ pub impl Hash for Series with hash_combine(self, hasher) {
 /// let series = Series::new("A", SeriesData::Int([1, 2, 3]))
 /// ```
 pub fn Series::new(name : String, values : SeriesData) -> Series {
-  Series::{ name: name.to_string(), data: values, data_type: get_dtype(values), bitmap: BitMap::new() }
+  Series::{ name: name.to_string(), data: values, data_type: get_dtype(values), bitmap: BitMap::new(length=values.length()) }
 }
 
 fn get_dtype(data : SeriesData) -> DataType {
