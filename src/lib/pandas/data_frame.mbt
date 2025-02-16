@@ -353,7 +353,7 @@ pub fn DataFrame::drop_row(self : DataFrame, row_index : Int) -> Unit! {
 /// ### Parameters
 ///
 /// - `self` : An instance of the DataFrame
-/// - `row` : An array of DType representing the new row to be added
+/// - `row` : An array of SeriesValue representing the new row to be added
 ///
 /// ### Return
 ///
@@ -370,9 +370,9 @@ pub fn DataFrame::drop_row(self : DataFrame, row_index : Int) -> Unit! {
 ///   Series::new("A", SeriesData::Int([1, 2, 3])), 
 ///   Series::new("B", SeriesData::Float([1.1, 2.2, 3.3]))
 /// ])
-/// df.add_row([DType::Int(4), DType::Float(4.4)])
+/// df.add_row([SeriesValue::Int(4), SeriesValue::Float(4.4)])
 /// ```
-pub fn DataFrame::add_row(self : DataFrame, row : Array[DType]) -> Unit! {
+pub fn DataFrame::add_row(self : DataFrame, row : Array[SeriesValue]) -> Unit! {
   if row.length() != self.shape()[1] {
     raise InconsistentSeriesLength(
       "Row length does not match DataFrame column length",
@@ -382,22 +382,22 @@ pub fn DataFrame::add_row(self : DataFrame, row : Array[DType]) -> Unit! {
     match self.data[i].data {
       SeriesData::Int(data) =>
         match row[i] {
-          DType::Int(value) => data.push(value)
+          SeriesValue::Int(value) => data.push(value)
           _ => raise InvalidType("Type mismatch")
         }
       SeriesData::Float(data) =>
         match row[i] {
-          DType::Float(value) => data.push(value)
+          SeriesValue::Float(value) => data.push(value)
           _ => raise InvalidType("Type mismatch")
         }
       SeriesData::Bool(data) =>
         match row[i] {
-          DType::Bool(value) => data.push(value)
+          SeriesValue::Bool(value) => data.push(value)
           _ => raise InvalidType("Type mismatch")
         }
       SeriesData::Str(data) =>
         match row[i] {
-          DType::Str(value) => data.push(value)
+          SeriesValue::Str(value) => data.push(value)
           _ => raise InvalidType("Type mismatch")
         }
     }
@@ -562,7 +562,7 @@ pub fn op_get(self : DataFrame, index : Int) -> DataFrame {
 ///
 /// - `self` : An instance of the DataFrame
 /// - `name` : The name of the column to apply the filter on
-/// - `f` : A function that takes a `DType` and returns a `Bool` indicating whether the row should be included
+/// - `f` : A function that takes a `SeriesValue` and returns a `Bool` indicating whether the row should be included
 ///
 /// ### Return
 ///
@@ -571,12 +571,12 @@ pub fn op_get(self : DataFrame, index : Int) -> DataFrame {
 /// ### Example
 /// ```
 /// let df = DataFrame::new([Series::new("A", SeriesData::Int([1, 2, 3, 4, 5, 6]))])
-/// let filtered = df.filter("A", fn(x) -> Bool { x < DType::Int(3) })
+/// let filtered = df.filter("A", fn(x : SeriesValue) -> Bool { x < SeriesValue::Int(3) })
 /// ```
 pub fn DataFrame::filter(
   self : DataFrame,
   name : String,
-  f : (DType) -> Bool
+  f : (SeriesValue) -> Bool
 ) -> DataFrame! {
   match self.index.get(name) {
     Some(index) =>
@@ -584,7 +584,7 @@ pub fn DataFrame::filter(
         SeriesData::Int(data) => {
           let rows = Array::new()
           for i = 0; i < data.length(); i = i + 1 {
-            if f(DType::Int(data[i])) {
+            if f(SeriesValue::Int(data[i])) {
               rows.push(i)
             }
           }
@@ -593,7 +593,7 @@ pub fn DataFrame::filter(
         SeriesData::Float(data) => {
           let rows = Array::new()
           for i = 0; i < data.length(); i = i + 1 {
-            if f(DType::Float(data[i])) {
+            if f(SeriesValue::Float(data[i])) {
               rows.push(i)
             }
           }
@@ -602,7 +602,7 @@ pub fn DataFrame::filter(
         SeriesData::Bool(data) => {
           let rows = Array::new()
           for i = 0; i < data.length(); i = i + 1 {
-            if f(DType::Bool(data[i])) {
+            if f(SeriesValue::Bool(data[i])) {
               rows.push(i)
             }
           }
@@ -611,7 +611,7 @@ pub fn DataFrame::filter(
         SeriesData::Str(data) => {
           let rows = Array::new()
           for i = 0; i < data.length(); i = i + 1 {
-            if f(DType::Str(data[i])) {
+            if f(SeriesValue::Str(data[i])) {
               rows.push(i)
             }
           }
@@ -819,7 +819,7 @@ pub(all) enum ColumnSelector {
 ///  * `ColumnSelector::Int`: A zero-based index of the column
 ///  * `ColumnSelector::Str`: The name of the column
 ///
-/// Returns a `DType` value representing the item at the specified position.
+/// Returns a `SeriesValue` value representing the item at the specified position.
 ///
 /// Throws:
 ///
@@ -841,7 +841,7 @@ pub fn DataFrame::item(
   self : DataFrame,
   row : Int,
   column : ColumnSelector
-) -> DType!Error {
+) -> SeriesValue!Error {
   let col = match column {
     ColumnSelector::Int(value) => value
     ColumnSelector::Str(value) =>
@@ -1265,7 +1265,7 @@ pub fn DataFrame::transpose(
         let col_data = []
         for j = 0; j < self.shape[1]; j = j + 1 {
           match self.data[j][i] {
-            DType::Int(value) => col_data.push(value)
+            SeriesValue::Int(value) => col_data.push(value)
             _ => ()
           }
         }
@@ -1277,7 +1277,7 @@ pub fn DataFrame::transpose(
         let col_data = []
         for j = 0; j < self.shape[1]; j = j + 1 {
           match self.data[j][i] {
-            DType::Float(value) => col_data.push(value)
+            SeriesValue::Float(value) => col_data.push(value)
             _ => ()
           }
         }
@@ -1289,7 +1289,7 @@ pub fn DataFrame::transpose(
         let col_data = []
         for j = 0; j < self.shape[1]; j = j + 1 {
           match self.data[j][i] {
-            DType::Bool(value) => col_data.push(value)
+            SeriesValue::Bool(value) => col_data.push(value)
             _ => ()
           }
         }
@@ -1301,7 +1301,7 @@ pub fn DataFrame::transpose(
         let col_data = []
         for j = 0; j < self.shape[1]; j = j + 1 {
           match self.data[j][i] {
-            DType::Str(value) => col_data.push(value)
+            SeriesValue::Str(value) => col_data.push(value)
             _ => ()
           }
         }
@@ -1346,13 +1346,13 @@ pub fn DataFrame::min(self : DataFrame) -> DataFrame! {
   for series in self.data {
     let min = series.min!()
     match min {
-      DType::Float(value) =>
+      SeriesValue::Float(value) =>
         data.push(Series::new(series.name, SeriesData::Float([value])))
-      DType::Int(value) =>
+      SeriesValue::Int(value) =>
         data.push(Series::new(series.name, SeriesData::Int([value])))
-      DType::Bool(value) =>
+      SeriesValue::Bool(value) =>
         data.push(Series::new(series.name, SeriesData::Bool([value])))
-      DType::Str(value) =>
+      SeriesValue::Str(value) =>
         data.push(Series::new(series.name, SeriesData::Str([value])))
     }
   }
@@ -1416,13 +1416,13 @@ pub fn DataFrame::max(self : DataFrame) -> DataFrame! {
   for series in self.data {
     let max = series.max!()
     match max {
-      DType::Float(value) =>
+      SeriesValue::Float(value) =>
         data.push(Series::new(series.name, SeriesData::Float([value])))
-      DType::Int(value) =>
+      SeriesValue::Int(value) =>
         data.push(Series::new(series.name, SeriesData::Int([value])))
-      DType::Bool(value) =>
+      SeriesValue::Bool(value) =>
         data.push(Series::new(series.name, SeriesData::Bool([value])))
-      DType::Str(value) =>
+      SeriesValue::Str(value) =>
         data.push(Series::new(series.name, SeriesData::Str([value])))
     }
   }
@@ -1490,9 +1490,9 @@ pub fn DataFrame::sum(self : DataFrame) -> DataFrame!InvalidType {
   for series in self.data {
     let sum = series.sum!()
     match sum {
-      DType::Float(value) =>
+      SeriesValue::Float(value) =>
         data.push(Series::new(series.name, SeriesData::Float([value])))
-      DType::Int(value) =>
+      SeriesValue::Int(value) =>
         data.push(Series::new(series.name, SeriesData::Int([value])))
       _ => ()
     }

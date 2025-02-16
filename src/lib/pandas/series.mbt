@@ -307,12 +307,12 @@ pub fn op_sub(self : SeriesData, other : SeriesData) -> SeriesData {
 }
 
 ///| 
-pub fn Series::op_get(self : Series, index : Int) -> DType {
+pub fn Series::op_get(self : Series, index : Int) -> SeriesValue {
   match self.data {
-    SeriesData::Int(data) => DType::Int(data[index])
-    SeriesData::Float(data) => DType::Float(data[index])
-    SeriesData::Bool(data) => DType::Bool(data[index])
-    SeriesData::Str(data) => DType::Str(data[index])
+    SeriesData::Int(data) => SeriesValue::Int(data[index])
+    SeriesData::Float(data) => SeriesValue::Float(data[index])
+    SeriesData::Bool(data) => SeriesValue::Bool(data[index])
+    SeriesData::Str(data) => SeriesValue::Str(data[index])
   }
 }
 
@@ -419,6 +419,7 @@ pub fn Series::reverse(self : Series) -> Unit {
   self.data.reverse()
 }
 
+
 ///|
 fn to_string(self : DataType) -> String {
   match self {
@@ -459,7 +460,7 @@ pub fn get_type(self : Series) -> DataType {
 /// let series = Series::new("test", SeriesData::Int([1, 3, 2]))
 /// series.arg_max!()
 /// ```
-pub fn Series::max(self : Series) -> DType!Error {
+pub fn Series::max(self : Series) -> SeriesValue!Error {
   if self.data.empty() {
     raise EmptyArrayError("Cannot find the maximum of an empty array")
   }
@@ -467,7 +468,7 @@ pub fn Series::max(self : Series) -> DType!Error {
     SeriesData::Int(data) =>
       match data {
         _ =>
-          DType::Int(
+          SeriesValue::Int(
             data
             .iter()
             .fold(init=data[0], fn(acc, x) { if x > acc { x } else { acc } }),
@@ -476,7 +477,7 @@ pub fn Series::max(self : Series) -> DType!Error {
     SeriesData::Float(data) =>
       match data {
         _ =>
-          DType::Float(
+          SeriesValue::Float(
             data
             .iter()
             .fold(init=data[0], fn(acc, x) { if x > acc { x } else { acc } }),
@@ -485,7 +486,7 @@ pub fn Series::max(self : Series) -> DType!Error {
     SeriesData::Bool(data) =>
       match data {
         _ =>
-          DType::Bool(
+          SeriesValue::Bool(
             data
             .iter()
             .fold(init=data[0], fn(acc, x) { if x > acc { x } else { acc } }),
@@ -494,7 +495,7 @@ pub fn Series::max(self : Series) -> DType!Error {
     SeriesData::Str(data) =>
       match data {
         _ =>
-          DType::Str(
+          SeriesValue::Str(
             data
             .iter()
             .fold(init=data[0], fn(acc, x) { if x > acc { x } else { acc } }),
@@ -523,7 +524,7 @@ pub fn Series::max(self : Series) -> DType!Error {
 ///   let series = Series::new("test", SeriesData::Int([3, 1, 2]))
 ///   series.arg_min!()
 /// ```
-pub fn Series::min(self : Series) -> DType!Error {
+pub fn Series::min(self : Series) -> SeriesValue!Error {
   if self.data.empty() {
     raise EmptyArrayError("Cannot find the minimum of an empty array")
   }
@@ -531,7 +532,7 @@ pub fn Series::min(self : Series) -> DType!Error {
     SeriesData::Int(data) =>
       match data {
         _ =>
-          DType::Int(
+          SeriesValue::Int(
             data
             .iter()
             .fold(init=data[0], fn(acc, x) { if x < acc { x } else { acc } }),
@@ -540,7 +541,7 @@ pub fn Series::min(self : Series) -> DType!Error {
     SeriesData::Float(data) =>
       match data {
         _ =>
-          DType::Float(
+          SeriesValue::Float(
             data
             .iter()
             .fold(init=data[0], fn(acc, x) { if x < acc { x } else { acc } }),
@@ -549,7 +550,7 @@ pub fn Series::min(self : Series) -> DType!Error {
     SeriesData::Bool(data) =>
       match data {
         _ =>
-          DType::Bool(
+          SeriesValue::Bool(
             data
             .iter()
             .fold(init=data[0], fn(acc, x) { if x < acc { x } else { acc } }),
@@ -558,7 +559,7 @@ pub fn Series::min(self : Series) -> DType!Error {
     SeriesData::Str(data) =>
       match data {
         _ =>
-          DType::Str(
+          SeriesValue::Str(
             data
             .iter()
             .fold(init=data[0], fn(acc, x) { if x < acc { x } else { acc } }),
@@ -575,7 +576,7 @@ pub fn Series::min(self : Series) -> DType!Error {
 ///
 /// ### Returns
 ///
-/// - `DType` : The sum of the Series
+/// - `SeriesValue` : The sum of the Series
 ///
 /// ### Errors
 ///
@@ -585,15 +586,15 @@ pub fn Series::min(self : Series) -> DType!Error {
 /// ```
 /// let sum = series.sum()
 /// ```
-pub fn Series::sum(self : Series) -> DType!InvalidType {
+pub fn Series::sum(self : Series) -> SeriesValue!InvalidType {
   match self.data {
     SeriesData::Int(data) =>
       match data {
-        _ => DType::Int(data.iter().fold(init=0, fn(acc, x) { acc + x }))
+        _ => SeriesValue::Int(data.iter().fold(init=0, fn(acc, x) { acc + x }))
       }
     SeriesData::Float(data) =>
       match data {
-        _ => DType::Float(data.iter().fold(init=0.0, fn(acc, x) { acc + x }))
+        _ => SeriesValue::Float(data.iter().fold(init=0.0, fn(acc, x) { acc + x }))
       }
     _ => raise InvalidType("unsupported type")
   }

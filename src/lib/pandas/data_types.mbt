@@ -6,7 +6,7 @@ pub(all) enum DataType{
 } derive(Eq, Hash, Show)
 
 ///|
-pub(all) enum DType {
+pub(all) enum SeriesValue {
   Int(Int)
   Float(Float)
   Bool(Bool)

@@ -24,10 +24,10 @@ test "add_drop_rename" {
   inspect!(df.data()[0].name(), content="A1")
   df.drop_row!(0)
   df.add_row!([
-    DType::Int(7),
-    DType::Float(7.5),
-    DType::Bool(true),
-    DType::Str("g"),
+    SeriesValue::Int(7),
+    SeriesValue::Float(7.5),
+    SeriesValue::Bool(true),
+    SeriesValue::Str("g"),
   ])
   inspect!(df.shape(), content="[6, 4]")
 }
@@ -54,7 +54,7 @@ test "filter" {
     Series::new("C", SeriesData::Bool([true, false, true, false, true, false])),
     Series::new("D", SeriesData::Str(["a", "b", "c", "d", "e", "f"])),
   ])
-  let filtered = df.filter!("A", fn(x) -> Bool { x < DType::Int(3) })
+  let filtered = df.filter!("A", fn(x) -> Bool { x < SeriesValue::Int(3) })
   inspect!(filtered.shape(), content="[4, 4]")
 }
 
