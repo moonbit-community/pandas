@@ -139,6 +139,7 @@ pub fn DataFrame::head(self : DataFrame, rows~ : Int = 5) -> Unit {
         SeriesData::Float(vals) => row_str += vals[i].to_string() + "\t"
         SeriesData::Bool(vals) => row_str += vals[i].to_string() + "\t"
         SeriesData::Str(vals) => row_str += vals[i] + "\t"
+
       }
     }
     row_str += "\n"
@@ -1379,8 +1380,8 @@ pub fn DataFrame::min(self : DataFrame) -> DataFrame! {
 pub fn DataFrame::min_horizontal(self : DataFrame) -> Series! {
   for series in self.data {
     match series.get_type() {
-      BasicType::Int => ()
-      BasicType::Float => ()
+      DataType::Int32 => ()
+      DataType::Float32 => ()
       _ => raise InvalidType("Contains unsupported data type")
     }
   }
@@ -1449,8 +1450,8 @@ pub fn DataFrame::max(self : DataFrame) -> DataFrame! {
 pub fn DataFrame::max_horizontal(self : DataFrame) -> Series! {
   for series in self.data {
     match series.get_type() {
-      BasicType::Int => ()
-      BasicType::Float => ()
+      DataType::Int32 => ()
+      DataType::Float32 => ()
       _ => raise InvalidType("Contains unsupported data type")
     }
   }
@@ -1524,8 +1525,8 @@ pub fn DataFrame::sum(self : DataFrame) -> DataFrame!InvalidType {
 pub fn DataFrame::sum_horizontal(self : DataFrame) -> Series! {
   for series in self.data {
     match series.get_type() {
-      BasicType::Int => ()
-      BasicType::Float => ()
+      DataType::Int32 => ()
+      DataType::Float32 => ()
       _ => raise InvalidType("Contains unsupported data type")
     }
   }

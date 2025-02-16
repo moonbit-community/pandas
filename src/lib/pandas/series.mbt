@@ -420,30 +420,22 @@ pub fn Series::reverse(self : Series) -> Unit {
 }
 
 ///|
-pub(all) enum BasicType {
-  Int
-  Float
-  Bool
-  Str
-} derive(Eq)
-
-///|
-fn to_string(self : BasicType) -> String {
+fn to_string(self : DataType) -> String {
   match self {
-    BasicType::Int => "Int"
-    BasicType::Float => "Float"
-    BasicType::Bool => "Bool"
-    BasicType::Str => "Str"
+    DataType::Int32 => "int32"
+    DataType::Float32 => "float32"
+    DataType::Bool => "bool"
+    DataType::String => "string"
   }
 }
 
 ///|
-pub fn get_type(self : Series) -> BasicType {
+pub fn get_type(self : Series) -> DataType {
   match self.data {
-    SeriesData::Int(_) => BasicType::Int
-    SeriesData::Float(_) => BasicType::Float
-    SeriesData::Bool(_) => BasicType::Bool
-    SeriesData::Str(_) => BasicType::Str
+    SeriesData::Int(_) => DataType::Int32
+    SeriesData::Float(_) => DataType::Float32
+    SeriesData::Bool(_) => DataType::Bool
+    SeriesData::Str(_) => DataType::String
   }
 }
 
