@@ -12,6 +12,7 @@ pub(all) enum SeriesValue {
   Float(Float)
   Bool(Bool)
   Str(String)
+  Null
 } derive(Show, Eq, Compare)
 
 ///|

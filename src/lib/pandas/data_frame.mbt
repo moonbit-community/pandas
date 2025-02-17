@@ -1282,7 +1282,7 @@ pub fn DataFrame::transpose(
     }
     false => ()
   }
-  match self.data[0][0] {
+  match self.data[0].data {
     Int(_) =>
       for i = 0; i < self.shape[0]; i = i + 1 {
         let col_data = []

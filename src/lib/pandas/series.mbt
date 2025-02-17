@@ -815,3 +815,142 @@ impl Compare for SeriesData with compare(self, other) -> Int {
     _ => abort("unsupported types")
   }
 }
+
+///| Check if all elements in the Series are true
+///
+/// Parameters
+///
+/// - `self` : An instance of the Series
+///
+/// Returns
+///
+/// - `Bool` : True if all elements are true, otherwise false
+///
+/// Errors
+///
+/// - `InvalidType` : Raised if the Series data type is not Bool
+///
+/// Example
+/// ```
+/// test {
+///   let series = Series::new("test", SeriesData::Bool([true, true, true]))
+///   let result = series.all()
+///   assert_eq!(result, true)
+/// }
+/// ```
+pub fn Series::all(self: Series) -> Bool!InvalidType {
+  match self.data {
+    SeriesData::Bool(data) => {
+      match self.bitmap.optional {
+        false => data.iter().all(fn(x) { x })
+        true => data.foldi(init=true, fn(i, acc, x) {
+          match self.bitmap[i] {
+            true => acc && x
+            false => acc
+          }
+        })
+      }
+    }
+    _ => raise InvalidType("unsupported type")
+  }
+}
+
+test "Series::all"{
+  let series = Series::new("test", SeriesInput::Bool([true, false, true]))
+  inspect!(series.all!(), content="false")
+  let series = Series::new("test", SeriesInput::Bool([true, true, true]))
+  inspect!(series.all!(), content="true")
+}
+
+///| Check if any element in the Series is true
+///
+/// Parameters
+///
+/// - `self` : An instance of the Series
+///
+/// Returns
+///
+/// - `Bool` : True if any element is true, otherwise false
+///
+/// Errors
+///
+/// - `InvalidType` : Raised if the Series data type is not Bool
+///
+/// Example
+/// ```moonbit
+/// let series = Series::new("test", SeriesData::Bool([true, false, true]))
+/// inspect!(series.any!(), content="true")
+/// let series = Series::new("test", SeriesData::Bool([false, false, false]))
+/// inspect!(series.any!(), content="false")
+/// ```
+pub fn Series::any(self : Series) -> Bool!InvalidType {
+  match self.data {
+    SeriesData::Bool(data) => {
+      // data.iter().any(fn(x) { x })
+      match self.bitmap.optional {
+        false => data.iter().any(fn(x) { x })
+        true => data.foldi(init=false, fn(i, acc, x) {
+          match self.bitmap[i] {
+            true => acc || x
+            false => acc
+          }
+        })
+      }
+    }
+    _ => raise InvalidType("unsupported type")
+  }
+}
+
+test "Series::any"{
+  let series = Series::new("test", SeriesInput::Bool([true, false, true]))
+  inspect!(series.any!(), content="true")
+  let series = Series::new("test", SeriesInput::Bool([false, false, false]))
+  inspect!(series.any!(), content="false")
+}
+
+///| Negate all boolean values in the Series
+///
+/// Parameters
+///
+/// - `self` : An instance of the Series
+///
+/// Returns
+///
+/// - `Series` : A new Series with all boolean values negated
+///
+/// Example
+/// ```moonbit
+/// let series = Series::new("test", SeriesData::Bool([true, false, true]))
+/// inspect!(series.not_().data.to_string(), content="Bool([false, true, false])")
+/// let series = Series::new("test", SeriesData::Bool([true, false, true]))
+/// inspect!(series.not_().data.to_string(), content="Bool([false, true, false])")
+/// ```
+pub fn Series::not_(self: Series) -> Series {
+  match self.data {
+    SeriesData::Bool(data) => {
+      // bitmap will not change
+      // Series::new_by_SeriesData(self.name(), SeriesData::Bool(data.map(fn(x) { not(x) })))
+      match self.bitmap.optional {
+        false => {
+          Series::new_by_SeriesData(self.name(), SeriesData::Bool(data.map(fn(x) { not(x) })))
+        }
+        true => {
+          Series::new_by_SeriesData(self.name(), SeriesData::Bool(data.mapi(fn(i, x) {
+            match self.bitmap[i] {
+              true => x
+              false => not(x)
+            }
+          })))
+        }
+      } 
+    }
+    _ => abort("unsupported type")
+  }
+}
+
+test "Series::not_"{
+  let series = Series::new("test", SeriesInput::Bool([true, false, true]))
+  inspect!(series.not_().data.to_string(), content="Bool([false, true, false])")
+  let series = Series::new("test", SeriesInput::Bool([true, false, true]))
+  inspect!(series.not_().data.to_string(), content="Bool([false, true, false])")  
+}
