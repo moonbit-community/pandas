@@ -1660,3 +1660,175 @@ pub fn DataFrame::product(self : DataFrame) -> DataFrame {
 pub fn DataFrame::dtypes(self : DataFrame) -> Array[String] {
   self.data.map(fn(series) { series.get_type().to_string() })
 }
+
+fn DataFrame::type_check_all(self : DataFrame, data_type : DataType) -> Bool {
+  for series in self.data {
+    if series.get_type() != data_type {
+      return false
+    }
+  }
+  true
+}
+
+///| Check if each column in the DataFrame has null values
+///
+/// Parameters
+///
+/// - `self` : An instance of the DataFrame
+///
+/// Returns
+///
+/// - `DataFrame` : A new DataFrame with a single row indicating if each column has null values
+///
+/// Example
+/// ```moonbit
+/// let df = DataFrame::new!([
+///   Series::new("A", SeriesInput::Bool([true, true, true])),
+///   Series::new("B", SeriesInput::Bool([true, false, true])),
+/// ])
+/// inspect!(df.all!().data[0][0], content="Bool(true)")
+/// inspect!(df.all!().data[1][0], content="Bool(false)")
+/// ```
+pub fn DataFrame::all(self : DataFrame, ignore_nulls~ : Bool = true) -> DataFrame! {
+  guard self.type_check_all(DataType::Bool) else {
+    raise InvalidType("All columns must be of type Bool")
+  }
+  match ignore_nulls {
+    true => {
+      let data = []
+      for i = 0; i < self.shape[1]; i = i + 1 {
+        data.push(Series::new(self.data[i].name, SeriesInput::Bool([self.data[i].all!()])))
+      }
+      DataFrame::new!(data)
+    }
+    false => {
+      let data = []
+      for i = 0; i < self.shape[1]; i = i + 1 {
+        if self.data[i].has_null() {
+          data.push(Series::new(self.data[i].name, SeriesInput::Bool_Nullable([None])))
+        } else {
+          data.push(Series::new(self.data[i].name, SeriesInput::Bool_Nullable([Some(self.data[i].all!())])))
+        }
+      }
+      DataFrame::new!(data)
+    }
+  }
+}
+
+test "DataFrame::all" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesInput::Bool([true, true, true])),
+    Series::new("B", SeriesInput::Bool([true, false, true])),
+  ])
+  inspect!(df.all!().data[0][0], content="Bool(true)")
+  inspect!(df.all!().data[1][0], content="Bool(false)")
+}
+
+///| Check if any element in each column of the DataFrame is true
+///
+/// Parameters
+///
+/// - `self` : An instance of the DataFrame
+/// - `ignore_nulls` : Whether to ignore null values (default is true)
+///
+/// Returns
+///
+/// - `DataFrame` : A new DataFrame with a single row indicating if any element in each column is true
+///
+/// Errors
+///
+/// - `InvalidType` : Raised if any column is not of type Bool
+///
+/// Example
+/// ```moonbit
+/// let df = DataFrame::new!([
+///   Series::new("A", SeriesInput::Bool([true, true, true])),
+///   Series::new("B", SeriesInput::Bool([true, false, true])),
+/// ])
+/// inspect!(df.any!().data[0][0], content="Bool(true)")
+/// inspect!(df.any!().data[1][0], content="Bool(true)")
+/// ```
+pub fn DataFrame::any(self : DataFrame, ignore_nulls~ : Bool = true) -> DataFrame! {
+  guard self.type_check_all(DataType::Bool) else {
+    raise InvalidType("All columns must be of type Bool")
+  }
+  match ignore_nulls {
+    true => {
+      let data = []
+      for i = 0; i < self.shape[1]; i = i + 1 {
+        data.push(Series::new(self.data[i].name, SeriesInput::Bool([self.data[i].any!()])))
+      }
+      DataFrame::new!(data)
+    }
+    false => {
+      let data = []
+      for i = 0; i < self.shape[1]; i = i + 1 {
+        if self.data[i].has_null() {
+          data.push(Series::new(self.data[i].name, SeriesInput::Bool_Nullable([None])))
+        } else {
+          data.push(Series::new(self.data[i].name, SeriesInput::Bool_Nullable([Some(self.data[i].any!())])))
+        }
+      }
+      DataFrame::new!(data)
+    }
+  }
+}
+
+test "DataFrame::any" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesInput::Bool([true, true, true])),
+    Series::new("B", SeriesInput::Bool([true, false, true])),
+  ])
+  inspect!(df.any!().data[0][0], content="Bool(true)")
+  inspect!(df.any!().data[1][0], content="Bool(true)")
+}
+
+///| Check if each column in the DataFrame has null values
+///
+/// Parameters
+///
+/// - `self` : An instance of the DataFrame
+///
+/// Returns
+///
+/// - `DataFrame` : A new DataFrame with a single row indicating if each column has null values
+///
+/// Example
+/// ```moonbit
+/// let df = DataFrame::new!([
+///   Series::new("A", SeriesInput::Int32([1, 2, 3])),
+/// ])
+/// inspect!(df.has_nulls().data[0][0], content="Bool(false)")
+/// let df = DataFrame::new!([
+///   Series::new("A", SeriesInput::Int32_Nullable([Some(1), None, Some(3)])),
+/// ])
+/// inspect!(df.has_nulls().data[0][0], content="Bool(true)")
+/// ```
+pub fn DataFrame::has_nulls(self : DataFrame) -> DataFrame {
+  let data = []
+  for serie in self.data {
+    let has_null = match serie.bitmap.optional {
+      false => false
+      true => serie.bitmap.has_nulls()
+    }
+    data.push(Series::new(serie.name, SeriesInput::Bool([has_null])))
+  }
+  DataFrame::{
+    data: data,
+    shape: [1, self.shape[1]],
+    index: self.index,
+  }
+}
+
+test "DataFrame::has_nulls" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesInput::Int32([1, 2, 3])),
+    Series::new("B", SeriesInput::Int32([1, 2, 3])),
+  ])
+  inspect!(df.has_nulls().data[0][0], content="Bool(false)")
+  let df = DataFrame::new!([
+    Series::new("A", SeriesInput::Int32_Nullable([Some(1), None, Some(3)])),
+    Series::new("B", SeriesInput::Int32([1, 2, 3])),
+  ])
+  inspect!(df.has_nulls().data[0][0], content="Bool(true)")
+}

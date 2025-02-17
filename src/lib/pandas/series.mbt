@@ -954,3 +954,10 @@ test "Series::not_"{
   let series = Series::new("test", SeriesInput::Bool([true, false, true]))
   inspect!(series.not_().data.to_string(), content="Bool([false, true, false])")  
 }
+
+pub fn Series::has_null(self : Series) -> Bool {
+  match self.bitmap.optional {
+    false => false
+    true => self.bitmap.bitmap.iter().any(fn(x) { x })
+  }
+}
