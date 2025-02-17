@@ -79,6 +79,7 @@ fn BitMap::slice(self : BitMap, start : Int, length? : Int) -> BitMap {
   }
 }
 
+///|
 fn BitMap::has_nulls(self : BitMap) -> Bool {
   match self.optional {
     false => false

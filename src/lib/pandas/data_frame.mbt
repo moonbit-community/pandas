@@ -1661,6 +1661,7 @@ pub fn DataFrame::dtypes(self : DataFrame) -> Array[String] {
   self.data.map(fn(series) { series.get_type().to_string() })
 }
 
+///|
 fn DataFrame::type_check_all(self : DataFrame, data_type : DataType) -> Bool {
   for series in self.data {
     if series.get_type() != data_type {
@@ -1689,7 +1690,10 @@ fn DataFrame::type_check_all(self : DataFrame, data_type : DataType) -> Bool {
 /// inspect!(df.all!().data[0][0], content="Bool(true)")
 /// inspect!(df.all!().data[1][0], content="Bool(false)")
 /// ```
-pub fn DataFrame::all(self : DataFrame, ignore_nulls~ : Bool = true) -> DataFrame! {
+pub fn DataFrame::all(
+  self : DataFrame,
+  ignore_nulls~ : Bool = true
+) -> DataFrame! {
   guard self.type_check_all(DataType::Bool) else {
     raise InvalidType("All columns must be of type Bool")
   }
@@ -1697,7 +1701,12 @@ pub fn DataFrame::all(self : DataFrame, ignore_nulls~ : Bool = true) -> DataFram
     true => {
       let data = []
       for i = 0; i < self.shape[1]; i = i + 1 {
-        data.push(Series::new(self.data[i].name, SeriesInput::Bool([self.data[i].all!()])))
+        data.push(
+          Series::new(
+            self.data[i].name,
+            SeriesInput::Bool([self.data[i].all!()]),
+          ),
+        )
       }
       DataFrame::new!(data)
     }
@@ -1705,9 +1714,16 @@ pub fn DataFrame::all(self : DataFrame, ignore_nulls~ : Bool = true) -> DataFram
       let data = []
       for i = 0; i < self.shape[1]; i = i + 1 {
         if self.data[i].has_null() {
-          data.push(Series::new(self.data[i].name, SeriesInput::Bool_Nullable([None])))
+          data.push(
+            Series::new(self.data[i].name, SeriesInput::Bool_Nullable([None])),
+          )
         } else {
-          data.push(Series::new(self.data[i].name, SeriesInput::Bool_Nullable([Some(self.data[i].all!())])))
+          data.push(
+            Series::new(
+              self.data[i].name,
+              SeriesInput::Bool_Nullable([Some(self.data[i].all!())]),
+            ),
+          )
         }
       }
       DataFrame::new!(data)
@@ -1748,7 +1764,10 @@ test "DataFrame::all" {
 /// inspect!(df.any!().data[0][0], content="Bool(true)")
 /// inspect!(df.any!().data[1][0], content="Bool(true)")
 /// ```
-pub fn DataFrame::any(self : DataFrame, ignore_nulls~ : Bool = true) -> DataFrame! {
+pub fn DataFrame::any(
+  self : DataFrame,
+  ignore_nulls~ : Bool = true
+) -> DataFrame! {
   guard self.type_check_all(DataType::Bool) else {
     raise InvalidType("All columns must be of type Bool")
   }
@@ -1756,7 +1775,12 @@ pub fn DataFrame::any(self : DataFrame, ignore_nulls~ : Bool = true) -> DataFram
     true => {
       let data = []
       for i = 0; i < self.shape[1]; i = i + 1 {
-        data.push(Series::new(self.data[i].name, SeriesInput::Bool([self.data[i].any!()])))
+        data.push(
+          Series::new(
+            self.data[i].name,
+            SeriesInput::Bool([self.data[i].any!()]),
+          ),
+        )
       }
       DataFrame::new!(data)
     }
@@ -1764,9 +1788,16 @@ pub fn DataFrame::any(self : DataFrame, ignore_nulls~ : Bool = true) -> DataFram
       let data = []
       for i = 0; i < self.shape[1]; i = i + 1 {
         if self.data[i].has_null() {
-          data.push(Series::new(self.data[i].name, SeriesInput::Bool_Nullable([None])))
+          data.push(
+            Series::new(self.data[i].name, SeriesInput::Bool_Nullable([None])),
+          )
         } else {
-          data.push(Series::new(self.data[i].name, SeriesInput::Bool_Nullable([Some(self.data[i].any!())])))
+          data.push(
+            Series::new(
+              self.data[i].name,
+              SeriesInput::Bool_Nullable([Some(self.data[i].any!())]),
+            ),
+          )
         }
       }
       DataFrame::new!(data)
@@ -1813,11 +1844,7 @@ pub fn DataFrame::has_nulls(self : DataFrame) -> DataFrame {
     }
     data.push(Series::new(serie.name, SeriesInput::Bool([has_null])))
   }
-  DataFrame::{
-    data: data,
-    shape: [1, self.shape[1]],
-    index: self.index,
-  }
+  DataFrame::{ data, shape: [1, self.shape[1]], index: self.index }
 }
 
 test "DataFrame::has_nulls" {

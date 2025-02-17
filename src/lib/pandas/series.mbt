@@ -121,7 +121,13 @@ pub fn Series::new(name : String, values : SeriesInput) -> Series {
 
 ///|
 fn Series::new_by_SeriesData(name : String, data : SeriesData) -> Series {
-  Series::{ name, data, data_type: get_dtype(data), bitmap: emptyBitMap, length: data.length() }
+  Series::{
+    name,
+    data,
+    data_type: get_dtype(data),
+    bitmap: emptyBitMap,
+    length: data.length(),
+  }
 }
 
 ///|
@@ -144,6 +150,7 @@ fn SeriesData::length(self : SeriesData) -> Int {
   }
 }
 
+///|
 pub fn Series::length(self : Series) -> Int {
   self.length()
 }
@@ -838,24 +845,24 @@ impl Compare for SeriesData with compare(self, other) -> Int {
 ///   assert_eq!(result, true)
 /// }
 /// ```
-pub fn Series::all(self: Series) -> Bool!InvalidType {
+pub fn Series::all(self : Series) -> Bool!InvalidType {
   match self.data {
-    SeriesData::Bool(data) => {
+    SeriesData::Bool(data) =>
       match self.bitmap.optional {
         false => data.iter().all(fn(x) { x })
-        true => data.foldi(init=true, fn(i, acc, x) {
-          match self.bitmap[i] {
-            true => acc && x
-            false => acc
-          }
-        })
+        true =>
+          data.foldi(init=true, fn(i, acc, x) {
+            match self.bitmap[i] {
+              true => acc && x
+              false => acc
+            }
+          })
       }
-    }
     _ => raise InvalidType("unsupported type")
   }
 }
 
-test "Series::all"{
+test "Series::all" {
   let series = Series::new("test", SeriesInput::Bool([true, false, true]))
   inspect!(series.all!(), content="false")
   let series = Series::new("test", SeriesInput::Bool([true, true, true]))
@@ -885,23 +892,23 @@ test "Series::all"{
 /// ```
 pub fn Series::any(self : Series) -> Bool!InvalidType {
   match self.data {
-    SeriesData::Bool(data) => {
+    SeriesData::Bool(data) =>
       // data.iter().any(fn(x) { x })
       match self.bitmap.optional {
         false => data.iter().any(fn(x) { x })
-        true => data.foldi(init=false, fn(i, acc, x) {
-          match self.bitmap[i] {
-            true => acc || x
-            false => acc
-          }
-        })
+        true =>
+          data.foldi(init=false, fn(i, acc, x) {
+            match self.bitmap[i] {
+              true => acc || x
+              false => acc
+            }
+          })
       }
-    }
     _ => raise InvalidType("unsupported type")
   }
 }
 
-test "Series::any"{
+test "Series::any" {
   let series = Series::new("test", SeriesInput::Bool([true, false, true]))
   inspect!(series.any!(), content="true")
   let series = Series::new("test", SeriesInput::Bool([false, false, false]))
@@ -925,36 +932,42 @@ test "Series::any"{
 /// let series = Series::new("test", SeriesData::Bool([true, false, true]))
 /// inspect!(series.not_().data.to_string(), content="Bool([false, true, false])")
 /// ```
-pub fn Series::not_(self: Series) -> Series {
+pub fn Series::not_(self : Series) -> Series {
   match self.data {
-    SeriesData::Bool(data) => {
+    SeriesData::Bool(data) =>
       // bitmap will not change
       // Series::new_by_SeriesData(self.name(), SeriesData::Bool(data.map(fn(x) { not(x) })))
       match self.bitmap.optional {
-        false => {
-          Series::new_by_SeriesData(self.name(), SeriesData::Bool(data.map(fn(x) { not(x) })))
-        }
-        true => {
-          Series::new_by_SeriesData(self.name(), SeriesData::Bool(data.mapi(fn(i, x) {
-            match self.bitmap[i] {
-              true => x
-              false => not(x)
-            }
-          })))
-        }
-      } 
-    }
+        false =>
+          Series::new_by_SeriesData(
+            self.name(),
+            SeriesData::Bool(data.map(fn(x) { not(x) })),
+          )
+        true =>
+          Series::new_by_SeriesData(
+            self.name(),
+            SeriesData::Bool(
+              data.mapi(fn(i, x) {
+                match self.bitmap[i] {
+                  true => x
+                  false => not(x)
+                }
+              }),
+            ),
+          )
+      }
     _ => abort("unsupported type")
   }
 }
 
-test "Series::not_"{
+test "Series::not_" {
   let series = Series::new("test", SeriesInput::Bool([true, false, true]))
   inspect!(series.not_().data.to_string(), content="Bool([false, true, false])")
   let series = Series::new("test", SeriesInput::Bool([true, false, true]))
-  inspect!(series.not_().data.to_string(), content="Bool([false, true, false])")  
+  inspect!(series.not_().data.to_string(), content="Bool([false, true, false])")
 }
 
+///|
 pub fn Series::has_null(self : Series) -> Bool {
   match self.bitmap.optional {
     false => false
