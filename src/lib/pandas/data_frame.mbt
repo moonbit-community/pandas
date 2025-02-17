@@ -540,6 +540,7 @@ pub fn op_get(self : DataFrame, index : Int) -> DataFrame {
           data: SeriesData::Int([data[index]]),
           data_type: col.data_type,
           bitmap: col.bitmap.slice(index, length=1),
+          length: 1,
         })
       SeriesData::Float(data) =>
         row.push(Series::{
@@ -547,6 +548,7 @@ pub fn op_get(self : DataFrame, index : Int) -> DataFrame {
           data: SeriesData::Float([data[index]]),
           data_type: col.data_type,
           bitmap: col.bitmap.slice(index, length=1),
+          length: 1,
         })
       SeriesData::Bool(data) =>
         row.push(Series::{
@@ -554,6 +556,7 @@ pub fn op_get(self : DataFrame, index : Int) -> DataFrame {
           data: SeriesData::Bool([data[index]]),
           data_type: col.data_type,
           bitmap: col.bitmap.slice(index, length=1),
+          length: 1,
         })
       SeriesData::Str(data) =>
         row.push(Series::{
@@ -561,6 +564,7 @@ pub fn op_get(self : DataFrame, index : Int) -> DataFrame {
           data: SeriesData::Str([data[index]]),
           data_type: col.data_type,
           bitmap: col.bitmap.slice(index, length=1),
+          length: 1,
         })
     }
   }
@@ -1425,6 +1429,7 @@ pub fn DataFrame::min_horizontal(self : DataFrame) -> Series! {
     data: SeriesData::Float(Array::make(self.shape[0], @float.max_value)),
     data_type: DataType::Float32,
     bitmap: emptyBitMap,
+    length: self.shape[0],
   }
   for series in self.data {
     data.data.min(series.data)
@@ -1503,6 +1508,7 @@ pub fn DataFrame::max_horizontal(self : DataFrame) -> Series! {
     data: SeriesData::Float(Array::make(self.shape[0], @float.min_value)),
     data_type: DataType::Float32,
     bitmap: emptyBitMap,
+    length: self.shape[0],
   }
   for series in self.data {
     data.data.max(series.data)
@@ -1582,6 +1588,7 @@ pub fn DataFrame::sum_horizontal(self : DataFrame) -> Series! {
     data: SeriesData::Float(Array::make(self.shape[0], (0.0 : Float))),
     data_type: DataType::Float32,
     bitmap: emptyBitMap,
+    length: self.shape[0],
   }
   for series in self.data {
     data += series

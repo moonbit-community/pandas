@@ -12,10 +12,11 @@ pub(all) struct Series {
   mut data : SeriesData
   mut data_type : DataType
   mut bitmap : BitMap
+  mut length : Int
 } derive(Show, Eq)
 
 ///|
-pub impl Hash for SeriesData with hash_combine(self, hasher) {
+impl Hash for SeriesData with hash_combine(self, hasher) {
   match self {
     SeriesData::Int(data) =>
       for value in data {
@@ -114,12 +115,13 @@ pub fn Series::new(name : String, values : SeriesInput) -> Series {
     data,
     data_type: get_dtype(data),
     bitmap: bit_map,
+    length: data.length(),
   }
 }
 
 ///|
 fn Series::new_by_SeriesData(name : String, data : SeriesData) -> Series {
-  Series::{ name, data, data_type: get_dtype(data), bitmap: emptyBitMap }
+  Series::{ name, data, data_type: get_dtype(data), bitmap: emptyBitMap, length: data.length() }
 }
 
 ///|
@@ -133,13 +135,17 @@ fn get_dtype(data : SeriesData) -> DataType {
 }
 
 ///| Get the length of the SeriesData
-pub fn SeriesData::length(self : SeriesData) -> Int {
+fn SeriesData::length(self : SeriesData) -> Int {
   match self {
     SeriesData::Int(data) => data.length()
     SeriesData::Float(data) => data.length()
     SeriesData::Bool(data) => data.length()
     SeriesData::Str(data) => data.length()
   }
+}
+
+pub fn Series::length(self : Series) -> Int {
+  self.length()
 }
 
 ///| SeriesData clear
@@ -191,14 +197,15 @@ pub fn SeriesData::erase(
 }
 
 ///| Sort the SeriesData
-pub fn SeriesData::sort(self : SeriesData) -> Unit {
-  match self {
-    SeriesData::Int(data) => data.sort()
-    SeriesData::Float(data) => data.sort()
-    SeriesData::Bool(data) => data.sort()
-    SeriesData::Str(data) => data.sort()
-  }
-}
+/// cause when build Series use SeriesInput instead of SeriesData, SeriesData become to inner type
+// pub fn SeriesData::sort(self : SeriesData) -> Unit {
+//   match self {
+//     SeriesData::Int(data) => data.sort()
+//     SeriesData::Float(data) => data.sort()
+//     SeriesData::Bool(data) => data.sort()
+//     SeriesData::Str(data) => data.sort()
+//   }
+// }
 
 ///| get the indices of the sorted elements
 pub fn SeriesData::get_argsort_indices(
@@ -285,7 +292,7 @@ pub fn Series::data(self : Series) -> SeriesData {
 
 // type! TypeError String derive(Show)
 ///| SeriesData add
-pub fn op_add(self : SeriesData, other : SeriesData) -> SeriesData {
+fn op_add(self : SeriesData, other : SeriesData) -> SeriesData {
   match (self, other) {
     (SeriesData::Int(a), SeriesData::Int(b)) => {
       let res = a.copy()
@@ -315,6 +322,7 @@ pub fn Series::op_add(self : Series, other : Series) -> Series {
     data: self.data() + other.data(),
     data_type: get_dtype(self.data()),
     bitmap: self.bitmap + other.bitmap,
+    length: self.length(),
   }
 }
 
@@ -358,6 +366,7 @@ pub fn Series::op_sub(self : Series, other : Series) -> Series {
     data: self.data() - other.data(),
     data_type: get_dtype(self.data()),
     bitmap: self.bitmap + other.bitmap,
+    length: self.length(),
   }
 }
 
@@ -391,6 +400,7 @@ pub fn Series::op_mul(self : Series, other : Series) -> Series {
     data: self.data() * other.data(),
     data_type: get_dtype(self.data()),
     bitmap: self.bitmap + other.bitmap,
+    length: self.length(),
   }
 }
 
@@ -424,6 +434,7 @@ pub fn Series::op_div(self : Series, other : Series) -> Series {
     data: self.data() / other.data(),
     data_type: get_dtype(self.data()),
     bitmap: self.bitmap + other.bitmap,
+    length: self.length(),
   }
 }
 
@@ -441,6 +452,7 @@ pub fn merge(self : Series, other : Series) -> Series!InvalidType {
     data,
     data_type: get_dtype(data),
     bitmap: self.bitmap + other.bitmap,
+    length: self.length() + other.length(),
   }
 }
 
@@ -461,6 +473,7 @@ pub fn Series::copy(self : Series) -> Series {
     data: self.data.copy(),
     data_type: self.data_type,
     bitmap: self.bitmap,
+    length: self.length(),
   }
 }
 
