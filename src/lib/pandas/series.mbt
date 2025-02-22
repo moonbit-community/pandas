@@ -193,10 +193,7 @@ fn SeriesData::empty(self : SeriesData) -> Bool {
 /// ```
 /// data.erase(1)
 /// ```
-fn SeriesData::erase(
-  self : SeriesData,
-  index : Int
-) -> Unit!EmptyArrayError {
+fn SeriesData::erase(self : SeriesData, index : Int) -> Unit!EmptyArrayError {
   if self.empty() {
     raise EmptyArrayError("Cannot erase from an empty array")
   }
@@ -245,7 +242,8 @@ fn SeriesData::sort(self : SeriesData) -> Unit {
   }
 }
 
-fn SeriesData::op_get(self: SeriesData, index: Int) -> SeriesValue {
+///|
+fn SeriesData::op_get(self : SeriesData, index : Int) -> SeriesValue {
   match self {
     SeriesData::Int(data) => SeriesValue::Int(data[index])
     SeriesData::Float(data) => SeriesValue::Float(data[index])
@@ -254,7 +252,12 @@ fn SeriesData::op_get(self: SeriesData, index: Int) -> SeriesValue {
   }
 }
 
-fn SeriesData::op_set(self: SeriesData, index: Int, value: SeriesValue) -> Unit {
+///|
+fn SeriesData::op_set(
+  self : SeriesData,
+  index : Int,
+  value : SeriesValue
+) -> Unit {
   match (self, value) {
     (SeriesData::Int(data), SeriesValue::Int(v)) => data[index] = v
     (SeriesData::Float(data), SeriesValue::Float(v)) => data[index] = v
@@ -264,13 +267,18 @@ fn SeriesData::op_set(self: SeriesData, index: Int, value: SeriesValue) -> Unit 
   }
 }
 
+///|
 fn SeriesData::swap(self : SeriesData, i : Int, j : Int) -> Unit {
   let tmp = self[i]
   self[i] = self[j]
   self[j] = tmp
 }
 
-fn SeriesData::split_at(self : SeriesData, index : Int) -> (SeriesData, SeriesData) {
+///|
+fn SeriesData::split_at(
+  self : SeriesData,
+  index : Int
+) -> (SeriesData, SeriesData) {
   match self {
     SeriesData::Int(data) => {
       let (a, b) = data.split_at(index)
@@ -290,6 +298,7 @@ fn SeriesData::split_at(self : SeriesData, index : Int) -> (SeriesData, SeriesDa
     }
   }
 }
+
 ///| Sort the Series
 ///
 /// Parameters

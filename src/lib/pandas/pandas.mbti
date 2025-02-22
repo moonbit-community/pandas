@@ -107,9 +107,11 @@ impl Series {
   all(Self) -> Bool!InvalidType
   any(Self) -> Bool!InvalidType
   argsort(Self, descending~ : Bool = ..) -> Array[Int]
+  clear(Self) -> Unit
   copy(Self) -> Self
   count(Self) -> Int
   data(Self) -> SeriesData
+  erase(Self, Int) -> Unit!
   get_type(Self) -> DataType
   has_null(Self) -> Bool
   length(Self) -> Int
@@ -126,6 +128,7 @@ impl Series {
   op_mul(Self, Self) -> Self
   op_sub(Self, Self) -> Self
   reverse(Self) -> Unit
+  sort(Self) -> Unit
   sum(Self) -> SeriesValue!InvalidType
   var(Self, ddof~ : Int = ..) -> Float!
 }
@@ -141,9 +144,6 @@ pub(all) enum SeriesData {
 }
 impl SeriesData {
   argsort(Self, descending~ : Bool = ..) -> Array[Int]
-  clear(Self) -> Unit
-  empty(Self) -> Bool
-  erase(Self, Int) -> Unit!EmptyArrayError
   get_argsort_indices(Self, descending~ : Bool = ..) -> Array[Int]
   op_div(Self, Self) -> Self
   op_mul(Self, Self) -> Self

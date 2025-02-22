@@ -101,6 +101,7 @@ fn BitMap::erase(self : BitMap, index : Int) -> Unit {
   self.bitmap.remove(index) |> ignore
 }
 
-fn BitMap::swap(self: BitMap, index1: Int, index2: Int) -> Unit {
+///|
+fn BitMap::swap(self : BitMap, index1 : Int, index2 : Int) -> Unit {
   self.bitmap.swap(index1, index2)
 }
