@@ -769,12 +769,16 @@ pub fn Series::sum(self : Series) -> SeriesValue!InvalidType {
   match self.data {
     SeriesData::Int(data) =>
       match data {
-        _ => SeriesValue::Int(data.iter().fold(init=0, fn(acc, x) { acc + x }))
+        _ => SeriesValue::Int(data.foldi(init=0, fn(i, acc, x) { 
+          if not(self.bitmap[i]) { acc + x } else { acc }
+      }))
       }
     SeriesData::Float(data) =>
       match data {
         _ =>
-          SeriesValue::Float(data.iter().fold(init=0.0, fn(acc, x) { acc + x }))
+          SeriesValue::Float(data.foldi(init=0.0, fn(i, acc, x) {
+            if not(self.bitmap[i]) { acc + x } else { acc }
+          }))
       }
     _ => raise InvalidType("unsupported type")
   }
@@ -810,16 +814,23 @@ pub fn Series::mean(self : Series) -> Float!Error {
       match data {
         [] => raise EmptyArrayError("Cannot find the mean of an empty array")
         _ => {
-          let sum = data.iter().fold(init=0, fn(acc, x) { acc + x })
-          sum.to_float() / data.length().to_float()
+          let mut cnt = 0
+          let sum = data.foldi(init=0, fn(i, acc, x) { 
+            if not(self.bitmap[i]) { cnt += 1; acc + x } else { acc }
+           })
+          sum.to_float() / cnt.to_float()
         }
       }
     SeriesData::Float(data) =>
       match data {
         [] => raise EmptyArrayError("Cannot find the mean of an empty array")
-        _ =>
-          data.iter().fold(init=Double::to_float(0.0), fn(acc, x) { acc + x }) /
-          data.length().to_float()
+        _ => {
+          let mut cnt = 0
+          let sum = data.foldi(init=(0.0 : Float), fn(i, acc, x) {
+            if not(self.bitmap[i]) { cnt += 1; acc + x } else { acc }
+          })
+          sum / cnt.to_float()
+        }
       }
     _ => raise InvalidType("unsupported type")
   }
@@ -855,12 +866,19 @@ pub fn Series::mean(self : Series) -> Float!Error {
 ///   series.var!()
 /// }
 /// ```
-pub fn Series::var(self : Series, ddof~ : Int = 1) -> Float!Error {
-  let float_data : Array[Float] = match self.data {
+pub fn Series::var(self : Series, ddof~ : Int = 1) -> Float! {
+  let raw_float_data : Array[Float] = match self.data {
     SeriesData::Int(arr) => arr.map(fn(x) { x.to_float() })
     SeriesData::Float(arr) => arr
     SeriesData::Bool(arr) => arr.map(fn(x) { if x { 1.0 } else { 0.0 } })
     _ => raise InvalidType("unsupported type")
+  }
+  // have no filteri, use loop instead
+  let float_data : Array[Float] = []
+  for i in 0..<raw_float_data.length() {
+    if not(self.bitmap[i]) {
+      float_data.push(raw_float_data[i])
+    }
   }
   let n = float_data.length()
   if n <= ddof {
@@ -881,7 +899,7 @@ pub fn Series::var(self : Series, ddof~ : Int = 1) -> Float!Error {
 
 ///|
 pub fn Series::count(self : Series) -> Int {
-  self.data.length()
+  self.length
 }
 
 ///|
