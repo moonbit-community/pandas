@@ -23,21 +23,6 @@ let emptyDataFrame : DataFrame = DataFrame::{
   index: {},
 }
 
-///|
-type! InconsistentSeriesLength String derive(Show)
-
-///|
-type! DuplicateColumnError String derive(Show)
-
-///|
-type! ColumnNotFoundError String derive(Show)
-
-///|
-type! IndexOutOfBounds String derive(Show)
-
-///|
-type! InvalidType String derive(Show)
-
 ///| Create a new DataFrame
 ///
 /// ### Parameters

@@ -119,7 +119,7 @@ pub fn Series::new(name : String, values : SeriesInput) -> Series {
   }
 }
 
-///|
+///| 内部保证无null时使用
 fn Series::new_by_SeriesData(name : String, data : SeriesData) -> Series {
   Series::{
     name,
@@ -156,7 +156,7 @@ pub fn Series::length(self : Series) -> Int {
 }
 
 ///| SeriesData clear
-pub fn SeriesData::clear(self : SeriesData) -> Unit {
+fn SeriesData::clear(self : SeriesData) -> Unit {
   match self {
     SeriesData::Int(data) => data.clear()
     SeriesData::Float(data) => data.clear()
@@ -165,13 +165,18 @@ pub fn SeriesData::clear(self : SeriesData) -> Unit {
   }
 }
 
-///| Check if the SeriesData is empty
-pub fn SeriesData::empty(self : SeriesData) -> Bool {
-  self.length() == 0
+///| Series clear
+pub fn Series::clear(self : Series) -> Unit {
+  self.name = ""
+  self.length = 0
+  self.data.clear()
+  self.bitmap.clear()
 }
 
-///|
-type! EmptyArrayError String derive(Show)
+///| Check if the SeriesData is empty
+fn SeriesData::empty(self : SeriesData) -> Bool {
+  self.length() == 0
+}
 
 ///| Erase an element from the SeriesData at a specified index
 ///
@@ -297,7 +302,6 @@ pub fn Series::data(self : Series) -> SeriesData {
   self.data
 }
 
-// type! TypeError String derive(Show)
 ///| SeriesData add
 fn op_add(self : SeriesData, other : SeriesData) -> SeriesData {
   match (self, other) {

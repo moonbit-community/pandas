@@ -1,9 +1,9 @@
 ///|
 struct BitMap {
-  optional : Bool
-  bitmap : Array[Bool]
-  length : Int
-  offset : Int
+  mut optional : Bool
+  mut bitmap : Array[Bool]
+  mut length : Int
+  mut offset : Int
 } derive(Show, Eq)
 
 ///|
@@ -85,4 +85,12 @@ fn BitMap::has_nulls(self : BitMap) -> Bool {
     false => false
     true => self.bitmap.iter().any(fn(v) { v })
   }
+}
+
+///|
+fn BitMap::clear(self : BitMap) -> Unit {
+  self.optional = false
+  self.bitmap = []
+  self.length = 0
+  self.offset = 0
 }
