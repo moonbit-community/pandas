@@ -483,7 +483,7 @@ pub fn Series::op_add(self : Series, other : Series) -> Series {
 }
 
 ///| SeriesData sub
-pub fn op_sub(self : SeriesData, other : SeriesData) -> SeriesData {
+fn op_sub(self : SeriesData, other : SeriesData) -> SeriesData {
   match (self, other) {
     (SeriesData::Int(a), SeriesData::Int(b)) => {
       let res = a.copy()
@@ -527,7 +527,7 @@ pub fn Series::op_sub(self : Series, other : Series) -> Series {
 }
 
 ///| SeriesData mul
-pub fn SeriesData::op_mul(self : SeriesData, other : SeriesData) -> SeriesData {
+fn SeriesData::op_mul(self : SeriesData, other : SeriesData) -> SeriesData {
   match (self, other) {
     (SeriesData::Int(a), SeriesData::Int(b)) => {
       let res = a.copy()
@@ -561,7 +561,7 @@ pub fn Series::op_mul(self : Series, other : Series) -> Series {
 }
 
 ///| SeriesData div
-pub fn SeriesData::op_div(self : SeriesData, other : SeriesData) -> SeriesData {
+fn SeriesData::op_div(self : SeriesData, other : SeriesData) -> SeriesData {
   match (self, other) {
     (SeriesData::Int(a), SeriesData::Int(b)) => {
       let res = a.copy()
@@ -601,13 +601,19 @@ pub fn merge(self : Series, other : Series) -> Series!InvalidType {
     (SeriesData::Float(a), SeriesData::Float(b)) => SeriesData::Float(a + b)
     (SeriesData::Bool(a), SeriesData::Bool(b)) => SeriesData::Bool(a + b)
     (SeriesData::Str(a), SeriesData::Str(b)) => SeriesData::Str(a + b)
-    _ => raise InvalidType("unsupported types")
+    _ => raise InvalidType("merger must be the same type")
+  }
+  let bitmap = BitMap::{
+    optional: self.bitmap.optional || other.bitmap.optional,
+    bitmap: self.bitmap.bitmap + other.bitmap.bitmap,
+    length: self.length() + other.length(),
+    offset: 0,
   }
   Series::{
     name: self.name(),
-    data,
+    data: data,
     data_type: get_dtype(data),
-    bitmap: self.bitmap + other.bitmap,
+    bitmap: bitmap,
     length: self.length() + other.length(),
   }
 }
@@ -628,7 +634,7 @@ pub fn Series::copy(self : Series) -> Series {
     name: self.name(),
     data: self.data.copy(),
     data_type: self.data_type,
-    bitmap: self.bitmap,
+    bitmap: self.bitmap.copy(),
     length: self.length(),
   }
 }
@@ -646,6 +652,7 @@ fn SeriesData::reverse(self : SeriesData) -> Unit {
 ///|
 pub fn Series::reverse(self : Series) -> Unit {
   self.data.reverse()
+  self.bitmap.reverse()
 }
 
 ///|

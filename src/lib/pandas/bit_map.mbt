@@ -120,3 +120,18 @@ fn BitMap::swap(self : BitMap, index1 : Int, index2 : Int) -> Unit {
   self.bitmap.swap(index1, index2)
 }
 
+///|
+fn BitMap::copy(self : BitMap) -> BitMap {
+  BitMap::{
+    optional: self.optional,
+    bitmap: self.bitmap.copy(),
+    length: self.length,
+    offset: self.offset,
+  }
+}
+
+///|
+fn BitMap::reverse(self : BitMap) -> Unit {
+  self.bitmap.rev_inplace()
+}
+
