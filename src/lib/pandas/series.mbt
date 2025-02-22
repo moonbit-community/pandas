@@ -193,7 +193,7 @@ fn SeriesData::empty(self : SeriesData) -> Bool {
 /// ```
 /// data.erase(1)
 /// ```
-pub fn SeriesData::erase(
+fn SeriesData::erase(
   self : SeriesData,
   index : Int
 ) -> Unit!EmptyArrayError {
@@ -208,16 +208,124 @@ pub fn SeriesData::erase(
   }
 }
 
+///| Erase an element from the Series at a specified index
+///
+/// ### Parameters
+///
+/// - `self` : An instance of the Series
+/// - `index` : The index of the element to be erased
+///
+/// ### Errors
+///
+/// - `IndexOutOfBounds` : index is out of bounds
+/// - `EmptyArrayError` : Series is empty
+///
+/// ### Example
+/// ```
+/// series.erase!(1)
+/// ```
+pub fn Series::erase(self : Series, index : Int) -> Unit! {
+  guard index >= 0 && index < self.length() else {
+    raise IndexOutOfBounds("Index out of bounds")
+  }
+  self.data.erase!(index)
+  self.length -= 1
+  // compute bitmap
+  self.bitmap.erase(index)
+}
+
 ///| Sort the SeriesData
 /// cause when build Series use SeriesInput instead of SeriesData, SeriesData become to inner type
-// pub fn SeriesData::sort(self : SeriesData) -> Unit {
-//   match self {
-//     SeriesData::Int(data) => data.sort()
-//     SeriesData::Float(data) => data.sort()
-//     SeriesData::Bool(data) => data.sort()
-//     SeriesData::Str(data) => data.sort()
-//   }
-// }
+fn SeriesData::sort(self : SeriesData) -> Unit {
+  match self {
+    SeriesData::Int(data) => data.sort()
+    SeriesData::Float(data) => data.sort()
+    SeriesData::Bool(data) => data.sort()
+    SeriesData::Str(data) => data.sort()
+  }
+}
+
+fn SeriesData::op_get(self: SeriesData, index: Int) -> SeriesValue {
+  match self {
+    SeriesData::Int(data) => SeriesValue::Int(data[index])
+    SeriesData::Float(data) => SeriesValue::Float(data[index])
+    SeriesData::Bool(data) => SeriesValue::Bool(data[index])
+    SeriesData::Str(data) => SeriesValue::Str(data[index])
+  }
+}
+
+fn SeriesData::op_set(self: SeriesData, index: Int, value: SeriesValue) -> Unit {
+  match (self, value) {
+    (SeriesData::Int(data), SeriesValue::Int(v)) => data[index] = v
+    (SeriesData::Float(data), SeriesValue::Float(v)) => data[index] = v
+    (SeriesData::Bool(data), SeriesValue::Bool(v)) => data[index] = v
+    (SeriesData::Str(data), SeriesValue::Str(v)) => data[index] = v
+    _ => abort("unsupported types")
+  }
+}
+
+fn SeriesData::swap(self : SeriesData, i : Int, j : Int) -> Unit {
+  let tmp = self[i]
+  self[i] = self[j]
+  self[j] = tmp
+}
+
+fn SeriesData::split_at(self : SeriesData, index : Int) -> (SeriesData, SeriesData) {
+  match self {
+    SeriesData::Int(data) => {
+      let (a, b) = data.split_at(index)
+      (SeriesData::Int(a), SeriesData::Int(b))
+    }
+    SeriesData::Float(data) => {
+      let (a, b) = data.split_at(index)
+      (SeriesData::Float(a), SeriesData::Float(b))
+    }
+    SeriesData::Bool(data) => {
+      let (a, b) = data.split_at(index)
+      (SeriesData::Bool(a), SeriesData::Bool(b))
+    }
+    SeriesData::Str(data) => {
+      let (a, b) = data.split_at(index)
+      (SeriesData::Str(a), SeriesData::Str(b))
+    }
+  }
+}
+///| 
+pub fn Series::sort(self : Series) -> Unit {
+  match self.bitmap.optional {
+    false => self.data.sort()
+    true => {
+      // 没有自定义排序
+      let mut l = 0
+      for i in 0..<self.length {
+        while l < self.length && self.bitmap[l] {
+          l += 1
+        }
+        if self.bitmap[i] && i > l {
+          self.data.swap(i, l)
+          self.bitmap.swap(i, l)
+          l += 1
+        }
+      }
+      self.data.split_at(l).1.sort()
+    }
+  }
+}
+
+test "Series::sort" {
+  let series = Series::new("test", SeriesInput::Int32([2, 1, 3, 5, 4]))
+  series.sort()
+  inspect!(series.data, content="Int([1, 2, 3, 4, 5])")
+  let series = Series::new("test", SeriesInput::Int32_Nullable([Some(2), None, Some(3)]))
+  // println(series.bitmap)
+  series.sort()
+  inspect!(series.data, content="Int([0, 2, 3])")
+}
+
+test "Series::length()" {
+  let series = Series::new("test", SeriesInput::Int32([1, 2, 3, 4, 5]))
+  assert_eq!(series.length(), 5)
+}
 
 ///| get the indices of the sorted elements
 pub fn SeriesData::get_argsort_indices(

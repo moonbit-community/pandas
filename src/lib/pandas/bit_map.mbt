@@ -21,8 +21,8 @@ fn BitMap::new[T](data? : Array[T?]) -> BitMap {
     Some(data) => {
       let bitmap = Array::makei(data.length(), fn(i) {
         match data[i] {
-          None => false
-          Some(_) => true
+          None => true
+          Some(_) => false
         }
       })
       BitMap::{ optional: true, bitmap, length: data.length(), offset: 0 }
@@ -93,4 +93,14 @@ fn BitMap::clear(self : BitMap) -> Unit {
   self.bitmap = []
   self.length = 0
   self.offset = 0
+}
+
+///|
+fn BitMap::erase(self : BitMap, index : Int) -> Unit {
+  self.length -= 1
+  self.bitmap.remove(index) |> ignore
+}
+
+fn BitMap::swap(self: BitMap, index1: Int, index2: Int) -> Unit {
+  self.bitmap.swap(index1, index2)
 }
