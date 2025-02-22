@@ -152,7 +152,7 @@ fn SeriesData::length(self : SeriesData) -> Int {
 
 ///|
 pub fn Series::length(self : Series) -> Int {
-  self.length()
+  self.length
 }
 
 ///| SeriesData clear
