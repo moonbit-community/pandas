@@ -32,14 +32,28 @@ fn BitMap::new[T](data? : Array[T?]) -> BitMap {
 
 ///|
 fn BitMap::op_add(self : BitMap, other : BitMap) -> BitMap {
-  let bitmap = self.bitmap
-  bitmap.iter().eachi(fn(i, v) { bitmap[i] = v && other.bitmap[i] })
-  BitMap::{
-    optional: self.optional || other.optional,
-    bitmap,
-    length: self.length,
-    offset: self.offset,
+  match (self.optional, other.optional) {
+    (false, false) => emptyBitMap
+    (true, false) => self
+    (false, true) => other
+    (true, true) => {
+      let bitmap = self.bitmap
+      bitmap.iter().eachi(fn(i, v) { bitmap[i] = v || other.bitmap[i] })
+      BitMap::{
+        optional: self.optional || other.optional,
+        bitmap: bitmap,
+        length: self.length,
+        offset: self.offset,
+      }
+    }
   }
+}
+
+test "BitMap::op_add" {
+  let a = BitMap::new(data=[Some(1), None, Some(3)])
+  let b = BitMap::new(data=[None, Some(2), Some(3)])
+  let c = a + b
+  inspect!(c, content="{optional: true, bitmap: [true, true, false], length: 3, offset: 0}")
 }
 
 ///|
@@ -105,3 +119,4 @@ fn BitMap::erase(self : BitMap, index : Int) -> Unit {
 fn BitMap::swap(self : BitMap, index1 : Int, index2 : Int) -> Unit {
   self.bitmap.swap(index1, index2)
 }
+

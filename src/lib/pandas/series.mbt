@@ -397,7 +397,7 @@ fn SeriesData::argsort_indices(self : SeriesData, indices : Array[Int]) -> Unit 
 /// let data = SeriesData::Int([3, 1, 2])
 /// let sorted_indices = data.argsort()
 /// ```
-pub fn SeriesData::argsort(
+fn SeriesData::argsort(
   self : SeriesData,
   descending~ : Bool = false
 ) -> Array[Int] {
@@ -423,7 +423,9 @@ pub fn SeriesData::argsort(
 /// let sorted_indices = series.argsort()
 /// ```
 pub fn Series::argsort(self : Series, descending~ : Bool = false) -> Array[Int] {
-  self.data.argsort(descending~)
+  let indices = self.data.argsort(descending~)
+  self.data.argsort_indices(indices)
+  indices
 }
 
 ///|
@@ -434,6 +436,15 @@ pub fn Series::name(self : Series) -> String {
 ///|
 pub fn Series::data(self : Series) -> SeriesData {
   self.data
+}
+
+fn SeriesData::get_type(self : SeriesData) -> DataType {
+  match self {
+    SeriesData::Int(_) => DataType::Int32
+    SeriesData::Float(_) => DataType::Float32
+    SeriesData::Bool(_) => DataType::Bool
+    SeriesData::Str(_) => DataType::String
+  }
 }
 
 ///| SeriesData add
