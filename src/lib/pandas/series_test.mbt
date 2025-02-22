@@ -89,3 +89,18 @@ test "panic Series::var/empty_array" {
   let series = Series::new("test", SeriesInput::Int32([]))
   ignore(series.var!())
 }
+
+test "Series::sort" {
+  let series = Series::new("test", SeriesInput::Int32([2, 1, 3, 5, 4]))
+  series.sort()
+  inspect!(series.data, content="Int([1, 2, 3, 4, 5])")
+  let series = Series::new("test", SeriesInput::Int32_Nullable([Some(2), None, Some(3)]))
+  // println(series.bitmap)
+  series.sort()
+  inspect!(series.data, content="Int([0, 2, 3])")
+}
+
+test "Series::length()" {
+  let series = Series::new("test", SeriesInput::Int32([1, 2, 3, 4, 5]))
+  assert_eq!(series.length(), 5)
+}

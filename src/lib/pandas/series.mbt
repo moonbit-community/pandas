@@ -290,7 +290,21 @@ fn SeriesData::split_at(self : SeriesData, index : Int) -> (SeriesData, SeriesDa
     }
   }
 }
-///| 
+///| Sort the Series
+///
+/// Parameters
+///
+/// - `self` : An instance of the Series
+///
+/// Example
+/// ```
+/// let series = Series::new("test", SeriesInput::Int32([2, 1, 3]))
+/// series.sort()
+/// inspect!(series.data, content="Int([1, 2, 3])")
+/// let series = Series::new("test", SeriesInput::Int32_Nullable([Some(2), None, Some(3)]))
+/// series.sort()
+/// inspect!(series.data, content="Int([0, 2, 3])")
+/// ```
 pub fn Series::sort(self : Series) -> Unit {
   match self.bitmap.optional {
     false => self.data.sort()
@@ -312,22 +326,25 @@ pub fn Series::sort(self : Series) -> Unit {
   }
 }
 
-test "Series::sort" {
-  let series = Series::new("test", SeriesInput::Int32([2, 1, 3, 5, 4]))
-  series.sort()
-  inspect!(series.data, content="Int([1, 2, 3, 4, 5])")
-  let series = Series::new("test", SeriesInput::Int32_Nullable([Some(2), None, Some(3)]))
-  // println(series.bitmap)
-  series.sort()
-  inspect!(series.data, content="Int([0, 2, 3])")
-}
-
-test "Series::length()" {
-  let series = Series::new("test", SeriesInput::Int32([1, 2, 3, 4, 5]))
-  assert_eq!(series.length(), 5)
-}
-
-///| get the indices of the sorted elements
+///| Get the indices that would sort the SeriesData
+///
+/// Parameters
+///
+/// - `self` : An instance of the SeriesData
+/// - `descending` : A boolean indicating whether to sort in descending order (default is false)
+///
+/// Returns
+///
+/// - `Array[Int]` : An array of indices representing the sorted order of the elements
+///
+/// Example
+/// ```
+/// let data = SeriesData::Int([3, 1, 2])
+/// let sorted_indices = data.get_argsort_indices()
+/// inspect!(sorted_indices, content="[2, 0, 1]")
+/// let sorted_indices_desc = data.get_argsort_indices(descending=true)
+/// inspect!(sorted_indices_desc, content="[0, 2, 1]")
+/// ```
 pub fn SeriesData::get_argsort_indices(
   self : SeriesData,
   descending~ : Bool = false
