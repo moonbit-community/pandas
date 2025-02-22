@@ -107,3 +107,23 @@ test "Series::length()" {
   let series = Series::new("test", SeriesInput::Int32([1, 2, 3, 4, 5]))
   assert_eq!(series.length(), 5)
 }
+
+// test "SeriesValue::op_compare" {
+//   let a = SeriesValue::Int(1)
+//   let b = SeriesValue::Null
+//   println(a < b)
+// }
+
+test "Series::max" {
+  let series = Series::new("test", SeriesInput::Int32([1, 3, 2]))
+  inspect!(series.max!(), content="Int(3)")
+  let series = Series::new("test", SeriesInput::Int32_Nullable([None, None, None]))
+  inspect!(series.max!(), content="Null")
+}
+
+test "Series::min" {
+  let series = Series::new("test", SeriesInput::Int32([1, 3, 2]))
+  inspect!(series.min!(), content="Int(1)")
+  let series = Series::new("test", SeriesInput::Int32_Nullable([None, None, None]))
+  inspect!(series.min!(), content="Null")
+}

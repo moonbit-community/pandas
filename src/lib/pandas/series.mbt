@@ -656,7 +656,7 @@ pub fn Series::reverse(self : Series) -> Unit {
 }
 
 ///|
-fn to_string(self : DataType) -> String {
+fn DataType::to_string(self : DataType) -> String {
   match self {
     DataType::Int32 => "int32"
     DataType::Float32 => "float32"
@@ -691,9 +691,9 @@ pub fn get_type(self : Series) -> DataType {
 ///
 /// Example:
 ///
-/// ```moonbit
-/// let series = Series::new("test", SeriesData::Int([1, 3, 2]))
-/// series.arg_max!()
+/// ```
+/// let series = Series::new("test", SeriesInput::Int32([1, 3, 2]))
+/// inspect!(series.max!(), content="Int(3)")
 /// ```
 pub fn Series::max(self : Series) -> SeriesValue!Error {
   if self.data.empty() {
@@ -701,41 +701,13 @@ pub fn Series::max(self : Series) -> SeriesValue!Error {
   }
   match self.data {
     SeriesData::Int(data) =>
-      match data {
-        _ =>
-          SeriesValue::Int(
-            data
-            .iter()
-            .fold(init=data[0], fn(acc, x) { if x > acc { x } else { acc } }),
-          )
-      }
+      data.foldi(init=SeriesValue::Null, fn(i, acc, x) { if (acc == SeriesValue::Null || SeriesValue::Int(x) > acc) && not(self.bitmap[i]) { SeriesValue::Int(x) } else { acc } })
     SeriesData::Float(data) =>
-      match data {
-        _ =>
-          SeriesValue::Float(
-            data
-            .iter()
-            .fold(init=data[0], fn(acc, x) { if x > acc { x } else { acc } }),
-          )
-      }
+      data.foldi(init=SeriesValue::Null, fn(i, acc, x) { if (acc == SeriesValue::Null || SeriesValue::Float(x) > acc) && not(self.bitmap[i]) { SeriesValue::Float(x) } else { acc } })
     SeriesData::Bool(data) =>
-      match data {
-        _ =>
-          SeriesValue::Bool(
-            data
-            .iter()
-            .fold(init=data[0], fn(acc, x) { if x > acc { x } else { acc } }),
-          )
-      }
+      data.foldi(init=SeriesValue::Null, fn(i, acc, x) { if (acc == SeriesValue::Null || SeriesValue::Bool(x) > acc) && not(self.bitmap[i]) { SeriesValue::Bool(x) } else { acc } })
     SeriesData::Str(data) =>
-      match data {
-        _ =>
-          SeriesValue::Str(
-            data
-            .iter()
-            .fold(init=data[0], fn(acc, x) { if x > acc { x } else { acc } }),
-          )
-      }
+      data.foldi(init=SeriesValue::Null, fn(i, acc, x) { if (acc == SeriesValue::Null || SeriesValue::Str(x) > acc) && not(self.bitmap[i]) { SeriesValue::Str(x) } else { acc } })
   }
 }
 
@@ -765,41 +737,13 @@ pub fn Series::min(self : Series) -> SeriesValue!Error {
   }
   match self.data {
     SeriesData::Int(data) =>
-      match data {
-        _ =>
-          SeriesValue::Int(
-            data
-            .iter()
-            .fold(init=data[0], fn(acc, x) { if x < acc { x } else { acc } }),
-          )
-      }
+      data.foldi(init=SeriesValue::Null, fn(i, acc, x) { if (acc == SeriesValue::Null || SeriesValue::Int(x) < acc) && not(self.bitmap[i]) { SeriesValue::Int(x) } else { acc } })
     SeriesData::Float(data) =>
-      match data {
-        _ =>
-          SeriesValue::Float(
-            data
-            .iter()
-            .fold(init=data[0], fn(acc, x) { if x < acc { x } else { acc } }),
-          )
-      }
+      data.foldi(init=SeriesValue::Null, fn(i, acc, x) { if (acc == SeriesValue::Null || SeriesValue::Float(x) < acc) && not(self.bitmap[i]) { SeriesValue::Float(x) } else { acc } })
     SeriesData::Bool(data) =>
-      match data {
-        _ =>
-          SeriesValue::Bool(
-            data
-            .iter()
-            .fold(init=data[0], fn(acc, x) { if x < acc { x } else { acc } }),
-          )
-      }
+      data.foldi(init=SeriesValue::Null, fn(i, acc, x) { if (acc == SeriesValue::Null || SeriesValue::Bool(x) < acc) && not(self.bitmap[i]) { SeriesValue::Bool(x) } else { acc } })
     SeriesData::Str(data) =>
-      match data {
-        _ =>
-          SeriesValue::Str(
-            data
-            .iter()
-            .fold(init=data[0], fn(acc, x) { if x < acc { x } else { acc } }),
-          )
-      }
+      data.foldi(init=SeriesValue::Null, fn(i, acc, x) { if (acc == SeriesValue::Null || SeriesValue::Str(x) < acc) && not(self.bitmap[i]) { SeriesValue::Str(x) } else { acc } })
   }
 }
 
