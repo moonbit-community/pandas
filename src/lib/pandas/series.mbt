@@ -1478,13 +1478,6 @@ pub fn Series::append(self : Series, other : Series) -> Series!InvalidType {
   }
 }
 
-test "Series::append" {
-  let series1 = Series::new("test", SeriesInput::Int32([1, 2]))
-  let series2 = Series::new("test", SeriesInput::Int32([3, 4]))
-  let series = series1.append!(series2)
-  inspect!(series.data, content="Int([1, 2, 3, 4])")
-}
-
 ///| Extend the current Series with another Series
 ///
 /// Parameters
@@ -1510,13 +1503,6 @@ pub fn Series::extend(self : Series, other : Series) -> Unit!InvalidType {
   self.data = self.data.append(other.data)
   self.bitmap = self.bitmap.append(other.bitmap)
   self.length += other.length
-}
-
-test "Series::extend" {
-  let series1 = Series::new("test", SeriesInput::Int32([1, 2]))
-  let series2 = Series::new("test", SeriesInput::Int32([3, 4]))
-  series1.extend!(series2)
-  inspect!(series1.data, content="Int([1, 2, 3, 4])")
 }
 
 ///| Concatenate multiple Series into one
@@ -1568,12 +1554,4 @@ pub fn Series::concat(data : Array[Series]) -> Series! {
     bitmap,
     length,
   }
-}
-
-test "Series::concat" {
-  let series1 = Series::new("test", SeriesInput::Int32([1, 2]))
-  let series2 = Series::new("test", SeriesInput::Int32([3, 4]))
-  let series3 = Series::new("test", SeriesInput::Int32([5]))
-  let series = Series::concat!([series1, series2, series3])
-  inspect!(series.data, content="Int([1, 2, 3, 4, 5])")
 }

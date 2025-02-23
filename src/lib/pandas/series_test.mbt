@@ -208,3 +208,25 @@ test "Series::abs" {
   let series = Series::new("test", SeriesInput::Float32([-1.5, 2.0, -3.0]))
   inspect!(series.abs!().data, content="Float([1.5, 2, 3])")
 }
+
+test "Series::append" {
+  let series1 = Series::new("test", SeriesInput::Int32([1, 2]))
+  let series2 = Series::new("test", SeriesInput::Int32([3, 4]))
+  let series = series1.append!(series2)
+  inspect!(series.data, content="Int([1, 2, 3, 4])")
+}
+
+test "Series::extend" {
+  let series1 = Series::new("test", SeriesInput::Int32([1, 2]))
+  let series2 = Series::new("test", SeriesInput::Int32([3, 4]))
+  series1.extend!(series2)
+  inspect!(series1.data, content="Int([1, 2, 3, 4])")
+}
+
+test "Series::concat" {
+  let series1 = Series::new("test", SeriesInput::Int32([1, 2]))
+  let series2 = Series::new("test", SeriesInput::Int32([3, 4]))
+  let series3 = Series::new("test", SeriesInput::Int32([5]))
+  let series = Series::concat!([series1, series2, series3])
+  inspect!(series.data, content="Int([1, 2, 3, 4, 5])")
+}
