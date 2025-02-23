@@ -114,6 +114,10 @@ impl Series {
   erase(Self, Int) -> Unit!
   get_type(Self) -> DataType
   has_null(Self) -> Bool
+  is_empty(Self) -> Bool
+  is_not_null(Self) -> Self
+  is_null(Self) -> Self
+  is_sorted(Self, descending~ : Bool = .., nulls_last~ : Bool = ..) -> Bool
   length(Self) -> Int
   max(Self) -> SeriesValue!
   mean(Self) -> Float!
@@ -143,11 +147,7 @@ pub(all) enum SeriesData {
   Str(Array[String])
 }
 impl SeriesData {
-  argsort(Self, descending~ : Bool = ..) -> Array[Int]
   get_argsort_indices(Self, descending~ : Bool = ..) -> Array[Int]
-  op_div(Self, Self) -> Self
-  op_mul(Self, Self) -> Self
-  op_sub(Self, Self) -> Self
 }
 impl Eq for SeriesData
 impl Show for SeriesData
