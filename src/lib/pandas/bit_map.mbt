@@ -41,7 +41,7 @@ fn BitMap::op_add(self : BitMap, other : BitMap) -> BitMap {
       bitmap.iter().eachi(fn(i, v) { bitmap[i] = v || other.bitmap[i] })
       BitMap::{
         optional: self.optional || other.optional,
-        bitmap: bitmap,
+        bitmap,
         length: self.length,
         offset: self.offset,
       }
@@ -53,7 +53,10 @@ test "BitMap::op_add" {
   let a = BitMap::new(data=[Some(1), None, Some(3)])
   let b = BitMap::new(data=[None, Some(2), Some(3)])
   let c = a + b
-  inspect!(c, content="{optional: true, bitmap: [true, true, false], length: 3, offset: 0}")
+  inspect!(
+    c,
+    content="{optional: true, bitmap: [true, true, false], length: 3, offset: 0}",
+  )
 }
 
 ///|
@@ -135,9 +138,10 @@ fn BitMap::reverse(self : BitMap) -> Unit {
   self.bitmap.rev_inplace()
 }
 
+///|
 fn BitMap::new_by_size(size : Int, optional~ : Bool = true) -> BitMap {
   BitMap::{
-    optional: optional,
+    optional,
     bitmap: Array::make(size, false),
     length: size,
     offset: 0,

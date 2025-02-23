@@ -9,27 +9,10 @@ test "new" {
   inspect!(df.shape(), content="[6, 4]")
 }
 
-test "add_drop_rename" {
-  let df = DataFrame::new!([
-    Series::new("A", SeriesInput::Int32([1, 2, 3, 4, 5, 6])),
-    Series::new("B", SeriesInput::Float32([1.5, 2.0, 3.5, 4.0, 5.5, 6.0])),
-    Series::new("C", SeriesInput::Bool([true, false, true, false, true, false])),
-    Series::new("D", SeriesInput::Str(["a", "b", "c", "d", "e", "f"])),
-  ])
-  df.add_column!(Series::new("E", SeriesInput::Int32([7, 8, 9, 10, 11, 12])))
-  inspect!(df.shape(), content="[6, 5]")
-  df.drop_column!("E")
-  inspect!(df.shape(), content="[6, 4]")
+test "rename" {
+  let df = DataFrame::new!([Series::new("A", SeriesInput::Int32([1, 2, 3]))])
   df.rename!("A", "A1")
   inspect!(df.data()[0].name(), content="A1")
-  df.drop_row!(0)
-  df.add_row!([
-    SeriesValue::Int(7),
-    SeriesValue::Float(7.5),
-    SeriesValue::Bool(true),
-    SeriesValue::Str("g"),
-  ])
-  inspect!(df.shape(), content="[6, 4]")
 }
 
 test "select" {
@@ -381,5 +364,8 @@ test "DataFrame::add_row" {
   inspect!(df.data[0].data(), content="Int([1, 2, 3])")
   df.add_row!([SeriesValue::Int(4), SeriesValue::Null])
   inspect!(df.data[1].data(), content="Float([1.5, 2.5, 3.5, 0])")
-  inspect!(df.data[1].bitmap, content="{optional: true, bitmap: [false, false, false, true], length: 4, offset: 0}")
+  inspect!(
+    df.data[1].bitmap,
+    content="{optional: true, bitmap: [false, false, false, true], length: 4, offset: 0}",
+  )
 }

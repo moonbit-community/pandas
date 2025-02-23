@@ -84,14 +84,13 @@ pub impl Show for DataFrame with output(self, logger) {
     for col in self.data {
       match col.bitmap[i] {
         true => row_str += "null\t"
-        false => {
+        false =>
           match col.data() {
             SeriesData::Int(vals) => row_str += vals[i].to_string() + "\t"
             SeriesData::Float(vals) => row_str += vals[i].to_string() + "\t"
             SeriesData::Bool(vals) => row_str += vals[i].to_string() + "\t"
             SeriesData::Str(vals) => row_str += vals[i] + "\t"
           }
-        }
       }
     }
     row_str += "\n"
@@ -126,14 +125,13 @@ pub fn DataFrame::head(self : DataFrame, rows~ : Int = 5) -> Unit {
     for col in self.data {
       match col.bitmap[i] {
         true => row_str += "null\t"
-        false => {
+        false =>
           match col.data() {
             SeriesData::Int(vals) => row_str += vals[i].to_string() + "\t"
             SeriesData::Float(vals) => row_str += vals[i].to_string() + "\t"
             SeriesData::Bool(vals) => row_str += vals[i].to_string() + "\t"
             SeriesData::Str(vals) => row_str += vals[i] + "\t"
           }
-        }
       }
     }
     row_str += "\n"
@@ -375,13 +373,15 @@ pub fn DataFrame::add_row(self : DataFrame, row : Array[SeriesValue]) -> Unit! {
     )
   }
   for i in 0..<row.length() {
-    guard row[i] == SeriesValue::Null || row[i].get_type() == self.data[i].data_type else {
+    guard row[i] == SeriesValue::Null ||
+      row[i].get_type() == self.data[i].data_type else {
       raise InvalidType("Type mismatch")
     }
+
   }
   for i in 0..<row.length() {
     match row[i] {
-      SeriesValue::Int(value) => {
+      SeriesValue::Int(value) =>
         match self.data[i].data {
           SeriesData::Int(data) => {
             if self.data[i].bitmap.optional {
@@ -390,8 +390,7 @@ pub fn DataFrame::add_row(self : DataFrame, row : Array[SeriesValue]) -> Unit! {
             data.push(value)
           }
         }
-      }
-      SeriesValue::Float(value) => {
+      SeriesValue::Float(value) =>
         match self.data[i].data {
           SeriesData::Float(data) => {
             if self.data[i].bitmap.optional {
@@ -400,8 +399,7 @@ pub fn DataFrame::add_row(self : DataFrame, row : Array[SeriesValue]) -> Unit! {
             data.push(value)
           }
         }
-      }
-      SeriesValue::Bool(value) => {
+      SeriesValue::Bool(value) =>
         match self.data[i].data {
           SeriesData::Bool(data) => {
             if self.data[i].bitmap.optional {
@@ -410,8 +408,7 @@ pub fn DataFrame::add_row(self : DataFrame, row : Array[SeriesValue]) -> Unit! {
             data.push(value)
           }
         }
-      }
-      SeriesValue::Str(value) => {
+      SeriesValue::Str(value) =>
         match self.data[i].data {
           SeriesData::Str(data) => {
             if self.data[i].bitmap.optional {
@@ -420,11 +417,9 @@ pub fn DataFrame::add_row(self : DataFrame, row : Array[SeriesValue]) -> Unit! {
             data.push(value)
           }
         }
-      }
       SeriesValue::Null => {
         match self.data[i].bitmap.optional {
-          false =>
-            self.data[i].bitmap = BitMap::new_by_size(self.shape[0])
+          false => self.data[i].bitmap = BitMap::new_by_size(self.shape[0])
           _ => ()
         }
         self.data[i].bitmap.bitmap.push(true)

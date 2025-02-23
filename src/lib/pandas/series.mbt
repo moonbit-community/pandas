@@ -438,6 +438,7 @@ pub fn Series::data(self : Series) -> SeriesData {
   self.data
 }
 
+///|
 fn SeriesData::get_type(self : SeriesData) -> DataType {
   match self {
     SeriesData::Int(_) => DataType::Int32
@@ -611,9 +612,9 @@ pub fn merge(self : Series, other : Series) -> Series!InvalidType {
   }
   Series::{
     name: self.name(),
-    data: data,
+    data,
     data_type: get_dtype(data),
-    bitmap: bitmap,
+    bitmap,
     length: self.length() + other.length(),
   }
 }
@@ -701,13 +702,41 @@ pub fn Series::max(self : Series) -> SeriesValue!Error {
   }
   match self.data {
     SeriesData::Int(data) =>
-      data.foldi(init=SeriesValue::Null, fn(i, acc, x) { if (acc == SeriesValue::Null || SeriesValue::Int(x) > acc) && not(self.bitmap[i]) { SeriesValue::Int(x) } else { acc } })
+      data.foldi(init=SeriesValue::Null, fn(i, acc, x) {
+        if (acc == SeriesValue::Null || SeriesValue::Int(x) > acc) &&
+          not(self.bitmap[i]) {
+          SeriesValue::Int(x)
+        } else {
+          acc
+        }
+      })
     SeriesData::Float(data) =>
-      data.foldi(init=SeriesValue::Null, fn(i, acc, x) { if (acc == SeriesValue::Null || SeriesValue::Float(x) > acc) && not(self.bitmap[i]) { SeriesValue::Float(x) } else { acc } })
+      data.foldi(init=SeriesValue::Null, fn(i, acc, x) {
+        if (acc == SeriesValue::Null || SeriesValue::Float(x) > acc) &&
+          not(self.bitmap[i]) {
+          SeriesValue::Float(x)
+        } else {
+          acc
+        }
+      })
     SeriesData::Bool(data) =>
-      data.foldi(init=SeriesValue::Null, fn(i, acc, x) { if (acc == SeriesValue::Null || SeriesValue::Bool(x) > acc) && not(self.bitmap[i]) { SeriesValue::Bool(x) } else { acc } })
+      data.foldi(init=SeriesValue::Null, fn(i, acc, x) {
+        if (acc == SeriesValue::Null || SeriesValue::Bool(x) > acc) &&
+          not(self.bitmap[i]) {
+          SeriesValue::Bool(x)
+        } else {
+          acc
+        }
+      })
     SeriesData::Str(data) =>
-      data.foldi(init=SeriesValue::Null, fn(i, acc, x) { if (acc == SeriesValue::Null || SeriesValue::Str(x) > acc) && not(self.bitmap[i]) { SeriesValue::Str(x) } else { acc } })
+      data.foldi(init=SeriesValue::Null, fn(i, acc, x) {
+        if (acc == SeriesValue::Null || SeriesValue::Str(x) > acc) &&
+          not(self.bitmap[i]) {
+          SeriesValue::Str(x)
+        } else {
+          acc
+        }
+      })
   }
 }
 
@@ -737,13 +766,41 @@ pub fn Series::min(self : Series) -> SeriesValue!Error {
   }
   match self.data {
     SeriesData::Int(data) =>
-      data.foldi(init=SeriesValue::Null, fn(i, acc, x) { if (acc == SeriesValue::Null || SeriesValue::Int(x) < acc) && not(self.bitmap[i]) { SeriesValue::Int(x) } else { acc } })
+      data.foldi(init=SeriesValue::Null, fn(i, acc, x) {
+        if (acc == SeriesValue::Null || SeriesValue::Int(x) < acc) &&
+          not(self.bitmap[i]) {
+          SeriesValue::Int(x)
+        } else {
+          acc
+        }
+      })
     SeriesData::Float(data) =>
-      data.foldi(init=SeriesValue::Null, fn(i, acc, x) { if (acc == SeriesValue::Null || SeriesValue::Float(x) < acc) && not(self.bitmap[i]) { SeriesValue::Float(x) } else { acc } })
+      data.foldi(init=SeriesValue::Null, fn(i, acc, x) {
+        if (acc == SeriesValue::Null || SeriesValue::Float(x) < acc) &&
+          not(self.bitmap[i]) {
+          SeriesValue::Float(x)
+        } else {
+          acc
+        }
+      })
     SeriesData::Bool(data) =>
-      data.foldi(init=SeriesValue::Null, fn(i, acc, x) { if (acc == SeriesValue::Null || SeriesValue::Bool(x) < acc) && not(self.bitmap[i]) { SeriesValue::Bool(x) } else { acc } })
+      data.foldi(init=SeriesValue::Null, fn(i, acc, x) {
+        if (acc == SeriesValue::Null || SeriesValue::Bool(x) < acc) &&
+          not(self.bitmap[i]) {
+          SeriesValue::Bool(x)
+        } else {
+          acc
+        }
+      })
     SeriesData::Str(data) =>
-      data.foldi(init=SeriesValue::Null, fn(i, acc, x) { if (acc == SeriesValue::Null || SeriesValue::Str(x) < acc) && not(self.bitmap[i]) { SeriesValue::Str(x) } else { acc } })
+      data.foldi(init=SeriesValue::Null, fn(i, acc, x) {
+        if (acc == SeriesValue::Null || SeriesValue::Str(x) < acc) &&
+          not(self.bitmap[i]) {
+          SeriesValue::Str(x)
+        } else {
+          acc
+        }
+      })
   }
 }
 
@@ -769,16 +826,29 @@ pub fn Series::sum(self : Series) -> SeriesValue!InvalidType {
   match self.data {
     SeriesData::Int(data) =>
       match data {
-        _ => SeriesValue::Int(data.foldi(init=0, fn(i, acc, x) { 
-          if not(self.bitmap[i]) { acc + x } else { acc }
-      }))
+        _ =>
+          SeriesValue::Int(
+            data.foldi(init=0, fn(i, acc, x) {
+              if not(self.bitmap[i]) {
+                acc + x
+              } else {
+                acc
+              }
+            }),
+          )
       }
     SeriesData::Float(data) =>
       match data {
         _ =>
-          SeriesValue::Float(data.foldi(init=0.0, fn(i, acc, x) {
-            if not(self.bitmap[i]) { acc + x } else { acc }
-          }))
+          SeriesValue::Float(
+            data.foldi(init=0.0, fn(i, acc, x) {
+              if not(self.bitmap[i]) {
+                acc + x
+              } else {
+                acc
+              }
+            }),
+          )
       }
     _ => raise InvalidType("unsupported type")
   }
@@ -815,9 +885,14 @@ pub fn Series::mean(self : Series) -> Float!Error {
         [] => raise EmptyArrayError("Cannot find the mean of an empty array")
         _ => {
           let mut cnt = 0
-          let sum = data.foldi(init=0, fn(i, acc, x) { 
-            if not(self.bitmap[i]) { cnt += 1; acc + x } else { acc }
-           })
+          let sum = data.foldi(init=0, fn(i, acc, x) {
+            if not(self.bitmap[i]) {
+              cnt += 1
+              acc + x
+            } else {
+              acc
+            }
+          })
           sum.to_float() / cnt.to_float()
         }
       }
@@ -827,7 +902,12 @@ pub fn Series::mean(self : Series) -> Float!Error {
         _ => {
           let mut cnt = 0
           let sum = data.foldi(init=(0.0 : Float), fn(i, acc, x) {
-            if not(self.bitmap[i]) { cnt += 1; acc + x } else { acc }
+            if not(self.bitmap[i]) {
+              cnt += 1
+              acc + x
+            } else {
+              acc
+            }
           })
           sum / cnt.to_float()
         }
@@ -1097,6 +1177,7 @@ pub fn Series::has_null(self : Series) -> Bool {
 //   ...
 // }
 
+///|
 fn SeriesData::resize(self : SeriesData, new_length : Int) -> Unit {
   match self {
     SeriesData::Int(data) => data.resize(new_length, 0)
@@ -1133,7 +1214,7 @@ pub fn Series::is_null(self : Series) -> Series {
   }
   Series::{
     name: self.name(),
-    data: data,
+    data,
     data_type: DataType::Bool,
     bitmap: emptyBitMap,
     length: self.length,
@@ -1162,7 +1243,7 @@ pub fn Series::is_not_null(self : Series) -> Series {
   }
   Series::{
     name: self.name(),
-    data: data,
+    data,
     data_type: DataType::Bool,
     bitmap: emptyBitMap,
     length: self.length,
@@ -1194,38 +1275,41 @@ pub fn Series::is_not_null(self : Series) -> Series {
 /// let series = Series::new("test", SeriesInput::Int32_Nullable([Some(3), Some(2), None]))
 /// inspect!(series.is_sorted(descending=true, nulls_last=true), content="true")
 /// ```
-pub fn Series::is_sorted(self : Series, descending~ : Bool = false, nulls_last~ : Bool = false) -> Bool {
+pub fn Series::is_sorted(
+  self : Series,
+  descending~ : Bool = false,
+  nulls_last~ : Bool = false
+) -> Bool {
   let mut l = 0
   let mut r = self.length - 1
   // check nulls
   match nulls_last {
-    false => {
-      while(l < self.length && self.bitmap[l]) {
+    false =>
+      while l < self.length && self.bitmap[l] {
         l += 1
       }
-    }
-    true => {
-      while(r >= 0 && self.bitmap[r]) {
+    true =>
+      while r >= 0 && self.bitmap[r] {
         r -= 1
       }
-    }
   }
-  guard not(self.bitmap.optional) || self.bitmap.bitmap[l:r+1].all(fn(x){not(x)}) else {
+  guard not(self.bitmap.optional) ||
+    self.bitmap.bitmap[l:r + 1].all(fn(x) { not(x) }) else {
     return false
   }
   // check order
   match descending {
     false => {
-      for i in (l+1)..<(r+1) {
-        if self.data[i] < self.data[i-1] {
+      for i in (l + 1)..<(r + 1) {
+        if self.data[i] < self.data[i - 1] {
           return false
         }
       }
       true
     }
     true => {
-      for i in (l+1)..<(r+1) {
-        if self.data[i] > self.data[i-1] {
+      for i in (l + 1)..<(r + 1) {
+        if self.data[i] > self.data[i - 1] {
           return false
         }
       }
