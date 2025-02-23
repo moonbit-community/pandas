@@ -79,14 +79,19 @@ pub impl Show for DataFrame with output(self, logger) {
   }
   logger.write_string(row_str + "\n")
   row_str = ""
-  for i = 0; i < self.shape()[0]; i = i + 1 {
+  for i = 0; i < self.shape[0]; i = i + 1 {
     row_str += i.to_string() + "\t"
     for col in self.data {
-      match col.data() {
-        SeriesData::Int(vals) => row_str += vals[i].to_string() + "\t"
-        SeriesData::Float(vals) => row_str += vals[i].to_string() + "\t"
-        SeriesData::Bool(vals) => row_str += vals[i].to_string() + "\t"
-        SeriesData::Str(vals) => row_str += vals[i] + "\t"
+      match col.bitmap[i] {
+        true => row_str += "null\t"
+        false => {
+          match col.data() {
+            SeriesData::Int(vals) => row_str += vals[i].to_string() + "\t"
+            SeriesData::Float(vals) => row_str += vals[i].to_string() + "\t"
+            SeriesData::Bool(vals) => row_str += vals[i].to_string() + "\t"
+            SeriesData::Str(vals) => row_str += vals[i] + "\t"
+          }
+        }
       }
     }
     row_str += "\n"
@@ -116,14 +121,19 @@ pub fn DataFrame::head(self : DataFrame, rows~ : Int = 5) -> Unit {
     row_str = row_str + col.name() + "\t"
   }
   row_str += "\n"
-  for i = 0; i < @math.minimum(rows, self.shape()[0]); i = i + 1 {
+  for i = 0; i < @math.minimum(rows, self.shape[0]); i = i + 1 {
     row_str += i.to_string() + "\t"
     for col in self.data {
-      match col.data() {
-        SeriesData::Int(vals) => row_str += vals[i].to_string() + "\t"
-        SeriesData::Float(vals) => row_str += vals[i].to_string() + "\t"
-        SeriesData::Bool(vals) => row_str += vals[i].to_string() + "\t"
-        SeriesData::Str(vals) => row_str += vals[i] + "\t"
+      match col.bitmap[i] {
+        true => row_str += "null\t"
+        false => {
+          match col.data() {
+            SeriesData::Int(vals) => row_str += vals[i].to_string() + "\t"
+            SeriesData::Float(vals) => row_str += vals[i].to_string() + "\t"
+            SeriesData::Bool(vals) => row_str += vals[i].to_string() + "\t"
+            SeriesData::Str(vals) => row_str += vals[i] + "\t"
+          }
+        }
       }
     }
     row_str += "\n"
@@ -149,23 +159,23 @@ pub fn DataFrame::head(self : DataFrame, rows~ : Int = 5) -> Unit {
 ///
 /// ### Example
 /// ```
-/// let new_column = Series::new("B", SeriesData::Int([1, 2, 3]))
+/// let new_column = Series::new("B", SeriesInput::Int32([1, 2, 3]))
 /// df.add_column(new_column)
 /// ```
 pub fn DataFrame::add_column(self : DataFrame, col : Series) -> Unit! {
-  if col.data().length() != self.shape()[0] {
+  guard col.data.length() == self.shape[0] else {
     raise InconsistentSeriesLength(
       "Could not add a new column to the DataFrame. The Series lengths are not equal.",
     )
   }
-  if self.index.contains(col.name()) {
+  guard not(self.index.contains(col.name)) else {
     raise DuplicateColumnError(
       "Could not add a new column to the DataFrame. The Series name already exists.",
     )
   }
   self.data += [col]
-  self.shape = [self.shape()[0], self.shape()[1] + 1]
-  self.index[col.name()] = self.shape()[1] - 1
+  self.shape = [self.shape[0], self.shape[1] + 1]
+  self.index[col.name] = self.shape[1] - 1
 }
 
 ///| Drop a column from the DataFrame
@@ -191,7 +201,7 @@ pub fn DataFrame::drop_column(
     Some(idx) => {
       let _ = self.data.remove(idx)
       self.index.remove(col_name)
-      self.shape = [self.shape()[0], self.shape()[1] - 1]
+      self.shape = [self.shape[0], self.shape[1] - 1]
       self.index.each(fn(k, v) { if v > idx { self.index[k] = v - 1 } })
     }
     None => raise ColumnNotFoundError("Column '\{col_name}' not found")
@@ -298,7 +308,7 @@ pub fn DataFrame::select_columns(
   }
   DataFrame::{
     data: selected_cols,
-    shape: [self.shape()[0], selected_cols.length()],
+    shape: [self.shape[0], selected_cols.length()],
     index,
   }
 }
@@ -323,7 +333,7 @@ pub fn DataFrame::select_columns(
 /// df.drop_row(0)
 /// ```
 pub fn DataFrame::drop_row(self : DataFrame, row_index : Int) -> Unit! {
-  if row_index < 0 || row_index >= self.shape()[0] {
+  if row_index < 0 || row_index >= self.shape[0] {
     raise IndexOutOfBounds("Row index out of bounds")
   }
   for col in self.data {

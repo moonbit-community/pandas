@@ -355,3 +355,19 @@ test "DataFrame::slice" {
   inspect!(sliced.data()[0].data(), content="Int([2, 3])")
   inspect!(sliced.data()[1].data(), content="Float([2, 3])")
 }
+
+// test "DataFrame Show" {
+//   let df = DataFrame::new!([
+//     Series::new("A", SeriesInput::Int32([1, 2, 3])),
+//     Series::new("B", SeriesInput::Int32_Nullable([Some(1), Some(2), None])),
+//   ])
+//   println(df)
+// }
+// test "DataFrame head" {
+//   let df = DataFrame::new!([
+//     Series::new("A", SeriesInput::Int32([1, 2, 3])),
+//     Series::new("B", SeriesInput::Int32_Nullable([Some(1), Some(2), None])),
+//   ])
+//   df.head()
+//   df.head(rows=2)
+// }
