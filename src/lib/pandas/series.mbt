@@ -1263,7 +1263,7 @@ pub fn Series::is_not_null(self : Series) -> Series {
 /// - `Bool` : True if the Series is sorted, otherwise false
 ///
 /// Example
-/// ```moonbit
+/// ```
 /// let series = Series::new("test", SeriesInput::Int32([1, 2, 3]))
 /// inspect!(series.is_sorted(), content="true")
 /// let series = Series::new("test", SeriesInput::Int32([3, 2, 1]))
@@ -1316,4 +1316,39 @@ pub fn Series::is_sorted(
       true
     }
   }
+}
+
+///| Count the null values in this Series.
+pub fn Series::null_count(self : Series) -> Int {
+  match self.bitmap.optional {
+    true => self.bitmap.bitmap.iter().filter(fn(x) { x }).count()
+    false => 0
+  }
+}
+
+///| Count the number of unique values in this Series
+///
+/// Parameters
+///
+/// - `self` : An instance of the Series
+///
+/// Returns
+///
+/// - `Int` : The number of unique values in the Series
+///
+/// Example
+/// ```
+/// let series = Series::new("test", SeriesInput::Int32([1, 2, 3, 1]))
+/// inspect!(series.n_unique(), content="3")
+/// let series = Series::new("test", SeriesInput::Int32_Nullable([Some(1), None, Some(3), Some(1)]))
+/// inspect!(series.n_unique(), content="2")
+/// ```
+pub fn Series::n_unique(self : Series) -> Int {
+  let st = @hashset.new()
+  for i in 0..<self.length {
+    if not(self.bitmap[i]) {
+      st.add(self.data[i])
+    }
+  }
+  st.size()
 }

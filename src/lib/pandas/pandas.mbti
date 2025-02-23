@@ -123,9 +123,11 @@ impl Series {
   mean(Self) -> Float!
   merge(Self, Self) -> Self!InvalidType
   min(Self) -> SeriesValue!
+  n_unique(Self) -> Int
   name(Self) -> String
   new(String, SeriesInput) -> Self
   not_(Self) -> Self
+  null_count(Self) -> Int
   op_add(Self, Self) -> Self
   op_div(Self, Self) -> Self
   op_get(Self, Int) -> SeriesValue
@@ -172,6 +174,7 @@ pub(all) enum SeriesValue {
 }
 impl Compare for SeriesValue
 impl Eq for SeriesValue
+impl Hash for SeriesValue
 impl Show for SeriesValue
 
 // Type aliases

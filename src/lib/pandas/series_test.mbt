@@ -182,3 +182,21 @@ test "Series::is_sorted" {
   )
   inspect!(series.is_sorted(descending=true, nulls_last=true), content="true")
 }
+
+test "Series::null_count" {
+  let series = Series::new(
+    "test",
+    SeriesInput::Int32_Nullable([Some(1), None, Some(2)]),
+  )
+  inspect!(series.null_count(), content="1")
+}
+
+test "Series::n_unique" {
+  let series = Series::new("test", SeriesInput::Int32([1, 2, 3, 1]))
+  inspect!(series.n_unique(), content="3")
+  let series = Series::new(
+    "test",
+    SeriesInput::Int32_Nullable([Some(1), None, Some(3), Some(1)]),
+  )
+  inspect!(series.n_unique(), content="2")
+}

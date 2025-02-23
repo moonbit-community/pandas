@@ -13,7 +13,7 @@ pub(all) enum SeriesValue {
   Bool(Bool)
   Str(String)
   Null
-} derive(Show, Eq, Compare)
+} derive(Show, Eq, Compare, Hash)
 
 ///|
 pub(all) enum SeriesInput {
