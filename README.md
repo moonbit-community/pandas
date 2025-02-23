@@ -6,81 +6,6 @@ moonbit-community link: https://github.com/moonbit-community/pandas
 This is a data processing library written in Moonbit. It provides a DataFrame data structure for efficient data manipulation and analysis.
 
 
-## Feature
-
-### DataFrame Methods
-
-| Method             | Description                                                                 |
-|--------------------|-----------------------------------------------------------------------------|
-| `new`              | Create a new DataFrame                                                      |
-| `shape`            | Get the shape of the DataFrame                                              |
-| `data`             | Get the data of the DataFrame                                               |
-| `head`             | Display the first few rows of the DataFrame                                 |
-| `add_column`       | Add a new column to the DataFrame                                           |
-| `drop_column`      | Drop a column from the DataFrame                                            |
-| `rename`           | Rename a column in the DataFrame                                            |
-| `column`           | Select a column from the DataFrame                                          |
-| `select_columns`   | Select specific columns from the DataFrame                                  |
-| `drop_row`         | Drop a row from the DataFrame                                               |
-| `add_row`          | Add a new row to the DataFrame                                              |
-| `select_rows`      | Select specific rows from the DataFrame                                     |
-| `filter`           | Filter rows in the DataFrame based on a condition                           |
-| `sort`             | Sort the DataFrame by a specified column                                    |
-| `vstack`           | Vertically stack two DataFrames                                             |
-| `hstack`           | Horizontally stack two DataFrames                                           |
-| `clear`            | Clear all data in the DataFrame                                             |
-| `clone`            | Create a deep copy of the DataFrame                                         |
-| `item`             | Retrieve a single item from the DataFrame                                   |
-| `limit`            | Create a new DataFrame containing only the first N rows                     |
-| `tail`             | Create a new DataFrame containing only the last N rows                      |
-| `slice`            | Create a new DataFrame containing a slice of rows                           |
-| `to_series`        | Convert a column of the DataFrame to a Series                               |
-| `unique`           | Remove duplicate rows from the DataFrame                                    |
-| `replace_column`   | Replace a column in the DataFrame                                           |
-| `reverse`          | Reverse the order of rows in the DataFrame                                  |
-| `get_column_index` | Get the index of a column by its name                                       |
-| `with_row_index`   | Add a row index column to the DataFrame                                     |
-| `transpose`        | Transpose the DataFrame over the diagonal                                   |
-| `mean`             | Calculate the mean of each column in the DataFrame                          |
-| `var`              | Calculate the variance of each column in the DataFrame                      |
-| `count`            | Count the number of rows and columns in the DataFrame                       |
-| `max`              | Get the maximum value of each column in the DataFrame                       |
-| `max_horizontal`   | Get the maximum value of each row in the DataFrame                          |
-| `min`              | Get the minimum value of each column in the DataFrame                       |
-| `min_horizontal`   | Get the minimum value of each row in the DataFrame                          |
-| `sum`              | Calculate the sum of each column in the DataFrame                           |
-| `sum_horizontal`   | Calculate the sum of each row in the DataFrame                              |
-| `dtypes`           | Get the data types of each column in the DataFrame                          |
-| `height`           | Get the number of rows in the DataFrame                                     |
-| `width`            | Get the number of columns in the DataFrame                                  |
-| `product`          | Calculate the product of each column in the DataFrame                       |
-| `schema`           | Get the schema of the DataFrame                                             |
-
-### Series Methods
-
-| Method             | Description                                                                 |
-|--------------------|-----------------------------------------------------------------------------|
-| `new`              | Create a new Series                                                         |
-| `data`             | Get the data of the Series                                                  |
-| `erase`            | Erase an element from the Series                                            |
-| `sort`             | Sort the SeriesData in Series and return the indices of the sorted elements |
-| `+`                | Add two Series                                                              |
-| `-`                | Subtract two Series                                                         |
-| `*`                | Multiply two Series                                                         |
-| `/`                | Divide two Series                                                           |
-| `mean`             | Calculate the mean of the Series                                            |
-| `var`              | Calculate the variance of the Series                                        |
-| `argsort`          | Return the indices that would sort the Series                               |
-| `copy`             | Create a copy of the Series                                                 |
-| `count`            | Count the number of elements in the Series                                  |
-| `get_type`         | Get the type of the Series                                                  |
-| `max`              | Get the maximum value of the Series                                         |
-| `merge`            | Merge two Series                                                            |
-| `min`              | Get the minimum value of the Series                                         |
-| `name`             | Get the name of the Series                                                  |
-| `reverse`          | Reverse the order of elements in the Series                                 |
-| `sum`              | Calculate the sum of the Series                                             |
-
 ## Usage
 
 ### DataFrame
@@ -197,6 +122,107 @@ let sub_op = series1 - series2
 let mul_op = series1 * series2
 let div_op = series1 / series2
 ```
+
+## Feature
+
+### DataFrame Methods
+
+| Method             | Description                                                                 |
+|--------------------|-----------------------------------------------------------------------------|
+| `new`              | Create a new DataFrame                                                      |
+| `shape`            | Get the shape of the DataFrame                                              |
+| `data`             | Get the data of the DataFrame                                               |
+| `head`             | Display the first few rows of the DataFrame                                 |
+| `add_column`       | Add a new column to the DataFrame                                           |
+| `drop_column`      | Drop a column from the DataFrame                                            |
+| `rename`           | Rename a column in the DataFrame                                            |
+| `column`           | Select a column from the DataFrame                                          |
+| `select_columns`   | Select specific columns from the DataFrame                                  |
+| `drop_row`         | Drop a row from the DataFrame                                               |
+| `add_row`          | Add a new row to the DataFrame                                              |
+| `select_rows`      | Select specific rows from the DataFrame                                     |
+| `filter`           | Filter rows in the DataFrame based on a condition                           |
+| `sort`             | Sort the DataFrame by a specified column                                    |
+| `vstack`           | Vertically stack two DataFrames                                             |
+| `hstack`           | Horizontally stack two DataFrames                                           |
+| `clear`            | Clear all data in the DataFrame                                             |
+| `clone`            | Create a deep copy of the DataFrame                                         |
+| `item`             | Retrieve a single item from the DataFrame                                   |
+| `limit`            | Create a new DataFrame containing only the first N rows                     |
+| `tail`             | Create a new DataFrame containing only the last N rows                      |
+| `slice`            | Create a new DataFrame containing a slice of rows                           |
+| `to_series`        | Convert a column of the DataFrame to a Series                               |
+| `unique`           | Remove duplicate rows from the DataFrame                                    |
+| `replace_column`   | Replace a column in the DataFrame                                           |
+| `reverse`          | Reverse the order of rows in the DataFrame                                  |
+| `get_column_index` | Get the index of a column by its name                                       |
+| `with_row_index`   | Add a row index column to the DataFrame                                     |
+| `transpose`        | Transpose the DataFrame over the diagonal                                   |
+| `mean`             | Calculate the mean of each column in the DataFrame                          |
+| `var`              | Calculate the variance of each column in the DataFrame                      |
+| `count`            | Count the number of rows and columns in the DataFrame                       |
+| `max`              | Get the maximum value of each column in the DataFrame                       |
+| `max_horizontal`   | Get the maximum value of each row in the DataFrame                          |
+| `min`              | Get the minimum value of each column in the DataFrame                       |
+| `min_horizontal`   | Get the minimum value of each row in the DataFrame                          |
+| `sum`              | Calculate the sum of each column in the DataFrame                           |
+| `sum_horizontal`   | Calculate the sum of each row in the DataFrame                              |
+| `dtypes`           | Get the data types of each column in the DataFrame                          |
+| `height`           | Get the number of rows in the DataFrame                                     |
+| `width`            | Get the number of columns in the DataFrame                                  |
+| `product`          | Calculate the product of each column in the DataFrame                       |
+| `schema`           | Get the schema of the DataFrame                                             |
+
+### Series Methods
+
+| Method             | Description                                                                 |
+|--------------------|-----------------------------------------------------------------------------|
+| `new`              | Create a new Series                                                         |
+| `data`             | Get the data of the Series                                                  |
+| `erase`            | Erase an element from the Series                                            |
+| `sort`             | Sort the SeriesData in Series and return the indices of the sorted elements |
+| `+`                | Add two Series                                                              |
+| `-`                | Subtract two Series                                                         |
+| `*`                | Multiply two Series                                                         |
+| `/`                | Divide two Series                                                           |
+| `mean`             | Calculate the mean of the Series                                            |
+| `var`              | Calculate the variance of the Series                                        |
+| `argsort`          | Return the indices that would sort the Series                               |
+| `copy`             | Create a copy of the Series                                                 |
+| `count`            | Count the number of elements in the Series                                  |
+| `get_type`         | Get the type of the Series                                                  |
+| `max`              | Get the maximum value of the Series                                         |
+| `merge`            | Merge two Series                                                            |
+| `min`              | Get the minimum value of the Series                                         |
+| `name`             | Get the name of the Series                                                  |
+| `reverse`          | Reverse the order of elements in the Series                                 |
+| `sum`              | Calculate the sum of the Series                                             |
+| `abs`              | Return a new Series with the absolute value of each element                 |
+| `acos`             | Return a new Series with the arccos of each element                         |
+| `all`              | Return whether all non-null elements in the Series are true                 |
+| `any`              | Return whether any non-null element in the Series is true                   |
+| `append`           | Append another Series to the current one and return a new Series            |
+| `clear`            | Remove all elements from the current Series                                 |
+| `concat`           | Concatenate multiple Series and return the result                           |
+| `cos`              | Return a new Series with the cosine of each element                         |
+| `extend`           | Extend the current Series in-place with another Series                      |
+| `has_null`         | Check if the current Series contains any null values                        |
+| `is_empty`         | Check if the current Series is empty                                        |
+| `is_not_null`      | Return a boolean Series indicating non-null elements                        |
+| `is_null`          | Return a boolean Series indicating null elements                            |
+| `is_sorted`        | Check if the current Series is sorted                                       |
+| `length`           | Return the length of the current Series                                     |
+| `log`              | Return a new Series with the logarithm of each element                      |
+| `log10`            | Return a new Series with the base-10 log of each element                    |
+| `lower_bound`      | Return a new Series with each element replaced by the lower bound           |
+| `n_unique`         | Return the number of unique elements in the Series                          |
+| `not_`             | Return the logical NOT of a boolean Series                                  |
+| `null_count`       | Return the count of null values in the Series                               |
+| `op_get`           | Return the element at a given index in the Series                           |
+| `sin`              | Return a new Series with the sine of each element                           |
+| `tan`              | Return a new Series with the tangent of each element                        |
+| `unique_counts`    | Return a new Series showing the count of each unique value                  |
+| `upper_bound`      | Return a new Series with each element replaced by the upper bound           |
 
 ## Contributing
 Issues and pull requests are welcome. Please make sure to run all tests before submitting.
