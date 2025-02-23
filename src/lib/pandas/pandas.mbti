@@ -119,6 +119,7 @@ impl Series {
   is_null(Self) -> Self
   is_sorted(Self, descending~ : Bool = .., nulls_last~ : Bool = ..) -> Bool
   length(Self) -> Int
+  lower_bound(Self) -> Self
   max(Self) -> SeriesValue!
   mean(Self) -> Float!
   merge(Self, Self) -> Self!InvalidType
@@ -136,6 +137,8 @@ impl Series {
   reverse(Self) -> Unit
   sort(Self) -> Unit
   sum(Self) -> SeriesValue!InvalidType
+  unique_counts(Self) -> Self
+  upper_bound(Self) -> Self
   var(Self, ddof~ : Int = ..) -> Float!
 }
 impl Eq for Series

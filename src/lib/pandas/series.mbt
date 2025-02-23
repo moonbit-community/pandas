@@ -1352,3 +1352,68 @@ pub fn Series::n_unique(self : Series) -> Int {
   }
   st.size()
 }
+
+///| Return the lower bound of this Series’ dtype as a unit Series.
+pub fn Series::lower_bound(self : Series) -> Series {
+  match self.data.get_type() {
+    DataType::Int32 =>
+      Series::new(self.name, SeriesInput::Int32([@int.min_value]))
+    DataType::Float32 =>
+      Series::new(self.name, SeriesInput::Float32([@float.min_value]))
+    DataType::Bool => Series::new(self.name, SeriesInput::Bool([false]))
+    DataType::String => Series::new(self.name, SeriesInput::Str([""]))
+  }
+}
+
+///| Return the upper bound of this Series’ dtype as a unit Series.
+pub fn Series::upper_bound(self : Series) -> Series {
+  match self.data.get_type() {
+    DataType::Int32 =>
+      Series::new(self.name, SeriesInput::Int32([@int.max_value]))
+    DataType::Float32 =>
+      Series::new(self.name, SeriesInput::Float32([@float.max_value]))
+    DataType::Bool => Series::new(self.name, SeriesInput::Bool([true]))
+    DataType::String =>
+      Series::new(self.name, SeriesInput::Str([@byte.max_value.to_string()]))
+  }
+}
+
+///| Return a count of the unique values in the order of appearance
+///
+/// Parameters
+///
+/// - `self` : An instance of the Series
+///
+/// Returns
+///
+/// - `Series` : A new Series containing the count of unique values in the order of appearance
+///
+/// Example
+/// ```
+/// let series = Series::new("test", SeriesInput::Int32([1, 2, 3, 1, 2]))
+/// inspect!(series.unique_counts().data.to_string(), content="Int([2, 2, 1])")
+/// let series = Series::new("test", SeriesInput::Int32_Nullable([Some(1), None, Some(3), Some(1), Some(3)]))
+/// inspect!(series.unique_counts().data.to_string(), content="Int([2, 1, 2])")
+/// ```
+pub fn Series::unique_counts(self : Series) -> Series {
+  let count : @hashmap.T[SeriesValue, Int] = @hashmap.new()
+  let order : Array[SeriesValue] = Array::new()
+  for i in 0..<self.length {
+    if not(count.contains(self.data[i])) {
+      order.push(self.data[i])
+    }
+    count[self.data[i]] = (match count[self.data[i]] {
+        None => 0
+        Some(val) => val
+      }) +
+      1
+  }
+  let data : Array[Int] = Array::makei(order.length(), fn(i) {
+    match count[order[i]] {
+      Some(val) => val
+      // never happened
+      None => -1
+    }
+  })
+  Series::new(self.name, SeriesInput::Int32(data))
+}

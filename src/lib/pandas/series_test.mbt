@@ -200,3 +200,13 @@ test "Series::n_unique" {
   )
   inspect!(series.n_unique(), content="2")
 }
+
+test "Series::unique_count" {
+  let series = Series::new("test", SeriesInput::Int32([1, 2, 3, 1, 2]))
+  inspect!(series.unique_counts().data.to_string(), content="Int([2, 2, 1])")
+  let series = Series::new(
+    "test",
+    SeriesInput::Int32_Nullable([Some(1), None, Some(3), Some(1), Some(3)]),
+  )
+  inspect!(series.unique_counts().data.to_string(), content="Int([2, 1, 2])")
+}
