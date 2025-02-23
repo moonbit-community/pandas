@@ -49,6 +49,34 @@ fn BitMap::op_add(self : BitMap, other : BitMap) -> BitMap {
   }
 }
 
+///|
+fn BitMap::append(self : BitMap, other : BitMap) -> BitMap {
+  match (self.optional, other.optional) {
+    (false, false) => emptyBitMap
+    (true, true) =>
+      BitMap::{
+        optional: true,
+        bitmap: self.bitmap + other.bitmap,
+        length: self.length + other.length,
+        offset: self.offset,
+      }
+    (true, false) =>
+      BitMap::{
+        optional: true,
+        bitmap: self.bitmap + Array::make(other.length, false),
+        length: self.length + other.length,
+        offset: self.offset,
+      }
+    (false, true) =>
+      BitMap::{
+        optional: true,
+        bitmap: Array::make(self.length, false) + other.bitmap,
+        length: self.length + other.length,
+        offset: self.offset,
+      }
+  }
+}
+
 test "BitMap::op_add" {
   let a = BitMap::new(data=[Some(1), None, Some(3)])
   let b = BitMap::new(data=[None, Some(2), Some(3)])

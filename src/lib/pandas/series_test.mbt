@@ -139,15 +139,9 @@ test "Series::is_null" {
     "test",
     SeriesInput::Int32_Nullable([Some(1), None, Some(2)]),
   )
-  inspect!(
-    series.is_null().data.to_string(),
-    content="Bool([false, true, false])",
-  )
+  inspect!(series.is_null().data, content="Bool([false, true, false])")
   let series = Series::new("test", SeriesInput::Int32([1, 2, 3]))
-  inspect!(
-    series.is_null().data.to_string(),
-    content="Bool([false, false, false])",
-  )
+  inspect!(series.is_null().data, content="Bool([false, false, false])")
 }
 
 test "Series::is_not_null" {
@@ -155,10 +149,7 @@ test "Series::is_not_null" {
     "test",
     SeriesInput::Int32_Nullable([Some(1), None, Some(2)]),
   )
-  inspect!(
-    series.is_not_null().data.to_string(),
-    content="Bool([true, false, true])",
-  )
+  inspect!(series.is_not_null().data, content="Bool([true, false, true])")
 }
 
 test "Series::is_sorted" {
@@ -203,17 +194,17 @@ test "Series::n_unique" {
 
 test "Series::unique_count" {
   let series = Series::new("test", SeriesInput::Int32([1, 2, 3, 1, 2]))
-  inspect!(series.unique_counts().data.to_string(), content="Int([2, 2, 1])")
+  inspect!(series.unique_counts().data, content="Int([2, 2, 1])")
   let series = Series::new(
     "test",
     SeriesInput::Int32_Nullable([Some(1), None, Some(3), Some(1), Some(3)]),
   )
-  inspect!(series.unique_counts().data.to_string(), content="Int([2, 1, 2])")
+  inspect!(series.unique_counts().data, content="Int([2, 1, 2])")
 }
 
 test "Series::abs" {
   let series = Series::new("test", SeriesInput::Int32([-1, 2, -3]))
-  inspect!(series.abs!().data.to_string(), content="Int([1, 2, 3])")
+  inspect!(series.abs!().data, content="Int([1, 2, 3])")
   let series = Series::new("test", SeriesInput::Float32([-1.5, 2.0, -3.0]))
-  inspect!(series.abs!().data.to_string(), content="Float([1.5, 2, 3])")
+  inspect!(series.abs!().data, content="Float([1.5, 2, 3])")
 }

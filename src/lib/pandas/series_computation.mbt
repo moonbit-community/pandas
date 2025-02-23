@@ -3,9 +3,9 @@
 /// Example
 /// ```
 /// let series = Series::new("test", SeriesInput::Int32([-1, 2, -3]))
-/// inspect!(series.abs!().data.to_string(), content="Int([1, 2, 3])")
+/// inspect!(series.abs!().data, content="Int([1, 2, 3])")
 /// let series = Series::new("test", SeriesInput::Float32([-1.5, 2.0, -3.0]))
-/// inspect!(series.abs!().data.to_string(), content="Float([1.5, 2, 3])")
+/// inspect!(series.abs!().data, content="Float([1.5, 2, 3])")
 /// ```
 pub fn Series::abs(self : Series) -> Series!InvalidType {
   match self.data {

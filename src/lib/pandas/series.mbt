@@ -472,6 +472,27 @@ fn op_add(self : SeriesData, other : SeriesData) -> SeriesData {
   }
 }
 
+///|
+fn SeriesData::append(self : SeriesData, other : SeriesData) -> SeriesData {
+  match (self, other) {
+    (SeriesData::Int(a), SeriesData::Int(b)) => SeriesData::Int(a + b)
+    (SeriesData::Float(a), SeriesData::Float(b)) => SeriesData::Float(a + b)
+    (SeriesData::Bool(a), SeriesData::Bool(b)) => SeriesData::Bool(a + b)
+    (SeriesData::Str(a), SeriesData::Str(b)) => SeriesData::Str(a + b)
+    _ => abort("unsupported types")
+  }
+}
+
+///|
+fn emptySeriesData(dtype : DataType) -> SeriesData {
+  match dtype {
+    DataType::Int32 => SeriesData::Int([])
+    DataType::Float32 => SeriesData::Float([])
+    DataType::Bool => SeriesData::Bool([])
+    DataType::String => SeriesData::Str([])
+  }
+}
+
 ///| Series add
 pub fn Series::op_add(self : Series, other : Series) -> Series {
   Series::{
@@ -1126,9 +1147,9 @@ test "Series::any" {
 /// Example
 /// ```moonbit
 /// let series = Series::new("test", SeriesData::Bool([true, false, true]))
-/// inspect!(series.not_().data.to_string(), content="Bool([false, true, false])")
+/// inspect!(series.not_().data, content="Bool([false, true, false])")
 /// let series = Series::new("test", SeriesData::Bool([true, false, true]))
-/// inspect!(series.not_().data.to_string(), content="Bool([false, true, false])")
+/// inspect!(series.not_().data, content="Bool([false, true, false])")
 /// ```
 pub fn Series::not_(self : Series) -> Series {
   match self.data {
@@ -1160,9 +1181,9 @@ pub fn Series::not_(self : Series) -> Series {
 
 test "Series::not_" {
   let series = Series::new("test", SeriesInput::Bool([true, false, true]))
-  inspect!(series.not_().data.to_string(), content="Bool([false, true, false])")
+  inspect!(series.not_().data, content="Bool([false, true, false])")
   let series = Series::new("test", SeriesInput::Bool([true, false, true]))
-  inspect!(series.not_().data.to_string(), content="Bool([false, true, false])")
+  inspect!(series.not_().data, content="Bool([false, true, false])")
 }
 
 ///|
@@ -1205,7 +1226,7 @@ pub fn Series::is_empty(self : Series) -> Bool {
 /// Example
 /// ```
 /// let series = Series::new("test", SeriesInput::Int32_Nullable([Some(1), None, Some(2)]))
-/// inspect!(series.is_null().data.to_string(), content="Bool([false, true, false])")
+/// inspect!(series.is_null().data, content="Bool([false, true, false])")
 /// ```
 pub fn Series::is_null(self : Series) -> Series {
   let data = match self.bitmap.optional {
@@ -1234,7 +1255,7 @@ pub fn Series::is_null(self : Series) -> Series {
 /// Example
 /// ```
 /// let series = Series::new("test", SeriesInput::Int32_Nullable([Some(1), None, Some(2)]))
-/// inspect!(series.is_not_null().data.to_string(), content="Bool([true, false, true])")
+/// inspect!(series.is_not_null().data, content="Bool([true, false, true])")
 /// ```
 pub fn Series::is_not_null(self : Series) -> Series {
   let data = match self.bitmap.optional {
@@ -1391,9 +1412,9 @@ pub fn Series::upper_bound(self : Series) -> Series {
 /// Example
 /// ```
 /// let series = Series::new("test", SeriesInput::Int32([1, 2, 3, 1, 2]))
-/// inspect!(series.unique_counts().data.to_string(), content="Int([2, 2, 1])")
+/// inspect!(series.unique_counts().data, content="Int([2, 2, 1])")
 /// let series = Series::new("test", SeriesInput::Int32_Nullable([Some(1), None, Some(3), Some(1), Some(3)]))
-/// inspect!(series.unique_counts().data.to_string(), content="Int([2, 1, 2])")
+/// inspect!(series.unique_counts().data, content="Int([2, 1, 2])")
 /// ```
 pub fn Series::unique_counts(self : Series) -> Series {
   let count : @hashmap.T[SeriesValue, Int] = @hashmap.new()
@@ -1418,3 +1439,141 @@ pub fn Series::unique_counts(self : Series) -> Series {
   Series::new(self.name, SeriesInput::Int32(data))
 }
 
+///| Append another Series to current Series
+///
+/// Parameters
+///
+/// - `self` : An instance of the Series
+/// - `other` : Another Series to append
+///
+/// Returns
+///
+/// - `Series` : A new Series with the data from both Series appended
+///
+/// Errors
+///
+/// - `InvalidType` : Raised if the data types of the two Series do not match
+///
+/// Example
+/// ```
+/// let series1 = Series::new("test", SeriesInput::Int32([1, 2]))
+/// let series2 = Series::new("test", SeriesInput::Int32([3, 4]))
+/// let series = series1.append!(series2)
+/// inspect!(series.data, content="Int([1, 2, 3, 4])")
+/// ```
+pub fn Series::append(self : Series, other : Series) -> Series!InvalidType {
+  let data = match (self.data, other.data) {
+    (SeriesData::Int(a), SeriesData::Int(b)) => SeriesData::Int(a + b)
+    (SeriesData::Float(a), SeriesData::Float(b)) => SeriesData::Float(a + b)
+    (SeriesData::Bool(a), SeriesData::Bool(b)) => SeriesData::Bool(a + b)
+    (SeriesData::Str(a), SeriesData::Str(b)) => SeriesData::Str(a + b)
+    _ => raise InvalidType("append must be the same type")
+  }
+  Series::{
+    name: self.name(),
+    data,
+    data_type: get_dtype(data),
+    bitmap: self.bitmap.append(other.bitmap),
+    length: self.length + other.length,
+  }
+}
+
+test "Series::append" {
+  let series1 = Series::new("test", SeriesInput::Int32([1, 2]))
+  let series2 = Series::new("test", SeriesInput::Int32([3, 4]))
+  let series = series1.append!(series2)
+  inspect!(series.data, content="Int([1, 2, 3, 4])")
+}
+
+///| Extend the current Series with another Series
+///
+/// Parameters
+///
+/// - `self` : An instance of the Series
+/// - `other` : Another Series to extend the current Series with
+///
+/// Errors
+///
+/// - `InvalidType` : Raised if the data types of the two Series do not match
+///
+/// Example
+/// ```
+/// let series1 = Series::new("test", SeriesInput::Int32([1, 2]))
+/// let series2 = Series::new("test", SeriesInput::Int32([3, 4]))
+/// series1.extend!(series2)
+/// inspect!(series1.data, content="Int([1, 2, 3, 4])")
+/// ```
+pub fn Series::extend(self : Series, other : Series) -> Unit!InvalidType {
+  guard self.data.get_type() == other.data.get_type() else {
+    raise InvalidType("extend must be the same type")
+  }
+  self.data = self.data.append(other.data)
+  self.bitmap = self.bitmap.append(other.bitmap)
+  self.length += other.length
+}
+
+test "Series::extend" {
+  let series1 = Series::new("test", SeriesInput::Int32([1, 2]))
+  let series2 = Series::new("test", SeriesInput::Int32([3, 4]))
+  series1.extend!(series2)
+  inspect!(series1.data, content="Int([1, 2, 3, 4])")
+}
+
+///| Concatenate multiple Series into one
+///
+/// Parameters
+///
+/// - `data` : An array of Series to concatenate
+///
+/// Returns
+///
+/// - `Series` : A new Series containing the concatenated data from all input Series
+///
+/// Errors
+///
+/// - `EmptyArrayError` : Raised if the input array is empty
+/// - `InvalidType` : Raised if the data types of the Series do not match
+///
+/// Example
+/// ```
+/// let series1 = Series::new("test", SeriesInput::Int32([1, 2]))
+/// let series2 = Series::new("test", SeriesInput::Int32([3, 4]))
+/// let series3 = Series::new("test", SeriesInput::Int32([5]))
+/// let series = Series::concat!([series1, series2, series3])
+/// inspect!(series.data, content="Int([1, 2, 3, 4, 5])")
+/// ```
+pub fn Series::concat(data : Array[Series]) -> Series! {
+  // check
+  guard data.length() > 0 else {
+    raise EmptyArrayError("Cannot concatenate an empty array")
+  }
+  for item in data {
+    guard item.data_type == data[0].data_type else {
+      raise InvalidType("concat must be the same type")
+    }
+
+  }
+  let mut new_data = emptySeriesData(data[0].data_type)
+  let mut bitmap = emptyBitMap
+  let mut length = 0
+  for item in data {
+    new_data = new_data.append(item.data)
+    bitmap = bitmap + item.bitmap
+    length += item.length
+  }
+  Series::{
+    name: data[0].name(),
+    data: new_data,
+    data_type: data[0].data_type,
+    bitmap,
+    length,
+  }
+}
+
+test "Series::concat" {
+  let series1 = Series::new("test", SeriesInput::Int32([1, 2]))
+  let series2 = Series::new("test", SeriesInput::Int32([3, 4]))
+  let series3 = Series::new("test", SeriesInput::Int32([5]))
+  let series = Series::concat!([series1, series2, series3])
+  inspect!(series.data, content="Int([1, 2, 3, 4, 5])")
+}

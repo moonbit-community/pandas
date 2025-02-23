@@ -108,13 +108,16 @@ impl Series {
   acos(Self) -> Self!InvalidType
   all(Self) -> Bool!InvalidType
   any(Self) -> Bool!InvalidType
+  append(Self, Self) -> Self!InvalidType
   argsort(Self, descending~ : Bool = ..) -> Array[Int]
   clear(Self) -> Unit
+  concat(Array[Self]) -> Self!
   copy(Self) -> Self
   cos(Self) -> Self!InvalidType
   count(Self) -> Int
   data(Self) -> SeriesData
   erase(Self, Int) -> Unit!
+  extend(Self, Self) -> Unit!InvalidType
   get_type(Self) -> DataType
   has_null(Self) -> Bool
   is_empty(Self) -> Bool
