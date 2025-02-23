@@ -1092,3 +1092,16 @@ pub fn Series::has_null(self : Series) -> Bool {
     true => self.bitmap.bitmap.iter().any(fn(x) { x })
   }
 }
+
+// fn Series::add_element(self : Series, value : SeriesValue) -> Unit {
+//   ...
+// }
+
+fn SeriesData::resize(self : SeriesData, new_length : Int) -> Unit {
+  match self {
+    SeriesData::Int(data) => data.resize(new_length, 0)
+    SeriesData::Float(data) => data.resize(new_length, 0.0)
+    SeriesData::Bool(data) => data.resize(new_length, false)
+    SeriesData::Str(data) => data.resize(new_length, "")
+  }
+}

@@ -23,24 +23,24 @@ test "indices_sort" {
   inspect!(arr, content="[1, 2, 3]")
 }
 
-fn type_check_operation(a : DataType, b : DataType) -> Bool {
-  match (a, b) {
-    (DataType::Int32, DataType::Int32) |
-    (DataType::Float32, DataType::Float32) |
-    (DataType::Int32, DataType::Float32) |
-    (DataType::Float32, DataType::Int32) |
-    (DataType::String, DataType::String) |
-    (DataType::Bool, DataType::Bool) => true
-    _ => false
-  }
-}
+// fn type_check_operation(a : DataType, b : DataType) -> Bool {
+//   match (a, b) {
+//     (DataType::Int32, DataType::Int32) |
+//     (DataType::Float32, DataType::Float32) |
+//     (DataType::Int32, DataType::Float32) |
+//     (DataType::Float32, DataType::Int32) |
+//     (DataType::String, DataType::String) |
+//     (DataType::Bool, DataType::Bool) => true
+//     _ => false
+//   }
+// }
 
-fn type_check_equal(a : DataType, b : DataType) -> Bool {
-  match (a, b) {
-    (DataType::Int32, DataType::Int32) |
-    (DataType::Float32, DataType::Float32) |
-    (DataType::String, DataType::String) |
-    (DataType::Bool, DataType::Bool) => true
-    _ => false
-  }
-}
+// fn type_check_equal(a : DataType, b : DataType) -> Bool {
+//   match (a, b) {
+//     (DataType::Int32, DataType::Int32) |
+//     (DataType::Float32, DataType::Float32) |
+//     (DataType::String, DataType::String) |
+//     (DataType::Bool, DataType::Bool) => true
+//     _ => false
+//   }
+// }

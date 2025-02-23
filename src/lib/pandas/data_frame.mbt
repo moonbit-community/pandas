@@ -338,8 +338,10 @@ pub fn DataFrame::drop_row(self : DataFrame, row_index : Int) -> Unit! {
   }
   for col in self.data {
     col.data.erase!(row_index)
+    col.bitmap.bitmap.remove(row_index) |> ignore
+    col.length = col.length - 1
   }
-  self.shape[0] = self.shape[0] - 1
+  self.shape[0] -= 1
 }
 
 ///| Add a new row to the DataFrame
@@ -367,36 +369,72 @@ pub fn DataFrame::drop_row(self : DataFrame, row_index : Int) -> Unit! {
 /// df.add_row([SeriesValue::Int(4), SeriesValue::Float(4.4)])
 /// ```
 pub fn DataFrame::add_row(self : DataFrame, row : Array[SeriesValue]) -> Unit! {
-  if row.length() != self.shape()[1] {
+  guard row.length() == self.shape[1] else {
     raise InconsistentSeriesLength(
       "Row length does not match DataFrame column length",
     )
   }
-  for i = 0; i < row.length(); i = i + 1 {
-    match self.data[i].data {
-      SeriesData::Int(data) =>
-        match row[i] {
-          SeriesValue::Int(value) => data.push(value)
-          _ => raise InvalidType("Type mismatch")
-        }
-      SeriesData::Float(data) =>
-        match row[i] {
-          SeriesValue::Float(value) => data.push(value)
-          _ => raise InvalidType("Type mismatch")
-        }
-      SeriesData::Bool(data) =>
-        match row[i] {
-          SeriesValue::Bool(value) => data.push(value)
-          _ => raise InvalidType("Type mismatch")
-        }
-      SeriesData::Str(data) =>
-        match row[i] {
-          SeriesValue::Str(value) => data.push(value)
-          _ => raise InvalidType("Type mismatch")
-        }
+  for i in 0..<row.length() {
+    guard row[i] == SeriesValue::Null || row[i].get_type() == self.data[i].data_type else {
+      raise InvalidType("Type mismatch")
     }
   }
-  self.shape[0] = self.shape[0] + 1
+  for i in 0..<row.length() {
+    match row[i] {
+      SeriesValue::Int(value) => {
+        match self.data[i].data {
+          SeriesData::Int(data) => {
+            if self.data[i].bitmap.optional {
+              self.data[i].bitmap.bitmap.push(false)
+            }
+            data.push(value)
+          }
+        }
+      }
+      SeriesValue::Float(value) => {
+        match self.data[i].data {
+          SeriesData::Float(data) => {
+            if self.data[i].bitmap.optional {
+              self.data[i].bitmap.bitmap.push(false)
+            }
+            data.push(value)
+          }
+        }
+      }
+      SeriesValue::Bool(value) => {
+        match self.data[i].data {
+          SeriesData::Bool(data) => {
+            if self.data[i].bitmap.optional {
+              self.data[i].bitmap.bitmap.push(false)
+            }
+            data.push(value)
+          }
+        }
+      }
+      SeriesValue::Str(value) => {
+        match self.data[i].data {
+          SeriesData::Str(data) => {
+            if self.data[i].bitmap.optional {
+              self.data[i].bitmap.bitmap.push(false)
+            }
+            data.push(value)
+          }
+        }
+      }
+      SeriesValue::Null => {
+        match self.data[i].bitmap.optional {
+          false =>
+            self.data[i].bitmap = BitMap::new_by_size(self.shape[0])
+          _ => ()
+        }
+        self.data[i].bitmap.bitmap.push(true)
+        self.data[i].bitmap.length += 1
+        self.data[i].data.resize(self.shape[0] + 1)
+      }
+    }
+    self.data[i].length += 1
+  }
+  self.shape[0] += 1
 }
 
 ///| Select specific rows from the DataFrame

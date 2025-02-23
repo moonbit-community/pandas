@@ -26,3 +26,14 @@ pub(all) enum SeriesInput {
   Bool_Nullable(Array[Bool?])
   Str_Nullable(Array[String?])
 }
+
+///|
+fn SeriesValue::get_type(self : SeriesValue) -> DataType {
+  match self {
+    SeriesValue::Int(_) => DataType::Int32
+    SeriesValue::Float(_) => DataType::Float32
+    SeriesValue::Bool(_) => DataType::Bool
+    SeriesValue::Str(_) => DataType::String
+    SeriesValue::Null => abort("SeriesValue::get_type: Null")
+  }
+}

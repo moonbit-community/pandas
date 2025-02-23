@@ -371,3 +371,15 @@ test "DataFrame::slice" {
 //   df.head()
 //   df.head(rows=2)
 // }
+
+test "DataFrame::add_row" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesInput::Int32([1, 2])),
+    Series::new("B", SeriesInput::Float32([1.5, 2.5])),
+  ])
+  df.add_row!([SeriesValue::Int(3), SeriesValue::Float(3.5)])
+  inspect!(df.data[0].data(), content="Int([1, 2, 3])")
+  df.add_row!([SeriesValue::Int(4), SeriesValue::Null])
+  inspect!(df.data[1].data(), content="Float([1.5, 2.5, 3.5, 0])")
+  inspect!(df.data[1].bitmap, content="{optional: true, bitmap: [false, false, false, true], length: 4, offset: 0}")
+}
