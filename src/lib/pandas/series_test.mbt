@@ -127,3 +127,28 @@ test "Series::min" {
   let series = Series::new("test", SeriesInput::Int32_Nullable([None, None, None]))
   inspect!(series.min!(), content="Null")
 }
+
+test "Series::is_null" {
+  let series = Series::new("test", SeriesInput::Int32_Nullable([Some(1), None, Some(2)]))
+  inspect!(series.is_null().data.to_string(), content="Bool([false, true, false])")
+  let series = Series::new("test", SeriesInput::Int32([1, 2, 3]))
+  inspect!(series.is_null().data.to_string(), content="Bool([false, false, false])")
+}
+
+test "Series::is_not_null" {
+  let series = Series::new("test", SeriesInput::Int32_Nullable([Some(1), None, Some(2)]))
+  inspect!(series.is_not_null().data.to_string(), content="Bool([true, false, true])")
+}
+
+test "Series::is_sorted" {
+  let series = Series::new("test", SeriesInput::Int32([1, 2, 3]))
+  inspect!(series.is_sorted(), content="true")
+  let series = Series::new("test", SeriesInput::Int32([3, 2, 1]))
+  inspect!(series.is_sorted(descending=true), content="true")
+  let series = Series::new("test", SeriesInput::Int32_Nullable([ Some(1), None, Some(3) ]))
+  inspect!(series.is_sorted(), content="false")
+  let series = Series::new("test", SeriesInput::Int32_Nullable([ None, Some(1), Some(3) ]))
+  inspect!(series.is_sorted(), content="true")
+  let series = Series::new("test", SeriesInput::Int32_Nullable([ Some(3), Some(2), None]))
+  inspect!(series.is_sorted(descending=true, nulls_last=true), content="true")
+}

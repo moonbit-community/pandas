@@ -1105,3 +1105,131 @@ fn SeriesData::resize(self : SeriesData, new_length : Int) -> Unit {
     SeriesData::Str(data) => data.resize(new_length, "")
   }
 }
+
+///| Check if the Series is empty.
+pub fn Series::is_empty(self : Series) -> Bool {
+  self.length == 0
+}
+
+///| Returns a boolean Series indicating which values are null
+///
+/// Parameters
+///
+/// - `self` : An instance of the Series
+///
+/// Returns
+///
+/// - `Series` : A boolean Series indicating which values are null
+///
+/// Example
+/// ```
+/// let series = Series::new("test", SeriesInput::Int32_Nullable([Some(1), None, Some(2)]))
+/// inspect!(series.is_null().data.to_string(), content="Bool([false, true, false])")
+/// ```
+pub fn Series::is_null(self : Series) -> Series {
+  let data = match self.bitmap.optional {
+    true => SeriesData::Bool(self.bitmap.bitmap)
+    false => SeriesData::Bool(Array::make(self.length, false))
+  }
+  Series::{
+    name: self.name(),
+    data: data,
+    data_type: DataType::Bool,
+    bitmap: emptyBitMap,
+    length: self.length,
+  }
+}
+
+///| Returns a boolean Series indicating which values are not null
+///
+/// Parameters
+///
+/// - `self` : An instance of the Series
+///
+/// Returns
+///
+/// - `Series` : A boolean Series indicating which values are not null
+///
+/// Example
+/// ```
+/// let series = Series::new("test", SeriesInput::Int32_Nullable([Some(1), None, Some(2)]))
+/// inspect!(series.is_not_null().data.to_string(), content="Bool([true, false, true])")
+/// ```
+pub fn Series::is_not_null(self : Series) -> Series {
+  let data = match self.bitmap.optional {
+    true => SeriesData::Bool(self.bitmap.bitmap.map(fn(x) { not(x) }))
+    false => SeriesData::Bool(Array::make(self.length, true))
+  }
+  Series::{
+    name: self.name(),
+    data: data,
+    data_type: DataType::Bool,
+    bitmap: emptyBitMap,
+    length: self.length,
+  }
+}
+
+///| Check if the Series is sorted
+///
+/// Parameters
+///
+/// - `self` : An instance of the Series
+/// - `descending` : A boolean indicating whether to check for descending order (default is false)
+/// - `nulls_last` : A boolean indicating whether null values should be considered last (default is false)
+///
+/// Returns
+///
+/// - `Bool` : True if the Series is sorted, otherwise false
+///
+/// Example
+/// ```moonbit
+/// let series = Series::new("test", SeriesInput::Int32([1, 2, 3]))
+/// inspect!(series.is_sorted(), content="true")
+/// let series = Series::new("test", SeriesInput::Int32([3, 2, 1]))
+/// inspect!(series.is_sorted(descending=true), content="true")
+/// let series = Series::new("test", SeriesInput::Int32_Nullable([Some(1), None, Some(3)]))
+/// inspect!(series.is_sorted(), content="false")
+/// let series = Series::new("test", SeriesInput::Int32_Nullable([None, Some(1), Some(3)]))
+/// inspect!(series.is_sorted(), content="true")
+/// let series = Series::new("test", SeriesInput::Int32_Nullable([Some(3), Some(2), None]))
+/// inspect!(series.is_sorted(descending=true, nulls_last=true), content="true")
+/// ```
+pub fn Series::is_sorted(self : Series, descending~ : Bool = false, nulls_last~ : Bool = false) -> Bool {
+  let mut l = 0
+  let mut r = self.length - 1
+  // check nulls
+  match nulls_last {
+    false => {
+      while(l < self.length && self.bitmap[l]) {
+        l += 1
+      }
+    }
+    true => {
+      while(r >= 0 && self.bitmap[r]) {
+        r -= 1
+      }
+    }
+  }
+  guard not(self.bitmap.optional) || self.bitmap.bitmap[l:r+1].all(fn(x){not(x)}) else {
+    return false
+  }
+  // check order
+  match descending {
+    false => {
+      for i in (l+1)..<(r+1) {
+        if self.data[i] < self.data[i-1] {
+          return false
+        }
+      }
+      true
+    }
+    true => {
+      for i in (l+1)..<(r+1) {
+        if self.data[i] > self.data[i-1] {
+          return false
+        }
+      }
+      true
+    }
+  }
+}
