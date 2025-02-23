@@ -104,11 +104,14 @@ pub(all) struct Series {
   length : Int
 }
 impl Series {
+  abs(Self) -> Self!InvalidType
+  acos(Self) -> Self!InvalidType
   all(Self) -> Bool!InvalidType
   any(Self) -> Bool!InvalidType
   argsort(Self, descending~ : Bool = ..) -> Array[Int]
   clear(Self) -> Unit
   copy(Self) -> Self
+  cos(Self) -> Self!InvalidType
   count(Self) -> Int
   data(Self) -> SeriesData
   erase(Self, Int) -> Unit!
@@ -119,6 +122,8 @@ impl Series {
   is_null(Self) -> Self
   is_sorted(Self, descending~ : Bool = .., nulls_last~ : Bool = ..) -> Bool
   length(Self) -> Int
+  log(Self, base~ : Float = ..) -> Self!InvalidType
+  log10(Self) -> Self!InvalidType
   lower_bound(Self) -> Self
   max(Self) -> SeriesValue!
   mean(Self) -> Float!
@@ -135,8 +140,10 @@ impl Series {
   op_mul(Self, Self) -> Self
   op_sub(Self, Self) -> Self
   reverse(Self) -> Unit
+  sin(Self) -> Self!InvalidType
   sort(Self) -> Unit
   sum(Self) -> SeriesValue!InvalidType
+  tan(Self) -> Self!InvalidType
   unique_counts(Self) -> Self
   upper_bound(Self) -> Self
   var(Self, ddof~ : Int = ..) -> Float!

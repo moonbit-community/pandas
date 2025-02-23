@@ -210,3 +210,10 @@ test "Series::unique_count" {
   )
   inspect!(series.unique_counts().data.to_string(), content="Int([2, 1, 2])")
 }
+
+test "Series::abs" {
+  let series = Series::new("test", SeriesInput::Int32([-1, 2, -3]))
+  inspect!(series.abs!().data.to_string(), content="Int([1, 2, 3])")
+  let series = Series::new("test", SeriesInput::Float32([-1.5, 2.0, -3.0]))
+  inspect!(series.abs!().data.to_string(), content="Float([1.5, 2, 3])")
+}
