@@ -11,9 +11,10 @@ This is a data processing library written in Moonbit. It provides a DataFrame da
 ### DataFrame
 create a DataFrame
 ```moonbit
-let col1 = Series::new("A", SeriesData::Int([1, 2, 3, 4, 5, 6]))
-let col2 = Series::new("B", SeriesData::Float([1.1, 2.2, 3.3, 4.4, 5.5, 6.6]))
-let df = DataFrame::new([col1, col2])
+let col1 = Series::new("A", SeriesInput::Int32([1, 2, 3]))
+let col2 = Series::new("B", SeriesInput::Float32([1.1, 2.2, 3.3]))
+let col3 = Series::new("C", SeriesInput::Int_Nullable([Some(1), None, Some(3)]))
+let df = DataFrame::new([col1, col2, col3])
 ```
 
 Display the first few(min(size, 5)) rows of the DataFrame
@@ -28,7 +29,7 @@ println(df)
 
 Add a new column
 ```moonbit
-let new_col = Series::new("C", SeriesData::Bool([true, false, true, false, true, false]))
+let new_col = Series::new("C", SeriesInput::Bool([true, false, true]))
 df.add_column!(new_col)
 ```
 
@@ -59,7 +60,7 @@ df.drop_row!(0)
 
 Add a new row
 ```moonbit
-df.add_row!([DType::Int(7), DType::Float(7.5), DType::Bool(true), DType::Str("g")])
+df.add_row!([SeriesValue::Int(7), SeriesValue::Float(7.5), SeriesValue::Bool(true), SeriesValue::Str("ok")])
 ```
 
 Select rows by range or by specific indices:
@@ -92,10 +93,10 @@ let new_df = df1.hstack!(df2)
 ### Series
 Create a Series
 ```moonbit
-let series_int = Series::new("IntColumn", SeriesData::Int([1, 2, 3, 4, 5]))
-let series_float = Series::new("FloatColumn", SeriesData::Float([1.1, 2.2, 3.3, 4.4, 5.5]))
-let series_bool = Series::new("BoolColumn", SeriesData::Bool([true, false, true, false, true]))
-let series_str = Series::new("StrColumn", SeriesData::Str(["a", "b", "c", "d", "e"]))
+let series_int = Series::new("IntColumn", SeriesInput::Int32([1, 2, 3]))
+let series_float = Series::new("FloatColumn", SeriesInput::Float32([1.1, 2.2, 3.3]))
+let series_bool = Series::new("BoolColumn", SeriesInput::Bool([true, false, true]))
+let series_str = Series::new("StrColumn", SeriesInput::Str(["a", "b", "c"]))
 ```
 
 Erase element
@@ -110,8 +111,8 @@ let indices = series.sort()
 
 Add two Series
 ```moonbit
-let series1 = Series::new("A", SeriesData::Int([1, 2, 3]))
-let series2 = Series::new("B", SeriesData::Float([1.5, 2.0, 3.5]))
+let series1 = Series::new("A", SeriesInput::Int([1, 2, 3]))
+let series2 = Series::new("B", SeriesInput::Float([1.5, 2.0, 3.5]))
 let add = series1 + series2
 ```
 
