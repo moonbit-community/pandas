@@ -486,7 +486,7 @@ pub fn DataFrame::select_rows(
           // select rows
           let selected_rows : Array[Series] = []
           for col in self.data {
-            let mut series_data : SeriesData = emptySeriesData(DataType::Int32)
+            let mut series_data : SeriesData = emptySeriesData(col.data_type)
             match col.data {
               SeriesData::Int(data) => {
                 let col_data = []
@@ -541,40 +541,20 @@ pub fn DataFrame::select_rows(
 pub fn op_get(self : DataFrame, index : Int) -> DataFrame {
   let row = []
   for col in self.data {
+    let mut series_data = emptySeriesData(col.data_type)
     match col.data {
-      SeriesData::Int(data) =>
-        row.push(Series::{
-          name: col.name,
-          data: SeriesData::Int([data[index]]),
-          data_type: col.data_type,
-          bitmap: col.bitmap.slice(index, length=1),
-          length: 1,
-        })
-      SeriesData::Float(data) =>
-        row.push(Series::{
-          name: col.name,
-          data: SeriesData::Float([data[index]]),
-          data_type: col.data_type,
-          bitmap: col.bitmap.slice(index, length=1),
-          length: 1,
-        })
-      SeriesData::Bool(data) =>
-        row.push(Series::{
-          name: col.name,
-          data: SeriesData::Bool([data[index]]),
-          data_type: col.data_type,
-          bitmap: col.bitmap.slice(index, length=1),
-          length: 1,
-        })
-      SeriesData::Str(data) =>
-        row.push(Series::{
-          name: col.name,
-          data: SeriesData::Str([data[index]]),
-          data_type: col.data_type,
-          bitmap: col.bitmap.slice(index, length=1),
-          length: 1,
-        })
+      SeriesData::Int(data) => series_data = SeriesData::Int([data[index]])
+      SeriesData::Float(data) => series_data = SeriesData::Float([data[index]])
+      SeriesData::Bool(data) => series_data = SeriesData::Bool([data[index]])
+      SeriesData::Str(data) => series_data = SeriesData::Str([data[index]])
     }
+    row.push(Series::{
+      name: col.name,
+      data: series_data,
+      data_type: col.data_type,
+      bitmap: col.bitmap.slice(index, length=1),
+      length: 1,
+    })
   }
   DataFrame::{ data: row, shape: [1, self.shape()[1]], index: self.index }
 }
