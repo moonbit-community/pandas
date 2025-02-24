@@ -1587,3 +1587,189 @@ pub fn Series::slice(self : Series, start : Int, end : Int) -> Series {
     length: end - start,
   }
 }
+
+///| Fill null values in the Series using the specified value or strategy ( call by DataFrame::fill_null )
+/// 
+/// Parameters
+///
+/// - `self` : An instance of the Series
+/// - `value` : An optional value to fill nulls with
+/// - `strategy` : An optional strategy to fill nulls ('forward', 'backward', 'min', 'max', 'mean', 'zero', 'one')
+/// - `limit` : An optional limit on the number of nulls to fill
+///
+/// Returns
+///
+/// - `Series` : A new Series with null values filled
+///
+/// Example
+/// ```
+/// let series = Series::new("test", SeriesInput::Int32_Nullable([Some(1), None, Some(3), None]))
+/// inspect!(series.fill_null!(value=Some(SeriesValue::Int(1))).data.to_string(), content="Int([1, 1, 3, 1])")
+/// inspect!(series.fill_null!(strategy=Some("forward")).data.to_string(), content="Int([1, 1, 3, 3])")
+/// inspect!(series.fill_null!(strategy=Some("max")).data.to_string(), content="Int([1, 3, 3, 3])")
+/// inspect!(series.fill_null!(strategy=Some("mean")).data.to_string(), content="Float([1, 2, 3, 2])")
+/// inspect!(series.fill_null!(strategy=Some("forward"), limit=Some(1)).data.to_string(), content="Int([1, 1, 3, 0])")
+/// ```
+fn Series::fill_null(
+  self : Series,
+  value? : SeriesValue?,
+  strategy? : String?,
+  limit? : Int?
+) -> Series! {
+  let serie = self.copy()
+  if serie.bitmap.optional == false {
+    return serie
+  }
+  let strategy = match strategy {
+    Some(val) => val
+    None => None
+  }
+  let value = match value {
+    Some(val) => val
+    None => None
+  }
+  if strategy != None {
+    let operate = match strategy {
+      Some(op) => op
+      None => abort("nerver happened")
+    }
+    // ‘forward’, ‘backward’, ‘min’, ‘max’, ‘mean’, ‘zero’, ‘one’
+    // !unsafe
+    let limit : Int64 = match limit {
+      Some(val) =>
+        match val {
+          Some(v) => v.to_int64()
+          None => @int64.max_value
+        }
+      None => @int64.max_value
+    }
+    match operate {
+      "forward" => {
+        let mut fill_cnt : Int64 = 0
+        for i in 1..<serie.length {
+          if serie.bitmap[i] && not(serie.bitmap[i - 1]) {
+            fill_cnt += 1
+            if fill_cnt > limit {
+              break
+            }
+            serie.data[i] = serie.data[i - 1]
+            serie.bitmap[i] = false
+          }
+        }
+      }
+      "backward" => {
+        let mut fill_cnt : Int64 = 0
+        for i = serie.length - 2; i >= 0; i = i - 1 {
+          if serie.bitmap[i] && not(serie.bitmap[i + 1]) {
+            fill_cnt += 1
+            if fill_cnt > limit {
+              break
+            }
+            serie.data[i] = serie.data[i + 1]
+            serie.bitmap[i] = false
+          }
+        }
+      }
+      "min" => {
+        let mn = serie.min!()
+        for i in 0..<serie.length {
+          if serie.bitmap[i] {
+            serie.data[i] = mn
+          }
+        }
+      }
+      "max" => {
+        let mx = serie.max!()
+        for i in 0..<serie.length {
+          if serie.bitmap[i] {
+            serie.data[i] = mx
+          }
+        }
+      }
+      "mean" => {
+        serie.data = SeriesData::Float(
+          Array::makei(serie.length, fn(i) { serie.data[i].to_float() }),
+        )
+        serie.data_type = DataType::Float32
+        let mean = serie.mean!()
+        for i in 0..<serie.length {
+          if serie.bitmap[i] {
+            serie.data[i] = SeriesValue::Float(mean)
+          }
+        }
+      }
+      "zero" =>
+        for i in 0..<serie.length {
+          if serie.bitmap[i] {
+            serie.data[i] = SeriesValue::Int(0)
+          }
+        }
+      "one" =>
+        for i in 0..<serie.length {
+          if serie.bitmap[i] {
+            serie.data[i] = SeriesValue::Int(1)
+          }
+        }
+      _ => raise InvalidType("unsupported strategy")
+    }
+    serie.bitmap.clear()
+  } else if value != None {
+    let value = match value {
+      Some(val) => val
+      None => abort("nerver happened")
+    }
+    guard type_check_operation(serie.data_type, value.get_type()) else {
+      raise InvalidType("Value type does not match column type")
+    }
+    for i in 0..<serie.length {
+      if serie.bitmap[i] {
+        serie.data[i] = value
+      }
+    }
+    serie.bitmap.clear()
+  }
+  serie
+}
+
+test "Series::fill_null" {
+  let series = Series::new(
+    "test",
+    SeriesInput::Int32_Nullable([Some(1), None, Some(3), None]),
+  )
+  inspect!(
+    series.fill_null!(value=Some(SeriesValue::Int(1))).data,
+    content="Int([1, 1, 3, 1])",
+  )
+  inspect!(
+    series.fill_null!(strategy=Some("forward")).data,
+    content="Int([1, 1, 3, 3])",
+  )
+  inspect!(
+    series.fill_null!(strategy=Some("backward")).data,
+    content="Int([1, 3, 3, 0])",
+  )
+  inspect!(
+    series.fill_null!(strategy=Some("min")).data,
+    content="Int([1, 1, 3, 1])",
+  )
+  inspect!(
+    series.fill_null!(strategy=Some("max")).data,
+    content="Int([1, 3, 3, 3])",
+  )
+  inspect!(
+    series.fill_null!(strategy=Some("mean")).data,
+    content="Float([1, 2, 3, 2])",
+  )
+  inspect!(
+    series.fill_null!(strategy=Some("zero")).data,
+    content="Int([1, 0, 3, 0])",
+  )
+  inspect!(
+    series.fill_null!(strategy=Some("one")).data,
+    content="Int([1, 1, 3, 1])",
+  )
+  inspect!(
+    series.fill_null!(strategy=Some("forward"), limit=Some(1)).data,
+    content="Int([1, 1, 3, 0])",
+  )
+}

@@ -33,12 +33,14 @@ impl DataFrame {
   drop_column(Self, String) -> Unit!ColumnNotFoundError
   drop_row(Self, Int) -> Unit!
   dtypes(Self) -> Array[String]
+  fill_null(Self, value? : SeriesValue, strategy? : String, limit? : Int) -> Self!
   filter(Self, String, (SeriesValue) -> Bool) -> Self!
   get_column_index(Self, String) -> Int!
   has_nulls(Self) -> Self
   head(Self, rows~ : Int = ..) -> Unit
   height(Self) -> Int
   hstack(Self, Self) -> Self!
+  is_empty(Self) -> Bool
   item(Self, Int, ColumnSelector) -> SeriesValue!
   limit(Self, Int) -> Self!
   max(Self) -> Self!
@@ -46,6 +48,7 @@ impl DataFrame {
   min(Self) -> Self!
   min_horizontal(Self) -> Series!
   new(Array[Series]) -> Self!InconsistentSeriesLength
+  null_count(Self) -> Self
   op_get(Self, Int) -> Self
   product(Self) -> Self
   rename(Self, String, String) -> Unit!ColumnNotFoundError
@@ -144,6 +147,7 @@ impl Series {
   op_sub(Self, Self) -> Self
   reverse(Self) -> Unit
   sin(Self) -> Self!InvalidType
+  slice(Self, Int, Int) -> Self
   sort(Self) -> Unit
   sum(Self) -> SeriesValue!InvalidType
   tan(Self) -> Self!InvalidType

@@ -1719,15 +1719,6 @@ pub fn DataFrame::all(
   }
 }
 
-test "DataFrame::all" {
-  let df = DataFrame::new!([
-    Series::new("A", SeriesInput::Bool([true, true, true])),
-    Series::new("B", SeriesInput::Bool([true, false, true])),
-  ])
-  inspect!(df.all!().data[0][0], content="Bool(true)")
-  inspect!(df.all!().data[1][0], content="Bool(false)")
-}
-
 ///| Check if any element in each column of the DataFrame is true
 ///
 /// Parameters
@@ -1793,15 +1784,6 @@ pub fn DataFrame::any(
   }
 }
 
-test "DataFrame::any" {
-  let df = DataFrame::new!([
-    Series::new("A", SeriesInput::Bool([true, true, true])),
-    Series::new("B", SeriesInput::Bool([true, false, true])),
-  ])
-  inspect!(df.any!().data[0][0], content="Bool(true)")
-  inspect!(df.any!().data[1][0], content="Bool(true)")
-}
-
 ///| Check if each column in the DataFrame has null values
 ///
 /// Parameters
@@ -1835,15 +1817,92 @@ pub fn DataFrame::has_nulls(self : DataFrame) -> DataFrame {
   DataFrame::{ data, shape: [1, self.shape[1]], index: self.index }
 }
 
-test "DataFrame::has_nulls" {
-  let df = DataFrame::new!([
-    Series::new("A", SeriesInput::Int32([1, 2, 3])),
-    Series::new("B", SeriesInput::Int32([1, 2, 3])),
-  ])
-  inspect!(df.has_nulls().data[0][0], content="Bool(false)")
+///| Create a new DataFrame that shows the null counts per column.
+pub fn DataFrame::null_count(self : DataFrame) -> DataFrame {
+  let data = []
+  for serie in self.data {
+    data.push(
+      Series::new_by_SeriesData(
+        serie.name,
+        SeriesData::Int([serie.null_count()]),
+      ),
+    )
+  }
+  DataFrame::{ data, shape: [1, self.shape[1]], index: self.index }
+}
+
+///| Returns True if the DataFrame contains no rows.
+pub fn DataFrame::is_empty(self : DataFrame) -> Bool {
+  self.shape[0] == 0
+}
+
+///| Fill null values using the specified value or strategy
+///
+/// Parameters
+///
+/// - `self` : An instance of the DataFrame
+/// - `value` : Value used to fill null values.
+/// - `strategy` : Strategy used to fill null values. {'forward', 'backward', 'min', 'max', 'mean', 'zero', 'one'}
+/// - `limit` : Number of consecutive null values to fill when using the ‘forward’ or ‘backward’ strategy.
+///
+/// Returns
+///
+/// - `DataFrame` : A new DataFrame with null values filled
+/// 
+/// Errors
+/// 
+/// - `InvalidType` : Raised if the value is not of the same type as the column
+///
+/// Example
+/// ```
+/// let df = DataFrame::new!([
+///   Series::new("A", SeriesInput::Int32_Nullable([Some(1), None, Some(3)])),
+///   Series::new("B", SeriesInput::Int32_Nullable([None, Some(1), Some(3)])),
+/// ])
+/// let filled = df.fill_null!(value=SeriesValue::Int(2))
+/// inspect!(filled.data[0].data, content="Int([1, 2, 3])")
+/// let filled = df.fill_null!(strategy="forward")
+/// inspect!(filled.data[0].data, content="Int([1, 1, 3])")
+/// let filled = df.fill_null!(strategy="backward")
+/// inspect!(filled.data[1].data, content="Int([1, 1, 3])")
+/// let filled = df.fill_null!(strategy="max")
+/// inspect!(filled.data[0].data, content="Int([1, 3, 3])")
+/// let filled = df.fill_null!(strategy="mean")
+/// inspect!(filled.data[0].data, content="Float([1, 2, 3])")
+/// ```
+pub fn DataFrame::fill_null(
+  self : DataFrame,
+  value? : SeriesValue,
+  strategy? : String,
+  limit? : Int
+) -> DataFrame! {
+  let series = []
+  for serie in self.data {
+    series.push(serie.fill_null!(value~, strategy~, limit~))
+  }
+  DataFrame::{ data: series, shape: self.shape, index: self.index }
+}
+
+test "DataFrame::fill_null" {
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Int32_Nullable([Some(1), None, Some(3)])),
-    Series::new("B", SeriesInput::Int32([1, 2, 3])),
+    Series::new("B", SeriesInput::Int32_Nullable([None, Some(1), Some(3)])),
   ])
-  inspect!(df.has_nulls().data[0][0], content="Bool(true)")
+  inspect!(
+    df.fill_null!(value=SeriesValue::Int(2)).data[0].data,
+    content="Int([1, 2, 3])",
+  )
+  inspect!(
+    df.fill_null!(strategy="forward").data[0].data,
+    content="Int([1, 1, 3])",
+  )
+  inspect!(
+    df.fill_null!(strategy="backward").data[1].data,
+    content="Int([1, 1, 3])",
+  )
+  inspect!(df.fill_null!(strategy="max").data[0].data, content="Int([1, 3, 3])")
+  inspect!(
+    df.fill_null!(strategy="mean").data[0].data,
+    content="Float([1, 2, 3])",
+  )
 }

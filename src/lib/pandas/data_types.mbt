@@ -37,3 +37,34 @@ fn SeriesValue::get_type(self : SeriesValue) -> DataType {
     SeriesValue::Null => abort("SeriesValue::get_type: Null")
   }
 }
+
+///|
+fn DataType::max_value(self : DataType) -> SeriesValue {
+  match self {
+    DataType::Int32 => SeriesValue::Int(@int.max_value)
+    DataType::Float32 => SeriesValue::Float(@float.max_value)
+    DataType::String => abort(@byte.max_value.to_string())
+    DataType::Bool => SeriesValue::Bool(true)
+  }
+}
+
+///|
+fn DataType::min_value(self : DataType) -> SeriesValue {
+  match self {
+    DataType::Int32 => SeriesValue::Int(@int.min_value)
+    DataType::Float32 => SeriesValue::Float(@float.min_value)
+    DataType::String => abort("")
+    DataType::Bool => SeriesValue::Bool(false)
+  }
+}
+
+///|
+fn SeriesValue::to_float(self : SeriesValue) -> Float {
+  match self {
+    SeriesValue::Int(x) => x.to_float()
+    SeriesValue::Float(x) => x
+    SeriesValue::Bool(x) => abort("SeriesValue::to_float: Bool")
+    SeriesValue::Str(x) => abort("SeriesValue::to_float: Str")
+    SeriesValue::Null => abort("SeriesValue::to_float: Null")
+  }
+}

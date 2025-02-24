@@ -369,3 +369,34 @@ test "DataFrame::add_row" {
     content="{optional: true, bitmap: [false, false, false, true], length: 4, offset: 0}",
   )
 }
+
+test "DataFrame::all" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesInput::Bool([true, true, true])),
+    Series::new("B", SeriesInput::Bool([true, false, true])),
+  ])
+  inspect!(df.all!().data[0][0], content="Bool(true)")
+  inspect!(df.all!().data[1][0], content="Bool(false)")
+}
+
+test "DataFrame::any" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesInput::Bool([true, true, true])),
+    Series::new("B", SeriesInput::Bool([true, false, true])),
+  ])
+  inspect!(df.any!().data[0][0], content="Bool(true)")
+  inspect!(df.any!().data[1][0], content="Bool(true)")
+}
+
+test "DataFrame::has_nulls" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesInput::Int32([1, 2, 3])),
+    Series::new("B", SeriesInput::Int32([1, 2, 3])),
+  ])
+  inspect!(df.has_nulls().data[0][0], content="Bool(false)")
+  let df = DataFrame::new!([
+    Series::new("A", SeriesInput::Int32_Nullable([Some(1), None, Some(3)])),
+    Series::new("B", SeriesInput::Int32([1, 2, 3])),
+  ])
+  inspect!(df.has_nulls().data[0][0], content="Bool(true)")
+}

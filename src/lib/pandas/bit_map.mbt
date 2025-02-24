@@ -96,6 +96,11 @@ fn BitMap::op_get(self : BitMap, index : Int) -> Bool {
 }
 
 ///|
+fn BitMap::op_set(self : BitMap, index : Int, value : Bool) -> Unit {
+  self.bitmap[index] = value
+}
+
+///|
 fn BitMap::slice(self : BitMap, start : Int, length? : Int) -> BitMap {
   match self.optional {
     false => emptyBitMap
