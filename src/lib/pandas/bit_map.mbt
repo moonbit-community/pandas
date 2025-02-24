@@ -175,3 +175,25 @@ fn BitMap::new_by_size(size : Int, optional~ : Bool = true) -> BitMap {
     offset: 0,
   }
 }
+
+///|
+fn BitMap::select_rows(self : BitMap, rows : Array[Int]) -> BitMap {
+  match self.optional {
+    false => emptyBitMap
+    true => {
+      rows.sort()
+      let bitmap = Array::make(rows.length(), false)
+      bitmap.iter().eachi(fn(i, _) { bitmap[i] = self.bitmap[rows[i]] })
+      BitMap::{ optional: true, bitmap, length: rows.length(), offset: 0 }
+    }
+  }
+}
+
+test "BitMap::select_rows" {
+  let a = BitMap::new(data=[Some(1), None, Some(3)])
+  let b = a.select_rows([0, 1])
+  inspect!(
+    b,
+    content="{optional: true, bitmap: [false, true], length: 2, offset: 0}",
+  )
+}

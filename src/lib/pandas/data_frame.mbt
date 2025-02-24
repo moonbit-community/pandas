@@ -467,87 +467,67 @@ pub fn DataFrame::select_rows(
           Some(r) => r
           None => abort("Range is None")
         }
-        let select_data = match col.data() {
-          SeriesData::Int(data) =>
-            SeriesData::Int(data.split_at(begin).1.split_at(end - begin).0)
-          SeriesData::Float(data) =>
-            SeriesData::Float(data.split_at(begin).1.split_at(end - begin).0)
-          SeriesData::Bool(data) =>
-            SeriesData::Bool(data.split_at(begin).1.split_at(end - begin).0)
-          SeriesData::Str(data) =>
-            SeriesData::Str(data.split_at(begin).1.split_at(end - begin).0)
-        }
-        selected_rows.push(Series::new_by_SeriesData(col.name(), select_data))
+        selected_rows.push(col.slice(begin, end))
       }
       DataFrame::{
         data: selected_rows,
-        shape: [selected_rows[0].data.length(), self.shape()[1]],
+        shape: [selected_rows[0].data.length(), self.shape[1]],
         index: self.index,
       }
     }
     (None, Some(_)) =>
       match indices {
         Some(i) => {
+          // boundary check
           i.sort()
-          if i[0] < 0 || i[i.length() - 1] >= self.shape()[0] {
+          if i[0] < 0 || i[i.length() - 1] >= self.shape[0] {
             raise IndexOutOfBounds("Row index out of bounds")
           }
+          // select rows
           let selected_rows : Array[Series] = []
           for col in self.data {
+            let mut series_data : SeriesData = emptySeriesData(DataType::Int32)
             match col.data {
               SeriesData::Int(data) => {
                 let col_data = []
                 for idx in i {
                   col_data.push(data[idx])
                 }
-                selected_rows.push(
-                  Series::new_by_SeriesData(
-                    col.name(),
-                    SeriesData::Int(col_data),
-                  ),
-                )
+                series_data = SeriesData::Int(col_data)
               }
               SeriesData::Float(data) => {
                 let col_data = []
                 for idx in i {
                   col_data.push(data[idx])
                 }
-                selected_rows.push(
-                  Series::new_by_SeriesData(
-                    col.name(),
-                    SeriesData::Float(col_data),
-                  ),
-                )
+                series_data = SeriesData::Float(col_data)
               }
               SeriesData::Bool(data) => {
                 let col_data = []
                 for idx in i {
                   col_data.push(data[idx])
                 }
-                selected_rows.push(
-                  Series::new_by_SeriesData(
-                    col.name(),
-                    SeriesData::Bool(col_data),
-                  ),
-                )
+                series_data = SeriesData::Bool(col_data)
               }
               SeriesData::Str(data) => {
                 let col_data = []
                 for idx in i {
                   col_data.push(data[idx])
                 }
-                selected_rows.push(
-                  Series::new_by_SeriesData(
-                    col.name(),
-                    SeriesData::Str(col_data),
-                  ),
-                )
+                series_data = SeriesData::Str(col_data)
               }
             }
+            selected_rows.push(Series::{
+              name: col.name(),
+              data: series_data,
+              data_type: col.data_type,
+              bitmap: col.bitmap.select_rows(i),
+              length: i.length(),
+            })
           }
           DataFrame::{
             data: selected_rows,
-            shape: [selected_rows[0].data().length(), self.shape()[1]],
+            shape: [selected_rows[0].data.length(), self.shape[1]],
             index: self.index,
           }
         }
