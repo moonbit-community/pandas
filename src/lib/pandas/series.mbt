@@ -1555,3 +1555,35 @@ pub fn Series::concat(data : Array[Series]) -> Series! {
     length,
   }
 }
+
+///| Slice the Series from start to end
+///
+/// Parameters
+///
+/// - `self` : An instance of the Series
+/// - `start` : The starting index of the slice
+/// - `end` : The ending index of the slice
+///
+/// Returns
+///
+/// - `Series` : A new Series containing the sliced data
+///
+/// Example
+/// ```
+/// let series = Series::new("test", SeriesInput::Int32([1, 2, 3, 4, 5]))
+/// inspect!(series.slice(1, 3).data, content="Int([2, 3])")
+/// ```
+pub fn Series::slice(self : Series, start : Int, end : Int) -> Series {
+  let data = self.data.split_at(end).0.split_at(start).1
+  let bitmap = match self.bitmap.optional {
+    true => self.bitmap.slice(start, length=end - start)
+    false => emptyBitMap
+  }
+  Series::{
+    name: self.name(),
+    data,
+    data_type: self.data_type,
+    bitmap,
+    length: end - start,
+  }
+}

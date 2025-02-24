@@ -230,3 +230,8 @@ test "Series::concat" {
   let series = Series::concat!([series1, series2, series3])
   inspect!(series.data, content="Int([1, 2, 3, 4, 5])")
 }
+
+test "Series::slice" {
+  let series = Series::new("test", SeriesInput::Int32([1, 2, 3, 4, 5]))
+  inspect!(series.slice(1, 3).data, content="Int([2, 3])")
+}
