@@ -12,7 +12,7 @@ This is a data processing library written in Moonbit. It provides a DataFrame da
 create a DataFrame
 ```moonbit
 let col1 = Series::new("A", SeriesInput::Int32([1, 2, 3]))
-let col2 = Series::new("B", SeriesInput::Float32([1.1, 2.2, 3.3]))
+let col2 = Series::new("B", SeriesInput::Float32([1.5, 2.5, 3.5]))
 let col3 = Series::new("C", SeriesInput::Int_Nullable([Some(1), None, Some(3)]))
 let df = DataFrame::new([col1, col2, col3])
 ```
@@ -173,6 +173,9 @@ let div_op = series1 / series2
 | `width`            | Get the number of columns in the DataFrame                                  |
 | `product`          | Calculate the product of each column in the DataFrame                       |
 | `schema`           | Get the schema of the DataFrame                                             |
+| `is_empty`         | Return whether the DataFrame is empty                                       |
+| `fill_null`        | Fill null values using the specified value or strategy                      |
+| `null_count`       | Return the number of null values in the DataFrame                           |
 
 ### Series Methods
 
@@ -224,6 +227,7 @@ let div_op = series1 / series2
 | `tan`              | Return a new Series with the tangent of each element                        |
 | `unique_counts`    | Return a new Series showing the count of each unique value                  |
 | `upper_bound`      | Return a new Series with each element replaced by the upper bound           |
+| `slice`            | Return a new Series containing elements in the specified range             |
 
 ## Contributing
 Issues and pull requests are welcome. Please make sure to run all tests before submitting.
