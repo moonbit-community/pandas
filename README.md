@@ -13,7 +13,7 @@ create a DataFrame
 ```moonbit
 let col1 = Series::new("A", SeriesInput::Int32([1, 2, 3]))
 let col2 = Series::new("B", SeriesInput::Float32([1.5, 2.5, 3.5]))
-let col3 = Series::new("C", SeriesInput::Int_Nullable([Some(1), None, Some(3)]))
+let col3 = Series::new("C", SeriesInput::Int32_Nullable([Some(1), None, Some(3)]))
 let df = DataFrame::new([col1, col2, col3])
 ```
 
@@ -60,7 +60,7 @@ df.drop_row!(0)
 
 Add a new row
 ```moonbit
-df.add_row!([SeriesValue::Int(7), SeriesValue::Float(7.5), SeriesValue::Bool(true), SeriesValue::Str("ok")])
+df.add_row!([SeriesValue::Int32(7), SeriesValue::Float32(7.5), SeriesValue::Bool(true), SeriesValue::Str("ok")])
 ```
 
 Select rows by range or by specific indices:
@@ -111,8 +111,8 @@ let indices = series.sort()
 
 Add two Series
 ```moonbit
-let series1 = Series::new("A", SeriesInput::Int([1, 2, 3]))
-let series2 = Series::new("B", SeriesInput::Float([1.5, 2.0, 3.5]))
+let series1 = Series::new("A", SeriesInput::Int32([1, 2, 3]))
+let series2 = Series::new("B", SeriesInput::Float32([1.5, 2.0, 3.5]))
 let add = series1 + series2
 ```
 
