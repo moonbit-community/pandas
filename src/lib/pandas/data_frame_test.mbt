@@ -400,3 +400,27 @@ test "DataFrame::has_nulls" {
   ])
   inspect!(df.has_nulls().data[0][0], content="Bool(true)")
 }
+
+test "DataFrame::fill_null" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesInput::Int32_Nullable([Some(1), None, Some(3)])),
+    Series::new("B", SeriesInput::Int32_Nullable([None, Some(1), Some(3)])),
+  ])
+  inspect!(
+    df.fill_null!(value=SeriesValue::Int(2)).data[0].data,
+    content="Int([1, 2, 3])",
+  )
+  inspect!(
+    df.fill_null!(strategy="forward").data[0].data,
+    content="Int([1, 1, 3])",
+  )
+  inspect!(
+    df.fill_null!(strategy="backward").data[1].data,
+    content="Int([1, 1, 3])",
+  )
+  inspect!(df.fill_null!(strategy="max").data[0].data, content="Int([1, 3, 3])")
+  inspect!(
+    df.fill_null!(strategy="mean").data[0].data,
+    content="Float([1, 2, 3])",
+  )
+}

@@ -1883,26 +1883,39 @@ pub fn DataFrame::fill_null(
   DataFrame::{ data: series, shape: self.shape, index: self.index }
 }
 
-test "DataFrame::fill_null" {
+///| Cast DataFrame column(s) to the specified dtype(s).
+///
+/// Parameters
+///
+/// - `self` : An instance of the DataFrame
+/// - `data_type` : The data type to cast the DataFrame to
+///
+/// Returns
+///
+/// - `DataFrame` : A new DataFrame with the specified data type
+///
+/// Example
+/// ```moonbit
+/// let df = DataFrame::new!([
+///   Series::new("A", SeriesInput::Int32([1, 2, 3])),
+///   Series::new("B", SeriesInput::Float32([1.1, 2.2, 3.3]))
+/// ])
+/// let df_cast = df.cast!(DataType::Float32)
+/// inspect!(df_cast.data[0].data_type, content="Float32")
+/// ```
+pub fn DataFrame::cast(self : DataFrame, data_type : DataType) -> DataFrame! {
+  let series = []
+  for serie in self.data {
+    series.push(serie.cast!(data_type))
+  }
+  DataFrame::{ data: series, shape: self.shape, index: self.index }
+}
+
+test "DataFrame::cast" {
   let df = DataFrame::new!([
-    Series::new("A", SeriesInput::Int32_Nullable([Some(1), None, Some(3)])),
-    Series::new("B", SeriesInput::Int32_Nullable([None, Some(1), Some(3)])),
+    Series::new("A", SeriesInput::Int32([1, 2, 3])),
+    Series::new("B", SeriesInput::Float32([1.1, 2.2, 3.3])),
   ])
-  inspect!(
-    df.fill_null!(value=SeriesValue::Int(2)).data[0].data,
-    content="Int([1, 2, 3])",
-  )
-  inspect!(
-    df.fill_null!(strategy="forward").data[0].data,
-    content="Int([1, 1, 3])",
-  )
-  inspect!(
-    df.fill_null!(strategy="backward").data[1].data,
-    content="Int([1, 1, 3])",
-  )
-  inspect!(df.fill_null!(strategy="max").data[0].data, content="Int([1, 3, 3])")
-  inspect!(
-    df.fill_null!(strategy="mean").data[0].data,
-    content="Float([1, 2, 3])",
-  )
+  let df_cast = df.cast!(DataType::Float32)
+  inspect!(df_cast.data[0].data_type, content="Float32")
 }

@@ -1773,3 +1773,67 @@ test "Series::fill_null" {
     content="Int([1, 1, 3, 0])",
   )
 }
+
+fn SeriesData::cast_to_int32(self : SeriesData) -> SeriesData!InvalidType {
+  match self {
+    SeriesData::Int(_) => self
+    SeriesData::Float(data) =>
+      SeriesData::Int(data.map(fn(x : Float) { x.to_int() }))
+    SeriesData::Bool(data) =>
+      SeriesData::Int(data.map(fn(x : Bool) {x.to_int()}))
+    SeriesData::Str(data) =>
+      raise InvalidType("Cannot cast String to Int32")
+  }
+}
+
+fn SeriesData::cast_to_float32(self : SeriesData) -> SeriesData!InvalidType {
+  match self {
+    SeriesData::Int(data) =>
+      SeriesData::Float(data.map(fn(x : Int) { x.to_float() }))
+    SeriesData::Float(_) => self
+    SeriesData::Bool(data) =>
+      SeriesData::Float(data.map(fn(x : Bool) { x.to_int().to_float() }))
+    SeriesData::Str(data) =>
+      raise InvalidType("Cannot cast String to Float32")
+  }
+}
+
+fn SeriesData::cast_to_bool(self : SeriesData) -> SeriesData {
+  match self {
+    SeriesData::Int(data) =>
+      SeriesData::Bool(data.map(fn(x : Int) { x != 0 }))
+    SeriesData::Float(data) =>
+      SeriesData::Bool(data.map(fn(x : Float) { x != 0.0 }))
+    SeriesData::Bool(_) => self
+    SeriesData::Str(data) =>
+      SeriesData::Bool(data.map(fn(x : String) { x != "" }))
+  }
+}
+
+fn SeriesData::cast_to_str(self : SeriesData) -> SeriesData {
+  match self {
+    SeriesData::Int(data) =>
+      SeriesData::Str(data.map(fn(x : Int) { x.to_string() }))
+    SeriesData::Float(data) =>
+      SeriesData::Str(data.map(fn(x : Float) { x.to_string() }))
+    SeriesData::Bool(data) =>
+      SeriesData::Str(data.map(fn(x : Bool) { x.to_string() }))
+    SeriesData::Str(_) => self
+  }
+}
+
+fn Series::cast(self : Series, dtype : DataType) -> Series!InvalidType {
+  let data = match dtype {
+    DataType::Int32 => self.data.cast_to_int32!()
+    DataType::Float32 => self.data.cast_to_float32!()
+    DataType::Bool => self.data.cast_to_bool()
+    DataType::String => self.data.cast_to_str()
+  }
+  Series::{
+    name: self.name(),
+    data,
+    data_type: dtype,
+    bitmap: self.bitmap,
+    length: self.length,
+  }
+}
