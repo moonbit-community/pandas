@@ -1888,34 +1888,49 @@ pub fn DataFrame::fill_null(
 /// Parameters
 ///
 /// - `self` : An instance of the DataFrame
-/// - `data_type` : The data type to cast the DataFrame to
+/// - `data_type?` : The data type to cast the DataFrame to
+/// - `cast_mapping?` : A mapping of column names to data types for casting specific columns
+/// - `strict~` : Whether to enforce strict casting (default is true)
 ///
 /// Returns
 ///
 /// - `DataFrame` : A new DataFrame with the specified data type
 ///
 /// Example
-/// ```moonbit
+/// ```
 /// let df = DataFrame::new!([
 ///   Series::new("A", SeriesInput::Int32([1, 2, 3])),
 ///   Series::new("B", SeriesInput::Float32([1.1, 2.2, 3.3]))
 /// ])
-/// let df_cast = df.cast!(DataType::Float32)
+/// let df_cast = df.cast!(data_type = DataType::Float32)
 /// inspect!(df_cast.data[0].data_type, content="Float32")
+/// let df_cast = df.cast!(cast_mapping = {"A" : DataType::Float32, "B" : DataType::Int32})
+/// inspect!(df_cast.data[0].data_type, content="Float32")
+/// inspect!(df_cast.data[1].data_type, content="Int32")
 /// ```
-pub fn DataFrame::cast(self : DataFrame, data_type : DataType) -> DataFrame! {
-  let series = []
-  for serie in self.data {
-    series.push(serie.cast!(data_type))
+pub fn DataFrame::cast(
+  self : DataFrame,
+  data_type? : DataType,
+  cast_mapping? : Map[String, DataType],
+  strict~ : Bool = true
+) -> DataFrame! {
+  match (data_type, cast_mapping) {
+    (Some(data_type), _) => {
+      let series = []
+      for serie in self.data {
+        series.push(serie.cast!(data_type, strict~))
+      }
+      DataFrame::{ data: series, shape: self.shape, index: self.index }
+    }
+    (_, Some(cast_mapping)) => {
+      let df = self.clone()
+      for iter in cast_mapping {
+        let (name, data_type) = iter
+        let index = df.get_column_index!(name)
+        df.replace_column!(index, df.data[index].cast!(data_type, strict~))
+      }
+      df
+    }
+    _ => self.clone()
   }
-  DataFrame::{ data: series, shape: self.shape, index: self.index }
-}
-
-test "DataFrame::cast" {
-  let df = DataFrame::new!([
-    Series::new("A", SeriesInput::Int32([1, 2, 3])),
-    Series::new("B", SeriesInput::Float32([1.1, 2.2, 3.3])),
-  ])
-  let df_cast = df.cast!(DataType::Float32)
-  inspect!(df_cast.data[0].data_type, content="Float32")
 }

@@ -1774,19 +1774,30 @@ test "Series::fill_null" {
   )
 }
 
-fn SeriesData::cast_to_int32(self : SeriesData) -> SeriesData!InvalidType {
+///|
+fn SeriesData::cast_to_int32(
+  self : SeriesData,
+  strict~ : Bool = true
+) -> SeriesData!InvalidType {
   match self {
     SeriesData::Int(_) => self
     SeriesData::Float(data) =>
       SeriesData::Int(data.map(fn(x : Float) { x.to_int() }))
     SeriesData::Bool(data) =>
-      SeriesData::Int(data.map(fn(x : Bool) {x.to_int()}))
+      SeriesData::Int(data.map(fn(x : Bool) { x.to_int() }))
     SeriesData::Str(data) =>
-      raise InvalidType("Cannot cast String to Int32")
+      match strict {
+        true => raise InvalidType("Cannot cast String to Int32")
+        false => SeriesData::Int(data.map(fn(x : String) { 0 }))
+      }
   }
 }
 
-fn SeriesData::cast_to_float32(self : SeriesData) -> SeriesData!InvalidType {
+///|
+fn SeriesData::cast_to_float32(
+  self : SeriesData,
+  strict~ : Bool = true
+) -> SeriesData!InvalidType {
   match self {
     SeriesData::Int(data) =>
       SeriesData::Float(data.map(fn(x : Int) { x.to_float() }))
@@ -1794,14 +1805,17 @@ fn SeriesData::cast_to_float32(self : SeriesData) -> SeriesData!InvalidType {
     SeriesData::Bool(data) =>
       SeriesData::Float(data.map(fn(x : Bool) { x.to_int().to_float() }))
     SeriesData::Str(data) =>
-      raise InvalidType("Cannot cast String to Float32")
+      match strict {
+        true => raise InvalidType("Cannot cast String to Float32")
+        false => SeriesData::Float(data.map(fn(x : String) { 0.0 }))
+      }
   }
 }
 
+///|
 fn SeriesData::cast_to_bool(self : SeriesData) -> SeriesData {
   match self {
-    SeriesData::Int(data) =>
-      SeriesData::Bool(data.map(fn(x : Int) { x != 0 }))
+    SeriesData::Int(data) => SeriesData::Bool(data.map(fn(x : Int) { x != 0 }))
     SeriesData::Float(data) =>
       SeriesData::Bool(data.map(fn(x : Float) { x != 0.0 }))
     SeriesData::Bool(_) => self
@@ -1810,6 +1824,7 @@ fn SeriesData::cast_to_bool(self : SeriesData) -> SeriesData {
   }
 }
 
+///|
 fn SeriesData::cast_to_str(self : SeriesData) -> SeriesData {
   match self {
     SeriesData::Int(data) =>
@@ -1822,18 +1837,30 @@ fn SeriesData::cast_to_str(self : SeriesData) -> SeriesData {
   }
 }
 
-fn Series::cast(self : Series, dtype : DataType) -> Series!InvalidType {
+///|
+fn Series::cast(
+  self : Series,
+  dtype : DataType,
+  strict~ : Bool = true
+) -> Series!InvalidType {
   let data = match dtype {
-    DataType::Int32 => self.data.cast_to_int32!()
-    DataType::Float32 => self.data.cast_to_float32!()
+    DataType::Int32 => self.data.cast_to_int32!(strict~)
+    DataType::Float32 => self.data.cast_to_float32!(strict~)
     DataType::Bool => self.data.cast_to_bool()
     DataType::String => self.data.cast_to_str()
+  }
+  let bitmap = match
+    strict == false &&
+    self.data_type == DataType::String &&
+    (dtype == DataType::Int32 || dtype == DataType::Float32) {
+    true => BitMap::new_by_size(self.length, value=true)
+    false => self.bitmap
   }
   Series::{
     name: self.name(),
     data,
     data_type: dtype,
-    bitmap: self.bitmap,
+    bitmap,
     length: self.length,
   }
 }

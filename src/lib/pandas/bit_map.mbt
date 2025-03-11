@@ -172,10 +172,14 @@ fn BitMap::reverse(self : BitMap) -> Unit {
 }
 
 ///|
-fn BitMap::new_by_size(size : Int, optional~ : Bool = true) -> BitMap {
+fn BitMap::new_by_size(
+  size : Int,
+  optional~ : Bool = true,
+  value~ : Bool = false
+) -> BitMap {
   BitMap::{
     optional,
-    bitmap: Array::make(size, false),
+    bitmap: Array::make(size, value),
     length: size,
     offset: 0,
   }
