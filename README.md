@@ -176,6 +176,7 @@ let div_op = series1 / series2
 | `is_empty`         | Return whether the DataFrame is empty                                       |
 | `fill_null`        | Fill null values using the specified value or strategy                      |
 | `null_count`       | Return the number of null values in the DataFrame                           |
+| `cast`             | Cast DataFrame column(s) to the specified dtype(s)                          |
 
 ### Series Methods
 
