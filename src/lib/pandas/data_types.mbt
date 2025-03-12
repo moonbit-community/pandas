@@ -63,8 +63,8 @@ fn SeriesValue::to_float(self : SeriesValue) -> Float {
   match self {
     SeriesValue::Int(x) => x.to_float()
     SeriesValue::Float(x) => x
-    SeriesValue::Bool(x) => abort("SeriesValue::to_float: Bool")
-    SeriesValue::Str(x) => abort("SeriesValue::to_float: Str")
+    SeriesValue::Bool(x) => x.to_int().to_float()
+    SeriesValue::Str(_) => abort("SeriesValue::to_float: Str")
     SeriesValue::Null => abort("SeriesValue::to_float: Null")
   }
 }

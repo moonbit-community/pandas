@@ -389,6 +389,7 @@ pub fn DataFrame::add_row(self : DataFrame, row : Array[SeriesValue]) -> Unit! {
             }
             data.push(value)
           }
+          _ => ()
         }
       SeriesValue::Float(value) =>
         match self.data[i].data {
@@ -398,6 +399,7 @@ pub fn DataFrame::add_row(self : DataFrame, row : Array[SeriesValue]) -> Unit! {
             }
             data.push(value)
           }
+          _ => ()
         }
       SeriesValue::Bool(value) =>
         match self.data[i].data {
@@ -407,6 +409,7 @@ pub fn DataFrame::add_row(self : DataFrame, row : Array[SeriesValue]) -> Unit! {
             }
             data.push(value)
           }
+          _ => ()
         }
       SeriesValue::Str(value) =>
         match self.data[i].data {
@@ -416,6 +419,7 @@ pub fn DataFrame::add_row(self : DataFrame, row : Array[SeriesValue]) -> Unit! {
             }
             data.push(value)
           }
+          _ => ()
         }
       SeriesValue::Null => {
         match self.data[i].bitmap.optional {
@@ -460,7 +464,7 @@ pub fn DataFrame::select_rows(
   indices? : Array[Int]
 ) -> DataFrame!IndexOutOfBounds {
   match (range, indices) {
-    (Some(_), Some(_)) | (Some(_), None) => {
+    (Some(_), _) => {
       let selected_rows : Array[Series] = []
       for col in self.data {
         let (begin, end) = match range {
@@ -475,7 +479,7 @@ pub fn DataFrame::select_rows(
         index: self.index,
       }
     }
-    (None, Some(_)) =>
+    (_, Some(_)) =>
       match indices {
         Some(i) => {
           // boundary check
@@ -583,10 +587,10 @@ pub fn DataFrame::filter(
 ) -> DataFrame! {
   match self.index.get(name) {
     Some(index) =>
-      match self.data[index].data() {
+      match self.data[index].data {
         SeriesData::Int(data) => {
           let rows = Array::new()
-          for i = 0; i < data.length(); i = i + 1 {
+          for i in 0..<data.length() {
             if f(SeriesValue::Int(data[i])) {
               rows.push(i)
             }
@@ -595,7 +599,7 @@ pub fn DataFrame::filter(
         }
         SeriesData::Float(data) => {
           let rows = Array::new()
-          for i = 0; i < data.length(); i = i + 1 {
+          for i in 0..<data.length() {
             if f(SeriesValue::Float(data[i])) {
               rows.push(i)
             }
@@ -604,7 +608,7 @@ pub fn DataFrame::filter(
         }
         SeriesData::Bool(data) => {
           let rows = Array::new()
-          for i = 0; i < data.length(); i = i + 1 {
+          for i in 0..<data.length() {
             if f(SeriesValue::Bool(data[i])) {
               rows.push(i)
             }
@@ -613,7 +617,7 @@ pub fn DataFrame::filter(
         }
         SeriesData::Str(data) => {
           let rows = Array::new()
-          for i = 0; i < data.length(); i = i + 1 {
+          for i in 0..<data.length() {
             if f(SeriesValue::Str(data[i])) {
               rows.push(i)
             }
