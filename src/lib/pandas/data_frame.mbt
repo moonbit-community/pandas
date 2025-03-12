@@ -631,43 +631,55 @@ pub fn DataFrame::filter(
 
 ///| Sort the DataFrame by a specified column
 ///
-/// ### Parameters
+/// Parameters
 ///
 /// - `self` : An instance of the DataFrame
-/// - `col_name` : The name of the column to sort by
-/// - `descending~` : Whether to sort in descending order (default is false)
+/// - `by` : The name of the column to sort by
+/// - `descending` : Whether to sort in descending order (default is false)
+/// - `nulls_last` : Whether to place null values at the end (default is false)
 ///
-/// ### Return
+/// Returns
 ///
 /// - `Unit` : This function sorts the DataFrame in place
 ///
-/// ### Errors
+/// Errors
 ///
 /// - `ColumnNotFoundError` : Raised if the specified column is not found
 ///
-/// ### Example
+/// Example
 /// ```
 /// let df = DataFrame::new([
 ///   Series::new("A", SeriesData::Int([3, 1, 2])), 
 ///   Series::new("B", SeriesData::Float([3.3, 1.1, 2.2]))
 /// ])
-/// df.sort("A", descending=true)
-/// inspect!(df.data()[0].data(), content="Int([1, 2, 3])")
+/// df.sort("B", descending=true)
+/// inspect!(df.data()[0].data(), content="Int([3, 2, 1])")
 /// ```
 pub fn DataFrame::sort(
   self : DataFrame,
-  col_name : String,
-  descending~ : Bool = false
+  by : String,
+  descending~ : Bool = false,
+  nulls_last~ : Bool = false
 ) -> Unit!ColumnNotFoundError {
-  match self.index.get(col_name) {
+  match self.index.get(by) {
     Some(index) => {
-      let indices = self.data[index].data.get_argsort_indices(descending~)
+      let serie = self.data[index]
+      let indices = self.data[index].get_argsort_indices(descending~, nulls_last~)
       for item in self.data {
         item.data.argsort_indices(indices)
       }
     }
-    None => raise ColumnNotFoundError("Column '\{col_name}' not found.")
+    None => raise ColumnNotFoundError("Column '\{by}' not found.")
   }
+}
+
+test "DataFrame::sort" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesInput::Int32([3, 1, 2])),
+    Series::new("B", SeriesInput::Float32([3.3, 1.1, 2.2])),
+  ])
+  df.sort!("B", descending=true)
+  inspect!(df.data()[0].data(), content="Int([3, 2, 1])")
 }
 
 ///| Vertically stack two DataFrames
