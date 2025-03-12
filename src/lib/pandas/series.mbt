@@ -419,7 +419,7 @@ pub fn Series::get_argsort_indices(
         (true, false) | (false, true) => {
           let mut l = 0
           for i in 0..<self.length {
-            if not(self.bitmap[indices[i]]){
+            if not(self.bitmap[indices[i]]) {
               indices.swap(i, l)
               l += 1
             }
@@ -432,19 +432,6 @@ pub fn Series::get_argsort_indices(
       indices
     }
   }
-}
-
-test "Series::get_argsort_indices" {
-  let series = Series::new("test", SeriesInput::Int32([2, 1, 3]))
-  let indices = series.get_argsort_indices()
-  inspect!(indices, content="[1, 0, 2]")
-  let indices_desc = series.get_argsort_indices(descending=true)
-  inspect!(indices_desc, content="[2, 0, 1]")
-  let series = Series::new("test", SeriesInput::Int32_Nullable([Some(-2), None, Some(3)]))
-  let indices = series.get_argsort_indices()
-  inspect!(indices, content="[1, 0, 2]")
-  let indices_desc = series.get_argsort_indices(descending=true)
-  inspect!(indices_desc, content="[1, 2, 0]")
 }
 
 ///| Sort the SeriesData by the indices
@@ -2008,13 +1995,14 @@ test "Series::swap" {
 /// inspect!(new_series.unwrap().data, content="Int([0, 0, 1, 3])")
 /// inspect!(series.data, content="Int([1, 0, 3, 0])")
 /// ```
-pub fn Series::move_nulls_front(self : Series, inplace~ : Bool = false) -> Option[Series] {
-  if(self.bitmap.optional == false) {
+pub fn Series::move_nulls_front(
+  self : Series,
+  inplace~ : Bool = false
+) -> Series? {
+  if self.bitmap.optional == false {
     match inplace {
-      true => 
-        return None
-      false => 
-        return Some(self.copy())
+      true => return None
+      false => return Some(self.copy())
     }
   }
   match inplace {
@@ -2037,10 +2025,16 @@ pub fn Series::move_nulls_front(self : Series, inplace~ : Bool = false) -> Optio
 }
 
 test "Series::move_nulls_front" {
-  let series = Series::new("test", SeriesInput::Int32_Nullable([Some(1), None, Some(3), None]))
+  let series = Series::new(
+    "test",
+    SeriesInput::Int32_Nullable([Some(1), None, Some(3), None]),
+  )
   let new_series = series.move_nulls_front()
-  inspect!(new_series.unwrap().bitmap.bitmap, content="[true, true, false, false]")
-  inspect!(new_series.unwrap().data, content="Int([0, 0, 1, 3])")  
+  inspect!(
+    new_series.unwrap().bitmap.bitmap,
+    content="[true, true, false, false]",
+  )
+  inspect!(new_series.unwrap().data, content="Int([0, 0, 1, 3])")
   inspect!(series.data, content="Int([1, 0, 3, 0])")
 }
 
@@ -2063,13 +2057,14 @@ test "Series::move_nulls_front" {
 /// inspect!(new_series.unwrap().data, content="Int([1, 3, 0, 0])")
 /// inspect!(series.data, content="Int([1, 0, 3, 0])")
 /// ```
-pub fn Series::move_nulls_back(self : Series, inplace~ : Bool = false) -> Option[Series] {
-  if(self.bitmap.optional == false) {
+pub fn Series::move_nulls_back(
+  self : Series,
+  inplace~ : Bool = false
+) -> Series? {
+  if self.bitmap.optional == false {
     match inplace {
-      true => 
-        return None
-      false => 
-        return Some(self.copy())
+      true => return None
+      false => return Some(self.copy())
     }
   }
   match inplace {
@@ -2092,9 +2087,15 @@ pub fn Series::move_nulls_back(self : Series, inplace~ : Bool = false) -> Option
 }
 
 test "Series::move_nulls_back" {
-  let series = Series::new("test", SeriesInput::Int32_Nullable([Some(1), None, Some(3), None]))
+  let series = Series::new(
+    "test",
+    SeriesInput::Int32_Nullable([Some(1), None, Some(3), None]),
+  )
   let new_series = series.move_nulls_back()
-  inspect!(new_series.unwrap().bitmap.bitmap, content="[false, false, true, true]")
-  inspect!(new_series.unwrap().data, content="Int([1, 3, 0, 0])")  
+  inspect!(
+    new_series.unwrap().bitmap.bitmap,
+    content="[false, false, true, true]",
+  )
+  inspect!(new_series.unwrap().data, content="Int([1, 3, 0, 0])")
   inspect!(series.data, content="Int([1, 0, 3, 0])")
 }

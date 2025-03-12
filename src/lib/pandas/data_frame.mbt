@@ -664,22 +664,16 @@ pub fn DataFrame::sort(
   match self.index.get(by) {
     Some(index) => {
       let serie = self.data[index]
-      let indices = self.data[index].get_argsort_indices(descending~, nulls_last~)
+      let indices = self.data[index].get_argsort_indices(
+        descending~,
+        nulls_last~,
+      )
       for item in self.data {
         item.data.argsort_indices(indices)
       }
     }
     None => raise ColumnNotFoundError("Column '\{by}' not found.")
   }
-}
-
-test "DataFrame::sort" {
-  let df = DataFrame::new!([
-    Series::new("A", SeriesInput::Int32([3, 1, 2])),
-    Series::new("B", SeriesInput::Float32([3.3, 1.1, 2.2])),
-  ])
-  df.sort!("B", descending=true)
-  inspect!(df.data()[0].data(), content="Int([3, 2, 1])")
 }
 
 ///| Vertically stack two DataFrames

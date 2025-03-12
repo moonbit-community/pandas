@@ -449,3 +449,12 @@ test "DataFrame::cast" {
   inspect!(df_cast.data[0].data_type, content="Float32")
   inspect!(df_cast.data[2].data_type, content="Int32")
 }
+
+test "DataFrame::sort" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesInput::Int32([3, 1, 2])),
+    Series::new("B", SeriesInput::Float32([3.3, 1.1, 2.2])),
+  ])
+  df.sort!("B", descending=true)
+  inspect!(df.data()[0].data(), content="Int([3, 2, 1])")
+}

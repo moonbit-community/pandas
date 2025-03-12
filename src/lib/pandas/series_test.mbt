@@ -235,3 +235,19 @@ test "Series::slice" {
   let series = Series::new("test", SeriesInput::Int32([1, 2, 3, 4, 5]))
   inspect!(series.slice(1, 3).data, content="Int([2, 3])")
 }
+
+test "Series::get_argsort_indices" {
+  let series = Series::new("test", SeriesInput::Int32([2, 1, 3]))
+  let indices = series.get_argsort_indices()
+  inspect!(indices, content="[1, 0, 2]")
+  let indices_desc = series.get_argsort_indices(descending=true)
+  inspect!(indices_desc, content="[2, 0, 1]")
+  let series = Series::new(
+    "test",
+    SeriesInput::Int32_Nullable([Some(-2), None, Some(3)]),
+  )
+  let indices = series.get_argsort_indices()
+  inspect!(indices, content="[1, 0, 2]")
+  let indices_desc = series.get_argsort_indices(descending=true)
+  inspect!(indices_desc, content="[1, 2, 0]")
+}
