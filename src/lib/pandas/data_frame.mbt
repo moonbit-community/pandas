@@ -663,7 +663,6 @@ pub fn DataFrame::sort(
 ) -> Unit!ColumnNotFoundError {
   match self.index.get(by) {
     Some(index) => {
-      let serie = self.data[index]
       let indices = self.data[index].get_argsort_indices(
         descending~,
         nulls_last~,

@@ -1851,7 +1851,7 @@ fn SeriesData::cast_to_int32(
     SeriesData::Str(data) =>
       match strict {
         true => raise InvalidType("Cannot cast String to Int32")
-        false => SeriesData::Int(data.map(fn(x : String) { 0 }))
+        false => SeriesData::Int(Array::make(data.length(), 0))
       }
   }
 }
@@ -1870,7 +1870,7 @@ fn SeriesData::cast_to_float32(
     SeriesData::Str(data) =>
       match strict {
         true => raise InvalidType("Cannot cast String to Float32")
-        false => SeriesData::Float(data.map(fn(x : String) { 0.0 }))
+        false => SeriesData::Float(Array::make(data.length(), 0.0))
       }
   }
 }
