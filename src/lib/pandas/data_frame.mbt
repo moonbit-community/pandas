@@ -1945,7 +1945,7 @@ pub fn DataFrame::cast(
 /// ```
 /// let dict = df.to_dict()
 /// ```
-pub fn DataFrame::to_dict(self: DataFrame) -> Map[String, Series] {
+pub fn DataFrame::to_dict(self : DataFrame) -> Map[String, Series] {
   let dict = {}
   for series in self.data {
     dict[series.name] = series
@@ -1981,5 +1981,8 @@ test "DataFrame::to_init_repr" {
     Series::new("A", SeriesInput::Int32([1, 2, 3])),
     Series::new("C", SeriesInput::Str(["a", "b", "c"])),
   ])
-  inspect!(df.to_init_repr(), content="DataFrame(\n\t[\n\t\tSeries 'A', [1, 2, 3], dtype=int32,\n\t\tSeries 'C', [\"a\", \"b\", \"c\"], dtype=string,\n\t]\n)")
+  inspect!(
+    df.to_init_repr(),
+    content="DataFrame(\n\t[\n\t\tSeries 'A', [1, 2, 3], dtype=int32,\n\t\tSeries 'C', [\"a\", \"b\", \"c\"], dtype=string,\n\t]\n)",
+  )
 }
