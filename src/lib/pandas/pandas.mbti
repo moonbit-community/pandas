@@ -25,6 +25,7 @@ impl DataFrame {
   add_row(Self, Array[SeriesValue]) -> Unit!
   all(Self, ignore_nulls~ : Bool = ..) -> Self!
   any(Self, ignore_nulls~ : Bool = ..) -> Self!
+  cast(Self, data_type? : DataType, cast_mapping? : Map[String, DataType], strict~ : Bool = ..) -> Self!
   clear(Self) -> Unit
   clone(Self) -> Self
   column(Self, String) -> Series!ColumnNotFoundError
@@ -59,10 +60,12 @@ impl DataFrame {
   select_rows(Self, range? : (Int, Int), indices? : Array[Int]) -> Self!IndexOutOfBounds
   shape(Self) -> Array[Int]
   slice(Self, Int, length~ : Int = ..) -> Self!
-  sort(Self, String, descending~ : Bool = ..) -> Unit!ColumnNotFoundError
+  sort(Self, String, descending~ : Bool = .., nulls_last~ : Bool = ..) -> Unit!ColumnNotFoundError
   sum(Self) -> Self!InvalidType
   sum_horizontal(Self) -> Series!
   tail(Self, Int) -> Self!
+  to_dict(Self) -> Map[String, Series]
+  to_init_repr(Self) -> String
   to_series(Self, Int) -> Series
   transpose(Self, include_header~ : Bool = .., header_name~ : String = .., column_names? : Array[String]) -> Self!
   unique(Self, Array[String], keep~ : String = ..) -> Self!
@@ -121,6 +124,7 @@ impl Series {
   data(Self) -> SeriesData
   erase(Self, Int) -> Unit!
   extend(Self, Self) -> Unit!InvalidType
+  get_argsort_indices(Self, descending~ : Bool = .., nulls_last~ : Bool = ..) -> Array[Int]
   get_type(Self) -> DataType
   has_null(Self) -> Bool
   is_empty(Self) -> Bool
@@ -135,6 +139,8 @@ impl Series {
   mean(Self) -> Float!
   merge(Self, Self) -> Self!InvalidType
   min(Self) -> SeriesValue!
+  move_nulls_back(Self, inplace~ : Bool = ..) -> Self?
+  move_nulls_front(Self, inplace~ : Bool = ..) -> Self?
   n_unique(Self) -> Int
   name(Self) -> String
   new(String, SeriesInput) -> Self
@@ -150,6 +156,7 @@ impl Series {
   slice(Self, Int, Int) -> Self
   sort(Self) -> Unit
   sum(Self) -> SeriesValue!InvalidType
+  swap(Self, Int, Int) -> Unit!IndexOutOfBounds
   tan(Self) -> Self!InvalidType
   unique_counts(Self) -> Self
   upper_bound(Self) -> Self
