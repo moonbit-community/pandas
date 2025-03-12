@@ -392,7 +392,8 @@ pub fn SeriesData::get_argsort_indices(
 /// ```
 pub fn Series::get_argsort_indices(
   self : Series,
-  descending~ : Bool = false
+  descending~ : Bool = false,
+  // nulls_last~ : Bool = false
 ) -> Array[Int] {
   match self.bitmap.optional {
     false => self.data.get_argsort_indices(descending~)
@@ -404,11 +405,11 @@ pub fn Series::get_argsort_indices(
         SeriesData::Bool(data) => indices.sort_by_key(fn(i) { data[i] })
         SeriesData::Str(data) => indices.sort_by_key(fn(i) { data[i] })
       }
-      let mut l = 0
-      for i in 0..<self.length {
-        if self.bitmap[indices[i]] {
-          indices.swap(i, l)
-          l += 1
+      let mut r = self.length - 1
+      for i = self.length - 1; i >= 0; i = i - 1 {
+        if not(self.bitmap[indices[i]]) {
+          indices.swap(i, r)
+          r -= 1
         }
       }
       if descending {
