@@ -1874,3 +1874,151 @@ fn SeriesData::to_init_repr(self : SeriesData) -> String {
     SeriesData::Str(data) => data.to_string()
   }
 }
+
+///| Swap two elements in the Series
+///
+/// Parameters
+///
+/// - `self` : An instance of the Series
+/// - `x` : The index of the first element to swap
+/// - `y` : The index of the second element to swap
+///
+/// Errors
+///
+/// - `IndexOutOfBounds` : Raised if either index is out of bounds
+///
+/// Example
+/// ```
+/// let series = Series::new("test", SeriesInput::Int32([1, 2, 3]))
+/// series.swap!(0, 1)
+/// inspect!(series.data.to_string(), content="Int([2, 1, 3])")
+/// ```
+pub fn Series::swap(self : Series, x : Int, y : Int) -> Unit!IndexOutOfBounds {
+  guard x >= 0 && x < self.length && y >= 0 && y < self.length else {
+    raise IndexOutOfBounds("Index out of bounds")
+  }
+  let tmp = self.data[x]
+  self.data[x] = self.data[y]
+  self.data[y] = tmp
+  if self.bitmap.optional {
+    let tmp = self.bitmap[x]
+    self.bitmap[x] = self.bitmap[y]
+    self.bitmap[y] = tmp
+  }
+}
+
+test "Series::swap" {
+  let series = Series::new("test", SeriesInput::Int32([1, 2, 3, 4, 5]))
+  series.swap!(0, 1)
+  inspect!(series.data, content="Int([2, 1, 3, 4, 5])")
+}
+
+///| Move null values to the front of the Series
+///
+/// Parameters
+///
+/// - `self` : An instance of the Series
+/// - `inplace` : Whether to modify the Series in place (default is false)
+///
+/// Returns
+///
+/// - `Option[Series]` : A new Series with null values moved to the front if `inplace` is false, otherwise None
+///
+/// Example
+/// ```
+/// let series = Series::new("test", SeriesInput::Int32_Nullable([Some(1), None, Some(3), None]))
+/// let new_series = series.move_nulls_front()
+/// inspect!(new_series.unwrap().bitmap.bitmap, content="[true, true, false, false]")
+/// inspect!(new_series.unwrap().data, content="Int([0, 0, 1, 3])")
+/// inspect!(series.data, content="Int([1, 0, 3, 0])")
+/// ```
+pub fn Series::move_nulls_front(self : Series, inplace~ : Bool = false) -> Option[Series] {
+  if(self.bitmap.optional == false) {
+    match inplace {
+      true => 
+        return None
+      false => 
+        return Some(self.copy())
+    }
+  }
+  match inplace {
+    false => {
+      let copy_serie = self.copy()
+      copy_serie.move_nulls_front(inplace=true) |> ignore
+      return Some(copy_serie)
+    }
+    true => {
+      let mut j = self.length - 1
+      for i = self.length - 1; i >= 0; i = i - 1 {
+        if not(self.bitmap[i]) {
+          self.swap?(i, j) |> ignore
+          j -= 1
+        }
+      }
+      return None
+    }
+  }
+}
+
+test "Series::move_nulls_front" {
+  let series = Series::new("test", SeriesInput::Int32_Nullable([Some(1), None, Some(3), None]))
+  let new_series = series.move_nulls_front()
+  inspect!(new_series.unwrap().bitmap.bitmap, content="[true, true, false, false]")
+  inspect!(new_series.unwrap().data, content="Int([0, 0, 1, 3])")  
+  inspect!(series.data, content="Int([1, 0, 3, 0])")
+}
+
+///| Move null values to the back of the Series
+///
+/// Parameters
+///
+/// - `self` : An instance of the Series
+/// - `inplace` : Whether to modify the Series in place (default is false)
+///
+/// Returns
+///
+/// - `Option[Series]` : A new Series with null values moved to the back if `inplace` is false, otherwise None
+///
+/// Example
+/// ```
+/// let series = Series::new("test", SeriesInput::Int32_Nullable([Some(1), None, Some(3), None]))
+/// let new_series = series.move_nulls_back()
+/// inspect!(new_series.unwrap().bitmap.bitmap, content="[false, false, true, true]")
+/// inspect!(new_series.unwrap().data, content="Int([1, 3, 0, 0])")
+/// inspect!(series.data, content="Int([1, 0, 3, 0])")
+/// ```
+pub fn Series::move_nulls_back(self : Series, inplace~ : Bool = false) -> Option[Series] {
+  if(self.bitmap.optional == false) {
+    match inplace {
+      true => 
+        return None
+      false => 
+        return Some(self.copy())
+    }
+  }
+  match inplace {
+    false => {
+      let copy_serie = self.copy()
+      copy_serie.move_nulls_back(inplace=true) |> ignore
+      return Some(copy_serie)
+    }
+    true => {
+      let mut j = 0
+      for i in 0..<self.length {
+        if not(self.bitmap[i]) {
+          self.swap?(i, j) |> ignore
+          j += 1
+        }
+      }
+      return None
+    }
+  }
+}
+
+test "Series::move_nulls_back" {
+  let series = Series::new("test", SeriesInput::Int32_Nullable([Some(1), None, Some(3), None]))
+  let new_series = series.move_nulls_back()
+  inspect!(new_series.unwrap().bitmap.bitmap, content="[false, false, true, true]")
+  inspect!(new_series.unwrap().data, content="Int([1, 3, 0, 0])")  
+  inspect!(series.data, content="Int([1, 0, 3, 0])")
+}
