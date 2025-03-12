@@ -377,13 +377,14 @@ pub fn SeriesData::get_argsort_indices(
 ///
 /// - `self` : An instance of the Series
 /// - `descending` : A boolean indicating whether to sort in descending order (default is false)
+/// - `nulls_last` : A boolean indicating whether null values should be considered last (default is false)
 ///
 /// Returns
 ///
 /// - `Array[Int]` : An array of indices representing the sorted order of the elements
 ///
 /// Example
-/// ```moonbit
+/// ```
 /// let series = Series::new("test", SeriesInput::Int32([2, 1, 3]))
 /// let indices = series.get_argsort_indices()
 /// inspect!(indices, content="[1, 0, 2]")
@@ -393,7 +394,7 @@ pub fn SeriesData::get_argsort_indices(
 pub fn Series::get_argsort_indices(
   self : Series,
   descending~ : Bool = false,
-  // nulls_last~ : Bool = false
+  nulls_last~ : Bool = false
 ) -> Array[Int] {
   match self.bitmap.optional {
     false => self.data.get_argsort_indices(descending~)
@@ -405,11 +406,24 @@ pub fn Series::get_argsort_indices(
         SeriesData::Bool(data) => indices.sort_by_key(fn(i) { data[i] })
         SeriesData::Str(data) => indices.sort_by_key(fn(i) { data[i] })
       }
-      let mut r = self.length - 1
-      for i = self.length - 1; i >= 0; i = i - 1 {
-        if not(self.bitmap[indices[i]]) {
-          indices.swap(i, r)
-          r -= 1
+      match (descending, nulls_last) {
+        (false, false) | (true, true) => {
+          let mut r = self.length - 1
+          for i = self.length - 1; i >= 0; i = i - 1 {
+            if not(self.bitmap[indices[i]]) {
+              indices.swap(i, r)
+              r -= 1
+            }
+          }
+        }
+        (true, false) | (false, true) => {
+          let mut l = 0
+          for i in 0..<self.length {
+            if not(self.bitmap[indices[i]]){
+              indices.swap(i, l)
+              l += 1
+            }
+          }
         }
       }
       if descending {
@@ -430,7 +444,7 @@ test "Series::get_argsort_indices" {
   let indices = series.get_argsort_indices()
   inspect!(indices, content="[1, 0, 2]")
   let indices_desc = series.get_argsort_indices(descending=true)
-  inspect!(indices_desc, content="[2, 0, 1]")
+  inspect!(indices_desc, content="[1, 2, 0]")
 }
 
 ///| Sort the SeriesData by the indices
