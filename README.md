@@ -230,7 +230,11 @@ let div_op = series1 / series2
 | `tan`              | Return a new Series with the tangent of each element                        |
 | `unique_counts`    | Return a new Series showing the count of each unique value                  |
 | `upper_bound`      | Return a new Series with each element replaced by the upper bound           |
-| `slice`            | Return a new Series containing elements in the specified range             |
+| `slice`            | Return a new Series containing elements in the specified range              |
+| `swap`             | Swap two elements in the Series                                             |
+| `get_argsort_indices`| Get the indices that would sort the Series                                |
+| `move_nulls_front` | Move null values to the front of the Series                                 |
+| `move_nulls_back`  | Move null values to the back of the Series                                  |
 
 ## Contributing
 Issues and pull requests are welcome. Please make sure to run all tests before submitting.
