@@ -1864,3 +1864,13 @@ fn Series::cast(
     length: self.length,
   }
 }
+
+///|
+fn SeriesData::to_init_repr(self : SeriesData) -> String {
+  match self {
+    SeriesData::Int(data) => data.to_string()
+    SeriesData::Float(data) => data.to_string()
+    SeriesData::Bool(data) => data.to_string()
+    SeriesData::Str(data) => data.to_string()
+  }
+}

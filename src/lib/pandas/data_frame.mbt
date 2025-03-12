@@ -1934,3 +1934,52 @@ pub fn DataFrame::cast(
     _ => self.clone()
   }
 }
+
+///| Convert the DataFrame to a dictionary where the keys are column names and the values are Series
+///
+/// Returns
+///
+/// - `Map[String, Series]` : A dictionary representation of the DataFrame
+///
+/// Example
+/// ```
+/// let dict = df.to_dict()
+/// ```
+pub fn DataFrame::to_dict(self: DataFrame) -> Map[String, Series] {
+  let dict = {}
+  for series in self.data {
+    dict[series.name] = series
+  }
+  dict
+}
+
+///| Convert DataFrame to instantiable string representation
+///
+/// Returns
+///
+/// - `String` : A string representation of the DataFrame that can be used to instantiate it
+///
+/// Example
+/// ```
+/// let df = DataFrame::new!([
+///   Series::new("A", SeriesInput::Int32([1, 2, 3])),
+///   Series::new("C", SeriesInput::Str(["a", "b", "c"])),
+/// ])
+/// inspect!(df.to_init_repr(), content="DataFrame(\n\t[\n\t\tSeries 'A', [1, 2, 3], dtype=int32,\n\t\tSeries 'C', [\"a\", \"b\", \"c\"], dtype=string,\n\t]\n)")
+/// ```
+pub fn DataFrame::to_init_repr(self : DataFrame) -> String {
+  let mut repr = "DataFrame(\n\t[\n"
+  for series in self.data {
+    repr += "\t\tSeries '\{series.name}', \{series.data.to_init_repr()}, dtype=\{series.data_type},\n"
+  }
+  repr += "\t]\n)"
+  repr
+}
+
+test "DataFrame::to_init_repr" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesInput::Int32([1, 2, 3])),
+    Series::new("C", SeriesInput::Str(["a", "b", "c"])),
+  ])
+  inspect!(df.to_init_repr(), content="DataFrame(\n\t[\n\t\tSeries 'A', [1, 2, 3], dtype=int32,\n\t\tSeries 'C', [\"a\", \"b\", \"c\"], dtype=string,\n\t]\n)")
+}
