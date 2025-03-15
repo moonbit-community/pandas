@@ -679,8 +679,35 @@ pub fn Series::op_div(self : Series, other : Series) -> Series {
   }
 }
 
-///|
-pub fn merge(self : Series, other : Series) -> Series!InvalidType {
+///| Merge two Series immutably or in place
+///
+/// Parameters
+///
+/// - `self` : An instance of the Series
+/// - `other` : Another Series to merge with
+/// - `inplace~` : Whether to merge in place (default is false)
+///
+/// Returns
+///
+/// - `Series` : A new Series with the data from both Series merged if `inplace` is false, otherwise the modified Series
+///
+/// Errors
+///
+/// - `InvalidType` : Raised if the data types of the two Series do not match
+///
+/// Example
+/// ```moonbit
+/// let series1 = Series::new("test", SeriesInput::Int32([1, 2]))
+/// let series2 = Series::new("test", SeriesInput::Int32([3, 4]))
+/// let merged_series = series1.merge!(series2)
+/// inspect!(merged_series.data, content="Int([1, 2, 3, 4])")
+/// let merged_series_inplace = series1.merge!(series2, inplace=true)
+/// inspect!(series1.data, content="Int([1, 2, 3, 4])")
+/// ```
+pub fn merge(self : Series, other : Series, inplace~ : Bool = false) -> Series!InvalidType {
+  guard self.data_type == other.data_type else {
+    raise InvalidType("merger must be the same type")
+  }
   let data = match (self.data, other.data) {
     (SeriesData::Int(a), SeriesData::Int(b)) => SeriesData::Int(a + b)
     (SeriesData::Float(a), SeriesData::Float(b)) => SeriesData::Float(a + b)
@@ -688,19 +715,30 @@ pub fn merge(self : Series, other : Series) -> Series!InvalidType {
     (SeriesData::Str(a), SeriesData::Str(b)) => SeriesData::Str(a + b)
     _ => raise InvalidType("merger must be the same type")
   }
-  let bitmap = BitMap::{
-    optional: self.bitmap.optional || other.bitmap.optional,
-    bitmap: self.bitmap.bitmap + other.bitmap.bitmap,
-    length: self.length() + other.length(),
-    offset: 0,
+  match inplace {
+    false => Series::{
+      name: self.name(),
+      data,
+      data_type: get_dtype(data),
+      bitmap: BitMap::merge(self.bitmap, other.bitmap, inplace=false),
+      length: self.length() + other.length(),
+    }
+    true => {
+      self.data = data
+      self.bitmap = BitMap::merge(self.bitmap, other.bitmap, inplace=true)
+      self.length += other.length()
+      self
+    }
   }
-  Series::{
-    name: self.name(),
-    data,
-    data_type: get_dtype(data),
-    bitmap,
-    length: self.length() + other.length(),
-  }
+}
+
+test "Series::merge" {
+  let series1 = Series::new("test", SeriesInput::Int32([1, 2]))
+  let series2 = Series::new("test", SeriesInput::Int32([3, 4]))
+  let merged_series = series1.merge!(series2)
+  inspect!(merged_series.data, content="Int([1, 2, 3, 4])")
+  let merged_series = series1.merge!(series2, inplace=true)
+  inspect!(series1.data, content="Int([1, 2, 3, 4])")
 }
 
 ///|
