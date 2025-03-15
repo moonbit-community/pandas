@@ -701,41 +701,25 @@ pub fn DataFrame::sort(
 /// ])
 /// let df_stacked = df1.vstack!(df2)
 /// ```
-pub fn vstack(self : DataFrame, other : DataFrame) -> DataFrame! {
-  if self.shape()[1] != other.shape()[1] {
+pub fn vstack(self : DataFrame, other : DataFrame, inplace~ : Bool = false) -> DataFrame! {
+  guard self.shape[1] == other.shape[1] else {
     raise InconsistentSeriesLength("The number of columns must be the same.")
   }
-  let data : Array[Series] = []
-  for series in self.data {
-    match (series.data, other.column!(series.name).data) {
-      (SeriesData::Int(data1), SeriesData::Int(data2)) => {
-        let new_data = data1 + data2
-        data.push(
-          Series::new_by_SeriesData(series.name, SeriesData::Int(new_data)),
-        )
+  match inplace {
+    true => {
+      for serie in self.data {
+        Series::merge!(serie, other.column!(serie.name()), inplace = true) |> ignore
       }
-      (SeriesData::Float(data1), SeriesData::Float(data2)) => {
-        let new_data = data1 + data2
-        data.push(
-          Series::new_by_SeriesData(series.name, SeriesData::Float(new_data)),
-        )
+      self
+    }
+    false => {
+      let data : Array[Series] = []
+      for serie in self.data {
+        data.push(Series::merge!(serie, other.column!(serie.name()), inplace = false))
       }
-      (SeriesData::Bool(data1), SeriesData::Bool(data2)) => {
-        let new_data = data1 + data2
-        data.push(
-          Series::new_by_SeriesData(series.name, SeriesData::Bool(new_data)),
-        )
-      }
-      (SeriesData::Str(data1), SeriesData::Str(data2)) => {
-        let new_data = data1 + data2
-        data.push(
-          Series::new_by_SeriesData(series.name, SeriesData::Str(new_data)),
-        )
-      }
-      _ => raise InvalidType("The data types must be the same.")
+      DataFrame::new!(data)
     }
   }
-  DataFrame::new!(data)
 }
 
 ///| Horizontally stack two DataFrames
