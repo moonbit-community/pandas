@@ -165,12 +165,31 @@ fn SeriesData::clear(self : SeriesData) -> Unit {
   }
 }
 
-///| Series clear
-pub fn Series::clear(self : Series) -> Unit {
-  self.name = ""
-  self.length = 0
-  self.data.clear()
-  self.bitmap.clear()
+///| Create an empty copy of the current Series, with zero to ‘n’ elements
+///
+/// Parameters
+///
+/// - `self` : An instance of the Series
+/// - `n~` : The number of elements in the new Series (default is 0)
+///
+/// Returns
+///
+/// - `Series` : A new Series with the same name and data type, but no data
+///
+/// Example
+/// ```
+/// let series = Series::new("test", SeriesInput::Int32([1, 2, 3]))
+/// let empty_series = series.clear()
+/// inspect!(empty_series.data, content="Int([])")
+/// ```
+pub fn Series::clear(self : Series, n~ : Int = 0) -> Series {
+  Series:: {
+    name: self.name(),
+    data: SeriesData::create_by_size(n, self.data_type),
+    data_type: self.data_type,
+    bitmap: self.bitmap.clear(n=n),
+    length: n,
+  }
 }
 
 ///| Check if the SeriesData is empty
@@ -553,6 +572,16 @@ fn emptySeriesData(dtype : DataType) -> SeriesData {
     DataType::Float32 => SeriesData::Float([])
     DataType::Bool => SeriesData::Bool([])
     DataType::String => SeriesData::Str([])
+  }
+}
+
+///|
+fn SeriesData::create_by_size(n : Int, dtype : DataType) -> SeriesData {
+  match dtype {
+    Int32 => SeriesData::Int(Array::make(n, 0))
+    Float32 => SeriesData::Float(Array::make(n, 0.0))
+    Bool => SeriesData::Bool(Array::make(n, false))
+    String => SeriesData::Str(Array::make(n, ""))
   }
 }
 
@@ -1813,7 +1842,7 @@ fn Series::fill_null(
         }
       _ => raise InvalidType("unsupported strategy")
     }
-    serie.bitmap.clear()
+    serie.bitmap.clear(inplace=true) |> ignore
   } else if value != None {
     let value = match value {
       Some(val) => val
@@ -1827,7 +1856,7 @@ fn Series::fill_null(
         serie.data[i] = value
       }
     }
-    serie.bitmap.clear()
+    serie.bitmap.clear(inplace=true) |> ignore
   }
   serie
 }

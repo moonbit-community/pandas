@@ -138,11 +138,17 @@ fn BitMap::has_nulls(self : BitMap) -> Bool {
 }
 
 ///|
-fn BitMap::clear(self : BitMap) -> Unit {
-  self.optional = false
-  self.bitmap = []
-  self.length = 0
-  self.offset = 0
+fn BitMap::clear(self : BitMap, n~ : Int = 0, inplace~ : Bool = false) -> BitMap {
+  match inplace {
+    false => BitMap::new_by_size(n, optional=(n != 0), value=true)
+    true => {
+      self.optional = (n != 0)
+      self.bitmap = Array::make(n, true)
+      self.length = n
+      self.offset = 0
+      self
+    }
+  }
 }
 
 ///|

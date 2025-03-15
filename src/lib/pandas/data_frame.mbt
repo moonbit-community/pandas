@@ -776,20 +776,23 @@ test "DataFrame::hstack" {
 /// ### Parameters:
 ///
 /// - `self` : The DataFrame to be cleared.
-/// - `n` : Optional parameter that specifies a size hint for clearing (default
-/// is 0). Currently not used.
+/// - `n` : Number of (null-filled) rows to return in the cleared frame
 ///
 /// ### Example:
 ///
-/// ```moonbit
-/// df.clear!()
 /// ```
-pub fn DataFrame::clear(self : DataFrame) -> Unit {
-  for item in self.data {
-    item.data.clear()
+/// df.clear()
+/// ```
+pub fn DataFrame::clear(self : DataFrame, n~ : Int = 0) -> DataFrame {
+  let data : Array[Series] = []
+  for serie in self.data {
+    data.push(serie.clear(n=n))
   }
-  self.shape = [0, 0]
-  self.index.clear()
+  DataFrame::{
+    data,
+    shape: [n, self.shape[1]],
+    index: self.index,
+  }
 }
 
 ///|
