@@ -677,28 +677,23 @@ pub fn DataFrame::sort(
 
 ///| Vertically stack two DataFrames
 ///
-/// ### Parameters
+/// Parameters
 ///
 /// - `self` : An instance of the DataFrame
 /// - `other` : Another DataFrame to be stacked vertically
+/// - `inplace` : Whether to stack in place (default is false)
 ///
-/// ### Return
+/// Returns
 ///
 /// - `DataFrame` : A new DataFrame resulting from the vertical stacking of the two DataFrames
 ///
-/// ### Errors
+/// Errors
 ///
 /// - `InconsistentSeriesLength` : Raised if the number of columns in the two DataFrames is not the same
 /// - `InvalidType` : Raised if the data types of the corresponding columns in the two DataFrames are not the same
 ///
-/// ### Example
+/// Example
 /// ```
-/// let df1 = DataFrame::new!([
-///   Series::new("A", SeriesData::Int([1, 2, 3]))
-/// ])
-/// let df2 = DataFrame::new!([
-///   Series::new("A", SeriesData::Int([4, 5, 6]))
-/// ])
 /// let df_stacked = df1.vstack!(df2)
 /// ```
 pub fn vstack(self : DataFrame, other : DataFrame, inplace~ : Bool = false) -> DataFrame! {
@@ -724,33 +719,55 @@ pub fn vstack(self : DataFrame, other : DataFrame, inplace~ : Bool = false) -> D
 
 ///| Horizontally stack two DataFrames
 ///
-/// ### Parameters
+/// Parameters
 ///
 /// - `self` : An instance of the DataFrame
 /// - `other` : Another DataFrame to be stacked horizontally
+/// - `inplace` : Whether to stack in place (default is false)
 ///
-/// ### Return
+/// Returns
 ///
 /// - `DataFrame` : A new DataFrame resulting from the horizontal stacking of the two DataFrames
 ///
-/// ### Example
+/// Example
 /// ```
-/// let df1 = DataFrame::new!([
-///   Series::new("A", SeriesData::Int([1, 2, 3]))
-/// ])
-/// let df2 = DataFrame::new!([
-///   Series::new("B", SeriesData::Int([4, 5, 6]))
-/// ])
-/// let df_stacked = df1.hstack!(df2)
+/// df1.hstack!(df2) |> ignore
 /// ```
-pub fn hstack(self : DataFrame, other : DataFrame) -> DataFrame! {
-  let data : Array[Series] = other.data.copy()
-  for series in self.data {
-    if other.index.contains(series.name()) == false {
-      data.push(series)
+pub fn hstack(self : DataFrame, other : DataFrame, inplace~ : Bool = false) -> DataFrame! {
+  match inplace {
+    false => {
+      let data : Array[Series] = self.data.copy()
+      for series in other.data {
+        if not(self.index.contains(series.name())) {
+          data.push(series)
+        }
+      }
+      DataFrame::new!(data)
+    }
+    true => {
+      for series in other.data {
+        if not(self.index.contains(series.name())) {
+          self.add_column!(series)
+        }
+      }
+      self
     }
   }
-  DataFrame::new!(data)
+}
+
+test "DataFrame::hstack" {
+  let df1 = DataFrame::new!([
+    Series::new("A", SeriesInput::Int32([1, 2, 3])),
+  ])
+  let df2 = DataFrame::new!([
+    Series::new("B", SeriesInput::Int32([4, 5, 6])),
+  ])
+  let df_stacked = df1.hstack!(df2)
+  inspect!(df_stacked.data[0].name(), content="A")
+  inspect!(df_stacked.data[1].name(), content="B")
+  df1.hstack!(df2, inplace=true) |> ignore
+  inspect!(df1.data[0].name(), content="A")
+  inspect!(df1.data[1].name(), content="B")
 }
 
 ///|
