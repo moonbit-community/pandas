@@ -179,6 +179,8 @@ let div_op = series1 / series2
 | `cast`             | Cast DataFrame column(s) to the specified dtype(s)                          |
 | `to_dict`          | Convert the DataFrame to a dictionary                                       |
 | `to_init_repr`     | Convert DataFrame to instantiable string representation                     |
+| `drop_nulls`       | Drop all rows that contain null values                                      |
+| `gather_every`     | Take every nth row in the DataFrame and return as a new DataFrame           |
 
 ### Series Methods
 
