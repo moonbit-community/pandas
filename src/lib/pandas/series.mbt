@@ -771,7 +771,7 @@ test "Series::merge" {
   let series2 = Series::new("test", SeriesInput::Int32([3, 4]))
   let merged_series = series1.merge!(series2)
   inspect!(merged_series.data, content="Int([1, 2, 3, 4])")
-  let merged_series = series1.merge!(series2, inplace=true)
+  series1.merge!(series2, inplace=true) |> ignore
   inspect!(series1.data, content="Int([1, 2, 3, 4])")
 }
 

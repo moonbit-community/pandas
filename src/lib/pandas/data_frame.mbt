@@ -1394,6 +1394,26 @@ pub fn DataFrame::min(self : DataFrame) -> DataFrame! {
         data.push(
           Series::new_by_SeriesData(series.name, SeriesData::Str([value])),
         )
+      SeriesValue::Null => {
+        match series.get_type() {
+          DataType::Int32 =>
+            data.push(
+              Series::new(series.name, SeriesInput::Int32_Nullable([None])),
+            )
+          DataType::Float32 =>
+            data.push(
+              Series::new(series.name, SeriesInput::Float32_Nullable([None])),
+            )
+          DataType::Bool =>
+            data.push(
+              Series::new(series.name, SeriesInput::Bool_Nullable([None])),
+            )
+          DataType::String =>
+            data.push(
+              Series::new(series.name, SeriesInput::Str_Nullable([None])),
+            )
+        }
+      }
     }
   }
   DataFrame::{ data, shape: [1, self.shape[1]], index: self.index }
@@ -1473,6 +1493,26 @@ pub fn DataFrame::max(self : DataFrame) -> DataFrame! {
         data.push(
           Series::new_by_SeriesData(series.name, SeriesData::Str([value])),
         )
+      SeriesValue::Null => {
+        match series.get_type() {
+          DataType::Int32 =>
+            data.push(
+              Series::new(series.name, SeriesInput::Int32_Nullable([None])),
+            )
+          DataType::Float32 =>
+            data.push(
+              Series::new(series.name, SeriesInput::Float32_Nullable([None])),
+            )
+          DataType::Bool =>
+            data.push(
+              Series::new(series.name, SeriesInput::Bool_Nullable([None])),
+            )
+          DataType::String =>
+            data.push(
+              Series::new(series.name, SeriesInput::Str_Nullable([None])),
+            )
+        }
+      }
     }
   }
   DataFrame::{ data, shape: [1, self.shape[1]], index: self.index }
