@@ -2088,3 +2088,43 @@ test "DataFrame::drop_nulls" {
   inspect!(df_dropped.data[0].data, content="Int([3])")
   inspect!(df_dropped.data[1].data, content="Int([3])")
 }
+
+///| Take every nth row in the DataFrame and return as a new DataFrame
+///
+/// Parameters
+///
+/// - `self` : An instance of the DataFrame
+/// - `n` : The interval at which rows are selected
+/// - `offset~` : The starting index for selection (default is 0)
+///
+/// Returns
+///
+/// - `DataFrame` : A new DataFrame containing every nth row
+///
+/// Example
+/// ```
+/// let df = DataFrame::new!([
+///   Series::new("A", SeriesInput::Int32([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])),
+///   Series::new("B", SeriesInput::Int32([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])),
+/// ])
+/// let df_gathered = df.gather_every(2)
+/// inspect!(df_gathered.data[0].data, content="Int([1, 3, 5, 7, 9])")
+/// inspect!(df_gathered.data[1].data, content="Int([1, 3, 5, 7, 9])")
+/// ```
+pub fn DataFrame::gather_every(self: DataFrame, n : Int, offset~ : Int = 0) -> DataFrame {
+    let rows = []
+    for i = offset; i < self.shape[0]; i = i + n {
+        rows.push(i)
+    }
+    self.select_rows?(indices=rows).unwrap()
+}
+
+test "DataFrame::gather_every" {
+    let df = DataFrame::new!([
+        Series::new("A", SeriesInput::Int32([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])),
+        Series::new("B", SeriesInput::Int32([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])),
+    ])
+    let df_gathered = df.gather_every(2)
+    inspect!(df_gathered.data[0].data, content="Int([1, 3, 5, 7, 9])")
+    inspect!(df_gathered.data[1].data, content="Int([1, 3, 5, 7, 9])")
+}
