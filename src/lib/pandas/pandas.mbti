@@ -26,21 +26,23 @@ impl DataFrame {
   all(Self, ignore_nulls~ : Bool = ..) -> Self!
   any(Self, ignore_nulls~ : Bool = ..) -> Self!
   cast(Self, data_type? : DataType, cast_mapping? : Map[String, DataType], strict~ : Bool = ..) -> Self!
-  clear(Self) -> Unit
+  clear(Self, n~ : Int = ..) -> Self
   clone(Self) -> Self
   column(Self, String) -> Series!ColumnNotFoundError
   count(Self) -> (Int, Int)
   data(Self) -> Array[Series]
   drop_column(Self, String) -> Unit!ColumnNotFoundError
+  drop_nulls(Self, subset? : Array[String]) -> Self!
   drop_row(Self, Int) -> Unit!
   dtypes(Self) -> Array[String]
   fill_null(Self, value? : SeriesValue, strategy? : String, limit? : Int) -> Self!
   filter(Self, String, (SeriesValue) -> Bool) -> Self!
+  gather_every(Self, Int, offset~ : Int = ..) -> Self
   get_column_index(Self, String) -> Int!
   has_nulls(Self) -> Self
   head(Self, rows~ : Int = ..) -> Unit
   height(Self) -> Int
-  hstack(Self, Self) -> Self!
+  hstack(Self, Self, inplace~ : Bool = ..) -> Self!
   is_empty(Self) -> Bool
   item(Self, Int, ColumnSelector) -> SeriesValue!
   limit(Self, Int) -> Self!
@@ -69,7 +71,7 @@ impl DataFrame {
   to_series(Self, Int) -> Series
   transpose(Self, include_header~ : Bool = .., header_name~ : String = .., column_names? : Array[String]) -> Self!
   unique(Self, Array[String], keep~ : String = ..) -> Self!
-  vstack(Self, Self) -> Self!
+  vstack(Self, Self, inplace~ : Bool = ..) -> Self!
   width(Self) -> Int
   with_row_index(Self, offset~ : Int = ..) -> Self
 }
@@ -116,7 +118,7 @@ impl Series {
   any(Self) -> Bool!InvalidType
   append(Self, Self) -> Self!InvalidType
   argsort(Self, descending~ : Bool = ..) -> Array[Int]
-  clear(Self) -> Unit
+  clear(Self, n~ : Int = ..) -> Self
   concat(Array[Self]) -> Self!
   copy(Self) -> Self
   cos(Self) -> Self!InvalidType
@@ -137,7 +139,7 @@ impl Series {
   lower_bound(Self) -> Self
   max(Self) -> SeriesValue!
   mean(Self) -> Float!
-  merge(Self, Self) -> Self!InvalidType
+  merge(Self, Self, inplace~ : Bool = ..) -> Self!InvalidType
   min(Self) -> SeriesValue!
   move_nulls_back(Self, inplace~ : Bool = ..) -> Self?
   move_nulls_front(Self, inplace~ : Bool = ..) -> Self?
