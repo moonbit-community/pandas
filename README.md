@@ -181,6 +181,7 @@ let div_op = series1 / series2
 | `to_init_repr`     | Convert DataFrame to instantiable string representation                     |
 | `drop_nulls`       | Drop all rows that contain null values                                      |
 | `gather_every`     | Take every nth row in the DataFrame and return as a new DataFrame           |
+| `drop_in_place`    | Drop a single column in-place and return the dropped column                 |
 
 ### Series Methods
 
