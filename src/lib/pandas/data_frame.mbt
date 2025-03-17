@@ -782,6 +782,7 @@ test "DataFrame::hstack" {
 ///
 /// ```
 /// df.clear()
+/// df.clear(n=1)
 /// ```
 pub fn DataFrame::clear(self : DataFrame, n~ : Int = 0) -> DataFrame {
   let data : Array[Series] = []
@@ -809,11 +810,7 @@ pub fn DataFrame::clear(self : DataFrame, n~ : Int = 0) -> DataFrame {
 ///
 /// ### Example:
 ///
-/// ```moonbit
-/// let df = DataFrame::new!([
-///   Series::new("A", SeriesData::Int([1, 2, 3])),
-///   Series::new("B", SeriesData::Float([1.0, 2.0, 3.0])),
-/// ])
+/// ```
 /// let cloned = df.clone()
 /// ```
 pub fn DataFrame::clone(self : DataFrame) -> DataFrame {
@@ -1998,4 +1995,96 @@ test "DataFrame::to_init_repr" {
     df.to_init_repr(),
     content="DataFrame(\n\t[\n\t\tSeries 'A', [1, 2, 3], dtype=int32,\n\t\tSeries 'C', [\"a\", \"b\", \"c\"], dtype=string,\n\t]\n)",
   )
+}
+
+///| judge if the row/col in df has null value
+fn DataFrame::has_nulls_rc(self : DataFrame, col? : Int, row? : Int, subset? : Array[String]) -> Bool {
+    match (col, row) {
+        (None, None) => {
+            false
+        }
+        (Some(col), None) | (Some(col), Some(_)) => {
+            self.data[col].has_null()
+        }
+        (None, Some(row)) => {
+            match subset {
+                Some(subset) => {
+                    for col_name in subset {
+                        let serie : Series = self.column?(col_name).unwrap()
+                        if serie.bitmap.bitmap[row] {
+                            return true
+                        }
+                    }
+                    false
+                }
+                None => {
+                    for series in self.data {
+                        if series.bitmap.bitmap[row] {
+                            return true
+                        }
+                    }
+                    false
+                }
+            }
+        }
+    }
+}
+
+///| Drop all rows that contain null values
+///
+/// Parameters
+///
+/// - `self` : An instance of the DataFrame
+/// - `subset~` : An optional array of column names to consider when dropping rows
+///
+/// Returns
+///
+/// - `DataFrame` : A new DataFrame with rows containing null values dropped
+///
+/// Errors
+///
+/// - `ColumnNotFoundError` : Raised if any of the specified columns in the subset are not found
+///
+/// Example
+/// ```
+/// let df = DataFrame::new!([
+///   Series::new("A", SeriesInput::Int32_Nullable([Some(1), None, Some(3)])),
+///   Series::new("B", SeriesInput::Int32_Nullable([None, Some(1), Some(3)])),
+/// ])
+/// let df_dropped = df.drop_nulls!()
+/// inspect!(df_dropped.data[0].data, content="Int([3])")
+/// inspect!(df_dropped.data[1].data, content="Int([3])")
+/// ```
+pub fn DataFrame::drop_nulls(self : DataFrame, subset?: Array[String]) -> DataFrame! {
+  let rows = []
+  match subset {
+    None => {
+      for i in 0..< self.shape[0] {
+        if not(self.has_nulls_rc(row=i)) {
+          rows.push(i)
+        }
+      }
+    }
+    Some(subset) => {
+      guard subset.iter().all(fn(s){self.index.contains(s)}) else {
+        raise ColumnNotFoundError("Some column not found")
+      }
+      for i in 0..< self.shape[0] {
+        if not(self.has_nulls_rc(row=i, subset=subset)) {
+          rows.push(i)
+        }
+      }
+    }
+  }
+  self.select_rows!(indices=rows)
+}
+
+test "DataFrame::drop_nulls" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesInput::Int32_Nullable([Some(1), None, Some(3)])),
+    Series::new("B", SeriesInput::Int32_Nullable([None, Some(1), Some(3)])),
+  ])
+  let df_dropped = df.drop_nulls!()
+  inspect!(df_dropped.data[0].data, content="Int([3])")
+  inspect!(df_dropped.data[1].data, content="Int([3])")
 }
