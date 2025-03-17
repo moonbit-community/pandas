@@ -183,11 +183,11 @@ fn SeriesData::clear(self : SeriesData) -> Unit {
 /// inspect!(empty_series.data, content="Int([])")
 /// ```
 pub fn Series::clear(self : Series, n~ : Int = 0) -> Series {
-  Series:: {
+  Series::{
     name: self.name(),
     data: SeriesData::create_by_size(n, self.data_type),
     data_type: self.data_type,
-    bitmap: self.bitmap.clear(n=n),
+    bitmap: self.bitmap.clear(n~),
     length: n,
   }
 }
@@ -733,7 +733,11 @@ pub fn Series::op_div(self : Series, other : Series) -> Series {
 /// let merged_series_inplace = series1.merge!(series2, inplace=true)
 /// inspect!(series1.data, content="Int([1, 2, 3, 4])")
 /// ```
-pub fn merge(self : Series, other : Series, inplace~ : Bool = false) -> Series!InvalidType {
+pub fn merge(
+  self : Series,
+  other : Series,
+  inplace~ : Bool = false
+) -> Series!InvalidType {
   guard self.data_type == other.data_type else {
     raise InvalidType("merger must be the same type")
   }
@@ -745,13 +749,14 @@ pub fn merge(self : Series, other : Series, inplace~ : Bool = false) -> Series!I
     _ => raise InvalidType("merger must be the same type")
   }
   match inplace {
-    false => Series::{
-      name: self.name(),
-      data,
-      data_type: get_dtype(data),
-      bitmap: BitMap::merge(self.bitmap, other.bitmap, inplace=false),
-      length: self.length() + other.length(),
-    }
+    false =>
+      Series::{
+        name: self.name(),
+        data,
+        data_type: get_dtype(data),
+        bitmap: BitMap::merge(self.bitmap, other.bitmap, inplace=false),
+        length: self.length() + other.length(),
+      }
     true => {
       self.data = data
       self.bitmap = BitMap::merge(self.bitmap, other.bitmap, inplace=true)

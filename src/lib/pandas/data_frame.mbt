@@ -696,21 +696,28 @@ pub fn DataFrame::sort(
 /// ```
 /// let df_stacked = df1.vstack!(df2)
 /// ```
-pub fn vstack(self : DataFrame, other : DataFrame, inplace~ : Bool = false) -> DataFrame! {
+pub fn vstack(
+  self : DataFrame,
+  other : DataFrame,
+  inplace~ : Bool = false
+) -> DataFrame! {
   guard self.shape[1] == other.shape[1] else {
     raise InconsistentSeriesLength("The number of columns must be the same.")
   }
   match inplace {
     true => {
       for serie in self.data {
-        Series::merge!(serie, other.column!(serie.name()), inplace = true) |> ignore
+        Series::merge!(serie, other.column!(serie.name()), inplace=true)
+        |> ignore
       }
       self
     }
     false => {
       let data : Array[Series] = []
       for serie in self.data {
-        data.push(Series::merge!(serie, other.column!(serie.name()), inplace = false))
+        data.push(
+          Series::merge!(serie, other.column!(serie.name()), inplace=false),
+        )
       }
       DataFrame::new!(data)
     }
@@ -733,7 +740,11 @@ pub fn vstack(self : DataFrame, other : DataFrame, inplace~ : Bool = false) -> D
 /// ```
 /// df1.hstack!(df2) |> ignore
 /// ```
-pub fn hstack(self : DataFrame, other : DataFrame, inplace~ : Bool = false) -> DataFrame! {
+pub fn hstack(
+  self : DataFrame,
+  other : DataFrame,
+  inplace~ : Bool = false
+) -> DataFrame! {
   match inplace {
     false => {
       let data : Array[Series] = self.data.copy()
@@ -756,12 +767,8 @@ pub fn hstack(self : DataFrame, other : DataFrame, inplace~ : Bool = false) -> D
 }
 
 test "DataFrame::hstack" {
-  let df1 = DataFrame::new!([
-    Series::new("A", SeriesInput::Int32([1, 2, 3])),
-  ])
-  let df2 = DataFrame::new!([
-    Series::new("B", SeriesInput::Int32([4, 5, 6])),
-  ])
+  let df1 = DataFrame::new!([Series::new("A", SeriesInput::Int32([1, 2, 3]))])
+  let df2 = DataFrame::new!([Series::new("B", SeriesInput::Int32([4, 5, 6]))])
   let df_stacked = df1.hstack!(df2)
   inspect!(df_stacked.data[0].name(), content="A")
   inspect!(df_stacked.data[1].name(), content="B")
@@ -787,13 +794,9 @@ test "DataFrame::hstack" {
 pub fn DataFrame::clear(self : DataFrame, n~ : Int = 0) -> DataFrame {
   let data : Array[Series] = []
   for serie in self.data {
-    data.push(serie.clear(n=n))
+    data.push(serie.clear(n~))
   }
-  DataFrame::{
-    data,
-    shape: [n, self.shape[1]],
-    index: self.index,
-  }
+  DataFrame::{ data, shape: [n, self.shape[1]], index: self.index }
 }
 
 ///|
@@ -1998,36 +2001,36 @@ test "DataFrame::to_init_repr" {
 }
 
 ///| judge if the row/col in df has null value
-fn DataFrame::has_nulls_rc(self : DataFrame, col? : Int, row? : Int, subset? : Array[String]) -> Bool {
-    match (col, row) {
-        (None, None) => {
-            false
-        }
-        (Some(col), None) | (Some(col), Some(_)) => {
-            self.data[col].has_null()
-        }
-        (None, Some(row)) => {
-            match subset {
-                Some(subset) => {
-                    for col_name in subset {
-                        let serie : Series = self.column?(col_name).unwrap()
-                        if serie.bitmap.bitmap[row] {
-                            return true
-                        }
-                    }
-                    false
-                }
-                None => {
-                    for series in self.data {
-                        if series.bitmap.bitmap[row] {
-                            return true
-                        }
-                    }
-                    false
-                }
+fn DataFrame::has_nulls_rc(
+  self : DataFrame,
+  col? : Int,
+  row? : Int,
+  subset? : Array[String]
+) -> Bool {
+  match (col, row) {
+    (None, None) => false
+    (Some(col), None) | (Some(col), Some(_)) => self.data[col].has_null()
+    (None, Some(row)) =>
+      match subset {
+        Some(subset) => {
+          for col_name in subset {
+            let serie : Series = self.column?(col_name).unwrap()
+            if serie.bitmap.bitmap[row] {
+              return true
             }
+          }
+          false
         }
-    }
+        None => {
+          for series in self.data {
+            if series.bitmap.bitmap[row] {
+              return true
+            }
+          }
+          false
+        }
+      }
+  }
 }
 
 ///| Drop all rows that contain null values
@@ -2055,22 +2058,24 @@ fn DataFrame::has_nulls_rc(self : DataFrame, col? : Int, row? : Int, subset? : A
 /// inspect!(df_dropped.data[0].data, content="Int([3])")
 /// inspect!(df_dropped.data[1].data, content="Int([3])")
 /// ```
-pub fn DataFrame::drop_nulls(self : DataFrame, subset?: Array[String]) -> DataFrame! {
+pub fn DataFrame::drop_nulls(
+  self : DataFrame,
+  subset? : Array[String]
+) -> DataFrame! {
   let rows = []
   match subset {
-    None => {
-      for i in 0..< self.shape[0] {
+    None =>
+      for i in 0..<self.shape[0] {
         if not(self.has_nulls_rc(row=i)) {
           rows.push(i)
         }
       }
-    }
     Some(subset) => {
-      guard subset.iter().all(fn(s){self.index.contains(s)}) else {
+      guard subset.iter().all(fn(s) { self.index.contains(s) }) else {
         raise ColumnNotFoundError("Some column not found")
       }
-      for i in 0..< self.shape[0] {
-        if not(self.has_nulls_rc(row=i, subset=subset)) {
+      for i in 0..<self.shape[0] {
+        if not(self.has_nulls_rc(row=i, subset~)) {
           rows.push(i)
         }
       }
@@ -2111,20 +2116,24 @@ test "DataFrame::drop_nulls" {
 /// inspect!(df_gathered.data[0].data, content="Int([1, 3, 5, 7, 9])")
 /// inspect!(df_gathered.data[1].data, content="Int([1, 3, 5, 7, 9])")
 /// ```
-pub fn DataFrame::gather_every(self: DataFrame, n : Int, offset~ : Int = 0) -> DataFrame {
-    let rows = []
-    for i = offset; i < self.shape[0]; i = i + n {
-        rows.push(i)
-    }
-    self.select_rows?(indices=rows).unwrap()
+pub fn DataFrame::gather_every(
+  self : DataFrame,
+  n : Int,
+  offset~ : Int = 0
+) -> DataFrame {
+  let rows = []
+  for i = offset; i < self.shape[0]; i = i + n {
+    rows.push(i)
+  }
+  self.select_rows?(indices=rows).unwrap()
 }
 
 test "DataFrame::gather_every" {
-    let df = DataFrame::new!([
-        Series::new("A", SeriesInput::Int32([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])),
-        Series::new("B", SeriesInput::Int32([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])),
-    ])
-    let df_gathered = df.gather_every(2)
-    inspect!(df_gathered.data[0].data, content="Int([1, 3, 5, 7, 9])")
-    inspect!(df_gathered.data[1].data, content="Int([1, 3, 5, 7, 9])")
+  let df = DataFrame::new!([
+    Series::new("A", SeriesInput::Int32([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])),
+    Series::new("B", SeriesInput::Int32([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])),
+  ])
+  let df_gathered = df.gather_every(2)
+  inspect!(df_gathered.data[0].data, content="Int([1, 3, 5, 7, 9])")
+  inspect!(df_gathered.data[1].data, content="Int([1, 3, 5, 7, 9])")
 }

@@ -138,11 +138,15 @@ fn BitMap::has_nulls(self : BitMap) -> Bool {
 }
 
 ///|
-fn BitMap::clear(self : BitMap, n~ : Int = 0, inplace~ : Bool = false) -> BitMap {
+fn BitMap::clear(
+  self : BitMap,
+  n~ : Int = 0,
+  inplace~ : Bool = false
+) -> BitMap {
   match inplace {
-    false => BitMap::new_by_size(n, optional=(n != 0), value=true)
+    false => BitMap::new_by_size(n, optional=n != 0, value=true)
     true => {
-      self.optional = (n != 0)
+      self.optional = n != 0
       self.bitmap = Array::make(n, true)
       self.length = n
       self.offset = 0
@@ -214,37 +218,37 @@ test "BitMap::select_rows" {
 }
 
 ///|
-fn BitMap::merge(self : BitMap, other : BitMap, inplace~ : Bool = false) -> BitMap {
+fn BitMap::merge(
+  self : BitMap,
+  other : BitMap,
+  inplace~ : Bool = false
+) -> BitMap {
   match inplace {
-    false => {
+    false =>
       match (self.optional, other.optional) {
         (false, false) => emptyBitMap
-        (true, false) => {
+        (true, false) =>
           BitMap::{
             optional: true,
             bitmap: self.bitmap.copy() + Array::make(other.length, false),
             length: self.length + other.length,
             offset: 0,
           }
-        }
-        (false, true) => {
+        (false, true) =>
           BitMap::{
             optional: true,
             bitmap: Array::make(self.length, false) + other.bitmap.copy(),
             length: self.length + other.length,
             offset: 0,
           }
-        }
-        (true, true) => {
+        (true, true) =>
           BitMap::{
             optional: true,
-            bitmap : self.bitmap.copy() + other.bitmap.copy(),
+            bitmap: self.bitmap.copy() + other.bitmap.copy(),
             length: self.length + other.length,
             offset: 0,
           }
-        }
       }
-    }
     true => {
       match (self.optional, other.optional) {
         (false, false) => ()
@@ -266,11 +270,10 @@ fn BitMap::merge(self : BitMap, other : BitMap, inplace~ : Bool = false) -> BitM
   }
 }
 
-
 test "BitMap::merge" {
   let a = BitMap::new(data=[Some(1), None, Some(3)])
   let b = BitMap::new(data=[Some(1), Some(2), Some(3)])
-  a.merge(b, inplace = true) |> ignore
+  a.merge(b, inplace=true) |> ignore
   inspect!(
     a,
     content="{optional: true, bitmap: [false, true, false, false, false, false], length: 6, offset: 0}",
