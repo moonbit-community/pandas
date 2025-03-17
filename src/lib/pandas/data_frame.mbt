@@ -2138,7 +2138,31 @@ test "DataFrame::gather_every" {
   inspect!(df_gathered.data[1].data, content="Int([1, 3, 5, 7, 9])")
 }
 
-///| Drop a single column in-place and return the dropped column.
+///| Drop a single column in-place and return the dropped column
+///
+/// Parameters
+///
+/// - `self` : An instance of the DataFrame
+/// - `name` : The name of the column to be dropped
+///
+/// Returns
+///
+/// - `Series` : The dropped column
+///
+/// Errors
+///
+/// - `ColumnNotFoundError` : Raised if the specified column is not found
+///
+/// Example
+/// ```
+/// let df = DataFrame::new!([
+///   Series::new("A", SeriesInput::Int32([1, 2, 3])),
+///   Series::new("B", SeriesInput::Int32([4, 5, 6])),
+/// ])
+/// let serie = df.drop_in_place!("A")
+/// inspect!(serie.data, content="Int([1, 2, 3])")
+/// inspect!(df.shape, content="[3, 1]")
+/// ```
 pub fn DataFrame::drop_in_place(self: DataFrame, name : String) -> Series! {
     guard self.index.contains(name) else {
         raise ColumnNotFoundError("Column \{name} not found")
