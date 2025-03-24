@@ -1,5 +1,9 @@
 {
     "is-main": false,
-    "dependencies": {},
-    "import": []
+    "dependencies": {
+        "xunyoyo/NyaCSV": "0.2.0"
+    },
+    "import": [
+      "xunyoyo/NyaCSV"
+    ]
 }
