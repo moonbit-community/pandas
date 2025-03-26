@@ -5,6 +5,11 @@ moonbit-community link: https://github.com/moonbit-community/pandas
 ## Introduction
 This is a data processing library written in Moonbit. It provides a DataFrame data structure for efficient data manipulation and analysis.
 
+## Installation
+To install the package, run the following command in the terminal:
+```moonbit
+moon add smallbearrr/pandas
+```
 
 ## Usage
 
