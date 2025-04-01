@@ -1,5 +1,5 @@
 ///|
-struct BitMap {
+priv struct BitMap {
   mut optional : Bool
   mut bitmap : Array[Bool]
   mut length : Int
@@ -77,6 +77,7 @@ fn BitMap::append(self : BitMap, other : BitMap) -> BitMap {
   }
 }
 
+///|
 test "BitMap::op_add" {
   let a = BitMap::new(data=[Some(1), None, Some(3)])
   let b = BitMap::new(data=[None, Some(2), Some(3)])
@@ -208,6 +209,7 @@ fn BitMap::select_rows(self : BitMap, rows : Array[Int]) -> BitMap {
   }
 }
 
+///|
 test "BitMap::select_rows" {
   let a = BitMap::new(data=[Some(1), None, Some(3)])
   let b = a.select_rows([0, 1])
@@ -270,6 +272,7 @@ fn BitMap::merge(
   }
 }
 
+///|
 test "BitMap::merge" {
   let a = BitMap::new(data=[Some(1), None, Some(3)])
   let b = BitMap::new(data=[Some(1), Some(2), Some(3)])
@@ -278,4 +281,32 @@ test "BitMap::merge" {
     a,
     content="{optional: true, bitmap: [false, true, false, false, false, false], length: 6, offset: 0}",
   )
+}
+
+///|
+fn BitMap::new_from_SeriesValues_array(data: Array[SeriesValue]) -> BitMap {
+  let n = data.length()
+  let null = data.iter().all(fn(v) {
+    match v {
+      SeriesValue::Null => true
+      _ => false
+    }
+  })
+  match null {
+    true => {
+      let bitmap = Array::makei(n, fn(i){
+        match data[i] {
+          SeriesValue::Null => true
+          _ => false
+        }
+      })
+      BitMap::{
+        optional: true,
+        bitmap,
+        length: n,
+        offset: 0,
+      }
+    }
+    false => emptyBitMap
+  }
 }
