@@ -1,5 +1,5 @@
 ///|
-fn type_infer(data : String) -> Option[DataType] {
+fn type_infer(data : String) -> DataType? {
   if data.is_empty() {
     return None
   } else if data == "true" ||
@@ -26,7 +26,7 @@ fn type_infer(data : String) -> Option[DataType] {
 }
 
 ///|
-fn type_infer_from_array(data : Array[String]) -> Option[DataType] {
+fn type_infer_from_array(data : Array[String]) -> DataType? {
   if data.length() == 0 {
     return None
   }
@@ -44,11 +44,15 @@ fn type_infer_from_array(data : Array[String]) -> Option[DataType] {
 }
 
 ///|
-fn type_convert(data: String, type_? : DataType, null~ : Bool = false) -> SeriesValue {
+fn type_convert(
+  data : String,
+  type_? : DataType,
+  null~ : Bool = false
+) -> SeriesValue {
   let mut null = null
   let type_ = match type_ {
     Some(type_) => type_
-    None => {
+    None =>
       match type_infer(data) {
         Some(type_) => type_
         None => {
@@ -56,11 +60,10 @@ fn type_convert(data: String, type_? : DataType, null~ : Bool = false) -> Series
           DataType::String
         }
       }
-    }
   }
   match null {
     true => SeriesValue::Null
-    false => {
+    false =>
       match type_ {
         DataType::Int32 => {
           let mut num : Int = 0
@@ -83,7 +86,7 @@ fn type_convert(data: String, type_? : DataType, null~ : Bool = false) -> Series
           SeriesValue::Float(flt)
         }
         DataType::String => SeriesValue::Str(data)
-        DataType::Bool => {
+        DataType::Bool =>
           if data == "true" || data == "True" {
             SeriesValue::Bool(true)
           } else if data == "false" || data == "False" {
@@ -91,9 +94,7 @@ fn type_convert(data: String, type_? : DataType, null~ : Bool = false) -> Series
           } else {
             SeriesValue::Bool(false)
           }
-        }
       }
-    }
   }
 }
 
@@ -104,23 +105,27 @@ test "type_convert" {
   inspect!(type_convert("true"), content="Bool(true)")
   inspect!(type_convert("false"), content="Bool(false)")
   inspect!(type_convert("True", null=true), content="Null")
-  inspect!(type_convert("False", type_ = DataType::String), content="Str(\"False\")")
+  inspect!(
+    type_convert("False", type_=DataType::String),
+    content="Str(\"False\")",
+  )
 }
 
 ///|
-fn type_convert_from_array(data : Array[String], type_? : DataType) -> Array[SeriesValue] {
+fn type_convert_from_array(
+  data : Array[String],
+  type_? : DataType
+) -> Array[SeriesValue] {
   let res = Array::make(data.length(), SeriesValue::Null)
   match type_ {
-    Some(type_) => {
+    Some(type_) =>
       for i in 0..<data.length() {
-        res[i] = type_convert(data[i], type_ = type_)
+        res[i] = type_convert(data[i], type_~)
       }
-    }
-    None => {
+    None =>
       for i in 0..<data.length() {
         res[i] = type_convert(data[i])
       }
-    }
   }
   res
 }

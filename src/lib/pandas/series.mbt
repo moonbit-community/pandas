@@ -2181,7 +2181,7 @@ test "Series::move_nulls_back" {
 }
 
 ///| unsafe (use only one type)
-fn seriesValueArray_get_type(data : Array[SeriesValue]) -> Option[DataType] {
+fn seriesValueArray_get_type(data : Array[SeriesValue]) -> DataType? {
   let mut dtype = None
   for i in 0..<data.length() {
     match data[i] {
@@ -2199,7 +2199,7 @@ fn seriesValueArray_get_type(data : Array[SeriesValue]) -> Option[DataType] {
 }
 
 ///| unsafe (use only one type)
-fn seriesValueArray_to_seriesData(data: Array[SeriesValue]) -> SeriesData {
+fn seriesValueArray_to_seriesData(data : Array[SeriesValue]) -> SeriesData {
   let n = data.length()
   let dtype = seriesValueArray_get_type(data)
   let dtype = match dtype {
@@ -2207,37 +2207,41 @@ fn seriesValueArray_to_seriesData(data: Array[SeriesValue]) -> SeriesData {
     Some(type_) => type_
   }
   match dtype {
-    String => {
-      SeriesData::Str(Array::makei(n, fn(i) {
-        match data[i] {
-          Str(s) => s
-          _ => ""
-        }
-      }))
-    }
-    Float32 => {
-      SeriesData::Float(Array::makei(n, fn(i) {
-        match data[i] {
-          Float(f) => f
-          _ => 0.0
-        }
-      }))
-    }
-    Int32 => {
-      SeriesData::Int(Array::makei(n, fn(i) {
-        match data[i] {
-          Int(i) => i
-          _ => 0
-        }
-      }))
-    }
-    Bool => {
-      SeriesData::Bool(Array::makei(n, fn(i) {
-        match data[i] {
-          Bool(b) => b
-          _ => false
-        }
-      }))
-    }
+    String =>
+      SeriesData::Str(
+        Array::makei(n, fn(i) {
+          match data[i] {
+            Str(s) => s
+            _ => ""
+          }
+        }),
+      )
+    Float32 =>
+      SeriesData::Float(
+        Array::makei(n, fn(i) {
+          match data[i] {
+            Float(f) => f
+            _ => 0.0
+          }
+        }),
+      )
+    Int32 =>
+      SeriesData::Int(
+        Array::makei(n, fn(i) {
+          match data[i] {
+            Int(i) => i
+            _ => 0
+          }
+        }),
+      )
+    Bool =>
+      SeriesData::Bool(
+        Array::makei(n, fn(i) {
+          match data[i] {
+            Bool(b) => b
+            _ => false
+          }
+        }),
+      )
   }
 }

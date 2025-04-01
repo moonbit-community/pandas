@@ -284,28 +284,25 @@ test "BitMap::merge" {
 }
 
 ///|
-fn BitMap::new_from_SeriesValues_array(data: Array[SeriesValue]) -> BitMap {
+fn BitMap::new_from_SeriesValues_array(data : Array[SeriesValue]) -> BitMap {
   let n = data.length()
-  let null = data.iter().all(fn(v) {
-    match v {
-      SeriesValue::Null => true
-      _ => false
-    }
-  })
+  let null = data
+    .iter()
+    .all(fn(v) {
+      match v {
+        SeriesValue::Null => true
+        _ => false
+      }
+    })
   match null {
     true => {
-      let bitmap = Array::makei(n, fn(i){
+      let bitmap = Array::makei(n, fn(i) {
         match data[i] {
           SeriesValue::Null => true
           _ => false
         }
       })
-      BitMap::{
-        optional: true,
-        bitmap,
-        length: n,
-        offset: 0,
-      }
+      BitMap::{ optional: true, bitmap, length: n, offset: 0 }
     }
     false => emptyBitMap
   }

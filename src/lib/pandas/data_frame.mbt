@@ -2036,7 +2036,7 @@ test "DataFrame::to_init_repr" {
   ])
   inspect!(
     df.to_init_repr(),
-    content="DataFrame(\n\t[\n\t\tSeries 'A', [1, 2, 3], dtype=int32,\n\t\tSeries 'C', [\"a\", \"b\", \"c\"], dtype=string,\n\t]\n)",
+    content="DataFrame(\n\t[\n\t\tSeries 'A', [1, 2, 3], dtype=Int32,\n\t\tSeries 'C', [\"a\", \"b\", \"c\"], dtype=String,\n\t]\n)",
   )
 }
 
