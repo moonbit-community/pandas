@@ -40,10 +40,11 @@ let emptyDataFrame : DataFrame = DataFrame::{
 /// ### Example
 /// ```
 /// let df = DataFrame::new!([
-///   Series::new("A", SeriesData::Int([1, 1, 3, 1, 1, 6])),
-///   Series::new("B", SeriesData::Float([1.5, 2.0, 3.5, 4.0, 5.5, 6.0])),
-///   Series::new("C", SeriesData::Bool([true, false, true, false, true, false])),
-///   Series::new("D", SeriesData::Str(["a", "b", "c", "d", "e", "f"])),
+///   Series::new("A", SeriesInput::Int32([1, 2, 3])),
+///   Series::new("B", SeriesInput::Float32([1.5, 2.0, 2.5])),
+///   Series::new("C", SeriesInput::Bool([true, false, true])),
+///   Series::new("D", SeriesInput::Str(["a", "b", "c"])),
+///   Series::new("E", SeriesInput::Int32_Nullable([Some(1), None, Some(3)])),
 /// ])
 /// ```
 pub fn DataFrame::new(
