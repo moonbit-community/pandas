@@ -206,15 +206,15 @@ test "reverse" {
     Series::new("B", SeriesInput::Str(["a", "b", "c"])),
   ])
   df.reverse()
-  inspect!(df.data[0].data(), content="Int([3, 2, 1])")
-  inspect!(df.data[1].data(), content="Str([\"c\", \"b\", \"a\"])")
+  inspect!(df.data()[0].data(), content="Int([3, 2, 1])")
+  inspect!(df.data()[1].data(), content="Str([\"c\", \"b\", \"a\"])")
 }
 
 test "row_index" {
   let df = DataFrame::new!([Series::new("A", SeriesInput::Int32([1, 2, 3]))])
   let new_df = df.with_row_index(offset=1000)
-  inspect!(new_df.shape, content="[3, 2]")
-  inspect!(new_df.data[0].data(), content="Int([1000, 1001, 1002])")
+  inspect!(new_df.shape(), content="[3, 2]")
+  inspect!(new_df.data()[0].data(), content="Int([1000, 1001, 1002])")
 }
 
 test "transpose" {
@@ -225,12 +225,12 @@ test "transpose" {
   let trans_df = df.transpose!()
   inspect!(trans_df.shape(), content="[2, 3]")
   let trans_df = df.transpose!(include_header=true)
-  inspect!(trans_df.data[0].data(), content="Str([\"A\", \"B\"])")
+  inspect!(trans_df.data()[0].data(), content="Str([\"A\", \"B\"])")
   let trans_df = df.transpose!(include_header=true, header_name="header")
-  inspect!(trans_df.data[0].data(), content="Str([\"A\", \"B\"])")
-  inspect!(trans_df.data[0].name(), content="header")
+  inspect!(trans_df.data()[0].data(), content="Str([\"A\", \"B\"])")
+  inspect!(trans_df.data()[0].name(), content="header")
   let trans_df = df.transpose!(include_header=true, column_names=["x", "y", "z"])
-  inspect!(trans_df.data[1].name(), content="y")
+  inspect!(trans_df.data()[1].name(), content="y")
 }
 
 // test "min/max" {
@@ -258,8 +258,8 @@ test "sum" {
     Series::new("B", SeriesInput::Float32([1.5, 2.0, 3.5])),
   ])
   let df_sum = df.sum!()
-  inspect!(df_sum.data[0].data(), content="Int([6])")
-  inspect!(df_sum.data[1].data(), content="Float([7])")
+  inspect!(df_sum.data()[0].data(), content="Int([6])")
+  inspect!(df_sum.data()[1].data(), content="Float([7])")
 }
 
 test "sum_horizontal" {
@@ -309,8 +309,8 @@ test "product" {
     Series::new("B", SeriesInput::Float32([1.5, 2, 3.0])),
   ])
   let df_product = df.product()
-  inspect!(df_product.data[0].data(), content="Int([6])")
-  inspect!(df_product.data[1].data(), content="Float([9])")
+  inspect!(df_product.data()[0].data(), content="Int([6])")
+  inspect!(df_product.data()[1].data(), content="Float([9])")
 }
 
 test "dtypes" {
@@ -361,11 +361,11 @@ test "DataFrame::add_row" {
     Series::new("B", SeriesInput::Float32([1.5, 2.5])),
   ])
   df.add_row!([SeriesValue::Int(3), SeriesValue::Float(3.5)])
-  inspect!(df.data[0].data(), content="Int([1, 2, 3])")
+  inspect!(df.data()[0].data(), content="Int([1, 2, 3])")
   df.add_row!([SeriesValue::Int(4), SeriesValue::Null])
-  inspect!(df.data[1].data(), content="Float([1.5, 2.5, 3.5, 0])")
+  inspect!(df.data()[1].data(), content="Float([1.5, 2.5, 3.5, 0])")
   // inspect!(
-  //   df.data[1].bitmap,
+  //   df.data()[1].bitmap,
   //   content="{optional: true, bitmap: [false, false, false, true], length: 4, offset: 0}",
   // )
 }
@@ -375,8 +375,8 @@ test "DataFrame::all" {
     Series::new("A", SeriesInput::Bool([true, true, true])),
     Series::new("B", SeriesInput::Bool([true, false, true])),
   ])
-  inspect!(df.all!().data[0][0], content="Bool(true)")
-  inspect!(df.all!().data[1][0], content="Bool(false)")
+  inspect!(df.all!().data()[0][0], content="Bool(true)")
+  inspect!(df.all!().data()[1][0], content="Bool(false)")
 }
 
 test "DataFrame::any" {
@@ -384,8 +384,8 @@ test "DataFrame::any" {
     Series::new("A", SeriesInput::Bool([true, true, true])),
     Series::new("B", SeriesInput::Bool([true, false, true])),
   ])
-  inspect!(df.any!().data[0][0], content="Bool(true)")
-  inspect!(df.any!().data[1][0], content="Bool(true)")
+  inspect!(df.any!().data()[0][0], content="Bool(true)")
+  inspect!(df.any!().data()[1][0], content="Bool(true)")
 }
 
 test "DataFrame::has_nulls" {
@@ -393,12 +393,12 @@ test "DataFrame::has_nulls" {
     Series::new("A", SeriesInput::Int32([1, 2, 3])),
     Series::new("B", SeriesInput::Int32([1, 2, 3])),
   ])
-  inspect!(df.has_nulls().data[0][0], content="Bool(false)")
+  inspect!(df.has_nulls().data()[0][0], content="Bool(false)")
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Int32_Nullable([Some(1), None, Some(3)])),
     Series::new("B", SeriesInput::Int32([1, 2, 3])),
   ])
-  inspect!(df.has_nulls().data[0][0], content="Bool(true)")
+  inspect!(df.has_nulls().data()[0][0], content="Bool(true)")
 }
 
 test "DataFrame::fill_null" {
@@ -407,20 +407,20 @@ test "DataFrame::fill_null" {
     Series::new("B", SeriesInput::Int32_Nullable([None, Some(1), Some(3)])),
   ])
   inspect!(
-    df.fill_null!(value=SeriesValue::Int(2)).data[0].data(),
+    df.fill_null!(value=SeriesValue::Int(2)).data()[0].data(),
     content="Int([1, 2, 3])",
   )
   inspect!(
-    df.fill_null!(strategy="forward").data[0].data(),
+    df.fill_null!(strategy="forward").data()[0].data(),
     content="Int([1, 1, 3])",
   )
   inspect!(
-    df.fill_null!(strategy="backward").data[1].data(),
+    df.fill_null!(strategy="backward").data()[1].data(),
     content="Int([1, 1, 3])",
   )
-  inspect!(df.fill_null!(strategy="max").data[0].data(), content="Int([1, 3, 3])")
+  inspect!(df.fill_null!(strategy="max").data()[0].data(), content="Int([1, 3, 3])")
   inspect!(
-    df.fill_null!(strategy="mean").data[0].data(),
+    df.fill_null!(strategy="mean").data()[0].data(),
     content="Float([1, 2, 3])",
   )
 }
@@ -432,9 +432,9 @@ test "DataFrame::cast" {
     Series::new("C", SeriesInput::Str(["a", "b", "c"])),
   ])
   let df_cast = df.cast!(data_type=DataType::Float32, strict=false)
-  inspect!(df_cast.data[0].get_type(), content="Float32")
+  inspect!(df_cast.data()[0].get_type(), content="Float32")
   let df_cast = df.cast!(data_type=DataType::Int32, strict=false)
-  inspect!(df_cast.data[2].get_type(), content="Int32")
+  inspect!(df_cast.data()[2].get_type(), content="Int32")
   // inspect!(df_cast.data[2].bitmap.length, content="3")
 
   let df = DataFrame::new!([
@@ -446,8 +446,8 @@ test "DataFrame::cast" {
     cast_mapping={ "A": DataType::Float32, "C": DataType::Int32 },
     strict=false,
   )
-  inspect!(df_cast.data[0].get_type(), content="Float32")
-  inspect!(df_cast.data[2].get_type(), content="Int32")
+  inspect!(df_cast.data()[0].get_type(), content="Float32")
+  inspect!(df_cast.data()[2].get_type(), content="Int32")
 }
 
 test "DataFrame::sort" {

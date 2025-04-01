@@ -1,5 +1,5 @@
 ///|
-pub(all) struct DataFrame {
+struct DataFrame {
   mut data : Array[Series]
   mut shape : Array[Int]
   mut index : Map[String, Int]
