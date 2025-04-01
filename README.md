@@ -21,7 +21,7 @@ moon add smallbearrr/pandas
 ### Dependencies
 This package depends on the following libraries:
  - "moonbitlang/x/fs": A file system I/O library.
- - "xunyoyo/NyaCSV": A CSV parsing library.
+ - "xunyoyo/NyaCSV": A CSV parsing library. <br>
 To install these dependencies, run the following command:
 ```moonbit
 moon add moonbitlang/x
