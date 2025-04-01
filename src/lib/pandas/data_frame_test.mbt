@@ -418,7 +418,10 @@ test "DataFrame::fill_null" {
     df.fill_null!(strategy="backward").data()[1].data(),
     content="Int([1, 1, 3])",
   )
-  inspect!(df.fill_null!(strategy="max").data()[0].data(), content="Int([1, 3, 3])")
+  inspect!(
+    df.fill_null!(strategy="max").data()[0].data(),
+    content="Int([1, 3, 3])",
+  )
   inspect!(
     df.fill_null!(strategy="mean").data()[0].data(),
     content="Float([1, 2, 3])",
