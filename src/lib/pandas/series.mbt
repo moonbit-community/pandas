@@ -1,5 +1,5 @@
 ///|
-pub(all) enum SeriesData {
+enum SeriesData {
   Int(Array[Int])
   Float(Array[Float])
   Bool(Array[Bool])
@@ -7,7 +7,7 @@ pub(all) enum SeriesData {
 } derive(Show, Eq)
 
 ///|
-pub(all) struct Series {
+struct Series {
   mut name : String
   mut data : SeriesData
   mut data_type : DataType
