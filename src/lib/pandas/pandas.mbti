@@ -15,11 +15,7 @@ pub(all) enum ColumnSelector {
   Str(String)
 }
 
-pub(all) struct DataFrame {
-  data : Array[Series]
-  shape : Array[Int]
-  index : Map[String, Int]
-}
+type DataFrame
 impl DataFrame {
   add_column(Self, Series) -> Unit!
   add_row(Self, Array[SeriesValue]) -> Unit!
@@ -32,6 +28,7 @@ impl DataFrame {
   count(Self) -> (Int, Int)
   data(Self) -> Array[Series]
   drop_column(Self, String) -> Unit!ColumnNotFoundError
+  drop_in_place(Self, String) -> Series!
   drop_nulls(Self, subset? : Array[String]) -> Self!
   drop_row(Self, Int) -> Unit!
   dtypes(Self) -> Array[String]
@@ -104,13 +101,7 @@ impl Show for IndexOutOfBounds
 type InvalidType
 impl Show for InvalidType
 
-pub(all) struct Series {
-  name : String
-  data : SeriesData
-  data_type : DataType
-  bitmap : BitMap
-  length : Int
-}
+type Series
 impl Series {
   abs(Self) -> Self!InvalidType
   acos(Self) -> Self!InvalidType
@@ -168,12 +159,7 @@ impl Eq for Series
 impl Hash for Series
 impl Show for Series
 
-pub(all) enum SeriesData {
-  Int(Array[Int])
-  Float(Array[Float])
-  Bool(Array[Bool])
-  Str(Array[String])
-}
+type SeriesData
 impl SeriesData {
   get_argsort_indices(Self, descending~ : Bool = ..) -> Array[Int]
 }
