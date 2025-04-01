@@ -2,7 +2,7 @@
 struct DataFrame {
   mut data : Array[Series]
   mut shape : Array[Int]
-  mut index : Map[String, Int]
+  index : Map[String, Int]
 } derive(Eq)
 
 ///|
