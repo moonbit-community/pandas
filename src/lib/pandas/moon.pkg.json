@@ -1,6 +1,9 @@
 {
     "is-main": false,
-    "dependencies": {},
+    "dependencies": {
+      "xunyoyo/NyaCSV": "0.3.0",
+      "moonbitlang/x": "0.4.23"
+    },
     "import": [
       "moonbitlang/x/fs",
       "xunyoyo/NyaCSV"
