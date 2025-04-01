@@ -16,6 +16,7 @@ fn indices_sort[T](data : Array[T], indices : Array[Int]) -> Unit {
   }
 }
 
+///|
 test "indices_sort" {
   let arr = [3, 2, 1]
   let indices = [2, 1, 0]
@@ -45,3 +46,18 @@ fn type_check_operation(a : DataType, b : DataType) -> Bool {
 //     _ => false
 //   }
 // }
+
+///|
+fn quick_pow(base : Int64, exp : Int) -> Int64 {
+  let mut result = 1L
+  let mut base = base
+  let mut exp = exp
+  while exp > 0 {
+    if exp % 2 == 1 {
+      result = result * base
+    }
+    base = base * base
+    exp = exp / 2
+  }
+  result
+}
