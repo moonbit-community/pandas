@@ -766,6 +766,7 @@ pub fn merge(
   }
 }
 
+///|
 test "Series::merge" {
   let series1 = Series::new("test", SeriesInput::Int32([1, 2]))
   let series2 = Series::new("test", SeriesInput::Int32([3, 4]))
@@ -1216,6 +1217,7 @@ pub fn Series::all(self : Series) -> Bool!InvalidType {
   }
 }
 
+///|
 test "Series::all" {
   let series = Series::new("test", SeriesInput::Bool([true, false, true]))
   inspect!(series.all!(), content="false")
@@ -1262,6 +1264,7 @@ pub fn Series::any(self : Series) -> Bool!InvalidType {
   }
 }
 
+///|
 test "Series::any" {
   let series = Series::new("test", SeriesInput::Bool([true, false, true]))
   inspect!(series.any!(), content="true")
@@ -1314,6 +1317,7 @@ pub fn Series::not_(self : Series) -> Series {
   }
 }
 
+///|
 test "Series::not_" {
   let series = Series::new("test", SeriesInput::Bool([true, false, true]))
   inspect!(series.not_().data, content="Bool([false, true, false])")
@@ -1866,6 +1870,7 @@ fn Series::fill_null(
   serie
 }
 
+///|
 test "Series::fill_null" {
   let series = Series::new(
     "test",
@@ -2042,6 +2047,7 @@ pub fn Series::swap(self : Series, x : Int, y : Int) -> Unit!IndexOutOfBounds {
   }
 }
 
+///|
 test "Series::swap" {
   let series = Series::new("test", SeriesInput::Int32([1, 2, 3, 4, 5]))
   series.swap!(0, 1)
@@ -2096,6 +2102,7 @@ pub fn Series::move_nulls_front(
   }
 }
 
+///|
 test "Series::move_nulls_front" {
   let series = Series::new(
     "test",
@@ -2158,6 +2165,7 @@ pub fn Series::move_nulls_back(
   }
 }
 
+///|
 test "Series::move_nulls_back" {
   let series = Series::new(
     "test",
@@ -2170,4 +2178,66 @@ test "Series::move_nulls_back" {
   )
   inspect!(new_series.unwrap().data, content="Int([1, 3, 0, 0])")
   inspect!(series.data, content="Int([1, 0, 3, 0])")
+}
+
+///| unsafe (use only one type)
+fn seriesValueArray_get_type(data : Array[SeriesValue]) -> Option[DataType] {
+  let mut dtype = None
+  for i in 0..<data.length() {
+    match data[i] {
+      Int(_) => dtype = Some(DataType::Int32)
+      Float(_) => dtype = Some(DataType::Float32)
+      Bool(_) => dtype = Some(DataType::Bool)
+      Str(_) => dtype = Some(DataType::String)
+      Null => ()
+    }
+    if dtype != None {
+      break
+    }
+  }
+  dtype
+}
+
+///| unsafe (use only one type)
+fn seriesValueArray_to_seriesData(data: Array[SeriesValue]) -> SeriesData {
+  let n = data.length()
+  let dtype = seriesValueArray_get_type(data)
+  let dtype = match dtype {
+    None => DataType::String
+    Some(type_) => type_
+  }
+  match dtype {
+    String => {
+      SeriesData::Str(Array::makei(n, fn(i) {
+        match data[i] {
+          Str(s) => s
+          _ => ""
+        }
+      }))
+    }
+    Float32 => {
+      SeriesData::Float(Array::makei(n, fn(i) {
+        match data[i] {
+          Float(f) => f
+          _ => 0.0
+        }
+      }))
+    }
+    Int32 => {
+      SeriesData::Int(Array::makei(n, fn(i) {
+        match data[i] {
+          Int(i) => i
+          _ => 0
+        }
+      }))
+    }
+    Bool => {
+      SeriesData::Bool(Array::makei(n, fn(i) {
+        match data[i] {
+          Bool(b) => b
+          _ => false
+        }
+      }))
+    }
+  }
 }

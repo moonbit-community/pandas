@@ -5,6 +5,7 @@ test "series" {
   // assert_eq!(series.data()(), SeriesData::Int([1, 2, 3, 4, 5]))
 }
 
+///|
 test "argsort_indices" {
   let series = Series::new("test", SeriesInput::Int32([2, 1, 3, 5, 4]))
   let indices = series.data().get_argsort_indices()
@@ -55,11 +56,13 @@ test "argsort_indices" {
 //   inspect!(c, content="{name: \"a\", data: Int([2, 2, 3]), data_type: Int32, bitmap: {optional: false, bitmap: [], length: 0, offset: 0}}")
 // }
 
+///|
 test "Series::var/int" {
   let series = Series::new("test", SeriesInput::Int32([1, 2, 3, 4, 5]))
   inspect!(series.var!(), content="2.5")
 }
 
+///|
 test "Series::var/float" {
   let series = Series::new(
     "test",
@@ -70,6 +73,7 @@ test "Series::var/float" {
   // 2.575
 }
 
+///|
 test "Series::var/ddof" {
   let series = Series::new(
     "test",
@@ -80,16 +84,19 @@ test "Series::var/ddof" {
   // 2.075
 }
 
+///|
 test "panic Series::var/invalid_type" {
   let series = Series::new("test", SeriesInput::Str(["a", "b", "c"]))
   ignore(series.var!())
 }
 
+///|
 test "panic Series::var/empty_array" {
   let series = Series::new("test", SeriesInput::Int32([]))
   ignore(series.var!())
 }
 
+///|
 test "Series::sort" {
   let series = Series::new("test", SeriesInput::Int32([2, 1, 3, 5, 4]))
   series.sort()
@@ -103,6 +110,7 @@ test "Series::sort" {
   inspect!(series.data(), content="Int([0, 2, 3])")
 }
 
+///|
 test "Series::length()" {
   let series = Series::new("test", SeriesInput::Int32([1, 2, 3, 4, 5]))
   assert_eq!(series.length(), 5)
@@ -114,6 +122,7 @@ test "Series::length()" {
 //   println(a < b)
 // }
 
+///|
 test "Series::max" {
   let series = Series::new("test", SeriesInput::Int32([1, 3, 2]))
   inspect!(series.max!(), content="Int(3)")
@@ -124,6 +133,7 @@ test "Series::max" {
   inspect!(series.max!(), content="Null")
 }
 
+///|
 test "Series::min" {
   let series = Series::new("test", SeriesInput::Int32([1, 3, 2]))
   inspect!(series.min!(), content="Int(1)")
@@ -134,6 +144,7 @@ test "Series::min" {
   inspect!(series.min!(), content="Null")
 }
 
+///|
 test "Series::is_null" {
   let series = Series::new(
     "test",
@@ -144,6 +155,7 @@ test "Series::is_null" {
   inspect!(series.is_null().data(), content="Bool([false, false, false])")
 }
 
+///|
 test "Series::is_not_null" {
   let series = Series::new(
     "test",
@@ -152,6 +164,7 @@ test "Series::is_not_null" {
   inspect!(series.is_not_null().data(), content="Bool([true, false, true])")
 }
 
+///|
 test "Series::is_sorted" {
   let series = Series::new("test", SeriesInput::Int32([1, 2, 3]))
   inspect!(series.is_sorted(), content="true")
@@ -174,6 +187,7 @@ test "Series::is_sorted" {
   inspect!(series.is_sorted(descending=true, nulls_last=true), content="true")
 }
 
+///|
 test "Series::null_count" {
   let series = Series::new(
     "test",
@@ -182,6 +196,7 @@ test "Series::null_count" {
   inspect!(series.null_count(), content="1")
 }
 
+///|
 test "Series::n_unique" {
   let series = Series::new("test", SeriesInput::Int32([1, 2, 3, 1]))
   inspect!(series.n_unique(), content="3")
@@ -192,6 +207,7 @@ test "Series::n_unique" {
   inspect!(series.n_unique(), content="2")
 }
 
+///|
 test "Series::unique_count" {
   let series = Series::new("test", SeriesInput::Int32([1, 2, 3, 1, 2]))
   inspect!(series.unique_counts().data(), content="Int([2, 2, 1])")
@@ -202,6 +218,7 @@ test "Series::unique_count" {
   inspect!(series.unique_counts().data(), content="Int([2, 1, 2])")
 }
 
+///|
 test "Series::abs" {
   let series = Series::new("test", SeriesInput::Int32([-1, 2, -3]))
   inspect!(series.abs!().data(), content="Int([1, 2, 3])")
@@ -209,6 +226,7 @@ test "Series::abs" {
   inspect!(series.abs!().data(), content="Float([1.5, 2, 3])")
 }
 
+///|
 test "Series::append" {
   let series1 = Series::new("test", SeriesInput::Int32([1, 2]))
   let series2 = Series::new("test", SeriesInput::Int32([3, 4]))
@@ -216,6 +234,7 @@ test "Series::append" {
   inspect!(series.data(), content="Int([1, 2, 3, 4])")
 }
 
+///|
 test "Series::extend" {
   let series1 = Series::new("test", SeriesInput::Int32([1, 2]))
   let series2 = Series::new("test", SeriesInput::Int32([3, 4]))
@@ -223,6 +242,7 @@ test "Series::extend" {
   inspect!(series1.data(), content="Int([1, 2, 3, 4])")
 }
 
+///|
 test "Series::concat" {
   let series1 = Series::new("test", SeriesInput::Int32([1, 2]))
   let series2 = Series::new("test", SeriesInput::Int32([3, 4]))
@@ -231,11 +251,13 @@ test "Series::concat" {
   inspect!(series.data(), content="Int([1, 2, 3, 4, 5])")
 }
 
+///|
 test "Series::slice" {
   let series = Series::new("test", SeriesInput::Int32([1, 2, 3, 4, 5]))
   inspect!(series.slice(1, 3).data(), content="Int([2, 3])")
 }
 
+///|
 test "Series::get_argsort_indices" {
   let series = Series::new("test", SeriesInput::Int32([2, 1, 3]))
   let indices = series.get_argsort_indices()

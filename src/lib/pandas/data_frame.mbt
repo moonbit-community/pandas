@@ -766,6 +766,7 @@ pub fn hstack(
   }
 }
 
+///|
 test "DataFrame::hstack" {
   let df1 = DataFrame::new!([Series::new("A", SeriesInput::Int32([1, 2, 3]))])
   let df2 = DataFrame::new!([Series::new("B", SeriesInput::Int32([4, 5, 6]))])
@@ -2027,6 +2028,7 @@ pub fn DataFrame::to_init_repr(self : DataFrame) -> String {
   repr
 }
 
+///|
 test "DataFrame::to_init_repr" {
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Int32([1, 2, 3])),
@@ -2122,6 +2124,7 @@ pub fn DataFrame::drop_nulls(
   self.select_rows!(indices=rows)
 }
 
+///|
 test "DataFrame::drop_nulls" {
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Int32_Nullable([Some(1), None, Some(3)])),
@@ -2166,6 +2169,7 @@ pub fn DataFrame::gather_every(
   self.select_rows?(indices=rows).unwrap()
 }
 
+///|
 test "DataFrame::gather_every" {
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Int32([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])),
@@ -2210,6 +2214,7 @@ pub fn DataFrame::drop_in_place(self : DataFrame, name : String) -> Series! {
   serie_droped
 }
 
+///|
 test "DataFrame::drop_in_place" {
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Int32([1, 2, 3])),

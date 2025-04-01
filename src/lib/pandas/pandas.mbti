@@ -1,6 +1,23 @@
-package smallbearrr/pandas/lib/pandas
+package "smallbearrr/pandas/lib/pandas"
 
 // Values
+fn get_type(Series) -> DataType
+
+fn hstack(DataFrame, DataFrame, inplace~ : Bool = ..) -> DataFrame!
+
+fn limit(DataFrame, Int) -> DataFrame!
+
+fn merge(Series, Series, inplace~ : Bool = ..) -> Series!InvalidType
+
+fn op_get(DataFrame, Int) -> DataFrame
+
+fn tail(DataFrame, Int) -> DataFrame!
+
+fn to_series(DataFrame, Int) -> Series
+
+fn unique(DataFrame, Array[String], keep~ : String = ..) -> DataFrame!
+
+fn vstack(DataFrame, DataFrame, inplace~ : Bool = ..) -> DataFrame!
 
 // Types and methods
 type BitMap

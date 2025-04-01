@@ -9,12 +9,14 @@ test "new" {
   inspect!(df.shape(), content="[6, 4]")
 }
 
+///|
 test "rename" {
   let df = DataFrame::new!([Series::new("A", SeriesInput::Int32([1, 2, 3]))])
   df.rename!("A", "A1")
   inspect!(df.data()[0].name(), content="A1")
 }
 
+///|
 test "select" {
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Int32([1, 2, 3, 4, 5, 6])),
@@ -30,6 +32,7 @@ test "select" {
   inspect!(row_selected.shape(), content="[3, 4]")
 }
 
+///|
 test "filter" {
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Int32([1, 1, 3, 1, 1, 6])),
@@ -41,6 +44,7 @@ test "filter" {
   inspect!(filtered.shape(), content="[4, 4]")
 }
 
+///|
 test "sort" {
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Int32([2, 1, 3, 5, 4])),
@@ -58,6 +62,7 @@ test "sort" {
   )
 }
 
+///|
 test "new_error" {
   let col1 = Series::new("A", SeriesInput::Int32([1, 2, 3, 4, 5, 6]))
   let col2 = Series::new("B", SeriesInput::Float32([1.5, 2.0, 3.5]))
@@ -68,6 +73,7 @@ test "new_error" {
   )
 }
 
+///|
 test "add_column_error" {
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Int32([1, 2, 3, 4, 5, 6])),
@@ -86,6 +92,7 @@ test "add_column_error" {
   )
 }
 
+///|
 test "drop_column_error" {
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Int32([1, 2, 3, 4, 5, 6])),
@@ -95,6 +102,7 @@ test "drop_column_error" {
   inspect!(res, content="Err(ColumnNotFoundError(\"Column 'C' not found\"))")
 }
 
+///|
 test "rename_column_error" {
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Int32([1, 2, 3, 4, 5, 6])),
@@ -104,6 +112,7 @@ test "rename_column_error" {
   inspect!(res, content="Err(ColumnNotFoundError(\"Column 'C' not found\"))")
 }
 
+///|
 test "vstack" {
   let df1 = DataFrame::new!([
     Series::new("A", SeriesInput::Int32([1, 2, 3])),
@@ -144,6 +153,7 @@ test "vstack" {
 //   )
 // }
 
+///|
 test "item" {
   let df = DataFrame::new!([Series::new("A", SeriesInput::Int32([1, 2, 3]))])
   inspect!(df.item?(1, ColumnSelector::Str("A")), content="Ok(Int(2))")
@@ -153,6 +163,7 @@ test "item" {
   )
 }
 
+///|
 test "unique/basic" {
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Int32([1, 1, 2, 2])),
@@ -163,6 +174,7 @@ test "unique/basic" {
   inspect!(unique_first.data()[0].data(), content="Int([1, 2])")
 }
 
+///|
 test "unique/empty" {
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Int32([])),
@@ -172,6 +184,7 @@ test "unique/empty" {
   inspect!(unique_df.shape(), content="[0, 0]")
 }
 
+///|
 test "panic unique/invalid_keep" {
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Int32([1, 1, 2, 2])),
@@ -180,6 +193,7 @@ test "panic unique/invalid_keep" {
   df.unique!(["A"], keep="invalid") |> ignore
 }
 
+///|
 test "op_get" {
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Int32([1, 2, 3])),
@@ -191,6 +205,7 @@ test "op_get" {
   inspect!(res.data()[1].data(), content="Str([\"b\"])")
 }
 
+///|
 test "replace_column" {
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Int32([1, 2, 3])),
@@ -200,6 +215,7 @@ test "replace_column" {
   inspect!(df.data()[1].data(), content="Int([4, 5, 6])")
 }
 
+///|
 test "reverse" {
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Int32([1, 2, 3])),
@@ -210,6 +226,7 @@ test "reverse" {
   inspect!(df.data()[1].data(), content="Str([\"c\", \"b\", \"a\"])")
 }
 
+///|
 test "row_index" {
   let df = DataFrame::new!([Series::new("A", SeriesInput::Int32([1, 2, 3]))])
   let new_df = df.with_row_index(offset=1000)
@@ -217,6 +234,7 @@ test "row_index" {
   inspect!(new_df.data()[0].data(), content="Int([1000, 1001, 1002])")
 }
 
+///|
 test "transpose" {
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Int32([1, 2, 3])),
@@ -252,6 +270,7 @@ test "transpose" {
 //   )
 // }
 
+///|
 test "sum" {
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Int32([1, 2, 3])),
@@ -262,6 +281,7 @@ test "sum" {
   inspect!(df_sum.data()[1].data(), content="Float([7])")
 }
 
+///|
 test "sum_horizontal" {
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Int32([1, 2, 3])),
@@ -271,6 +291,7 @@ test "sum_horizontal" {
   inspect!(sum.data(), content="Float([2.5, 4.5, 6])")
 }
 
+///|
 test "min_horizontal" {
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Int32([1, 2, 3])),
@@ -280,6 +301,7 @@ test "min_horizontal" {
   inspect!(min.data(), content="Float([1, 2, 1.5])")
 }
 
+///|
 test "max_horizontal" {
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Int32([1, 2, 3])),
@@ -289,6 +311,7 @@ test "max_horizontal" {
   inspect!(max.data(), content="Float([1.5, 2, 3])")
 }
 
+///|
 test "schema" {
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Int32([1, 2, 3])),
@@ -303,6 +326,7 @@ test "schema" {
   )
 }
 
+///|
 test "product" {
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Int32([1, 2, 3])),
@@ -313,6 +337,7 @@ test "product" {
   inspect!(df_product.data()[1].data(), content="Float([9])")
 }
 
+///|
 test "dtypes" {
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Int32([1, 2, 3])),
@@ -326,6 +351,7 @@ test "dtypes" {
   )
 }
 
+///|
 test "DataFrame::slice" {
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Int32([1, 2, 3, 4, 5])),
@@ -355,6 +381,7 @@ test "DataFrame::slice" {
 //   df.head(rows=2)
 // }
 
+///|
 test "DataFrame::add_row" {
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Int32([1, 2])),
@@ -370,6 +397,7 @@ test "DataFrame::add_row" {
   // )
 }
 
+///|
 test "DataFrame::all" {
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Bool([true, true, true])),
@@ -379,6 +407,7 @@ test "DataFrame::all" {
   inspect!(df.all!().data()[1][0], content="Bool(false)")
 }
 
+///|
 test "DataFrame::any" {
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Bool([true, true, true])),
@@ -388,6 +417,7 @@ test "DataFrame::any" {
   inspect!(df.any!().data()[1][0], content="Bool(true)")
 }
 
+///|
 test "DataFrame::has_nulls" {
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Int32([1, 2, 3])),
@@ -401,6 +431,7 @@ test "DataFrame::has_nulls" {
   inspect!(df.has_nulls().data()[0][0], content="Bool(true)")
 }
 
+///|
 test "DataFrame::fill_null" {
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Int32_Nullable([Some(1), None, Some(3)])),
@@ -428,6 +459,7 @@ test "DataFrame::fill_null" {
   )
 }
 
+///|
 test "DataFrame::cast" {
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Int32([1, 2, 3])),
@@ -453,6 +485,7 @@ test "DataFrame::cast" {
   inspect!(df_cast.data()[2].get_type(), content="Int32")
 }
 
+///|
 test "DataFrame::sort" {
   let df = DataFrame::new!([
     Series::new("A", SeriesInput::Int32([3, 1, 2])),
