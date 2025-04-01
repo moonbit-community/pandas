@@ -5,10 +5,27 @@ moonbit-community link: https://github.com/moonbit-community/pandas
 ## Introduction
 This is a data processing library written in Moonbit. It provides a DataFrame data structure for efficient data manipulation and analysis.
 
+## Features
+- DataFrame and Series data structures for handling tabular data
+- Support for various data types including integers, floats, strings, and booleans
+- Basic data manipulation operations such as filtering, sorting, and aggregating
+- Support for reading CSV files
+- Support for handling missing values and null data
+- Support for mathematical operations on Series and DataFrames
+
 ## Installation
 To install the package, run the following command in the terminal:
 ```moonbit
 moon add smallbearrr/pandas
+```
+### Dependencies
+This package depends on the following libraries:
+ - "moonbitlang/x/fs": A file system I/O library.
+ - "xunyoyo/NyaCSV": A CSV parsing library.
+To install these dependencies, run the following command:
+```moonbit
+moon add moonbitlang/x
+moon add xunyoyo/NyaCSV
 ```
 
 ## Usage
@@ -85,14 +102,9 @@ df.sort!("A")
 df.sort!("B", descending=true)
 ```
 
-Vertically stack two DataFrame
+Read a CSV file:
 ```moonbit
-let new_df = df1.vstack!(df2)
-```
-
-Horizontally stack two DataFra
-```moonbit
-let new_df = df1.hstack!(df2)
+let df = DataFrame::read_csv!("./data.csv")
 ```
 
 ### Series
@@ -187,6 +199,7 @@ let div_op = series1 / series2
 | `drop_nulls`       | Drop all rows that contain null values                                      |
 | `gather_every`     | Take every nth row in the DataFrame and return as a new DataFrame           |
 | `drop_in_place`    | Drop a single column in-place and return the dropped column                 |
+| `read_csv`         | Read a CSV file and convert it into a DataFrame                             |
 
 ### Series Methods
 
