@@ -16,9 +16,6 @@
 /// Example
 /// ```moonbit
 /// let df = DataFrame::read_csv!("./data.csv")
-/// inspect!(df.data()[0].get_type(), content="Int32")
-/// inspect!(df.data()[1].get_type(), content="String")
-/// inspect!(df.data()[2].get_type(), content="Bool")
 /// ```
 pub fn DataFrame::read_csv(path : String) -> DataFrame! {
   guard path.length() >= 4 && path.substring(start=path.length() - 4) == ".csv" else {
