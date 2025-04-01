@@ -20,10 +20,6 @@ fn unique(DataFrame, Array[String], keep~ : String = ..) -> DataFrame!
 fn vstack(DataFrame, DataFrame, inplace~ : Bool = ..) -> DataFrame!
 
 // Types and methods
-type BitMap
-impl Eq for BitMap
-impl Show for BitMap
-
 type ColumnNotFoundError
 impl Show for ColumnNotFoundError
 
@@ -68,6 +64,7 @@ impl DataFrame {
   null_count(Self) -> Self
   op_get(Self, Int) -> Self
   product(Self) -> Self
+  read_csv(String) -> Self!
   rename(Self, String, String) -> Unit!ColumnNotFoundError
   replace_column(Self, Int, Series) -> Unit!
   reverse(Self) -> Unit
@@ -102,12 +99,6 @@ pub(all) enum DataType {
 impl Eq for DataType
 impl Hash for DataType
 impl Show for DataType
-
-type DuplicateColumnError
-impl Show for DuplicateColumnError
-
-type EmptyArrayError
-impl Show for EmptyArrayError
 
 type InconsistentSeriesLength
 impl Show for InconsistentSeriesLength
