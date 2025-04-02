@@ -9,7 +9,7 @@ This is a data processing library written in Moonbit. It provides a DataFrame da
 - DataFrame and Series data structures for handling tabular data
 - Support for various data types including integers, floats, strings, and booleans
 - Basic data manipulation operations such as filtering, sorting, and aggregating
-- Support for reading CSV files
+- Support for reading and writing CSV files
 - Support for handling missing values and null data
 - Support for mathematical operations on Series and DataFrames
 
@@ -103,9 +103,20 @@ df.sort!("A")
 df.sort!("B", descending=true)
 ```
 
+Convert Between `DataFrame` and `@NyaCSV.CSV`:
+```moonbit
+let df = DataFrame::from_NyaCSV(csv)
+let csv = df.to_NyaCSV()
+```
+
 Read a CSV file:
 ```moonbit
 let df = DataFrame::read_csv!("./data.csv")
+```
+
+Write the DataFrame to a CSV file:
+```moonbit
+df.write_csv!("./output.csv")
 ```
 
 ### Series
@@ -201,6 +212,9 @@ let div_op = series1 / series2
 | `gather_every`     | Take every nth row in the DataFrame and return as a new DataFrame           |
 | `drop_in_place`    | Drop a single column in-place and return the dropped column                 |
 | `read_csv`         | Read a CSV file and convert it into a DataFrame                             |
+| `from_NyaCSV`      | Convert a NyaCSV.CSV object into a DataFrame                                |
+| `to_NyaCSV`        | Convert the DataFrame to a NyaCSV.CSV object                                |
+| `write_csv`        | Write the DataFrame to a CSV file                                           |
 
 ### Series Methods
 
