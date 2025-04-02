@@ -51,6 +51,7 @@ impl DataFrame {
   dtypes(Self) -> Array[String]
   fill_null(Self, value? : SeriesValue, strategy? : String, limit? : Int) -> Self!
   filter(Self, String, (SeriesValue) -> Bool) -> Self!
+  from_NyaCSV(@NyaCSV.CSV) -> Self
   gather_every(Self, Int, offset~ : Int = ..) -> Self
   get_column_index(Self, String) -> Int!
   has_nulls(Self) -> Self

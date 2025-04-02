@@ -62,6 +62,62 @@ test "DataFrame::read_csv" {
   )
 }
 
+///| Convert a NyaCSV.CSV object into a DataFrame
+///
+/// Parameters
+///
+/// - `csv` : A NyaCSV.CSV object containing the data to be converted
+///
+/// Returns
+///
+/// - `DataFrame` : A DataFrame containing the data from the NyaCSV.CSV object
+///
+/// Example
+/// ```
+/// let csv = @NyaCSV.CSV::parse_string("A,B,C\n1,1.5,true\n2,2.0,false\n3,2.5,true")
+/// let df = DataFrame::from_NyaCSV(csv)
+/// inspect!(df.data()[0].get_type(), content="Int32")
+/// inspect!(df.data()[1].get_type(), content="Float32")
+/// inspect!(df.data()[2].get_type(), content="Bool")
+/// ```
+pub fn DataFrame::from_NyaCSV(csv : @NyaCSV.CSV) -> DataFrame {
+  let data = csv.data()
+  let header = csv.header()
+  let shape = (data.length(), data[0].length())
+  let reshaped_data = Array::makei(shape.1, fn(row) {
+    Array::makei(shape.0, fn(col) { data[col][row] })
+  })
+  let series : Array[Series] = Array::makei(shape.1, fn(i) {
+    let name = header[i]
+    let type_ = type_infer_from_array(reshaped_data[i])
+    let series_values = match type_ {
+      None => type_convert_from_array(reshaped_data[i])
+      Some(type_) => type_convert_from_array(reshaped_data[i], type_~)
+    }
+    Series::{
+      name,
+      data: seriesValueArray_to_seriesData(series_values),
+      data_type: type_.unwrap(),
+      bitmap: BitMap::new_from_SeriesValues_array(series_values),
+      length: shape.1,
+    }
+  })
+  DataFrame::new?(series).unwrap()
+}
+
+///|
+test "DataFrame::from_NyaCSV" {
+  let csv = @NyaCSV.CSV::parse_string(
+    "A,B,C\n1,1.5,true\n2,2.0,false\n3,2.5,true",
+  )
+  println(csv.to_string())
+  let df = DataFrame::from_NyaCSV(csv)
+  inspect!(df.data()[0].get_type(), content="Int32")
+  inspect!(df.data()[1].get_type(), content="Float32")
+  inspect!(df.data()[2].get_type(), content="Bool")
+  inspect!(df.data()[0].name(), content="A")
+}
+
 ///| Convert the DataFrame to a `NyaCSV.CSV` object
 ///
 /// Parameters
