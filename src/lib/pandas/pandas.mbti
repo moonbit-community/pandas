@@ -1,5 +1,9 @@
 package "smallbearrr/pandas/lib/pandas"
 
+import(
+  "xunyoyo/NyaCSV"
+)
+
 // Values
 fn get_type(Series) -> DataType
 
@@ -77,6 +81,7 @@ impl DataFrame {
   sum(Self) -> Self!InvalidType
   sum_horizontal(Self) -> Series!
   tail(Self, Int) -> Self!
+  to_NyaCSV(Self, has_header~ : Bool = ..) -> @NyaCSV.CSV
   to_dict(Self) -> Map[String, Series]
   to_init_repr(Self) -> String
   to_series(Self, Int) -> Series
@@ -85,6 +90,7 @@ impl DataFrame {
   vstack(Self, Self, inplace~ : Bool = ..) -> Self!
   width(Self) -> Int
   with_row_index(Self, offset~ : Int = ..) -> Self
+  write_csv(Self, String, has_header~ : Bool = ..) -> Unit!
 }
 impl Eq for DataFrame
 impl Hash for DataFrame
