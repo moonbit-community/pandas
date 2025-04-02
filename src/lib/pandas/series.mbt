@@ -621,6 +621,9 @@ fn op_sub(self : SeriesData, other : SeriesData) -> SeriesData {
 
 ///| 
 pub fn Series::op_get(self : Series, index : Int) -> SeriesValue {
+  if self.bitmap[index] {
+    return SeriesValue::Null
+  }
   match self.data {
     SeriesData::Int(data) => SeriesValue::Int(data[index])
     SeriesData::Float(data) => SeriesValue::Float(data[index])
@@ -2243,5 +2246,16 @@ fn seriesValueArray_to_seriesData(data : Array[SeriesValue]) -> SeriesData {
           }
         }),
       )
+  }
+}
+
+///|
+fn SeriesValue::to_string_csv(self : SeriesValue) -> String {
+  match self {
+    Int(i) => i.to_string()
+    Float(f) => f.to_string()
+    Bool(b) => b.to_string()
+    Str(s) => s
+    Null => ""
   }
 }
