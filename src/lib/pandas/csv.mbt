@@ -61,3 +61,97 @@ test "DataFrame::read_csv" {
     content="Err(NotCSVFile(\"Specified file is not a CSV file\"))",
   )
 }
+
+///| Convert the DataFrame to a `NyaCSV.CSV` object
+///
+/// Parameters
+///
+/// - `self` : An instance of the DataFrame
+/// - `has_header~` : Whether to include the header row in the CSV (default is true)
+///
+/// Returns
+///
+/// - `@NyaCSV.CSV` : A NyaCSV.CSV object representing the DataFrame
+///
+/// Example
+/// ```moonbit
+/// let df = DataFrame::new!([
+///   Series::new("A", SeriesInput::Int32([1, 2, 3])),
+///   Series::new("B", SeriesInput::Float32([1.5, 2.0, 2.5])),
+///   Series::new("C", SeriesInput::Bool([true, false, true])),
+/// ])
+/// let csv = df.to_NyaCSV()
+/// inspect!(csv.header(), content="[\"A\", \"B\", \"C\"]")
+/// inspect!(csv.data(), content="[[\"1\", \"1.5\", \"true\"], [\"2\", \"2.0\", \"false\"], [\"3\", \"2.5\", \"true\"]]")
+/// ```
+pub fn DataFrame::to_NyaCSV(self: DataFrame, has_header~ : Bool = true) -> @NyaCSV.CSV {
+  let data = Array::makei(self.shape[0], fn(j) {
+    Array::makei(self.shape[1], fn(i) {
+      self.data[i][j].to_string_csv()
+    })
+  })
+  if has_header {
+    let header = Array::makei(self.shape[1], fn(i) {
+      self.data[i].name
+    })
+    data.insert(0, header)
+  }
+  @NyaCSV.CSV::from_array(data)
+}
+
+test "DataFrame::to_NyaCSV" {
+  let df = DataFrame::new!([
+    Series::new("A", SeriesInput::Int32([1, 2, 3])),
+    Series::new("B", SeriesInput::Float32([1.5, 2.0, 2.5])),
+    Series::new("C", SeriesInput::Bool([true, false, true])),
+    Series::new("D", SeriesInput::Str(["a", "b", "c"])),
+    Series::new("E", SeriesInput::Int32_Nullable([Some(1), None, Some(3)])),
+  ])
+  let csv = df.to_NyaCSV()
+  inspect!(csv.header(), content="[\"A\", \"B\", \"C\", \"D\", \"E\"]")
+  inspect!(csv.data(), content="[[\"1\", \"1.5\", \"true\", \"a\", \"1\"], [\"2\", \"2\", \"false\", \"b\", \"\"], [\"3\", \"2.5\", \"true\", \"c\", \"3\"]]")
+}
+
+///| Write the DataFrame to a CSV file
+///
+/// Parameters
+///
+/// - `self` : An instance of the DataFrame
+/// - `path` : The file path where the CSV file will be written
+/// - `has_header` : Whether to include the header row in the CSV (default is true)
+///
+/// Returns
+///
+/// - `Unit` : This function does not return a value
+///
+/// Errors
+///
+/// - `PathNotFound` : Raised if the specified file path does not exist
+///
+/// Example
+/// ```moonbit
+/// let df = DataFrame::new!([
+///   Series::new("A", SeriesInput::Int32([1, 2, 3])),
+///   Series::new("B", SeriesInput::Float32([1.5, 2.0, 2.5])),
+///   Series::new("C", SeriesInput::Bool([true, false, true])),
+/// ])
+/// df.write_csv!("./output.csv")
+/// ```
+pub fn DataFrame::write_csv(self: DataFrame, path : String, has_header~ : Bool = true) -> Unit! {
+  guard @fs.path_exists(path) else {
+    raise PathNotFound("Path \{path} not found")
+  }
+  let csv = self.to_NyaCSV(has_header=has_header)
+  @fs.write_string_to_file!(path, csv.to_string())
+}
+
+// test "DataFrame::write_csv" {
+//   let df = DataFrame::new!([
+//     Series::new("A", SeriesInput::Int32([1, 2, 3])),
+//     Series::new("B", SeriesInput::Float32([1.5, 2.0, 2.5])),
+//     Series::new("C", SeriesInput::Bool([true, false, true])),
+//     Series::new("D", SeriesInput::Str(["a", "b", "c"])),
+//     Series::new("E", SeriesInput::Int32_Nullable([Some(1), None, Some(3)])),
+//   ])
+//   df.write_csv!("./csv_test/test_write.csv")
+// }
