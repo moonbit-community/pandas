@@ -154,11 +154,7 @@ impl Series {
   new(String, SeriesInput) -> Self
   not_(Self) -> Self
   null_count(Self) -> Int
-  op_add(Self, Self) -> Self
-  op_div(Self, Self) -> Self
   op_get(Self, Int) -> SeriesValue
-  op_mul(Self, Self) -> Self
-  op_sub(Self, Self) -> Self
   reverse(Self) -> Unit
   sin(Self) -> Self!InvalidType
   slice(Self, Int, Int) -> Self
@@ -170,9 +166,13 @@ impl Series {
   upper_bound(Self) -> Self
   var(Self, ddof~ : Int = ..) -> Float!
 }
+impl Add for Series
+impl Div for Series
 impl Eq for Series
 impl Hash for Series
+impl Mul for Series
 impl Show for Series
+impl Sub for Series
 
 type SeriesData
 impl SeriesData {
