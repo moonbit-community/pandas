@@ -31,7 +31,7 @@ fn BitMap::new[T](data? : Array[T?]) -> BitMap {
 }
 
 ///|
-fn BitMap::op_add(self : BitMap, other : BitMap) -> BitMap {
+impl Add for BitMap with op_add(self : BitMap, other : BitMap) -> BitMap {
   match (self.optional, other.optional) {
     (false, false) => emptyBitMap
     (true, false) => self
