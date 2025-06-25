@@ -1,25 +1,25 @@
 ///|
-priv type! EmptyArrayError String derive(Show)
+priv suberror EmptyArrayError String derive(Show)
 
 ///|
-type! InconsistentSeriesLength String derive(Show)
+suberror InconsistentSeriesLength String derive(Show)
 
 ///|
-priv type! DuplicateColumnError String derive(Show)
+priv suberror DuplicateColumnError String derive(Show)
 
 ///|
-type! ColumnNotFoundError String derive(Show)
+suberror ColumnNotFoundError String derive(Show)
 
 ///|
-type! IndexOutOfBounds String derive(Show)
+suberror IndexOutOfBounds String derive(Show)
 
 ///|
-type! InvalidType String derive(Show)
+suberror InvalidType String derive(Show)
 
 ///|
-priv type! PathNotFound String derive(Show)
+priv suberror PathNotFound String derive(Show)
 
 ///|
-priv type! NotCSVFile String derive(Show)
+priv suberror NotCSVFile String derive(Show)
 
-// type! TypeError String derive(Show)
+// suberror TypeError String derive(Show)

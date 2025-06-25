@@ -7,7 +7,7 @@
 /// let series = Series::new("test", SeriesInput::Float32([-1.5, 2.0, -3.0]))
 /// inspect!(series.abs!().data, content="Float([1.5, 2, 3])")
 /// ```
-pub fn Series::abs(self : Series) -> Series!InvalidType {
+pub fn Series::abs(self : Series) -> Series raise InvalidType {
   match self.data {
     SeriesData::Int(data) =>
       Series::new(self.name, SeriesInput::Int32(data.map(fn(x) { x.abs() })))
@@ -24,7 +24,7 @@ pub fn Series::abs(self : Series) -> Series!InvalidType {
 /// let series = Series::new("test", SeriesInput::Float32([1.0, 1.5, 2.0]))
 /// let cos = series.cos()
 /// ```
-pub fn Series::cos(self : Series) -> Series!InvalidType {
+pub fn Series::cos(self : Series) -> Series raise InvalidType {
   match self.data {
     SeriesData::Int(data) =>
       Series::new(
@@ -51,7 +51,7 @@ pub fn Series::cos(self : Series) -> Series!InvalidType {
 /// let series = Series::new("test", SeriesInput::Float32([1.0, 1.5, 2.0]))
 /// let sin = series.sin()
 /// ```
-pub fn Series::sin(self : Series) -> Series!InvalidType {
+pub fn Series::sin(self : Series) -> Series raise InvalidType {
   match self.data {
     SeriesData::Int(data) =>
       Series::new(
@@ -78,7 +78,7 @@ pub fn Series::sin(self : Series) -> Series!InvalidType {
 /// let series = Series::new("test", SeriesInput::Float32([1.0, 1.5, 2.0]))
 /// let tan = series.tan()
 /// ```
-pub fn Series::tan(self : Series) -> Series!InvalidType {
+pub fn Series::tan(self : Series) -> Series raise InvalidType {
   match self.data {
     SeriesData::Int(data) =>
       Series::new(
@@ -105,7 +105,7 @@ pub fn Series::tan(self : Series) -> Series!InvalidType {
 /// let series = Series::new("test", SeriesInput::Float32([1.0, 1.5, 2.0]))
 /// let acos = series.acos()
 /// ```
-pub fn Series::acos(self : Series) -> Series!InvalidType {
+pub fn Series::acos(self : Series) -> Series raise InvalidType {
   match self.data {
     SeriesData::Int(data) =>
       Series::new(
@@ -139,7 +139,7 @@ pub fn Series::acos(self : Series) -> Series!InvalidType {
 pub fn Series::log(
   self : Series,
   base~ : Float = 2.718281828459045
-) -> Series!InvalidType {
+) -> Series raise InvalidType {
   match self.data {
     SeriesData::Int(data) =>
       Series::new(
@@ -170,7 +170,7 @@ pub fn Series::log(
 /// let series = Series::new("test", SeriesInput::Float32([1.0, 1.5, 2.0]))
 /// let log10 = series.log10()
 /// ```
-pub fn Series::log10(self : Series) -> Series!InvalidType {
+pub fn Series::log10(self : Series) -> Series raise InvalidType {
   match self.data {
     SeriesData::Int(data) =>
       Series::new(

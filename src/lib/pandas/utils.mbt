@@ -1,5 +1,5 @@
 ///| sort the data by the indices
-fn indices_sort[T](data : Array[T], indices : Array[Int]) -> Unit {
+fn[T] indices_sort(data : Array[T], indices : Array[Int]) -> Unit {
   let n = data.length()
   let visited = Array::make(n, false)
   for i = 0; i < n; i = i + 1 {
@@ -21,7 +21,7 @@ test "indices_sort" {
   let arr = [3, 2, 1]
   let indices = [2, 1, 0]
   indices_sort(arr, indices)
-  inspect!(arr, content="[1, 2, 3]")
+  inspect(arr, content="[1, 2, 3]")
 }
 
 ///|

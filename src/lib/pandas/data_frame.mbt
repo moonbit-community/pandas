@@ -49,7 +49,7 @@ let emptyDataFrame : DataFrame = DataFrame::{
 /// ```
 pub fn DataFrame::new(
   data : Array[Series]
-) -> DataFrame!InconsistentSeriesLength {
+) -> DataFrame raise InconsistentSeriesLength {
   let index : Map[String, Int] = {}
   for i = 0; i < data.length(); i = i + 1 {
     if data[i].data().length() != data[0].data().length() {
@@ -161,7 +161,7 @@ pub fn DataFrame::head(self : DataFrame, rows~ : Int = 5) -> Unit {
 /// let new_column = Series::new("B", SeriesInput::Int32([1, 2, 3]))
 /// df.add_column(new_column)
 /// ```
-pub fn DataFrame::add_column(self : DataFrame, col : Series) -> Unit! {
+pub fn DataFrame::add_column(self : DataFrame, col : Series) -> Unit raise{
   guard col.data.length() == self.shape[0] else {
     raise InconsistentSeriesLength(
       "Could not add a new column to the DataFrame. The Series lengths are not equal.",
@@ -195,7 +195,7 @@ pub fn DataFrame::add_column(self : DataFrame, col : Series) -> Unit! {
 pub fn DataFrame::drop_column(
   self : DataFrame,
   col_name : String
-) -> Unit!ColumnNotFoundError {
+) -> Unit raise ColumnNotFoundError {
   match self.index.get(col_name) {
     Some(idx) => {
       let _ = self.data.remove(idx)
@@ -235,7 +235,7 @@ pub fn DataFrame::rename(
   self : DataFrame,
   old_name : String,
   new_name : String
-) -> Unit!ColumnNotFoundError {
+) -> Unit raise ColumnNotFoundError {
   match self.index.get(old_name) {
     Some(idx) => self.data[idx].name = new_name
     None => raise ColumnNotFoundError("Column '\{old_name}' not found")
@@ -264,7 +264,7 @@ pub fn DataFrame::rename(
 pub fn DataFrame::column(
   self : DataFrame,
   col_name : String
-) -> Series!ColumnNotFoundError {
+) -> Series raise ColumnNotFoundError {
   match self.index.get(col_name) {
     Some(idx) => self.data[idx]
     None => raise ColumnNotFoundError("Column '\{col_name}' not found")
@@ -293,7 +293,7 @@ pub fn DataFrame::column(
 pub fn DataFrame::select_columns(
   self : DataFrame,
   cols : Array[String]
-) -> DataFrame!ColumnNotFoundError {
+) -> DataFrame raise ColumnNotFoundError {
   let selected_cols : Array[Series] = []
   let index : Map[String, Int] = {}
   for name in cols {
@@ -331,12 +331,12 @@ pub fn DataFrame::select_columns(
 /// ```
 /// df.drop_row(0)
 /// ```
-pub fn DataFrame::drop_row(self : DataFrame, row_index : Int) -> Unit! {
+pub fn DataFrame::drop_row(self : DataFrame, row_index : Int) -> Unit raise {
   if row_index < 0 || row_index >= self.shape[0] {
     raise IndexOutOfBounds("Row index out of bounds")
   }
   for col in self.data {
-    col.data.erase!(row_index)
+    col.data.erase(row_index)
     col.bitmap.bitmap.remove(row_index) |> ignore
     col.length = col.length - 1
   }
@@ -367,7 +367,7 @@ pub fn DataFrame::drop_row(self : DataFrame, row_index : Int) -> Unit! {
 /// ])
 /// df.add_row([SeriesValue::Int(4), SeriesValue::Float(4.4)])
 /// ```
-pub fn DataFrame::add_row(self : DataFrame, row : Array[SeriesValue]) -> Unit! {
+pub fn DataFrame::add_row(self : DataFrame, row : Array[SeriesValue]) -> Unit raise{
   guard row.length() == self.shape[1] else {
     raise InconsistentSeriesLength(
       "Row length does not match DataFrame column length",
@@ -463,7 +463,7 @@ pub fn DataFrame::select_rows(
   self : DataFrame,
   range? : (Int, Int),
   indices? : Array[Int]
-) -> DataFrame!IndexOutOfBounds {
+) -> DataFrame raise IndexOutOfBounds {
   match (range, indices) {
     (Some(_), _) => {
       let selected_rows : Array[Series] = []
@@ -585,7 +585,7 @@ pub fn DataFrame::filter(
   self : DataFrame,
   name : String,
   f : (SeriesValue) -> Bool
-) -> DataFrame! {
+) -> DataFrame raise {
   match self.index.get(name) {
     Some(index) =>
       match self.data[index].data {
@@ -596,7 +596,7 @@ pub fn DataFrame::filter(
               rows.push(i)
             }
           }
-          self.select_rows!(indices=rows)
+          self.select_rows(indices=rows)
         }
         SeriesData::Float(data) => {
           let rows = Array::new()
@@ -605,7 +605,7 @@ pub fn DataFrame::filter(
               rows.push(i)
             }
           }
-          self.select_rows!(indices=rows)
+          self.select_rows(indices=rows)
         }
         SeriesData::Bool(data) => {
           let rows = Array::new()
@@ -614,7 +614,7 @@ pub fn DataFrame::filter(
               rows.push(i)
             }
           }
-          self.select_rows!(indices=rows)
+          self.select_rows(indices=rows)
         }
         SeriesData::Str(data) => {
           let rows = Array::new()
@@ -623,7 +623,7 @@ pub fn DataFrame::filter(
               rows.push(i)
             }
           }
-          self.select_rows!(indices=rows)
+          self.select_rows(indices=rows)
         }
       }
     None => emptyDataFrame
@@ -661,7 +661,7 @@ pub fn DataFrame::sort(
   by : String,
   descending~ : Bool = false,
   nulls_last~ : Bool = false
-) -> Unit!ColumnNotFoundError {
+) -> Unit raise ColumnNotFoundError {
   match self.index.get(by) {
     Some(index) => {
       let indices = self.data[index].get_argsort_indices(
@@ -701,14 +701,14 @@ pub fn vstack(
   self : DataFrame,
   other : DataFrame,
   inplace~ : Bool = false
-) -> DataFrame! {
+) -> DataFrame raise{
   guard self.shape[1] == other.shape[1] else {
     raise InconsistentSeriesLength("The number of columns must be the same.")
   }
   match inplace {
     true => {
       for serie in self.data {
-        Series::merge!(serie, other.column!(serie.name()), inplace=true)
+        Series::merge(serie, other.column(serie.name()), inplace=true)
         |> ignore
       }
       self
@@ -717,10 +717,10 @@ pub fn vstack(
       let data : Array[Series] = []
       for serie in self.data {
         data.push(
-          Series::merge!(serie, other.column!(serie.name()), inplace=false),
+          Series::merge(serie, other.column(serie.name()), inplace=false),
         )
       }
-      DataFrame::new!(data)
+      DataFrame::new(data)
     }
   }
 }
@@ -745,7 +745,7 @@ pub fn hstack(
   self : DataFrame,
   other : DataFrame,
   inplace~ : Bool = false
-) -> DataFrame! {
+) -> DataFrame raise{
   match inplace {
     false => {
       let data : Array[Series] = self.data.copy()
@@ -754,12 +754,12 @@ pub fn hstack(
           data.push(series)
         }
       }
-      DataFrame::new!(data)
+      DataFrame::new(data)
     }
     true => {
       for series in other.data {
         if not(self.index.contains(series.name())) {
-          self.add_column!(series)
+          self.add_column(series)
         }
       }
       self
@@ -769,14 +769,14 @@ pub fn hstack(
 
 ///|
 test "DataFrame::hstack" {
-  let df1 = DataFrame::new!([Series::new("A", SeriesInput::Int32([1, 2, 3]))])
-  let df2 = DataFrame::new!([Series::new("B", SeriesInput::Int32([4, 5, 6]))])
-  let df_stacked = df1.hstack!(df2)
-  inspect!(df_stacked.data[0].name(), content="A")
-  inspect!(df_stacked.data[1].name(), content="B")
-  df1.hstack!(df2, inplace=true) |> ignore
-  inspect!(df1.data[0].name(), content="A")
-  inspect!(df1.data[1].name(), content="B")
+  let df1 = DataFrame::new([Series::new("A", SeriesInput::Int32([1, 2, 3]))])
+  let df2 = DataFrame::new([Series::new("B", SeriesInput::Int32([4, 5, 6]))])
+  let df_stacked = df1.hstack(df2)
+  inspect(df_stacked.data[0].name(), content="A")
+  inspect(df_stacked.data[1].name(), content="B")
+  df1.hstack(df2, inplace=true) |> ignore
+  inspect(df1.data[0].name(), content="A")
+  inspect(df1.data[1].name(), content="B")
 }
 
 ///|
@@ -867,7 +867,7 @@ pub fn DataFrame::item(
   self : DataFrame,
   row : Int,
   column : ColumnSelector
-) -> SeriesValue!Error {
+) -> SeriesValue raise{
   let col = match column {
     ColumnSelector::Int(value) => value
     ColumnSelector::Str(value) =>
@@ -908,7 +908,7 @@ pub fn DataFrame::item(
 /// ])
 /// let limited = df.limit!(3)
 /// ```
-pub fn limit(self : DataFrame, n : Int) -> DataFrame!Error {
+pub fn limit(self : DataFrame, n : Int) -> DataFrame raise{
   let data : Array[Series] = []
   let n = @math.minimum(n, self.shape()[0])
   for series in self.data {
@@ -920,7 +920,7 @@ pub fn limit(self : DataFrame, n : Int) -> DataFrame!Error {
     }
     data.push(Series::new_by_SeriesData(series.name, new_data))
   }
-  DataFrame::new!(data)
+  DataFrame::new(data)
 }
 
 ///|
@@ -949,7 +949,7 @@ pub fn limit(self : DataFrame, n : Int) -> DataFrame!Error {
 /// ])
 /// let last_three = df.tail!(3)
 /// ```
-pub fn tail(self : DataFrame, n : Int) -> DataFrame!Error {
+pub fn tail(self : DataFrame, n : Int) -> DataFrame raise {
   let data : Array[Series] = []
   let n = @math.minimum(n, self.shape()[0])
   for series in self.data {
@@ -965,7 +965,7 @@ pub fn tail(self : DataFrame, n : Int) -> DataFrame!Error {
     }
     data.push(Series::new_by_SeriesData(series.name, new_data))
   }
-  DataFrame::new!(data)
+  DataFrame::new(data)
 }
 
 ///|
@@ -996,13 +996,16 @@ pub fn tail(self : DataFrame, n : Int) -> DataFrame!Error {
 pub fn DataFrame::slice(
   self : DataFrame,
   offset : Int,
-  length~ : Int = self.shape()[0] - offset
-) -> DataFrame!Error {
-  if length < 0 || offset + length > self.shape()[0] {
+  length? : Int
+) -> DataFrame raise{
+  let len = match length {
+    Some(l) => l
+    None => self.shape()[0] - offset
+  }
+  if len < 0 || offset + len > self.shape()[0] {
     raise IndexOutOfBounds("length cannot be negative")
   } else {
     let data : Array[Series] = []
-    let len = length
     for series in self.data {
       let new_data = match series.data {
         SeriesData::Int(data) =>
@@ -1016,7 +1019,7 @@ pub fn DataFrame::slice(
       }
       data.push(Series::new_by_SeriesData(series.name, new_data))
     }
-    DataFrame::new!(data)
+    DataFrame::new(data)
   }
 }
 
@@ -1081,7 +1084,7 @@ pub fn unique(
   self : DataFrame,
   subset : Array[String],
   keep~ : String = "any"
-) -> DataFrame!Error {
+) -> DataFrame raise{
   if not(["first", "last", "any", "none"].contains(keep)) {
     raise InvalidType(
       "Invalid keep parameter. Must be one of: first, last, any, none",
@@ -1089,12 +1092,12 @@ pub fn unique(
   }
   let selected_cols = []
   for item in subset {
-    selected_cols.push(self.column!(item))
+    selected_cols.push(self.column(item))
   }
-  let df = DataFrame::new!(selected_cols)
+  let df = DataFrame::new(selected_cols)
   let unique_map = Map::new() // key: row_string, value: Array[Int]
   for i = 0; i < df.shape()[0]; i = i + 1 {
-    let row_key = df.select_rows!(range=(i, i + 1)).to_string()
+    let row_key = df.select_rows(range=(i, i + 1)).to_string()
     if unique_map.contains(row_key) {
       let current_indices = match unique_map.get(row_key) {
         Some(indices) => indices
@@ -1119,7 +1122,7 @@ pub fn unique(
   unique_indices.sort()
   match unique_indices.length() {
     0 => emptyDataFrame
-    _ => self.select_rows!(indices=unique_indices)
+    _ => self.select_rows(indices=unique_indices)
   }
 }
 
@@ -1149,7 +1152,7 @@ pub fn DataFrame::replace_column(
   self : DataFrame,
   index : Int,
   series : Series
-) -> Unit! {
+) -> Unit raise {
   guard index >= 0 && index < self.shape[1] else {
     raise IndexOutOfBounds("Index out of bounds")
   }
@@ -1190,7 +1193,7 @@ pub fn DataFrame::reverse(self : DataFrame) -> Unit {
 /// ```moonbit
 /// let index = df.get_column_index("A")
 /// ```
-pub fn DataFrame::get_column_index(self : DataFrame, name : String) -> Int! {
+pub fn DataFrame::get_column_index(self : DataFrame, name : String) -> Int raise {
   match self.index.get(name) {
     Some(index) => index
     None => raise ColumnNotFoundError("Column '\{name}' not found")
@@ -1266,7 +1269,7 @@ pub fn DataFrame::transpose(
   include_header~ : Bool = false,
   header_name~ : String = "column",
   column_names? : Array[String]
-) -> DataFrame! {
+) -> DataFrame raise{
   for series in self.data {
     if series.get_type() != self.data[0].get_type() {
       raise InvalidType("All columns must have the same data type")
@@ -1375,10 +1378,10 @@ pub fn DataFrame::transpose(
 /// ```
 /// let df_min = df.min()
 /// ```
-pub fn DataFrame::min(self : DataFrame) -> DataFrame! {
+pub fn DataFrame::min(self : DataFrame) -> DataFrame raise{
   let data : Array[Series] = []
   for series in self.data {
-    let min = series.min!()
+    let min = series.min()
     match min {
       SeriesValue::Float(value) =>
         data.push(
@@ -1438,7 +1441,7 @@ pub fn DataFrame::min(self : DataFrame) -> DataFrame! {
 /// ```
 /// let max = df.min_horizontal()
 /// ```
-pub fn DataFrame::min_horizontal(self : DataFrame) -> Series! {
+pub fn DataFrame::min_horizontal(self : DataFrame) -> Series raise {
   for series in self.data {
     match series.get_type() {
       DataType::Int32 => ()
@@ -1473,10 +1476,10 @@ pub fn DataFrame::min_horizontal(self : DataFrame) -> Series! {
 /// ```
 /// let df_min = df.max()
 /// ```
-pub fn DataFrame::max(self : DataFrame) -> DataFrame! {
+pub fn DataFrame::max(self : DataFrame) -> DataFrame raise {
   let data : Array[Series] = []
   for series in self.data {
-    let max = series.max!()
+    let max = series.max()
     match max {
       SeriesValue::Float(value) =>
         data.push(
@@ -1536,7 +1539,7 @@ pub fn DataFrame::max(self : DataFrame) -> DataFrame! {
 /// ```
 /// let max = df.max_horizontal()
 /// ```
-pub fn DataFrame::max_horizontal(self : DataFrame) -> Series! {
+pub fn DataFrame::max_horizontal(self : DataFrame) -> Series raise {
   for series in self.data {
     match series.get_type() {
       DataType::Int32 => ()
@@ -1575,10 +1578,10 @@ pub fn DataFrame::max_horizontal(self : DataFrame) -> Series! {
 /// ```
 /// let df_sum = df.sum()
 /// ```
-pub fn DataFrame::sum(self : DataFrame) -> DataFrame!InvalidType {
+pub fn DataFrame::sum(self : DataFrame) -> DataFrame raise {
   let data : Array[Series] = []
   for series in self.data {
-    let sum = series.sum!()
+    let sum = series.sum()
     match sum {
       SeriesValue::Float(value) =>
         data.push(
@@ -1616,7 +1619,7 @@ pub fn DataFrame::sum(self : DataFrame) -> DataFrame!InvalidType {
 /// ])
 /// let sum = df.sum_horizontal!()
 /// ```
-pub fn DataFrame::sum_horizontal(self : DataFrame) -> Series! {
+pub fn DataFrame::sum_horizontal(self : DataFrame) -> Series raise {
   for series in self.data {
     match series.get_type() {
       DataType::Int32 => ()
@@ -1734,7 +1737,7 @@ fn DataFrame::type_check_all(self : DataFrame, data_type : DataType) -> Bool {
 pub fn DataFrame::all(
   self : DataFrame,
   ignore_nulls~ : Bool = true
-) -> DataFrame! {
+) -> DataFrame raise {
   guard self.type_check_all(DataType::Bool) else {
     raise InvalidType("All columns must be of type Bool")
   }
@@ -1745,11 +1748,11 @@ pub fn DataFrame::all(
         data.push(
           Series::new(
             self.data[i].name,
-            SeriesInput::Bool([self.data[i].all!()]),
+            SeriesInput::Bool([self.data[i].all()]),
           ),
         )
       }
-      DataFrame::new!(data)
+      DataFrame::new(data)
     }
     false => {
       let data = []
@@ -1762,12 +1765,12 @@ pub fn DataFrame::all(
           data.push(
             Series::new(
               self.data[i].name,
-              SeriesInput::Bool_Nullable([Some(self.data[i].all!())]),
+              SeriesInput::Bool_Nullable([Some(self.data[i].all())]),
             ),
           )
         }
       }
-      DataFrame::new!(data)
+      DataFrame::new(data)
     }
   }
 }
@@ -1799,7 +1802,7 @@ pub fn DataFrame::all(
 pub fn DataFrame::any(
   self : DataFrame,
   ignore_nulls~ : Bool = true
-) -> DataFrame! {
+) -> DataFrame raise{
   guard self.type_check_all(DataType::Bool) else {
     raise InvalidType("All columns must be of type Bool")
   }
@@ -1810,11 +1813,11 @@ pub fn DataFrame::any(
         data.push(
           Series::new(
             self.data[i].name,
-            SeriesInput::Bool([self.data[i].any!()]),
+            SeriesInput::Bool([self.data[i].any()]),
           ),
         )
       }
-      DataFrame::new!(data)
+      DataFrame::new(data)
     }
     false => {
       let data = []
@@ -1827,12 +1830,12 @@ pub fn DataFrame::any(
           data.push(
             Series::new(
               self.data[i].name,
-              SeriesInput::Bool_Nullable([Some(self.data[i].any!())]),
+              SeriesInput::Bool_Nullable([Some(self.data[i].any())]),
             ),
           )
         }
       }
-      DataFrame::new!(data)
+      DataFrame::new(data)
     }
   }
 }
@@ -1928,10 +1931,10 @@ pub fn DataFrame::fill_null(
   value? : SeriesValue,
   strategy? : String,
   limit? : Int
-) -> DataFrame! {
+) -> DataFrame raise{
   let series = []
   for serie in self.data {
-    series.push(serie.fill_null!(value~, strategy~, limit~))
+    series.push(serie.fill_null(value~, strategy~, limit~))
   }
   DataFrame::{ data: series, shape: self.shape, index: self.index }
 }
@@ -1966,12 +1969,12 @@ pub fn DataFrame::cast(
   data_type? : DataType,
   cast_mapping? : Map[String, DataType],
   strict~ : Bool = true
-) -> DataFrame! {
+) -> DataFrame raise{
   match (data_type, cast_mapping) {
     (Some(data_type), _) => {
       let series = []
       for serie in self.data {
-        series.push(serie.cast!(data_type, strict~))
+        series.push(serie.cast(data_type, strict~))
       }
       DataFrame::{ data: series, shape: self.shape, index: self.index }
     }
@@ -1979,8 +1982,8 @@ pub fn DataFrame::cast(
       let df = self.clone()
       for iter in cast_mapping {
         let (name, data_type) = iter
-        let index = df.get_column_index!(name)
-        df.replace_column!(index, df.data[index].cast!(data_type, strict~))
+        let index = df.get_column_index(name)
+        df.replace_column(index, df.data[index].cast(data_type, strict~))
       }
       df
     }
@@ -2031,11 +2034,11 @@ pub fn DataFrame::to_init_repr(self : DataFrame) -> String {
 
 ///|
 test "DataFrame::to_init_repr" {
-  let df = DataFrame::new!([
+  let df = DataFrame::new([
     Series::new("A", SeriesInput::Int32([1, 2, 3])),
     Series::new("C", SeriesInput::Str(["a", "b", "c"])),
   ])
-  inspect!(
+  inspect(
     df.to_init_repr(),
     content="DataFrame(\n\t[\n\t\tSeries 'A', [1, 2, 3], dtype=Int32,\n\t\tSeries 'C', [\"a\", \"b\", \"c\"], dtype=String,\n\t]\n)",
   )
@@ -2055,7 +2058,7 @@ fn DataFrame::has_nulls_rc(
       match subset {
         Some(subset) => {
           for col_name in subset {
-            let serie : Series = self.column?(col_name).unwrap()
+            let serie : Series = (try? self.column(col_name)).unwrap()
             if serie.bitmap.bitmap[row] {
               return true
             }
@@ -2102,7 +2105,7 @@ fn DataFrame::has_nulls_rc(
 pub fn DataFrame::drop_nulls(
   self : DataFrame,
   subset? : Array[String]
-) -> DataFrame! {
+) -> DataFrame raise{
   let rows = []
   match subset {
     None =>
@@ -2122,18 +2125,18 @@ pub fn DataFrame::drop_nulls(
       }
     }
   }
-  self.select_rows!(indices=rows)
+  self.select_rows(indices=rows)
 }
 
 ///|
 test "DataFrame::drop_nulls" {
-  let df = DataFrame::new!([
+  let df = DataFrame::new([
     Series::new("A", SeriesInput::Int32_Nullable([Some(1), None, Some(3)])),
     Series::new("B", SeriesInput::Int32_Nullable([None, Some(1), Some(3)])),
   ])
-  let df_dropped = df.drop_nulls!()
-  inspect!(df_dropped.data[0].data, content="Int([3])")
-  inspect!(df_dropped.data[1].data, content="Int([3])")
+  let df_dropped = df.drop_nulls()
+  inspect(df_dropped.data[0].data, content="Int([3])")
+  inspect(df_dropped.data[1].data, content="Int([3])")
 }
 
 ///| Take every nth row in the DataFrame and return as a new DataFrame
@@ -2167,18 +2170,18 @@ pub fn DataFrame::gather_every(
   for i = offset; i < self.shape[0]; i = i + n {
     rows.push(i)
   }
-  self.select_rows?(indices=rows).unwrap()
+  (try? self.select_rows(indices=rows)).unwrap()
 }
 
 ///|
 test "DataFrame::gather_every" {
-  let df = DataFrame::new!([
+  let df = DataFrame::new([
     Series::new("A", SeriesInput::Int32([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])),
     Series::new("B", SeriesInput::Int32([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])),
   ])
   let df_gathered = df.gather_every(2)
-  inspect!(df_gathered.data[0].data, content="Int([1, 3, 5, 7, 9])")
-  inspect!(df_gathered.data[1].data, content="Int([1, 3, 5, 7, 9])")
+  inspect(df_gathered.data[0].data, content="Int([1, 3, 5, 7, 9])")
+  inspect(df_gathered.data[1].data, content="Int([1, 3, 5, 7, 9])")
 }
 
 ///| Drop a single column in-place and return the dropped column
@@ -2206,22 +2209,22 @@ test "DataFrame::gather_every" {
 /// inspect!(serie.data, content="Int([1, 2, 3])")
 /// inspect!(df.shape, content="[3, 1]")
 /// ```
-pub fn DataFrame::drop_in_place(self : DataFrame, name : String) -> Series! {
+pub fn DataFrame::drop_in_place(self : DataFrame, name : String) -> Series raise {
   guard self.index.contains(name) else {
     raise ColumnNotFoundError("Column \{name} not found")
   }
-  let serie_droped = self.data[self.get_column_index?(name).unwrap()]
-  self.drop_column!(name)
+  let serie_droped = self.data[(try? self.get_column_index(name)).unwrap()]
+  self.drop_column(name)
   serie_droped
 }
 
 ///|
 test "DataFrame::drop_in_place" {
-  let df = DataFrame::new!([
+  let df = DataFrame::new([
     Series::new("A", SeriesInput::Int32([1, 2, 3])),
     Series::new("B", SeriesInput::Int32([4, 5, 6])),
   ])
-  let serie = df.drop_in_place!("A")
-  inspect!(serie.data, content="Int([1, 2, 3])")
-  inspect!(df.shape, content="[3, 1]")
+  let serie = df.drop_in_place("A")
+  inspect(serie.data, content="Int([1, 2, 3])")
+  inspect(df.shape, content="[3, 1]")
 }

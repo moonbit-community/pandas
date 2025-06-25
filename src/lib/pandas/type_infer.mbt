@@ -68,7 +68,7 @@ fn type_convert(
         DataType::Int32 => {
           let mut num : Int = 0
           for i in 0..<data.length() {
-            num = num * 10 + (data[i].to_int() - '0')
+            num = num * 10 + (data.charcode_at(i) - '0'.to_int())
           }
           SeriesValue::Int(num)
         }
@@ -76,10 +76,10 @@ fn type_convert(
           let mut dicimal = 0
           let mut num : Int64 = 0
           for i in 0..<data.length() {
-            if data[i] == '.' {
+            if data.charcode_at(i) == '.'.to_int() {
               dicimal = data.length() - i - 1
             } else {
-              num = num * 10 + (data[i].to_int() - '0').to_int64()
+              num = num * 10 + (data.charcode_at(i) - '0'.to_int()).to_int64()
             }
           }
           let flt = num.to_float() / quick_pow(10, dicimal).to_float()
@@ -100,12 +100,12 @@ fn type_convert(
 
 ///|
 test "type_convert" {
-  inspect!(type_convert("123"), content="Int(123)")
+  inspect(type_convert("123"), content="Int(123)")
   // inspect!(type_convert("123.45"), content="Float(123.45)")
-  inspect!(type_convert("true"), content="Bool(true)")
-  inspect!(type_convert("false"), content="Bool(false)")
-  inspect!(type_convert("True", null=true), content="Null")
-  inspect!(
+  inspect(type_convert("true"), content="Bool(true)")
+  inspect(type_convert("false"), content="Bool(false)")
+  inspect(type_convert("True", null=true), content="Null")
+  inspect(
     type_convert("False", type_=DataType::String),
     content="Str(\"False\")",
   )
@@ -132,14 +132,14 @@ fn type_convert_from_array(
 
 ///|
 test "type_infer" {
-  inspect!(type_infer("123"), content="Some(Int32)")
-  inspect!(type_infer("123.45"), content="Some(Float32)")
-  inspect!(type_infer("true"), content="Some(Bool)")
-  inspect!(type_infer("false"), content="Some(Bool)")
-  inspect!(type_infer("True"), content="Some(Bool)")
-  inspect!(type_infer("False"), content="Some(Bool)")
-  inspect!(type_infer("hello"), content="Some(String)")
-  inspect!(type_infer(""), content="None")
-  inspect!(type_infer("123abc"), content="Some(String)")
-  inspect!(type_infer("12.1.2"), content="Some(String)")
+  inspect(type_infer("123"), content="Some(Int32)")
+  inspect(type_infer("123.45"), content="Some(Float32)")
+  inspect(type_infer("true"), content="Some(Bool)")
+  inspect(type_infer("false"), content="Some(Bool)")
+  inspect(type_infer("True"), content="Some(Bool)")
+  inspect(type_infer("False"), content="Some(Bool)")
+  inspect(type_infer("hello"), content="Some(String)")
+  inspect(type_infer(""), content="None")
+  inspect(type_infer("123abc"), content="Some(String)")
+  inspect(type_infer("12.1.2"), content="Some(String)")
 }

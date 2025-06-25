@@ -15,7 +15,7 @@ let emptyBitMap : BitMap = BitMap::{
 }
 
 ///|
-fn BitMap::new[T](data? : Array[T?]) -> BitMap {
+fn[T] BitMap::new(data? : Array[T?]) -> BitMap {
   match data {
     None => BitMap::{ optional: false, bitmap: [], length: 0, offset: 0 }
     Some(data) => {
@@ -82,7 +82,7 @@ test "BitMap::op_add" {
   let a = BitMap::new(data=[Some(1), None, Some(3)])
   let b = BitMap::new(data=[None, Some(2), Some(3)])
   let c = a + b
-  inspect!(
+  inspect(
     c,
     content="{optional: true, bitmap: [true, true, false], length: 3, offset: 0}",
   )
@@ -213,7 +213,7 @@ fn BitMap::select_rows(self : BitMap, rows : Array[Int]) -> BitMap {
 test "BitMap::select_rows" {
   let a = BitMap::new(data=[Some(1), None, Some(3)])
   let b = a.select_rows([0, 1])
-  inspect!(
+  inspect(
     b,
     content="{optional: true, bitmap: [false, true], length: 2, offset: 0}",
   )
@@ -277,7 +277,7 @@ test "BitMap::merge" {
   let a = BitMap::new(data=[Some(1), None, Some(3)])
   let b = BitMap::new(data=[Some(1), Some(2), Some(3)])
   a.merge(b, inplace=true) |> ignore
-  inspect!(
+  inspect(
     a,
     content="{optional: true, bitmap: [false, true, false, false, false, false], length: 6, offset: 0}",
   )

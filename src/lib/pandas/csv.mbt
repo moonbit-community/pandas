@@ -17,14 +17,14 @@
 /// ```moonbit
 /// let df = DataFrame::read_csv!("./data.csv")
 /// ```
-pub fn DataFrame::read_csv(path : String) -> DataFrame! {
+pub fn DataFrame::read_csv(path : String) -> DataFrame raise {
   guard path.length() >= 4 && path.substring(start=path.length() - 4) == ".csv" else {
     raise NotCSVFile("Specified file is not a CSV file")
   }
   guard @fs.path_exists(path) else {
     raise PathNotFound("Path \{path} not found")
   }
-  let file = @fs.read_file_to_string!(path)
+  let file = @fs.read_file_to_string(path)
   let csv = @NyaCSV.CSV::parse_string(file)
   let data = csv.data()
   let header = csv.header()
@@ -47,17 +47,17 @@ pub fn DataFrame::read_csv(path : String) -> DataFrame! {
       length: shape.1,
     }
   })
-  DataFrame::new!(series)
+  DataFrame::new(series)
 }
 
 ///|
 test "DataFrame::read_csv" {
-  let df = DataFrame::read_csv!("./csv_test/full.csv")
-  inspect!(df.data()[0].get_type(), content="Int32")
-  inspect!(df.data()[1].get_type(), content="String")
-  inspect!(df.data()[2].get_type(), content="Bool")
-  inspect!(
-    DataFrame::read_csv?("./csv.mbt"),
+  let df = DataFrame::read_csv("./csv_test/full.csv")
+  inspect(df.data()[0].get_type(), content="Int32")
+  inspect(df.data()[1].get_type(), content="String")
+  inspect(df.data()[2].get_type(), content="Bool")
+  inspect(
+    try? DataFrame::read_csv("./csv.mbt"),
     content="Err(NotCSVFile(\"Specified file is not a CSV file\"))",
   )
 }
@@ -102,7 +102,7 @@ pub fn DataFrame::from_NyaCSV(csv : @NyaCSV.CSV) -> DataFrame {
       length: shape.1,
     }
   })
-  DataFrame::new?(series).unwrap()
+  (try? DataFrame::new(series)).unwrap()
 }
 
 ///|
@@ -112,10 +112,10 @@ test "DataFrame::from_NyaCSV" {
   )
   println(csv.to_string())
   let df = DataFrame::from_NyaCSV(csv)
-  inspect!(df.data()[0].get_type(), content="Int32")
-  inspect!(df.data()[1].get_type(), content="Float32")
-  inspect!(df.data()[2].get_type(), content="Bool")
-  inspect!(df.data()[0].name(), content="A")
+  inspect(df.data()[0].get_type(), content="Int32")
+  inspect(df.data()[1].get_type(), content="Float32")
+  inspect(df.data()[2].get_type(), content="Bool")
+  inspect(df.data()[0].name(), content="A")
 }
 
 ///| Convert the DataFrame to a `NyaCSV.CSV` object
@@ -149,7 +149,7 @@ pub fn DataFrame::to_NyaCSV(
 
 ///|
 test "DataFrame::to_NyaCSV" {
-  let df = DataFrame::new!([
+  let df = DataFrame::new([
     Series::new("A", SeriesInput::Int32([1, 2, 3])),
     Series::new("B", SeriesInput::Float32([1.5, 2.0, 2.5])),
     Series::new("C", SeriesInput::Bool([true, false, true])),
@@ -157,8 +157,8 @@ test "DataFrame::to_NyaCSV" {
     Series::new("E", SeriesInput::Int32_Nullable([Some(1), None, Some(3)])),
   ])
   let csv = df.to_NyaCSV()
-  inspect!(csv.header(), content="[\"A\", \"B\", \"C\", \"D\", \"E\"]")
-  inspect!(
+  inspect(csv.header(), content="[\"A\", \"B\", \"C\", \"D\", \"E\"]")
+  inspect(
     csv.data(),
     content="[[\"1\", \"1.5\", \"true\", \"a\", \"1\"], [\"2\", \"2\", \"false\", \"b\", \"\"], [\"3\", \"2.5\", \"true\", \"c\", \"3\"]]",
   )
@@ -188,12 +188,12 @@ pub fn DataFrame::write_csv(
   self : DataFrame,
   path : String,
   has_header~ : Bool = true
-) -> Unit! {
+) -> Unit raise {
   guard @fs.path_exists(path) else {
     raise PathNotFound("Path \{path} not found")
   }
   let csv = self.to_NyaCSV(has_header~)
-  @fs.write_string_to_file!(path, csv.to_string())
+  @fs.write_string_to_file(path, csv.to_string())
 }
 
 // test "DataFrame::write_csv" {
