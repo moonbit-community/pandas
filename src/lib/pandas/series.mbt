@@ -7,7 +7,7 @@ enum SeriesData {
 } derive(Show, Eq)
 
 ///|
-struct Series {
+pub(all) struct Series {
   mut name : String
   mut data : SeriesData
   mut data_type : DataType
@@ -156,7 +156,7 @@ pub fn Series::length(self : Series) -> Int {
 }
 
 ///| SeriesData clear
-fn SeriesData::clear(self : SeriesData) -> Unit {
+pub fn SeriesData::clear(self : SeriesData) -> Unit {
   match self {
     SeriesData::Int(data) => data.clear()
     SeriesData::Float(data) => data.clear()
@@ -180,7 +180,7 @@ fn SeriesData::clear(self : SeriesData) -> Unit {
 /// ```
 /// let series = Series::new("test", SeriesInput::Int32([1, 2, 3]))
 /// let empty_series = series.clear()
-/// inspect!(empty_series.data, content="Int([])")
+/// inspect(empty_series.data, content="Int([])")
 /// ```
 pub fn Series::clear(self : Series, n~ : Int = 0) -> Series {
   Series::{
@@ -238,7 +238,7 @@ fn SeriesData::erase(self : SeriesData, index : Int) -> Unit raise EmptyArrayErr
 ///
 /// ### Example
 /// ```
-/// series.erase!(1)
+/// series.erase(1)
 /// ```
 pub fn Series::erase(self : Series, index : Int) -> Unit raise{
   guard index >= 0 && index < self.length() else {
@@ -328,10 +328,10 @@ fn SeriesData::split_at(
 /// ```
 /// let series = Series::new("test", SeriesInput::Int32([2, 1, 3]))
 /// series.sort()
-/// inspect!(series.data, content="Int([1, 2, 3])")
+/// inspect(series.data, content="Int([1, 2, 3])")
 /// let series = Series::new("test", SeriesInput::Int32_Nullable([Some(2), None, Some(3)]))
 /// series.sort()
-/// inspect!(series.data, content="Int([0, 2, 3])")
+/// inspect(series.data, content="Int([0, 2, 3])")
 /// ```
 pub fn Series::sort(self : Series) -> Unit {
   match self.bitmap.optional {
@@ -369,9 +369,9 @@ pub fn Series::sort(self : Series) -> Unit {
 /// ```
 /// let data = SeriesData::Int([3, 1, 2])
 /// let sorted_indices = data.get_argsort_indices()
-/// inspect!(sorted_indices, content="[2, 0, 1]")
+/// inspect(sorted_indices, content="[2, 0, 1]")
 /// let sorted_indices_desc = data.get_argsort_indices(descending=true)
-/// inspect!(sorted_indices_desc, content="[0, 2, 1]")
+/// inspect(sorted_indices_desc, content="[0, 2, 1]")
 /// ```
 pub fn SeriesData::get_argsort_indices(
   self : SeriesData,
@@ -406,9 +406,9 @@ pub fn SeriesData::get_argsort_indices(
 /// ```
 /// let series = Series::new("test", SeriesInput::Int32([2, 1, 3]))
 /// let indices = series.get_argsort_indices()
-/// inspect!(indices, content="[1, 0, 2]")
+/// inspect(indices, content="[1, 0, 2]")
 /// let indices_desc = series.get_argsort_indices(descending=true)
-/// inspect!(indices_desc, content="[2, 0, 1]")
+/// inspect(indices_desc, content="[2, 0, 1]")
 /// ```
 pub fn Series::get_argsort_indices(
   self : Series,
@@ -732,9 +732,9 @@ pub impl Div for Series with op_div(self : Series, other : Series) -> Series {
 /// let series1 = Series::new("test", SeriesInput::Int32([1, 2]))
 /// let series2 = Series::new("test", SeriesInput::Int32([3, 4]))
 /// let merged_series = series1.merge!(series2)
-/// inspect!(merged_series.data, content="Int([1, 2, 3, 4])")
+/// inspect(merged_series.data, content="Int([1, 2, 3, 4])")
 /// let merged_series_inplace = series1.merge!(series2, inplace=true)
-/// inspect!(series1.data, content="Int([1, 2, 3, 4])")
+/// inspect(series1.data, content="Int([1, 2, 3, 4])")
 /// ```
 pub fn merge(
   self : Series,
@@ -854,7 +854,7 @@ pub fn get_type(self : Series) -> DataType {
 ///
 /// ```
 /// let series = Series::new("test", SeriesInput::Int32([1, 3, 2]))
-/// inspect!(series.max!(), content="Int(3)")
+/// inspect(series.max!(), content="Int(3)")
 /// ```
 pub fn Series::max(self : Series) -> SeriesValue raise{
   if self.data.empty() {
@@ -1101,12 +1101,12 @@ pub fn Series::mean(self : Series) -> Float raise{
 /// ```moonbit
 /// test "Series::var" {
 ///   let series = Series::new("test", SeriesData::Int([1, 2, 3, 4, 5]))
-///   series.var!()
+///   series.variance!()
 ///   let bool_series = Series::new("test", SeriesData::Bool([true, false, true]))
-///   series.var!()
+///   series.variance!()
 /// }
 /// ```
-pub fn Series::var(self : Series, ddof~ : Int = 1) -> Float raise{
+pub fn Series::variance(self : Series, ddof~ : Int = 1) -> Float raise{
   let raw_float_data : Array[Float] = match self.data {
     SeriesData::Int(arr) => arr.map(fn(x) { x.to_float() })
     SeriesData::Float(arr) => arr
@@ -1146,12 +1146,12 @@ pub fn Series::count(self : Series) -> Int {
 fn SeriesData::min(self : SeriesData, other : SeriesData) -> Unit {
   match (self, other) {
     (SeriesData::Int(a), SeriesData::Int(b)) =>
-      a.eachi(fn(i, v) { a[i] = @math.minimum(v, b[i]) })
+      a.eachi(fn(i, v) { a[i] = @cmp.minimum(v, b[i]) })
     (SeriesData::Float(a), SeriesData::Float(b)) =>
-      a.eachi(fn(i, v) { a[i] = @math.minimum(v, b[i]) })
+      a.eachi(fn(i, v) { a[i] = @cmp.minimum(v, b[i]) })
     (SeriesData::Float(a), SeriesData::Int(b))
     | (SeriesData::Int(b), SeriesData::Float(a)) =>
-      a.eachi(fn(i, v) { a[i] = @math.minimum(v, b[i].to_float()) })
+      a.eachi(fn(i, v) { a[i] = @cmp.minimum(v, b[i].to_float()) })
     _ => abort("unsupported types")
   }
 }
@@ -1160,12 +1160,12 @@ fn SeriesData::min(self : SeriesData, other : SeriesData) -> Unit {
 fn SeriesData::max(self : SeriesData, other : SeriesData) -> Unit {
   match (self, other) {
     (SeriesData::Int(a), SeriesData::Int(b)) =>
-      a.eachi(fn(i, v) { a[i] = @math.maximum(v, b[i]) })
+      a.eachi(fn(i, v) { a[i] = @cmp.maximum(v, b[i]) })
     (SeriesData::Float(a), SeriesData::Float(b)) =>
-      a.eachi(fn(i, v) { a[i] = @math.maximum(v, b[i]) })
+      a.eachi(fn(i, v) { a[i] = @cmp.maximum(v, b[i]) })
     (SeriesData::Float(a), SeriesData::Int(b))
     | (SeriesData::Int(b), SeriesData::Float(a)) =>
-      a.eachi(fn(i, v) { a[i] = @math.maximum(v, b[i].to_float()) })
+      a.eachi(fn(i, v) { a[i] = @cmp.maximum(v, b[i].to_float()) })
     _ => abort("unsupported types")
   }
 }
@@ -1245,9 +1245,9 @@ test "Series::all" {
 /// Example
 /// ```moonbit
 /// let series = Series::new("test", SeriesData::Bool([true, false, true]))
-/// inspect!(series.any!(), content="true")
+/// inspect(series.any!(), content="true")
 /// let series = Series::new("test", SeriesData::Bool([false, false, false]))
-/// inspect!(series.any!(), content="false")
+/// inspect(series.any!(), content="false")
 /// ```
 pub fn Series::any(self : Series) -> Bool raise InvalidType {
   match self.data {
@@ -1288,9 +1288,9 @@ test "Series::any" {
 /// Example
 /// ```moonbit
 /// let series = Series::new("test", SeriesData::Bool([true, false, true]))
-/// inspect!(series.not_().data, content="Bool([false, true, false])")
+/// inspect(series.not_().data, content="Bool([false, true, false])")
 /// let series = Series::new("test", SeriesData::Bool([true, false, true]))
-/// inspect!(series.not_().data, content="Bool([false, true, false])")
+/// inspect(series.not_().data, content="Bool([false, true, false])")
 /// ```
 pub fn Series::not_(self : Series) -> Series {
   match self.data {
@@ -1368,7 +1368,7 @@ pub fn Series::is_empty(self : Series) -> Bool {
 /// Example
 /// ```
 /// let series = Series::new("test", SeriesInput::Int32_Nullable([Some(1), None, Some(2)]))
-/// inspect!(series.is_null().data, content="Bool([false, true, false])")
+/// inspect(series.is_null().data, content="Bool([false, true, false])")
 /// ```
 pub fn Series::is_null(self : Series) -> Series {
   let data = match self.bitmap.optional {
@@ -1397,7 +1397,7 @@ pub fn Series::is_null(self : Series) -> Series {
 /// Example
 /// ```
 /// let series = Series::new("test", SeriesInput::Int32_Nullable([Some(1), None, Some(2)]))
-/// inspect!(series.is_not_null().data, content="Bool([true, false, true])")
+/// inspect(series.is_not_null().data, content="Bool([true, false, true])")
 /// ```
 pub fn Series::is_not_null(self : Series) -> Series {
   let data = match self.bitmap.optional {
@@ -1428,15 +1428,15 @@ pub fn Series::is_not_null(self : Series) -> Series {
 /// Example
 /// ```
 /// let series = Series::new("test", SeriesInput::Int32([1, 2, 3]))
-/// inspect!(series.is_sorted(), content="true")
+/// inspect(series.is_sorted(), content="true")
 /// let series = Series::new("test", SeriesInput::Int32([3, 2, 1]))
-/// inspect!(series.is_sorted(descending=true), content="true")
+/// inspect(series.is_sorted(descending=true), content="true")
 /// let series = Series::new("test", SeriesInput::Int32_Nullable([Some(1), None, Some(3)]))
-/// inspect!(series.is_sorted(), content="false")
+/// inspect(series.is_sorted(), content="false")
 /// let series = Series::new("test", SeriesInput::Int32_Nullable([None, Some(1), Some(3)]))
-/// inspect!(series.is_sorted(), content="true")
+/// inspect(series.is_sorted(), content="true")
 /// let series = Series::new("test", SeriesInput::Int32_Nullable([Some(3), Some(2), None]))
-/// inspect!(series.is_sorted(descending=true, nulls_last=true), content="true")
+/// inspect(series.is_sorted(descending=true, nulls_last=true), content="true")
 /// ```
 pub fn Series::is_sorted(
   self : Series,
@@ -1502,9 +1502,9 @@ pub fn Series::null_count(self : Series) -> Int {
 /// Example
 /// ```
 /// let series = Series::new("test", SeriesInput::Int32([1, 2, 3, 1]))
-/// inspect!(series.n_unique(), content="3")
+/// inspect(series.n_unique(), content="3")
 /// let series = Series::new("test", SeriesInput::Int32_Nullable([Some(1), None, Some(3), Some(1)]))
-/// inspect!(series.n_unique(), content="2")
+/// inspect(series.n_unique(), content="2")
 /// ```
 pub fn Series::n_unique(self : Series) -> Int {
   let st = @hashset.new()
@@ -1554,9 +1554,9 @@ pub fn Series::upper_bound(self : Series) -> Series {
 /// Example
 /// ```
 /// let series = Series::new("test", SeriesInput::Int32([1, 2, 3, 1, 2]))
-/// inspect!(series.unique_counts().data, content="Int([2, 2, 1])")
+/// inspect(series.unique_counts().data, content="Int([2, 2, 1])")
 /// let series = Series::new("test", SeriesInput::Int32_Nullable([Some(1), None, Some(3), Some(1), Some(3)]))
-/// inspect!(series.unique_counts().data, content="Int([2, 1, 2])")
+/// inspect(series.unique_counts().data, content="Int([2, 1, 2])")
 /// ```
 pub fn Series::unique_counts(self : Series) -> Series {
   let count : @hashmap.T[SeriesValue, Int] = @hashmap.new()
@@ -1601,7 +1601,7 @@ pub fn Series::unique_counts(self : Series) -> Series {
 /// let series1 = Series::new("test", SeriesInput::Int32([1, 2]))
 /// let series2 = Series::new("test", SeriesInput::Int32([3, 4]))
 /// let series = series1.append!(series2)
-/// inspect!(series.data, content="Int([1, 2, 3, 4])")
+/// inspect(series.data, content="Int([1, 2, 3, 4])")
 /// ```
 pub fn Series::append(self : Series, other : Series) -> Series raise InvalidType {
   let data = match (self.data, other.data) {
@@ -1636,7 +1636,7 @@ pub fn Series::append(self : Series, other : Series) -> Series raise InvalidType
 /// let series1 = Series::new("test", SeriesInput::Int32([1, 2]))
 /// let series2 = Series::new("test", SeriesInput::Int32([3, 4]))
 /// series1.extend!(series2)
-/// inspect!(series1.data, content="Int([1, 2, 3, 4])")
+/// inspect(series1.data, content="Int([1, 2, 3, 4])")
 /// ```
 pub fn Series::extend(self : Series, other : Series) -> Unit raise InvalidType {
   guard self.data.get_type() == other.data.get_type() else {
@@ -1668,7 +1668,7 @@ pub fn Series::extend(self : Series, other : Series) -> Unit raise InvalidType {
 /// let series2 = Series::new("test", SeriesInput::Int32([3, 4]))
 /// let series3 = Series::new("test", SeriesInput::Int32([5]))
 /// let series = Series::concat!([series1, series2, series3])
-/// inspect!(series.data, content="Int([1, 2, 3, 4, 5])")
+/// inspect(series.data, content="Int([1, 2, 3, 4, 5])")
 /// ```
 pub fn Series::concat(data : Array[Series]) -> Series raise{
   // check
@@ -1713,7 +1713,7 @@ pub fn Series::concat(data : Array[Series]) -> Series raise{
 /// Example
 /// ```
 /// let series = Series::new("test", SeriesInput::Int32([1, 2, 3, 4, 5]))
-/// inspect!(series.slice(1, 3).data, content="Int([2, 3])")
+/// inspect(series.slice(1, 3).data, content="Int([2, 3])")
 /// ```
 pub fn Series::slice(self : Series, start : Int, end : Int) -> Series {
   let data = self.data.split_at(end).0.split_at(start).1
@@ -1746,11 +1746,11 @@ pub fn Series::slice(self : Series, start : Int, end : Int) -> Series {
 /// Example
 /// ```
 /// let series = Series::new("test", SeriesInput::Int32_Nullable([Some(1), None, Some(3), None]))
-/// inspect!(series.fill_null!(value=Some(SeriesValue::Int(1))).data.to_string(), content="Int([1, 1, 3, 1])")
-/// inspect!(series.fill_null!(strategy=Some("forward")).data.to_string(), content="Int([1, 1, 3, 3])")
-/// inspect!(series.fill_null!(strategy=Some("max")).data.to_string(), content="Int([1, 3, 3, 3])")
-/// inspect!(series.fill_null!(strategy=Some("mean")).data.to_string(), content="Float([1, 2, 3, 2])")
-/// inspect!(series.fill_null!(strategy=Some("forward"), limit=Some(1)).data.to_string(), content="Int([1, 1, 3, 0])")
+/// inspect(series.fill_null!(value=Some(SeriesValue::Int(1))).data.to_string(), content="Int([1, 1, 3, 1])")
+/// inspect(series.fill_null!(strategy=Some("forward")).data.to_string(), content="Int([1, 1, 3, 3])")
+/// inspect(series.fill_null!(strategy=Some("max")).data.to_string(), content="Int([1, 3, 3, 3])")
+/// inspect(series.fill_null!(strategy=Some("mean")).data.to_string(), content="Float([1, 2, 3, 2])")
+/// inspect(series.fill_null!(strategy=Some("forward"), limit=Some(1)).data.to_string(), content="Int([1, 1, 3, 0])")
 /// ```
 fn Series::fill_null(
   self : Series,
@@ -2034,7 +2034,7 @@ fn SeriesData::to_init_repr(self : SeriesData) -> String {
 /// ```
 /// let series = Series::new("test", SeriesInput::Int32([1, 2, 3]))
 /// series.swap!(0, 1)
-/// inspect!(series.data.to_string(), content="Int([2, 1, 3])")
+/// inspect(series.data.to_string(), content="Int([2, 1, 3])")
 /// ```
 pub fn Series::swap(self : Series, x : Int, y : Int) -> Unit raise IndexOutOfBounds {
   guard x >= 0 && x < self.length && y >= 0 && y < self.length else {
@@ -2072,9 +2072,9 @@ test "Series::swap" {
 /// ```
 /// let series = Series::new("test", SeriesInput::Int32_Nullable([Some(1), None, Some(3), None]))
 /// let new_series = series.move_nulls_front()
-/// inspect!(new_series.unwrap().bitmap.bitmap, content="[true, true, false, false]")
-/// inspect!(new_series.unwrap().data, content="Int([0, 0, 1, 3])")
-/// inspect!(series.data, content="Int([1, 0, 3, 0])")
+/// inspect(new_series.unwrap().bitmap.bitmap, content="[true, true, false, false]")
+/// inspect(new_series.unwrap().data, content="Int([0, 0, 1, 3])")
+/// inspect(series.data, content="Int([1, 0, 3, 0])")
 /// ```
 pub fn Series::move_nulls_front(
   self : Series,
@@ -2135,9 +2135,9 @@ test "Series::move_nulls_front" {
 /// ```
 /// let series = Series::new("test", SeriesInput::Int32_Nullable([Some(1), None, Some(3), None]))
 /// let new_series = series.move_nulls_back()
-/// inspect!(new_series.unwrap().bitmap.bitmap, content="[false, false, true, true]")
-/// inspect!(new_series.unwrap().data, content="Int([1, 3, 0, 0])")
-/// inspect!(series.data, content="Int([1, 0, 3, 0])")
+/// inspect(new_series.unwrap().bitmap.bitmap, content="[false, false, true, true]")
+/// inspect(new_series.unwrap().data, content="Int([1, 3, 0, 0])")
+/// inspect(series.data, content="Int([1, 0, 3, 0])")
 /// ```
 pub fn Series::move_nulls_back(
   self : Series,

@@ -1,65 +1,65 @@
 ///| Tests
 test "series" {
   let series = Series::new("test", SeriesInput::Int32([1, 2, 3, 4, 5]))
-  assert_eq!(series.name(), "test")
-  // assert_eq!(series.data()(), SeriesData::Int([1, 2, 3, 4, 5]))
+  assert_eq(series.name(), "test")
+  // assert_eq(series.data()(), SeriesData::Int([1, 2, 3, 4, 5]))
 }
 
 ///|
 test "argsort_indices" {
   let series = Series::new("test", SeriesInput::Int32([2, 1, 3, 5, 4]))
   let indices = series.data().get_argsort_indices()
-  inspect!(indices, content="[1, 0, 2, 4, 3]")
+  inspect(indices, content="[1, 0, 2, 4, 3]")
   let series = Series::new("test", SeriesInput::Str(["a", "b", "c", "d", "e"]))
-  inspect!(series.data().get_argsort_indices(), content="[0, 1, 2, 3, 4]")
+  inspect(series.data().get_argsort_indices(), content="[0, 1, 2, 3, 4]")
 }
 
 // test "argsort" {
 //   let series = Series::new("test", SeriesInput::Int32([2, 1, 3, 5, 4]))
 //   let indices = series.argsort()
-//   // inspect!(indices, content="[1, 0, 2, 4, 3]")
+//   // inspect(indices, content="[1, 0, 2, 4, 3]")
 // }
 
 // test "series_add" {
 //   let a = Series::new("a", SeriesData::Float([1.5, 2, 3.5]))
 //   let b = Series::new("b", SeriesData::Int([4, 5, 6]))
 //   let c = a.data + b.data
-//   inspect!(c, content="Float([5.5, 7, 9.5])")
+//   inspect(c, content="Float([5.5, 7, 9.5])")
 //   let c = a + b
-//   inspect!(c, content="{name: \"a\", data: Float([5.5, 7, 9.5]), data_type: Float32, bitmap: {optional: false, bitmap: [], length: 0, offset: 0}}")
+//   inspect(c, content="{name: \"a\", data: Float([5.5, 7, 9.5]), data_type: Float32, bitmap: {optional: false, bitmap: [], length: 0, offset: 0}}")
 // }
 
 // test "series_sub" {
 //   let a = Series::new("a", SeriesData::Float([1.5, 2, 3.5]))
 //   let b = Series::new("b", SeriesData::Int([4, 5, 6]))
 //   let c = a.data - b.data
-//   inspect!(c, content="Float([-2.5, -3, -2.5])")
+//   inspect(c, content="Float([-2.5, -3, -2.5])")
 //   let c = a - b
-//   inspect!(c, content="{name: \"a\", data: Float([-2.5, -3, -2.5]), data_type: Float32, bitmap: {optional: false, bitmap: [], length: 0, offset: 0}}")
+//   inspect(c, content="{name: \"a\", data: Float([-2.5, -3, -2.5]), data_type: Float32, bitmap: {optional: false, bitmap: [], length: 0, offset: 0}}")
 // }
 
 // test "series_mul" {
 //   let a = Series::new("a", SeriesData::Float([1.5, 2, 3.5]))
 //   let b = Series::new("b", SeriesData::Int([4, 5, 6]))
 //   let c = a.data * b.data
-//   inspect!(c, content="Float([6, 10, 21])")
+//   inspect(c, content="Float([6, 10, 21])")
 //   let c = a * b
-//   inspect!(c, content="{name: \"a\", data: Float([6, 10, 21]), data_type: Float32, bitmap: {optional: false, bitmap: [], length: 0, offset: 0}}")
+//   inspect(c, content="{name: \"a\", data: Float([6, 10, 21]), data_type: Float32, bitmap: {optional: false, bitmap: [], length: 0, offset: 0}}")
 // }
 
 // test "series_div" {
 //   let a = Series::new("a", SeriesData::Int([2, 4, 9]))
 //   let b = Series::new("b", SeriesData::Int([1, 2, 3]))
 //   let c = a.data / b.data
-//   inspect!(c, content="Int([2, 2, 3])")
+//   inspect(c, content="Int([2, 2, 3])")
 //   let c = a / b
-//   inspect!(c, content="{name: \"a\", data: Int([2, 2, 3]), data_type: Int32, bitmap: {optional: false, bitmap: [], length: 0, offset: 0}}")
+//   inspect(c, content="{name: \"a\", data: Int([2, 2, 3]), data_type: Int32, bitmap: {optional: false, bitmap: [], length: 0, offset: 0}}")
 // }
 
 ///|
 test "Series::var/int" {
   let series = Series::new("test", SeriesInput::Int32([1, 2, 3, 4, 5]))
-  inspect!(series.var!(), content="2.5")
+  inspect(series.variance(), content="2.5")
 }
 
 ///|
@@ -68,8 +68,8 @@ test "Series::var/float" {
     "test",
     SeriesInput::Float32([1.5, 2.0, 3.5, 4.0, 5.5]),
   )
-  series.var!() |> ignore
-  // series.var!() |> println
+  series.variance() |> ignore
+  // series.var() |> println
   // 2.575
 }
 
@@ -79,41 +79,41 @@ test "Series::var/ddof" {
     "test",
     SeriesInput::Float32([1.5, 2.0, 3.5, 4.0, 5.0]),
   )
-  series.var!(ddof=1) |> ignore
-  // series.var!(ddof=1) |> println
+  series.variance(ddof=1) |> ignore
+  // series.var(ddof=1) |> println
   // 2.075
 }
 
 ///|
 test "panic Series::var/invalid_type" {
   let series = Series::new("test", SeriesInput::Str(["a", "b", "c"]))
-  ignore(series.var!())
+  ignore(series.variance())
 }
 
 ///|
 test "panic Series::var/empty_array" {
   let series = Series::new("test", SeriesInput::Int32([]))
-  ignore(series.var!())
+  ignore(series.variance())
 }
 
 ///|
 test "Series::sort" {
   let series = Series::new("test", SeriesInput::Int32([2, 1, 3, 5, 4]))
   series.sort()
-  inspect!(series.data(), content="Int([1, 2, 3, 4, 5])")
+  inspect(series.data(), content="Int([1, 2, 3, 4, 5])")
   let series = Series::new(
     "test",
     SeriesInput::Int32_Nullable([Some(2), None, Some(3)]),
   )
   // println(series.bitmap)
   series.sort()
-  inspect!(series.data(), content="Int([0, 2, 3])")
+  inspect(series.data(), content="Int([0, 2, 3])")
 }
 
 ///|
 test "Series::length()" {
   let series = Series::new("test", SeriesInput::Int32([1, 2, 3, 4, 5]))
-  assert_eq!(series.length(), 5)
+  assert_eq(series.length(), 5)
 }
 
 // test "SeriesValue::op_compare" {
@@ -125,23 +125,23 @@ test "Series::length()" {
 ///|
 test "Series::max" {
   let series = Series::new("test", SeriesInput::Int32([1, 3, 2]))
-  inspect!(series.max!(), content="Int(3)")
+  inspect(series.max(), content="Int(3)")
   let series = Series::new(
     "test",
     SeriesInput::Int32_Nullable([None, None, None]),
   )
-  inspect!(series.max!(), content="Null")
+  inspect(series.max(), content="Null")
 }
 
 ///|
 test "Series::min" {
   let series = Series::new("test", SeriesInput::Int32([1, 3, 2]))
-  inspect!(series.min!(), content="Int(1)")
+  inspect(series.min(), content="Int(1)")
   let series = Series::new(
     "test",
     SeriesInput::Int32_Nullable([None, None, None]),
   )
-  inspect!(series.min!(), content="Null")
+  inspect(series.min(), content="Null")
 }
 
 ///|
@@ -150,9 +150,9 @@ test "Series::is_null" {
     "test",
     SeriesInput::Int32_Nullable([Some(1), None, Some(2)]),
   )
-  inspect!(series.is_null().data(), content="Bool([false, true, false])")
+  inspect(series.is_null().data(), content="Bool([false, true, false])")
   let series = Series::new("test", SeriesInput::Int32([1, 2, 3]))
-  inspect!(series.is_null().data(), content="Bool([false, false, false])")
+  inspect(series.is_null().data(), content="Bool([false, false, false])")
 }
 
 ///|
@@ -161,30 +161,30 @@ test "Series::is_not_null" {
     "test",
     SeriesInput::Int32_Nullable([Some(1), None, Some(2)]),
   )
-  inspect!(series.is_not_null().data(), content="Bool([true, false, true])")
+  inspect(series.is_not_null().data(), content="Bool([true, false, true])")
 }
 
 ///|
 test "Series::is_sorted" {
   let series = Series::new("test", SeriesInput::Int32([1, 2, 3]))
-  inspect!(series.is_sorted(), content="true")
+  inspect(series.is_sorted(), content="true")
   let series = Series::new("test", SeriesInput::Int32([3, 2, 1]))
-  inspect!(series.is_sorted(descending=true), content="true")
+  inspect(series.is_sorted(descending=true), content="true")
   let series = Series::new(
     "test",
     SeriesInput::Int32_Nullable([Some(1), None, Some(3)]),
   )
-  inspect!(series.is_sorted(), content="false")
+  inspect(series.is_sorted(), content="false")
   let series = Series::new(
     "test",
     SeriesInput::Int32_Nullable([None, Some(1), Some(3)]),
   )
-  inspect!(series.is_sorted(), content="true")
+  inspect(series.is_sorted(), content="true")
   let series = Series::new(
     "test",
     SeriesInput::Int32_Nullable([Some(3), Some(2), None]),
   )
-  inspect!(series.is_sorted(descending=true, nulls_last=true), content="true")
+  inspect(series.is_sorted(descending=true, nulls_last=true), content="true")
 }
 
 ///|
@@ -193,53 +193,53 @@ test "Series::null_count" {
     "test",
     SeriesInput::Int32_Nullable([Some(1), None, Some(2)]),
   )
-  inspect!(series.null_count(), content="1")
+  inspect(series.null_count(), content="1")
 }
 
 ///|
 test "Series::n_unique" {
   let series = Series::new("test", SeriesInput::Int32([1, 2, 3, 1]))
-  inspect!(series.n_unique(), content="3")
+  inspect(series.n_unique(), content="3")
   let series = Series::new(
     "test",
     SeriesInput::Int32_Nullable([Some(1), None, Some(3), Some(1)]),
   )
-  inspect!(series.n_unique(), content="2")
+  inspect(series.n_unique(), content="2")
 }
 
 ///|
 test "Series::unique_count" {
   let series = Series::new("test", SeriesInput::Int32([1, 2, 3, 1, 2]))
-  inspect!(series.unique_counts().data(), content="Int([2, 2, 1])")
+  inspect(series.unique_counts().data(), content="Int([2, 2, 1])")
   let series = Series::new(
     "test",
     SeriesInput::Int32_Nullable([Some(1), None, Some(3), Some(1), Some(3)]),
   )
-  inspect!(series.unique_counts().data(), content="Int([2, 1, 2])")
+  inspect(series.unique_counts().data(), content="Int([2, 1, 2])")
 }
 
 ///|
 test "Series::abs" {
   let series = Series::new("test", SeriesInput::Int32([-1, 2, -3]))
-  inspect!(series.abs!().data(), content="Int([1, 2, 3])")
+  inspect(series.abs().data(), content="Int([1, 2, 3])")
   let series = Series::new("test", SeriesInput::Float32([-1.5, 2.0, -3.0]))
-  inspect!(series.abs!().data(), content="Float([1.5, 2, 3])")
+  inspect(series.abs().data(), content="Float([1.5, 2, 3])")
 }
 
 ///|
 test "Series::append" {
   let series1 = Series::new("test", SeriesInput::Int32([1, 2]))
   let series2 = Series::new("test", SeriesInput::Int32([3, 4]))
-  let series = series1.append!(series2)
-  inspect!(series.data(), content="Int([1, 2, 3, 4])")
+  let series = series1.append(series2)
+  inspect(series.data(), content="Int([1, 2, 3, 4])")
 }
 
 ///|
 test "Series::extend" {
   let series1 = Series::new("test", SeriesInput::Int32([1, 2]))
   let series2 = Series::new("test", SeriesInput::Int32([3, 4]))
-  series1.extend!(series2)
-  inspect!(series1.data(), content="Int([1, 2, 3, 4])")
+  series1.extend(series2)
+  inspect(series1.data(), content="Int([1, 2, 3, 4])")
 }
 
 ///|
@@ -247,29 +247,29 @@ test "Series::concat" {
   let series1 = Series::new("test", SeriesInput::Int32([1, 2]))
   let series2 = Series::new("test", SeriesInput::Int32([3, 4]))
   let series3 = Series::new("test", SeriesInput::Int32([5]))
-  let series = Series::concat!([series1, series2, series3])
-  inspect!(series.data(), content="Int([1, 2, 3, 4, 5])")
+  let series = Series::concat([series1, series2, series3])
+  inspect(series.data(), content="Int([1, 2, 3, 4, 5])")
 }
 
 ///|
 test "Series::slice" {
   let series = Series::new("test", SeriesInput::Int32([1, 2, 3, 4, 5]))
-  inspect!(series.slice(1, 3).data(), content="Int([2, 3])")
+  inspect(series.slice(1, 3).data(), content="Int([2, 3])")
 }
 
 ///|
 test "Series::get_argsort_indices" {
   let series = Series::new("test", SeriesInput::Int32([2, 1, 3]))
   let indices = series.get_argsort_indices()
-  inspect!(indices, content="[1, 0, 2]")
+  inspect(indices, content="[1, 0, 2]")
   let indices_desc = series.get_argsort_indices(descending=true)
-  inspect!(indices_desc, content="[2, 0, 1]")
+  inspect(indices_desc, content="[2, 0, 1]")
   let series = Series::new(
     "test",
     SeriesInput::Int32_Nullable([Some(-2), None, Some(3)]),
   )
   let indices = series.get_argsort_indices()
-  inspect!(indices, content="[1, 0, 2]")
+  inspect(indices, content="[1, 0, 2]")
   let indices_desc = series.get_argsort_indices(descending=true)
-  inspect!(indices_desc, content="[1, 2, 0]")
+  inspect(indices_desc, content="[1, 2, 0]")
 }

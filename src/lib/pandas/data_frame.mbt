@@ -1,5 +1,5 @@
 ///|
-struct DataFrame {
+pub(all) struct DataFrame {
   mut data : Array[Series]
   mut shape : Array[Int]
   index : Map[String, Int]
@@ -121,7 +121,7 @@ pub fn DataFrame::head(self : DataFrame, rows~ : Int = 5) -> Unit {
     row_str = row_str + col.name() + "\t"
   }
   row_str += "\n"
-  for i = 0; i < @math.minimum(rows, self.shape[0]); i = i + 1 {
+  for i = 0; i < @cmp.minimum(rows, self.shape[0]); i = i + 1 {
     row_str += i.to_string() + "\t"
     for col in self.data {
       match col.bitmap[i] {
@@ -228,7 +228,7 @@ pub fn DataFrame::drop_column(
 /// test {
 ///   let mut df = DataFrame::new([Series::new("A", SeriesData::Int([1, 2]))])
 ///   df.rename("A", "B")
-///   inspect!(df.data()[0].name(), context="B")
+///   inspect(df.data()[0].name(), context="B")
 /// }
 /// ```
 pub fn DataFrame::rename(
@@ -654,7 +654,7 @@ pub fn DataFrame::filter(
 ///   Series::new("B", SeriesData::Float([3.3, 1.1, 2.2]))
 /// ])
 /// df.sort("B", descending=true)
-/// inspect!(df.data()[0].data(), content="Int([3, 2, 1])")
+/// inspect(df.data()[0].data(), content="Int([3, 2, 1])")
 /// ```
 pub fn DataFrame::sort(
   self : DataFrame,
@@ -910,7 +910,7 @@ pub fn DataFrame::item(
 /// ```
 pub fn limit(self : DataFrame, n : Int) -> DataFrame raise{
   let data : Array[Series] = []
-  let n = @math.minimum(n, self.shape()[0])
+  let n = @cmp.minimum(n, self.shape()[0])
   for series in self.data {
     let new_data = match series.data {
       SeriesData::Int(data) => SeriesData::Int(data.split_at(n).0)
@@ -951,7 +951,7 @@ pub fn limit(self : DataFrame, n : Int) -> DataFrame raise{
 /// ```
 pub fn tail(self : DataFrame, n : Int) -> DataFrame raise {
   let data : Array[Series] = []
-  let n = @math.minimum(n, self.shape()[0])
+  let n = @cmp.minimum(n, self.shape()[0])
   for series in self.data {
     let new_data = match series.data {
       SeriesData::Int(data) =>
@@ -1348,7 +1348,7 @@ pub fn DataFrame::transpose(
   }
   match column_names {
     Some(names) =>
-      for i = 0; i < @math.minimum(names.length(), new_data.length()); i = i + 1 {
+      for i = 0; i < @cmp.minimum(names.length(), new_data.length()); i = i + 1 {
         new_data[i].name = names[i]
       }
     None => ()
@@ -1731,8 +1731,8 @@ fn DataFrame::type_check_all(self : DataFrame, data_type : DataType) -> Bool {
 ///   Series::new("A", SeriesInput::Bool([true, true, true])),
 ///   Series::new("B", SeriesInput::Bool([true, false, true])),
 /// ])
-/// inspect!(df.all!().data[0][0], content="Bool(true)")
-/// inspect!(df.all!().data[1][0], content="Bool(false)")
+/// inspect(df.all!().data[0][0], content="Bool(true)")
+/// inspect(df.all!().data[1][0], content="Bool(false)")
 /// ```
 pub fn DataFrame::all(
   self : DataFrame,
@@ -1796,8 +1796,8 @@ pub fn DataFrame::all(
 ///   Series::new("A", SeriesInput::Bool([true, true, true])),
 ///   Series::new("B", SeriesInput::Bool([true, false, true])),
 /// ])
-/// inspect!(df.any!().data[0][0], content="Bool(true)")
-/// inspect!(df.any!().data[1][0], content="Bool(true)")
+/// inspect(df.any!().data[0][0], content="Bool(true)")
+/// inspect(df.any!().data[1][0], content="Bool(true)")
 /// ```
 pub fn DataFrame::any(
   self : DataFrame,
@@ -1855,11 +1855,11 @@ pub fn DataFrame::any(
 /// let df = DataFrame::new!([
 ///   Series::new("A", SeriesInput::Int32([1, 2, 3])),
 /// ])
-/// inspect!(df.has_nulls().data[0][0], content="Bool(false)")
+/// inspect(df.has_nulls().data[0][0], content="Bool(false)")
 /// let df = DataFrame::new!([
 ///   Series::new("A", SeriesInput::Int32_Nullable([Some(1), None, Some(3)])),
 /// ])
-/// inspect!(df.has_nulls().data[0][0], content="Bool(true)")
+/// inspect(df.has_nulls().data[0][0], content="Bool(true)")
 /// ```
 pub fn DataFrame::has_nulls(self : DataFrame) -> DataFrame {
   let data = []
@@ -1916,15 +1916,15 @@ pub fn DataFrame::is_empty(self : DataFrame) -> Bool {
 ///   Series::new("B", SeriesInput::Int32_Nullable([None, Some(1), Some(3)])),
 /// ])
 /// let filled = df.fill_null!(value=SeriesValue::Int(2))
-/// inspect!(filled.data[0].data, content="Int([1, 2, 3])")
+/// inspect(filled.data[0].data, content="Int([1, 2, 3])")
 /// let filled = df.fill_null!(strategy="forward")
-/// inspect!(filled.data[0].data, content="Int([1, 1, 3])")
+/// inspect(filled.data[0].data, content="Int([1, 1, 3])")
 /// let filled = df.fill_null!(strategy="backward")
-/// inspect!(filled.data[1].data, content="Int([1, 1, 3])")
+/// inspect(filled.data[1].data, content="Int([1, 1, 3])")
 /// let filled = df.fill_null!(strategy="max")
-/// inspect!(filled.data[0].data, content="Int([1, 3, 3])")
+/// inspect(filled.data[0].data, content="Int([1, 3, 3])")
 /// let filled = df.fill_null!(strategy="mean")
-/// inspect!(filled.data[0].data, content="Float([1, 2, 3])")
+/// inspect(filled.data[0].data, content="Float([1, 2, 3])")
 /// ```
 pub fn DataFrame::fill_null(
   self : DataFrame,
@@ -1959,10 +1959,10 @@ pub fn DataFrame::fill_null(
 ///   Series::new("B", SeriesInput::Float32([1.1, 2.2, 3.3]))
 /// ])
 /// let df_cast = df.cast!(data_type = DataType::Float32)
-/// inspect!(df_cast.data[0].data_type, content="Float32")
+/// inspect(df_cast.data[0].data_type, content="Float32")
 /// let df_cast = df.cast!(cast_mapping = {"A" : DataType::Float32, "B" : DataType::Int32})
-/// inspect!(df_cast.data[0].data_type, content="Float32")
-/// inspect!(df_cast.data[1].data_type, content="Int32")
+/// inspect(df_cast.data[0].data_type, content="Float32")
+/// inspect(df_cast.data[1].data_type, content="Int32")
 /// ```
 pub fn DataFrame::cast(
   self : DataFrame,
@@ -2021,7 +2021,7 @@ pub fn DataFrame::to_dict(self : DataFrame) -> Map[String, Series] {
 ///   Series::new("A", SeriesInput::Int32([1, 2, 3])),
 ///   Series::new("C", SeriesInput::Str(["a", "b", "c"])),
 /// ])
-/// inspect!(df.to_init_repr(), content="DataFrame(\n\t[\n\t\tSeries 'A', [1, 2, 3], dtype=int32,\n\t\tSeries 'C', [\"a\", \"b\", \"c\"], dtype=string,\n\t]\n)")
+/// inspect(df.to_init_repr(), content="DataFrame(\n\t[\n\t\tSeries 'A', [1, 2, 3], dtype=int32,\n\t\tSeries 'C', [\"a\", \"b\", \"c\"], dtype=string,\n\t]\n)")
 /// ```
 pub fn DataFrame::to_init_repr(self : DataFrame) -> String {
   let mut repr = "DataFrame(\n\t[\n"
@@ -2099,8 +2099,8 @@ fn DataFrame::has_nulls_rc(
 ///   Series::new("B", SeriesInput::Int32_Nullable([None, Some(1), Some(3)])),
 /// ])
 /// let df_dropped = df.drop_nulls!()
-/// inspect!(df_dropped.data[0].data, content="Int([3])")
-/// inspect!(df_dropped.data[1].data, content="Int([3])")
+/// inspect(df_dropped.data[0].data, content="Int([3])")
+/// inspect(df_dropped.data[1].data, content="Int([3])")
 /// ```
 pub fn DataFrame::drop_nulls(
   self : DataFrame,
@@ -2153,13 +2153,13 @@ test "DataFrame::drop_nulls" {
 ///
 /// Example
 /// ```
-/// let df = DataFrame::new!([
+/// let df = DataFrame::new([
 ///   Series::new("A", SeriesInput::Int32([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])),
 ///   Series::new("B", SeriesInput::Int32([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])),
 /// ])
 /// let df_gathered = df.gather_every(2)
-/// inspect!(df_gathered.data[0].data, content="Int([1, 3, 5, 7, 9])")
-/// inspect!(df_gathered.data[1].data, content="Int([1, 3, 5, 7, 9])")
+/// inspect(df_gathered.data[0].data, content="Int([1, 3, 5, 7, 9])")
+/// inspect(df_gathered.data[1].data, content="Int([1, 3, 5, 7, 9])")
 /// ```
 pub fn DataFrame::gather_every(
   self : DataFrame,
@@ -2201,13 +2201,13 @@ test "DataFrame::gather_every" {
 ///
 /// Example
 /// ```
-/// let df = DataFrame::new!([
+/// let df = DataFrame::new([
 ///   Series::new("A", SeriesInput::Int32([1, 2, 3])),
 ///   Series::new("B", SeriesInput::Int32([4, 5, 6])),
 /// ])
-/// let serie = df.drop_in_place!("A")
-/// inspect!(serie.data, content="Int([1, 2, 3])")
-/// inspect!(df.shape, content="[3, 1]")
+/// let serie = df.drop_in_place("A")
+/// inspect(serie.data, content="Int([1, 2, 3])")
+/// inspect(df.shape, content="[3, 1]")
 /// ```
 pub fn DataFrame::drop_in_place(self : DataFrame, name : String) -> Series raise {
   guard self.index.contains(name) else {

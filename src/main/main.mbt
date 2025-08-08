@@ -1,6 +1,6 @@
 ///|
 fn main {
-  let df = @pandas.DataFrame::new?([
+  let df = try? @pandas.DataFrame::new([
     @pandas.Series::new("A", @pandas.SeriesInput::Int32([1, 2, 3, 4, 5, 6])),
     @pandas.Series::new(
       "B",
