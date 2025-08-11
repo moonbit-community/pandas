@@ -1,21 +1,4 @@
 ///|
-enum SeriesData {
-  Int(Array[Int])
-  Float(Array[Float])
-  Bool(Array[Bool])
-  Str(Array[String])
-} derive(Show, Eq)
-
-///|
-pub(all) struct Series {
-  mut name : String
-  mut data : SeriesData
-  mut data_type : DataType
-  mut bitmap : BitMap
-  mut length : Int
-} derive(Show, Eq)
-
-///|
 impl Hash for SeriesData with hash_combine(self, hasher) {
   match self {
     SeriesData::Int(data) =>

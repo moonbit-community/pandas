@@ -68,7 +68,7 @@ fn type_convert(
         DataType::Int32 => {
           let mut num : Int = 0
           for i in 0..<data.length() {
-            num = num * 10 + (data.charcode_at(i) - '0'.to_int())
+            num = num * 10 + (data[i] - '0'.to_int())
           }
           SeriesValue::Int(num)
         }
@@ -76,10 +76,10 @@ fn type_convert(
           let mut dicimal = 0
           let mut num : Int64 = 0
           for i in 0..<data.length() {
-            if data.charcode_at(i) == '.'.to_int() {
+            if data[i] == '.' {
               dicimal = data.length() - i - 1
             } else {
-              num = num * 10 + (data.charcode_at(i) - '0'.to_int()).to_int64()
+              num = num * 10 + (data[i] - '0'.to_int()).to_int64()
             }
           }
           let flt = num.to_float() / quick_pow(10, dicimal).to_float()

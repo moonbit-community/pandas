@@ -1,11 +1,4 @@
 ///|
-pub(all) struct DataFrame {
-  mut data : Array[Series]
-  mut shape : Array[Int]
-  index : Map[String, Int]
-} derive(Eq)
-
-///|
 pub impl Hash for DataFrame with hash_combine(self, hasher) {
   for idx in self.index {
     hasher.combine(idx.0)

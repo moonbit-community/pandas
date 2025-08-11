@@ -1,4 +1,28 @@
 ///|
+pub(all) struct DataFrame {
+  mut data : Array[Series]
+  mut shape : Array[Int]
+  index : Map[String, Int]
+} derive(Eq)
+
+///|
+enum SeriesData {
+  Int(Array[Int])
+  Float(Array[Float])
+  Bool(Array[Bool])
+  Str(Array[String])
+} derive(Show, Eq)
+
+///|
+struct Series {
+  mut name : String
+  mut data : SeriesData
+  mut data_type : DataType
+  mut bitmap : BitMap
+  mut length : Int
+} derive(Show, Eq)
+
+///|
 pub(all) enum DataType {
   Int32
   Float32

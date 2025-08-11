@@ -117,7 +117,7 @@ fn BitMap::slice(self : BitMap, start : Int, length? : Int) -> BitMap {
           }
         }
         Some(length) => {
-          let length = @math.minimum(length, self.length - start)
+          let length = @cmp.minimum(length, self.length - start)
           let bitmap = self.bitmap.split_at(start).1.split_at(length).0
           BitMap::{
             optional: self.optional,
