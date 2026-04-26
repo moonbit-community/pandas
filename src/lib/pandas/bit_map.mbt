@@ -141,8 +141,8 @@ fn BitMap::has_nulls(self : BitMap) -> Bool {
 ///|
 fn BitMap::clear(
   self : BitMap,
-  n~ : Int = 0,
-  inplace~ : Bool = false
+  n? : Int = 0,
+  inplace? : Bool = false,
 ) -> BitMap {
   match inplace {
     false => BitMap::new_by_size(n, optional=n != 0, value=true)
@@ -185,8 +185,8 @@ fn BitMap::reverse(self : BitMap) -> Unit {
 ///|
 fn BitMap::new_by_size(
   size : Int,
-  optional~ : Bool = true,
-  value~ : Bool = false
+  optional? : Bool = true,
+  value? : Bool = false,
 ) -> BitMap {
   BitMap::{
     optional,
@@ -223,7 +223,7 @@ test "BitMap::select_rows" {
 fn BitMap::merge(
   self : BitMap,
   other : BitMap,
-  inplace~ : Bool = false
+  inplace? : Bool = false,
 ) -> BitMap {
   match inplace {
     false =>

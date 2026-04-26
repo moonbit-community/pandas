@@ -16,7 +16,8 @@ let emptyDataFrame : DataFrame = DataFrame::{
   index: {},
 }
 
-///| Create a new DataFrame
+///|
+/// Create a new DataFrame
 ///
 /// ### Parameters
 ///
@@ -41,7 +42,7 @@ let emptyDataFrame : DataFrame = DataFrame::{
 /// ])
 /// ```
 pub fn DataFrame::new(
-  data : Array[Series]
+  data : Array[Series],
 ) -> DataFrame raise InconsistentSeriesLength {
   let index : Map[String, Int] = {}
   for i = 0; i < data.length(); i = i + 1 {
@@ -65,7 +66,8 @@ pub fn DataFrame::data(self : DataFrame) -> Array[Series] {
   self.data
 }
 
-///| Trait Show for DataFrame
+///|
+/// Trait Show for DataFrame
 pub impl Show for DataFrame with output(self, logger) {
   let mut row_str = "\t"
   for col in self.data {
@@ -92,7 +94,8 @@ pub impl Show for DataFrame with output(self, logger) {
   logger.write_string(row_str)
 }
 
-///| Display the first few rows of the DataFrame
+///|
+/// Display the first few rows of the DataFrame
 ///
 /// ### Parameters
 ///
@@ -108,7 +111,7 @@ pub impl Show for DataFrame with output(self, logger) {
 /// df.head()
 /// df.head(rows=3)
 /// ```
-pub fn DataFrame::head(self : DataFrame, rows~ : Int = 5) -> Unit {
+pub fn DataFrame::head(self : DataFrame, rows? : Int = 5) -> Unit {
   let mut row_str = "\t"
   for col in self.data {
     row_str = row_str + col.name() + "\t"
@@ -133,7 +136,8 @@ pub fn DataFrame::head(self : DataFrame, rows~ : Int = 5) -> Unit {
   println(row_str)
 }
 
-///| Add a new column to the DataFrame
+///|
+/// Add a new column to the DataFrame
 ///
 /// ### Parameters
 ///
@@ -154,7 +158,7 @@ pub fn DataFrame::head(self : DataFrame, rows~ : Int = 5) -> Unit {
 /// let new_column = Series::new("B", SeriesInput::Int32([1, 2, 3]))
 /// df.add_column(new_column)
 /// ```
-pub fn DataFrame::add_column(self : DataFrame, col : Series) -> Unit raise{
+pub fn DataFrame::add_column(self : DataFrame, col : Series) -> Unit raise {
   guard col.data.length() == self.shape[0] else {
     raise InconsistentSeriesLength(
       "Could not add a new column to the DataFrame. The Series lengths are not equal.",
@@ -170,7 +174,8 @@ pub fn DataFrame::add_column(self : DataFrame, col : Series) -> Unit raise{
   self.index[col.name] = self.shape[1] - 1
 }
 
-///| Drop a column from the DataFrame
+///|
+/// Drop a column from the DataFrame
 ///
 /// ### Parameters
 ///
@@ -187,7 +192,7 @@ pub fn DataFrame::add_column(self : DataFrame, col : Series) -> Unit raise{
 /// ```
 pub fn DataFrame::drop_column(
   self : DataFrame,
-  col_name : String
+  col_name : String,
 ) -> Unit raise ColumnNotFoundError {
   match self.index.get(col_name) {
     Some(idx) => {
@@ -200,7 +205,8 @@ pub fn DataFrame::drop_column(
   }
 }
 
-///| Rename a column in the DataFrame
+///|
+/// Rename a column in the DataFrame
 ///
 /// ### Parameters
 ///
@@ -227,7 +233,7 @@ pub fn DataFrame::drop_column(
 pub fn DataFrame::rename(
   self : DataFrame,
   old_name : String,
-  new_name : String
+  new_name : String,
 ) -> Unit raise ColumnNotFoundError {
   match self.index.get(old_name) {
     Some(idx) => self.data[idx].name = new_name
@@ -235,7 +241,8 @@ pub fn DataFrame::rename(
   }
 }
 
-///| Select a column from the DataFrame
+///|
+/// Select a column from the DataFrame
 ///
 /// ### Parameters
 ///
@@ -256,7 +263,7 @@ pub fn DataFrame::rename(
 /// ```
 pub fn DataFrame::column(
   self : DataFrame,
-  col_name : String
+  col_name : String,
 ) -> Series raise ColumnNotFoundError {
   match self.index.get(col_name) {
     Some(idx) => self.data[idx]
@@ -264,7 +271,8 @@ pub fn DataFrame::column(
   }
 }
 
-///| Select specific columns from the DataFrame
+///|
+/// Select specific columns from the DataFrame
 ///
 /// ### Parameters
 ///
@@ -285,7 +293,7 @@ pub fn DataFrame::column(
 /// ```
 pub fn DataFrame::select_columns(
   self : DataFrame,
-  cols : Array[String]
+  cols : Array[String],
 ) -> DataFrame raise ColumnNotFoundError {
   let selected_cols : Array[Series] = []
   let index : Map[String, Int] = {}
@@ -305,7 +313,8 @@ pub fn DataFrame::select_columns(
   }
 }
 
-///| Drop a row from the DataFrame
+///|
+/// Drop a row from the DataFrame
 ///
 /// ### Parameters
 ///
@@ -336,7 +345,8 @@ pub fn DataFrame::drop_row(self : DataFrame, row_index : Int) -> Unit raise {
   self.shape[0] -= 1
 }
 
-///| Add a new row to the DataFrame
+///|
+/// Add a new row to the DataFrame
 ///
 /// ### Parameters
 ///
@@ -360,7 +370,10 @@ pub fn DataFrame::drop_row(self : DataFrame, row_index : Int) -> Unit raise {
 /// ])
 /// df.add_row([SeriesValue::Int(4), SeriesValue::Float(4.4)])
 /// ```
-pub fn DataFrame::add_row(self : DataFrame, row : Array[SeriesValue]) -> Unit raise{
+pub fn DataFrame::add_row(
+  self : DataFrame,
+  row : Array[SeriesValue],
+) -> Unit raise {
   guard row.length() == self.shape[1] else {
     raise InconsistentSeriesLength(
       "Row length does not match DataFrame column length",
@@ -371,7 +384,6 @@ pub fn DataFrame::add_row(self : DataFrame, row : Array[SeriesValue]) -> Unit ra
       row[i].get_type() == self.data[i].data_type else {
       raise InvalidType("Type mismatch")
     }
-
   }
   for i in 0..<row.length() {
     match row[i] {
@@ -430,7 +442,8 @@ pub fn DataFrame::add_row(self : DataFrame, row : Array[SeriesValue]) -> Unit ra
   self.shape[0] += 1
 }
 
-///| Select specific rows from the DataFrame
+///|
+/// Select specific rows from the DataFrame
 ///
 /// ### Parameters
 ///
@@ -455,7 +468,7 @@ pub fn DataFrame::add_row(self : DataFrame, row : Array[SeriesValue]) -> Unit ra
 pub fn DataFrame::select_rows(
   self : DataFrame,
   range? : (Int, Int),
-  indices? : Array[Int]
+  indices? : Array[Int],
 ) -> DataFrame raise IndexOutOfBounds {
   match (range, indices) {
     (Some(_), _) => {
@@ -536,7 +549,7 @@ pub fn DataFrame::select_rows(
 }
 
 ///|
-pub fn op_get(self : DataFrame, index : Int) -> DataFrame {
+pub fn DataFrame::op_get(self : DataFrame, index : Int) -> DataFrame {
   let row = []
   for col in self.data {
     let mut series_data = emptySeriesData(col.data_type)
@@ -557,7 +570,8 @@ pub fn op_get(self : DataFrame, index : Int) -> DataFrame {
   DataFrame::{ data: row, shape: [1, self.shape()[1]], index: self.index }
 }
 
-///| Filter rows in the DataFrame based on a condition
+///|
+/// Filter rows in the DataFrame based on a condition
 ///
 /// ### Parameters
 ///
@@ -577,7 +591,7 @@ pub fn op_get(self : DataFrame, index : Int) -> DataFrame {
 pub fn DataFrame::filter(
   self : DataFrame,
   name : String,
-  f : (SeriesValue) -> Bool
+  f : (SeriesValue) -> Bool,
 ) -> DataFrame raise {
   match self.index.get(name) {
     Some(index) =>
@@ -623,7 +637,8 @@ pub fn DataFrame::filter(
   }
 }
 
-///| Sort the DataFrame by a specified column
+///|
+/// Sort the DataFrame by a specified column
 ///
 /// Parameters
 ///
@@ -652,8 +667,8 @@ pub fn DataFrame::filter(
 pub fn DataFrame::sort(
   self : DataFrame,
   by : String,
-  descending~ : Bool = false,
-  nulls_last~ : Bool = false
+  descending? : Bool = false,
+  nulls_last? : Bool = false,
 ) -> Unit raise ColumnNotFoundError {
   match self.index.get(by) {
     Some(index) => {
@@ -669,7 +684,8 @@ pub fn DataFrame::sort(
   }
 }
 
-///| Vertically stack two DataFrames
+///|
+/// Vertically stack two DataFrames
 ///
 /// Parameters
 ///
@@ -690,19 +706,18 @@ pub fn DataFrame::sort(
 /// ```
 /// let df_stacked = df1.vstack!(df2)
 /// ```
-pub fn vstack(
+pub fn DataFrame::vstack(
   self : DataFrame,
   other : DataFrame,
-  inplace~ : Bool = false
-) -> DataFrame raise{
+  inplace? : Bool = false,
+) -> DataFrame raise {
   guard self.shape[1] == other.shape[1] else {
     raise InconsistentSeriesLength("The number of columns must be the same.")
   }
   match inplace {
     true => {
       for serie in self.data {
-        Series::merge(serie, other.column(serie.name()), inplace=true)
-        |> ignore
+        Series::merge(serie, other.column(serie.name()), inplace=true) |> ignore
       }
       self
     }
@@ -718,7 +733,8 @@ pub fn vstack(
   }
 }
 
-///| Horizontally stack two DataFrames
+///|
+/// Horizontally stack two DataFrames
 ///
 /// Parameters
 ///
@@ -734,11 +750,11 @@ pub fn vstack(
 /// ```
 /// df1.hstack!(df2) |> ignore
 /// ```
-pub fn hstack(
+pub fn DataFrame::hstack(
   self : DataFrame,
   other : DataFrame,
-  inplace~ : Bool = false
-) -> DataFrame raise{
+  inplace? : Bool = false,
+) -> DataFrame raise {
   match inplace {
     false => {
       let data : Array[Series] = self.data.copy()
@@ -786,7 +802,7 @@ test "DataFrame::hstack" {
 /// df.clear()
 /// df.clear(n=1)
 /// ```
-pub fn DataFrame::clear(self : DataFrame, n~ : Int = 0) -> DataFrame {
+pub fn DataFrame::clear(self : DataFrame, n? : Int = 0) -> DataFrame {
   let data : Array[Series] = []
   for serie in self.data {
     data.push(serie.clear(n~))
@@ -848,7 +864,7 @@ pub(all) enum ColumnSelector {
 ///
 /// ### Example:
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let df = DataFrame::new!([
 ///   Series::new("A", SeriesData::Int([1, 2, 3])),
 ///   Series::new("B", SeriesData::Float([1.5, 2.0, 3.5])),
@@ -859,8 +875,8 @@ pub(all) enum ColumnSelector {
 pub fn DataFrame::item(
   self : DataFrame,
   row : Int,
-  column : ColumnSelector
-) -> SeriesValue raise{
+  column : ColumnSelector,
+) -> SeriesValue raise {
   let col = match column {
     ColumnSelector::Int(value) => value
     ColumnSelector::Str(value) =>
@@ -894,14 +910,15 @@ pub fn DataFrame::item(
 ///
 /// ### Example:
 ///
-/// ```moonbit
-/// let df = DataFrame::new!([
+/// ```moonbit nocheck
+/// let df = DataFrame::new([
 ///   Series::new("A", SeriesData::Int([1, 2, 3, 4, 5])),
 ///   Series::new("B", SeriesData::Float([1.1, 2.2, 3.3, 4.4, 5.5])),
 /// ])
-/// let limited = df.limit!(3)
+///
+/// let limited = df.limit(3)
 /// ```
-pub fn limit(self : DataFrame, n : Int) -> DataFrame raise{
+pub fn DataFrame::limit(self : DataFrame, n : Int) -> DataFrame raise {
   let data : Array[Series] = []
   let n = @cmp.minimum(n, self.shape()[0])
   for series in self.data {
@@ -935,14 +952,15 @@ pub fn limit(self : DataFrame, n : Int) -> DataFrame raise{
 ///
 /// ### Example:
 ///
-/// ```moonbit
-/// let df = DataFrame::new!([
+/// ```moonbit nocheck
+/// let df = DataFrame::new([
 ///   Series::new("A", SeriesData::Int([1, 2, 3, 4, 5])),
 ///   Series::new("B", SeriesData::Float([1.1, 2.2, 3.3, 4.4, 5.5])),
 /// ])
-/// let last_three = df.tail!(3)
+///
+/// let last_three = df.tail(3)
 /// ```
-pub fn tail(self : DataFrame, n : Int) -> DataFrame raise {
+pub fn DataFrame::tail(self : DataFrame, n : Int) -> DataFrame raise {
   let data : Array[Series] = []
   let n = @cmp.minimum(n, self.shape()[0])
   for series in self.data {
@@ -979,18 +997,19 @@ pub fn tail(self : DataFrame, n : Int) -> DataFrame raise {
 ///
 /// Example:
 ///
-/// ```moonbit
-///   let df = DataFrame::new!([
-///     Series::new("A", SeriesData::Int([1, 2, 3, 4, 5])),
-///     Series::new("B", SeriesData::Float([1.1, 2.2, 3.3, 4.4, 5.5])),
-///   ])
-///   let sliced = df.slice!(1, length=2)
+/// ```moonbit nocheck
+/// let df = DataFrame::new([
+///   Series::new("A", SeriesData::Int([1, 2, 3, 4, 5])),
+///   Series::new("B", SeriesData::Float([1.1, 2.2, 3.3, 4.4, 5.5])),
+/// ])
+///
+/// let sliced = df.slice(1, length=2)
 /// ```
 pub fn DataFrame::slice(
   self : DataFrame,
   offset : Int,
-  length? : Int
-) -> DataFrame raise{
+  length? : Int,
+) -> DataFrame raise {
   let len = match length {
     Some(l) => l
     None => self.shape()[0] - offset
@@ -1028,14 +1047,14 @@ pub fn DataFrame::slice(
 ///
 /// Example:
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let df = DataFrame::new!([
 ///   Series::new("A", SeriesData::Int([1, 2, 3])),
 ///   Series::new("B", SeriesData::Float([1.5, 2.0, 2.5])),
 /// ])
 /// df.to_series(0)
 /// ```
-pub fn to_series(self : DataFrame, index : Int) -> Series {
+pub fn DataFrame::to_series(self : DataFrame, index : Int) -> Series {
   self.data[index]
 }
 
@@ -1066,18 +1085,19 @@ pub fn to_series(self : DataFrame, index : Int) -> Series {
 ///
 /// Example:
 ///
-/// ```moonbit
-/// let df = DataFrame::new!([
+/// ```moonbit nocheck
+/// let df = DataFrame::new([
 ///   Series::new("A", SeriesData::Int([1, 1, 2, 2])),
 ///   Series::new("B", SeriesData::Int([1, 1, 2, 3])),
 /// ])
-/// let unique_df = df.unique!(["A"], keep="first")
+///
+/// let unique_df = df.unique(["A"], keep="first")
 /// ```
-pub fn unique(
+pub fn DataFrame::unique(
   self : DataFrame,
   subset : Array[String],
-  keep~ : String = "any"
-) -> DataFrame raise{
+  keep? : String = "any",
+) -> DataFrame raise {
   if not(["first", "last", "any", "none"].contains(keep)) {
     raise InvalidType(
       "Invalid keep parameter. Must be one of: first, last, any, none",
@@ -1119,7 +1139,8 @@ pub fn unique(
   }
 }
 
-///| Replace a column in the DataFrame at a specified index
+///|
+/// Replace a column in the DataFrame at a specified index
 ///
 /// ### Parameters
 ///
@@ -1144,7 +1165,7 @@ pub fn unique(
 pub fn DataFrame::replace_column(
   self : DataFrame,
   index : Int,
-  series : Series
+  series : Series,
 ) -> Unit raise {
   guard index >= 0 && index < self.shape[1] else {
     raise IndexOutOfBounds("Index out of bounds")
@@ -1155,14 +1176,15 @@ pub fn DataFrame::replace_column(
   self.data[index] = series
 }
 
-///| Reverse the order of rows in the DataFrame
+///|
+/// Reverse the order of rows in the DataFrame
 ///
 /// ### Parameters
 ///
 /// - `self` : An instance of the DataFrame
 ///
 /// ### Example
-/// ```moonbit
+/// ```moonbit nocheck
 /// df.reverse()
 /// ```
 pub fn DataFrame::reverse(self : DataFrame) -> Unit {
@@ -1171,7 +1193,8 @@ pub fn DataFrame::reverse(self : DataFrame) -> Unit {
   }
 }
 
-///| Get the index of a column by its name
+///|
+/// Get the index of a column by its name
 ///
 /// ### Parameters
 ///
@@ -1183,17 +1206,21 @@ pub fn DataFrame::reverse(self : DataFrame) -> Unit {
 /// - `ColumnNotFoundError` : Raised if the specified column is not found
 ///
 /// ### Example
-/// ```moonbit
+/// ```moonbit nocheck
 /// let index = df.get_column_index("A")
 /// ```
-pub fn DataFrame::get_column_index(self : DataFrame, name : String) -> Int raise {
+pub fn DataFrame::get_column_index(
+  self : DataFrame,
+  name : String,
+) -> Int raise {
   match self.index.get(name) {
     Some(index) => index
     None => raise ColumnNotFoundError("Column '\{name}' not found")
   }
 }
 
-///| Add a row index column to the DataFrame
+///|
+/// Add a row index column to the DataFrame
 ///
 /// ### Parameters
 ///
@@ -1210,7 +1237,7 @@ pub fn DataFrame::get_column_index(self : DataFrame, name : String) -> Int raise
 /// ```
 pub fn DataFrame::with_row_index(
   self : DataFrame,
-  offset~ : Int = 0
+  offset? : Int = 0,
 ) -> DataFrame {
   let new_data = self.data.copy()
   let idx = Series::new_by_SeriesData(
@@ -1229,7 +1256,8 @@ pub fn DataFrame::with_row_index(
   }
 }
 
-///| Transpose a DataFrame over the diagonal
+///|
+/// Transpose a DataFrame over the diagonal
 ///
 /// ### Parameters
 ///
@@ -1259,10 +1287,10 @@ pub fn DataFrame::with_row_index(
 /// ```
 pub fn DataFrame::transpose(
   self : DataFrame,
-  include_header~ : Bool = false,
-  header_name~ : String = "column",
-  column_names? : Array[String]
-) -> DataFrame raise{
+  include_header? : Bool = false,
+  header_name? : String = "column",
+  column_names? : Array[String],
+) -> DataFrame raise {
   for series in self.data {
     if series.get_type() != self.data[0].get_type() {
       raise InvalidType("All columns must have the same data type")
@@ -1357,7 +1385,8 @@ pub fn DataFrame::transpose(
   }
 }
 
-///| Aggregate the columns of this DataFrame to their minimum value
+///|
+/// Aggregate the columns of this DataFrame to their minimum value
 ///
 /// ### Parameters
 ///
@@ -1371,7 +1400,7 @@ pub fn DataFrame::transpose(
 /// ```
 /// let df_min = df.min()
 /// ```
-pub fn DataFrame::min(self : DataFrame) -> DataFrame raise{
+pub fn DataFrame::min(self : DataFrame) -> DataFrame raise {
   let data : Array[Series] = []
   for series in self.data {
     let min = series.min()
@@ -1416,7 +1445,8 @@ pub fn DataFrame::min(self : DataFrame) -> DataFrame raise{
   DataFrame::{ data, shape: [1, self.shape[1]], index: self.index }
 }
 
-///| Get the minimum value horizontally across columns.
+///|
+/// Get the minimum value horizontally across columns.
 ///
 /// ### Parameters
 ///
@@ -1455,7 +1485,8 @@ pub fn DataFrame::min_horizontal(self : DataFrame) -> Series raise {
   data
 }
 
-///| Aggregate the columns of this DataFrame to their maximum value
+///|
+/// Aggregate the columns of this DataFrame to their maximum value
 ///
 /// ### Parameters
 ///
@@ -1514,7 +1545,8 @@ pub fn DataFrame::max(self : DataFrame) -> DataFrame raise {
   DataFrame::{ data, shape: [1, self.shape[1]], index: self.index }
 }
 
-///| Get the maximum value horizontally across columns.
+///|
+/// Get the maximum value horizontally across columns.
 ///
 /// ### Parameters
 ///
@@ -1553,7 +1585,8 @@ pub fn DataFrame::max_horizontal(self : DataFrame) -> Series raise {
   data
 }
 
-///| Calculate the sum of each column in the DataFrame
+///|
+/// Calculate the sum of each column in the DataFrame
 ///
 /// ### Parameters
 ///
@@ -1590,7 +1623,8 @@ pub fn DataFrame::sum(self : DataFrame) -> DataFrame raise {
   DataFrame::{ data, shape: [1, self.shape[1]], index: self.index }
 }
 
-///| Sum all values horizontally across columns
+///|
+/// Sum all values horizontally across columns
 ///
 /// ### Parameters
 ///
@@ -1638,17 +1672,20 @@ pub fn DataFrame::count(self : DataFrame) -> (Int, Int) {
   (self.shape[0], self.shape[1])
 }
 
-///| Get the number of rows
+///|
+/// Get the number of rows
 pub fn DataFrame::height(self : DataFrame) -> Int {
   self.shape[0]
 }
 
-///| Get the number of columns
+///|
+/// Get the number of columns
 pub fn DataFrame::width(self : DataFrame) -> Int {
   self.shape[1]
 }
 
-///| Get an ordered mapping of column names to their data type
+///|
+/// Get an ordered mapping of column names to their data type
 /// 
 /// Example:
 /// ```
@@ -1662,7 +1699,8 @@ pub fn DataFrame::schema(self : DataFrame) -> Map[String, String] {
   schema
 }
 
-///| Aggregate the columns of this DataFrame to their product values
+///|
+/// Aggregate the columns of this DataFrame to their product values
 /// 
 /// Example:
 /// ```
@@ -1693,7 +1731,8 @@ pub fn DataFrame::product(self : DataFrame) -> DataFrame {
   DataFrame::{ data, shape: [1, self.shape[1]], index: self.index }
 }
 
-///| Get the column data types
+///|
+/// Get the column data types
 pub fn DataFrame::dtypes(self : DataFrame) -> Array[String] {
   self.data.map(fn(series) { series.get_type().to_string() })
 }
@@ -1708,7 +1747,8 @@ fn DataFrame::type_check_all(self : DataFrame, data_type : DataType) -> Bool {
   true
 }
 
-///| Check if each column in the DataFrame has null values
+///|
+/// Check if each column in the DataFrame has null values
 ///
 /// Parameters
 ///
@@ -1719,7 +1759,7 @@ fn DataFrame::type_check_all(self : DataFrame, data_type : DataType) -> Bool {
 /// - `DataFrame` : A new DataFrame with a single row indicating if each column has null values
 ///
 /// Example
-/// ```moonbit
+/// ```moonbit nocheck
 /// let df = DataFrame::new!([
 ///   Series::new("A", SeriesInput::Bool([true, true, true])),
 ///   Series::new("B", SeriesInput::Bool([true, false, true])),
@@ -1729,7 +1769,7 @@ fn DataFrame::type_check_all(self : DataFrame, data_type : DataType) -> Bool {
 /// ```
 pub fn DataFrame::all(
   self : DataFrame,
-  ignore_nulls~ : Bool = true
+  ignore_nulls? : Bool = true,
 ) -> DataFrame raise {
   guard self.type_check_all(DataType::Bool) else {
     raise InvalidType("All columns must be of type Bool")
@@ -1768,7 +1808,8 @@ pub fn DataFrame::all(
   }
 }
 
-///| Check if any element in each column of the DataFrame is true
+///|
+/// Check if any element in each column of the DataFrame is true
 ///
 /// Parameters
 ///
@@ -1784,7 +1825,7 @@ pub fn DataFrame::all(
 /// - `InvalidType` : Raised if any column is not of type Bool
 ///
 /// Example
-/// ```moonbit
+/// ```moonbit nocheck
 /// let df = DataFrame::new!([
 ///   Series::new("A", SeriesInput::Bool([true, true, true])),
 ///   Series::new("B", SeriesInput::Bool([true, false, true])),
@@ -1794,8 +1835,8 @@ pub fn DataFrame::all(
 /// ```
 pub fn DataFrame::any(
   self : DataFrame,
-  ignore_nulls~ : Bool = true
-) -> DataFrame raise{
+  ignore_nulls? : Bool = true,
+) -> DataFrame raise {
   guard self.type_check_all(DataType::Bool) else {
     raise InvalidType("All columns must be of type Bool")
   }
@@ -1833,7 +1874,8 @@ pub fn DataFrame::any(
   }
 }
 
-///| Check if each column in the DataFrame has null values
+///|
+/// Check if each column in the DataFrame has null values
 ///
 /// Parameters
 ///
@@ -1844,7 +1886,7 @@ pub fn DataFrame::any(
 /// - `DataFrame` : A new DataFrame with a single row indicating if each column has null values
 ///
 /// Example
-/// ```moonbit
+/// ```moonbit nocheck
 /// let df = DataFrame::new!([
 ///   Series::new("A", SeriesInput::Int32([1, 2, 3])),
 /// ])
@@ -1866,7 +1908,8 @@ pub fn DataFrame::has_nulls(self : DataFrame) -> DataFrame {
   DataFrame::{ data, shape: [1, self.shape[1]], index: self.index }
 }
 
-///| Create a new DataFrame that shows the null counts per column.
+///|
+/// Create a new DataFrame that shows the null counts per column.
 pub fn DataFrame::null_count(self : DataFrame) -> DataFrame {
   let data = []
   for serie in self.data {
@@ -1880,12 +1923,14 @@ pub fn DataFrame::null_count(self : DataFrame) -> DataFrame {
   DataFrame::{ data, shape: [1, self.shape[1]], index: self.index }
 }
 
-///| Returns True if the DataFrame contains no rows.
+///|
+/// Returns True if the DataFrame contains no rows.
 pub fn DataFrame::is_empty(self : DataFrame) -> Bool {
   self.shape[0] == 0
 }
 
-///| Fill null values using the specified value or strategy
+///|
+/// Fill null values using the specified value or strategy
 ///
 /// Parameters
 ///
@@ -1923,8 +1968,8 @@ pub fn DataFrame::fill_null(
   self : DataFrame,
   value? : SeriesValue,
   strategy? : String,
-  limit? : Int
-) -> DataFrame raise{
+  limit? : Int,
+) -> DataFrame raise {
   let series = []
   for serie in self.data {
     series.push(serie.fill_null(value~, strategy~, limit~))
@@ -1932,7 +1977,8 @@ pub fn DataFrame::fill_null(
   DataFrame::{ data: series, shape: self.shape, index: self.index }
 }
 
-///| Cast DataFrame column(s) to the specified dtype(s).
+///|
+/// Cast DataFrame column(s) to the specified dtype(s).
 ///
 /// Parameters
 ///
@@ -1961,8 +2007,8 @@ pub fn DataFrame::cast(
   self : DataFrame,
   data_type? : DataType,
   cast_mapping? : Map[String, DataType],
-  strict~ : Bool = true
-) -> DataFrame raise{
+  strict? : Bool = true,
+) -> DataFrame raise {
   match (data_type, cast_mapping) {
     (Some(data_type), _) => {
       let series = []
@@ -1984,7 +2030,8 @@ pub fn DataFrame::cast(
   }
 }
 
-///| Convert the DataFrame to a dictionary where the keys are column names and the values are Series
+///|
+/// Convert the DataFrame to a dictionary where the keys are column names and the values are Series
 ///
 /// Returns
 ///
@@ -2002,7 +2049,8 @@ pub fn DataFrame::to_dict(self : DataFrame) -> Map[String, Series] {
   dict
 }
 
-///| Convert DataFrame to instantiable string representation
+///|
+/// Convert DataFrame to instantiable string representation
 ///
 /// Returns
 ///
@@ -2037,12 +2085,13 @@ test "DataFrame::to_init_repr" {
   )
 }
 
-///| judge if the row/col in df has null value
+///|
+/// judge if the row/col in df has null value
 fn DataFrame::has_nulls_rc(
   self : DataFrame,
   col? : Int,
   row? : Int,
-  subset? : Array[String]
+  subset? : Array[String],
 ) -> Bool {
   match (col, row) {
     (None, None) => false
@@ -2070,7 +2119,8 @@ fn DataFrame::has_nulls_rc(
   }
 }
 
-///| Drop all rows that contain null values
+///|
+/// Drop all rows that contain null values
 ///
 /// Parameters
 ///
@@ -2097,8 +2147,8 @@ fn DataFrame::has_nulls_rc(
 /// ```
 pub fn DataFrame::drop_nulls(
   self : DataFrame,
-  subset? : Array[String]
-) -> DataFrame raise{
+  subset? : Array[String],
+) -> DataFrame raise {
   let rows = []
   match subset {
     None =>
@@ -2132,7 +2182,8 @@ test "DataFrame::drop_nulls" {
   inspect(df_dropped.data[1].data, content="Int([3])")
 }
 
-///| Take every nth row in the DataFrame and return as a new DataFrame
+///|
+/// Take every nth row in the DataFrame and return as a new DataFrame
 ///
 /// Parameters
 ///
@@ -2157,7 +2208,7 @@ test "DataFrame::drop_nulls" {
 pub fn DataFrame::gather_every(
   self : DataFrame,
   n : Int,
-  offset~ : Int = 0
+  offset? : Int = 0,
 ) -> DataFrame {
   let rows = []
   for i = offset; i < self.shape[0]; i = i + n {
@@ -2177,7 +2228,8 @@ test "DataFrame::gather_every" {
   inspect(df_gathered.data[1].data, content="Int([1, 3, 5, 7, 9])")
 }
 
-///| Drop a single column in-place and return the dropped column
+///|
+/// Drop a single column in-place and return the dropped column
 ///
 /// Parameters
 ///
@@ -2202,7 +2254,10 @@ test "DataFrame::gather_every" {
 /// inspect(serie.data, content="Int([1, 2, 3])")
 /// inspect(df.shape, content="[3, 1]")
 /// ```
-pub fn DataFrame::drop_in_place(self : DataFrame, name : String) -> Series raise {
+pub fn DataFrame::drop_in_place(
+  self : DataFrame,
+  name : String,
+) -> Series raise {
   guard self.index.contains(name) else {
     raise ColumnNotFoundError("Column \{name} not found")
   }

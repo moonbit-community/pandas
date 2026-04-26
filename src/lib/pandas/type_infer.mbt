@@ -47,7 +47,7 @@ fn type_infer_from_array(data : Array[String]) -> DataType? {
 fn type_convert(
   data : String,
   type_? : DataType,
-  null~ : Bool = false
+  null? : Bool = false,
 ) -> SeriesValue {
   let mut null = null
   let type_ = match type_ {
@@ -114,7 +114,7 @@ test "type_convert" {
 ///|
 fn type_convert_from_array(
   data : Array[String],
-  type_? : DataType
+  type_? : DataType,
 ) -> Array[SeriesValue] {
   let res = Array::make(data.length(), SeriesValue::Null)
   match type_ {

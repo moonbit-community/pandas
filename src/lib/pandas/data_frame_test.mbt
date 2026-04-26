@@ -1,4 +1,5 @@
-///| Tests
+///|
+/// Tests
 test "new" {
   let df = DataFrame::new([
     Series::new("A", SeriesInput::Int32([1, 2, 3, 4, 5, 6])),
@@ -345,10 +346,7 @@ test "dtypes" {
     Series::new("C", SeriesInput::Bool([true, false, true])),
     Series::new("D", SeriesInput::Str(["a", "b", "c"])),
   ])
-  inspect(
-    df.dtypes(),
-    content="[\"int32\", \"float32\", \"bool\", \"string\"]",
-  )
+  inspect(df.dtypes(), content="[\"int32\", \"float32\", \"bool\", \"string\"]")
 }
 
 ///|
