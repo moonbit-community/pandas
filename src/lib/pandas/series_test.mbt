@@ -1,4 +1,5 @@
-///| Tests
+///|
+/// Tests
 test "series" {
   let series = Series::new("test", SeriesInput::Int32([1, 2, 3, 4, 5]))
   assert_eq(series.name(), "test")

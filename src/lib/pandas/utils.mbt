@@ -1,4 +1,5 @@
-///| sort the data by the indices
+///|
+/// sort the data by the indices
 fn[T] indices_sort(data : Array[T], indices : Array[Int]) -> Unit {
   let n = data.length()
   let visited = Array::make(n, false)

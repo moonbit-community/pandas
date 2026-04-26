@@ -1,0 +1,7 @@
+import {
+  "smallbearrr/pandas/lib/pandas",
+}
+
+options(
+  "is-main": true,
+)

@@ -1,0 +1,9 @@
+import {
+  "moonbitlang/x/fs",
+  "xunyoyo/NyaCSV",
+}
+
+options(
+  dependencies: { "moonbitlang/x": "0.4.23", "xunyoyo/NyaCSV": "0.3.0" },
+  "is-main": false,
+)

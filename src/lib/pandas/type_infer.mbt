@@ -47,7 +47,7 @@ fn type_infer_from_array(data : Array[String]) -> DataType? {
 fn type_convert(
   data : String,
   type_? : DataType,
-  null~ : Bool = false
+  null? : Bool = false,
 ) -> SeriesValue {
   let mut null = null
   let type_ = match type_ {
@@ -68,7 +68,7 @@ fn type_convert(
         DataType::Int32 => {
           let mut num : Int = 0
           for i in 0..<data.length() {
-            num = num * 10 + (data[i] - '0'.to_int())
+            num = num * 10 + (data.code_unit_at(i).to_int() - '0'.to_int())
           }
           SeriesValue::Int(num)
         }
@@ -76,10 +76,11 @@ fn type_convert(
           let mut dicimal = 0
           let mut num : Int64 = 0
           for i in 0..<data.length() {
-            if data[i] == '.' {
+            if data.code_unit_at(i).unsafe_to_char() == '.' {
               dicimal = data.length() - i - 1
             } else {
-              num = num * 10 + (data[i] - '0'.to_int()).to_int64()
+              let digit = data.code_unit_at(i).to_int() - '0'.to_int()
+              num = num * 10 + digit.to_int64()
             }
           }
           let flt = num.to_float() / quick_pow(10, dicimal).to_float()
@@ -114,7 +115,7 @@ test "type_convert" {
 ///|
 fn type_convert_from_array(
   data : Array[String],
-  type_? : DataType
+  type_? : DataType,
 ) -> Array[SeriesValue] {
   let res = Array::make(data.length(), SeriesValue::Null)
   match type_ {

@@ -1,4 +1,5 @@
-///| Read a CSV file and convert it into a DataFrame
+///|
+/// Read a CSV file and convert it into a DataFrame
 ///
 /// Parameters
 ///
@@ -14,8 +15,8 @@
 /// - `PathNotFound` : Specified file path does not exist
 ///
 /// Example
-/// ```moonbit
-/// let df = DataFrame::read_csv!("./data.csv")
+/// ```moonbit nocheck
+/// let df = DataFrame::read_csv("./data.csv")
 /// ```
 pub fn DataFrame::read_csv(path : String) -> DataFrame raise {
   guard path.length() >= 4 && path.substring(start=path.length() - 4) == ".csv" else {
@@ -62,7 +63,8 @@ test "DataFrame::read_csv" {
   )
 }
 
-///| Convert a NyaCSV.CSV object into a DataFrame
+///|
+/// Convert a NyaCSV.CSV object into a DataFrame
 ///
 /// Parameters
 ///
@@ -118,7 +120,8 @@ test "DataFrame::from_NyaCSV" {
   inspect(df.data()[0].name(), content="A")
 }
 
-///| Convert the DataFrame to a `NyaCSV.CSV` object
+///|
+/// Convert the DataFrame to a `NyaCSV.CSV` object
 ///
 /// Parameters
 ///
@@ -135,7 +138,7 @@ test "DataFrame::from_NyaCSV" {
 /// ```
 pub fn DataFrame::to_NyaCSV(
   self : DataFrame,
-  has_header~ : Bool = true
+  has_header? : Bool = true,
 ) -> @NyaCSV.CSV {
   let data = Array::makei(self.shape[0], fn(j) {
     Array::makei(self.shape[1], fn(i) { self.data[i][j].to_string_csv() })
@@ -164,7 +167,8 @@ test "DataFrame::to_NyaCSV" {
   )
 }
 
-///| Write the DataFrame to a CSV file
+///|
+/// Write the DataFrame to a CSV file
 ///
 /// Parameters
 ///
@@ -187,7 +191,7 @@ test "DataFrame::to_NyaCSV" {
 pub fn DataFrame::write_csv(
   self : DataFrame,
   path : String,
-  has_header~ : Bool = true
+  has_header? : Bool = true,
 ) -> Unit raise {
   guard @fs.path_exists(path) else {
     raise PathNotFound("Path \{path} not found")

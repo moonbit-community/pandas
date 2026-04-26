@@ -1,4 +1,5 @@
-///| Tests
+///|
+/// Tests
 test "new" {
   let df = DataFrame::new([
     Series::new("A", SeriesInput::Int32([1, 2, 3, 4, 5, 6])),
@@ -156,9 +157,9 @@ test "vstack" {
 ///|
 test "item" {
   let df = DataFrame::new([Series::new("A", SeriesInput::Int32([1, 2, 3]))])
-  inspect(df.item(1, ColumnSelector::Str("A")), content="Ok(Int(2))")
+  inspect(try? df.item(1, ColumnSelector::Str("A")), content="Ok(Int(2))")
   inspect(
-    df.item(0, ColumnSelector::Int(2)),
+    try? df.item(0, ColumnSelector::Int(2)),
     content="Err(IndexOutOfBounds(\"Row index out of bounds\"))",
   )
 }
@@ -345,10 +346,7 @@ test "dtypes" {
     Series::new("C", SeriesInput::Bool([true, false, true])),
     Series::new("D", SeriesInput::Str(["a", "b", "c"])),
   ])
-  inspect(
-    df.dtypes(),
-    content="[\"int32\", \"float32\", \"bool\", \"string\"]",
-  )
+  inspect(df.dtypes(), content="[\"int32\", \"float32\", \"bool\", \"string\"]")
 }
 
 ///|

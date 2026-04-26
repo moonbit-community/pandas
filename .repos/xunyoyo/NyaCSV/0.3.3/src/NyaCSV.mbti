@@ -1,0 +1,34 @@
+package "xunyoyo/NyaCSV"
+
+import(
+  "moonbitlang/core/buffer"
+)
+
+// Values
+
+// Types and methods
+type CSV
+impl CSV {
+  data(Self) -> Array[Array[String]]
+  from_array(Array[Array[String]], has_header~ : Bool = .., generate_headers~ : Bool = ..) -> Self
+  header(Self) -> Array[String]
+  new() -> Self
+  parse_buffer(@buffer.T, options~ : CSVOptions = ..) -> Self
+  parse_bytes(Bytes, options~ : CSVOptions = ..) -> Self
+  parse_string(String, options~ : CSVOptions = ..) -> Self
+  shape(Self) -> (Int, Int)
+}
+impl Show for CSV
+
+pub(all) struct CSVOptions {
+  delimiter : Char
+  allow_newlines_in_quotes : Bool
+  quote_char : Char
+  skip_empty_lines : Bool
+  trim_spaces : Bool
+}
+
+// Type aliases
+
+// Traits
+
