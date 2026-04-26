@@ -157,9 +157,9 @@ test "vstack" {
 ///|
 test "item" {
   let df = DataFrame::new([Series::new("A", SeriesInput::Int32([1, 2, 3]))])
-  inspect(df.item(1, ColumnSelector::Str("A")), content="Ok(Int(2))")
+  inspect(try? df.item(1, ColumnSelector::Str("A")), content="Ok(Int(2))")
   inspect(
-    df.item(0, ColumnSelector::Int(2)),
+    try? df.item(0, ColumnSelector::Int(2)),
     content="Err(IndexOutOfBounds(\"Row index out of bounds\"))",
   )
 }

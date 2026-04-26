@@ -533,7 +533,7 @@ fn SeriesData::get_type(self : SeriesData) -> DataType {
 
 ///|
 /// SeriesData add
-impl Add for SeriesData with op_add(self : SeriesData, other : SeriesData) -> SeriesData {
+impl Add for SeriesData with add(self : SeriesData, other : SeriesData) -> SeriesData {
   match (self, other) {
     (SeriesData::Int(a), SeriesData::Int(b)) => {
       let res = a.copy()
@@ -589,7 +589,7 @@ fn SeriesData::create_by_size(n : Int, dtype : DataType) -> SeriesData {
 
 ///|
 /// Series add
-pub impl Add for Series with op_add(self : Series, other : Series) -> Series {
+pub impl Add for Series with add(self : Series, other : Series) -> Series {
   Series::{
     name: self.name(),
     data: self.data() + other.data(),
@@ -601,7 +601,7 @@ pub impl Add for Series with op_add(self : Series, other : Series) -> Series {
 
 ///|
 /// SeriesData sub
-impl Sub for SeriesData with op_sub(self : SeriesData, other : SeriesData) -> SeriesData {
+impl Sub for SeriesData with sub(self : SeriesData, other : SeriesData) -> SeriesData {
   match (self, other) {
     (SeriesData::Int(a), SeriesData::Int(b)) => {
       let res = a.copy()
@@ -638,7 +638,7 @@ pub fn Series::op_get(self : Series, index : Int) -> SeriesValue {
 
 ///|
 /// Series sub
-pub impl Sub for Series with op_sub(self : Series, other : Series) -> Series {
+pub impl Sub for Series with sub(self : Series, other : Series) -> Series {
   Series::{
     name: self.name(),
     data: self.data() - other.data(),
@@ -650,7 +650,7 @@ pub impl Sub for Series with op_sub(self : Series, other : Series) -> Series {
 
 ///|
 /// SeriesData mul
-impl Mul for SeriesData with op_mul(self : SeriesData, other : SeriesData) -> SeriesData {
+impl Mul for SeriesData with mul(self : SeriesData, other : SeriesData) -> SeriesData {
   match (self, other) {
     (SeriesData::Int(a), SeriesData::Int(b)) => {
       let res = a.copy()
@@ -674,7 +674,7 @@ impl Mul for SeriesData with op_mul(self : SeriesData, other : SeriesData) -> Se
 
 ///|
 /// Series mul
-pub impl Mul for Series with op_mul(self : Series, other : Series) -> Series {
+pub impl Mul for Series with mul(self : Series, other : Series) -> Series {
   Series::{
     name: self.name(),
     data: self.data() * other.data(),
@@ -686,7 +686,7 @@ pub impl Mul for Series with op_mul(self : Series, other : Series) -> Series {
 
 ///|
 /// SeriesData div
-impl Div for SeriesData with op_div(self : SeriesData, other : SeriesData) -> SeriesData {
+impl Div for SeriesData with div(self : SeriesData, other : SeriesData) -> SeriesData {
   match (self, other) {
     (SeriesData::Int(a), SeriesData::Int(b)) => {
       let res = a.copy()
@@ -710,7 +710,7 @@ impl Div for SeriesData with op_div(self : SeriesData, other : SeriesData) -> Se
 
 ///|
 /// Series div
-pub impl Div for Series with op_div(self : Series, other : Series) -> Series {
+pub impl Div for Series with div(self : Series, other : Series) -> Series {
   Series::{
     name: self.name(),
     data: self.data() / other.data(),
