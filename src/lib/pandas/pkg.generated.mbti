@@ -1,0 +1,178 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "smallbearrr/pandas/lib/pandas"
+
+import {
+  "xunyoyo/NyaCSV",
+}
+
+// Values
+
+// Errors
+type ColumnNotFoundError derive(Show)
+
+type InconsistentSeriesLength derive(Show)
+
+type IndexOutOfBounds derive(Show)
+
+type InvalidType derive(Show)
+
+// Types and methods
+pub(all) enum ColumnSelector {
+  Int(Int)
+  Str(String)
+}
+
+pub(all) struct DataFrame {
+  mut data : Array[Series]
+  mut shape : Array[Int]
+  index : Map[String, Int]
+} derive(Eq)
+pub fn DataFrame::add_column(Self, Series) -> Unit raise
+pub fn DataFrame::add_row(Self, Array[SeriesValue]) -> Unit raise
+pub fn DataFrame::all(Self, ignore_nulls? : Bool) -> Self raise
+pub fn DataFrame::any(Self, ignore_nulls? : Bool) -> Self raise
+pub fn DataFrame::cast(Self, data_type? : DataType, cast_mapping? : Map[String, DataType], strict? : Bool) -> Self raise
+pub fn DataFrame::clear(Self, n? : Int) -> Self
+pub fn DataFrame::clone(Self) -> Self
+pub fn DataFrame::column(Self, String) -> Series raise ColumnNotFoundError
+pub fn DataFrame::count(Self) -> (Int, Int)
+pub fn DataFrame::data(Self) -> Array[Series]
+pub fn DataFrame::drop_column(Self, String) -> Unit raise ColumnNotFoundError
+pub fn DataFrame::drop_in_place(Self, String) -> Series raise
+pub fn DataFrame::drop_nulls(Self, subset? : Array[String]) -> Self raise
+pub fn DataFrame::drop_row(Self, Int) -> Unit raise
+pub fn DataFrame::dtypes(Self) -> Array[String]
+pub fn DataFrame::fill_null(Self, value? : SeriesValue, strategy? : String, limit? : Int) -> Self raise
+pub fn DataFrame::filter(Self, String, (SeriesValue) -> Bool) -> Self raise
+pub fn DataFrame::from_NyaCSV(@NyaCSV.CSV) -> Self
+pub fn DataFrame::gather_every(Self, Int, offset? : Int) -> Self
+pub fn DataFrame::get_column_index(Self, String) -> Int raise
+pub fn DataFrame::has_nulls(Self) -> Self
+pub fn DataFrame::head(Self, rows? : Int) -> Unit
+pub fn DataFrame::height(Self) -> Int
+pub fn DataFrame::hstack(Self, Self, inplace? : Bool) -> Self raise
+pub fn DataFrame::is_empty(Self) -> Bool
+pub fn DataFrame::item(Self, Int, ColumnSelector) -> SeriesValue raise
+pub fn DataFrame::limit(Self, Int) -> Self raise
+pub fn DataFrame::max(Self) -> Self raise
+pub fn DataFrame::max_horizontal(Self) -> Series raise
+pub fn DataFrame::min(Self) -> Self raise
+pub fn DataFrame::min_horizontal(Self) -> Series raise
+pub fn DataFrame::new(Array[Series]) -> Self raise InconsistentSeriesLength
+pub fn DataFrame::null_count(Self) -> Self
+pub fn DataFrame::op_get(Self, Int) -> Self
+pub fn DataFrame::product(Self) -> Self
+pub fn DataFrame::read_csv(String) -> Self raise
+pub fn DataFrame::rename(Self, String, String) -> Unit raise ColumnNotFoundError
+pub fn DataFrame::replace_column(Self, Int, Series) -> Unit raise
+pub fn DataFrame::reverse(Self) -> Unit
+pub fn DataFrame::schema(Self) -> Map[String, String]
+pub fn DataFrame::select_columns(Self, Array[String]) -> Self raise ColumnNotFoundError
+pub fn DataFrame::select_rows(Self, range? : (Int, Int), indices? : Array[Int]) -> Self raise IndexOutOfBounds
+pub fn DataFrame::shape(Self) -> Array[Int]
+pub fn DataFrame::slice(Self, Int, length? : Int) -> Self raise
+pub fn DataFrame::sort(Self, String, descending? : Bool, nulls_last? : Bool) -> Unit raise ColumnNotFoundError
+pub fn DataFrame::sum(Self) -> Self raise
+pub fn DataFrame::sum_horizontal(Self) -> Series raise
+pub fn DataFrame::tail(Self, Int) -> Self raise
+pub fn DataFrame::to_NyaCSV(Self, has_header? : Bool) -> @NyaCSV.CSV
+pub fn DataFrame::to_dict(Self) -> Map[String, Series]
+pub fn DataFrame::to_init_repr(Self) -> String
+pub fn DataFrame::to_series(Self, Int) -> Series
+pub fn DataFrame::transpose(Self, include_header? : Bool, header_name? : String, column_names? : Array[String]) -> Self raise
+pub fn DataFrame::unique(Self, Array[String], keep? : String) -> Self raise
+pub fn DataFrame::vstack(Self, Self, inplace? : Bool) -> Self raise
+pub fn DataFrame::width(Self) -> Int
+pub fn DataFrame::with_row_index(Self, offset? : Int) -> Self
+pub fn DataFrame::write_csv(Self, String, has_header? : Bool) -> Unit raise
+pub impl Hash for DataFrame
+pub impl Show for DataFrame
+
+pub(all) enum DataType {
+  Int32
+  Float32
+  String
+  Bool
+} derive(Eq, Hash, Show)
+
+type Series derive(Eq, Show)
+pub fn Series::abs(Self) -> Self raise InvalidType
+pub fn Series::acos(Self) -> Self raise InvalidType
+pub fn Series::all(Self) -> Bool raise InvalidType
+pub fn Series::any(Self) -> Bool raise InvalidType
+pub fn Series::append(Self, Self) -> Self raise InvalidType
+pub fn Series::argsort(Self, descending? : Bool) -> Array[Int]
+pub fn Series::clear(Self, n? : Int) -> Self
+pub fn Series::concat(Array[Self]) -> Self raise
+pub fn Series::copy(Self) -> Self
+pub fn Series::cos(Self) -> Self raise InvalidType
+pub fn Series::count(Self) -> Int
+pub fn Series::data(Self) -> SeriesData
+pub fn Series::erase(Self, Int) -> Unit raise
+pub fn Series::extend(Self, Self) -> Unit raise InvalidType
+pub fn Series::get_argsort_indices(Self, descending? : Bool, nulls_last? : Bool) -> Array[Int]
+pub fn Series::get_type(Self) -> DataType
+pub fn Series::has_null(Self) -> Bool
+pub fn Series::is_empty(Self) -> Bool
+pub fn Series::is_not_null(Self) -> Self
+pub fn Series::is_null(Self) -> Self
+pub fn Series::is_sorted(Self, descending? : Bool, nulls_last? : Bool) -> Bool
+pub fn Series::length(Self) -> Int
+pub fn Series::log(Self, base? : Float) -> Self raise InvalidType
+pub fn Series::log10(Self) -> Self raise InvalidType
+pub fn Series::lower_bound(Self) -> Self
+pub fn Series::max(Self) -> SeriesValue raise
+pub fn Series::mean(Self) -> Float raise
+pub fn Series::merge(Self, Self, inplace? : Bool) -> Self raise InvalidType
+pub fn Series::min(Self) -> SeriesValue raise
+pub fn Series::move_nulls_back(Self, inplace? : Bool) -> Self?
+pub fn Series::move_nulls_front(Self, inplace? : Bool) -> Self?
+pub fn Series::n_unique(Self) -> Int
+pub fn Series::name(Self) -> String
+pub fn Series::new(String, SeriesInput) -> Self
+pub fn Series::not_(Self) -> Self
+pub fn Series::null_count(Self) -> Int
+pub fn Series::op_get(Self, Int) -> SeriesValue
+pub fn Series::reverse(Self) -> Unit
+pub fn Series::sin(Self) -> Self raise InvalidType
+pub fn Series::slice(Self, Int, Int) -> Self
+pub fn Series::sort(Self) -> Unit
+pub fn Series::sum(Self) -> SeriesValue raise InvalidType
+pub fn Series::swap(Self, Int, Int) -> Unit raise IndexOutOfBounds
+pub fn Series::tan(Self) -> Self raise InvalidType
+pub fn Series::unique_counts(Self) -> Self
+pub fn Series::upper_bound(Self) -> Self
+pub fn Series::variance(Self, ddof? : Int) -> Float raise
+pub impl Add for Series
+pub impl Div for Series
+pub impl Hash for Series
+pub impl Mul for Series
+pub impl Sub for Series
+
+type SeriesData derive(Eq, Show)
+pub fn SeriesData::clear(Self) -> Unit
+pub fn SeriesData::get_argsort_indices(Self, descending? : Bool) -> Array[Int]
+
+pub(all) enum SeriesInput {
+  Int32(Array[Int])
+  Float32(Array[Float])
+  Bool(Array[Bool])
+  Str(Array[String])
+  Int32_Nullable(Array[Int?])
+  Float32_Nullable(Array[Float?])
+  Bool_Nullable(Array[Bool?])
+  Str_Nullable(Array[String?])
+}
+
+pub(all) enum SeriesValue {
+  Int(Int)
+  Float(Float)
+  Bool(Bool)
+  Str(String)
+  Null
+} derive(Compare, Eq, Hash, Show)
+
+// Type aliases
+
+// Traits
+
