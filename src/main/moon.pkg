@@ -1,0 +1,5 @@
+import {
+  "smallbearrr/pandas/lib/pandas",
+}
+
+pkgtype(kind: "executable")

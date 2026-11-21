@@ -1,4 +1,5 @@
-///| Tests
+///|
+/// Tests
 test "new" {
   let df = DataFrame::new([
     Series::new("A", SeriesInput::Int32([1, 2, 3, 4, 5, 6])),
@@ -53,10 +54,10 @@ test "sort" {
     Series::new("D", SeriesInput::Str(["b", "a", "c", "e", "d"])),
   ])
   df.sort("A")
-  inspect(df.data()[0].data(), content="Int([1, 2, 3, 4, 5])")
+  @debug.debug_inspect(df.data()[0].data(), content="Int([1, 2, 3, 4, 5])")
   df.sort("A", descending=true)
-  inspect(df.data()[0].data(), content="Int([5, 4, 3, 2, 1])")
-  inspect(
+  @debug.debug_inspect(df.data()[0].data(), content="Int([5, 4, 3, 2, 1])")
+  @debug.debug_inspect(
     df.data()[3].data(),
     content="Str([\"e\", \"d\", \"c\", \"b\", \"a\"])",
   )
@@ -66,8 +67,8 @@ test "sort" {
 test "new_error" {
   let col1 = Series::new("A", SeriesInput::Int32([1, 2, 3, 4, 5, 6]))
   let col2 = Series::new("B", SeriesInput::Float32([1.5, 2.0, 3.5]))
-  let res = try? DataFrame::new([col1, col2])
-  inspect(
+  let res = Ok(DataFrame::new([col1, col2]) |> ignore) catch { e => Err(e) }
+  @debug.debug_inspect(
     res,
     content="Err(InconsistentSeriesLength(\"Could not create a new DataFrame. The Series lengths are not equal.\"))",
   )
@@ -80,13 +81,15 @@ test "add_column_error" {
     Series::new("B", SeriesInput::Float32([1.5, 2.0, 3.5, 4.0, 5.5, 6.0])),
   ])
   let col = Series::new("B", SeriesInput::Int32([1, 2, 3, 4, 5, 6]))
-  let res = try? df.add_column(col)
-  inspect(
+  let res = Ok(df.add_column(col)) catch { e => Err(e) }
+  @debug.debug_inspect(
     res,
     content="Err(DuplicateColumnError(\"Could not add a new column to the DataFrame. The Series name already exists.\"))",
   )
-  let res = try? df.add_column(Series::new("C", SeriesInput::Int32([1, 2, 3])))
-  inspect(
+  let res = Ok(df.add_column(Series::new("C", SeriesInput::Int32([1, 2, 3])))) catch {
+    e => Err(e)
+  }
+  @debug.debug_inspect(
     res,
     content="Err(InconsistentSeriesLength(\"Could not add a new column to the DataFrame. The Series lengths are not equal.\"))",
   )
@@ -98,8 +101,11 @@ test "drop_column_error" {
     Series::new("A", SeriesInput::Int32([1, 2, 3, 4, 5, 6])),
     Series::new("B", SeriesInput::Float32([1.5, 2.0, 3.5, 4.0, 5.5, 6.0])),
   ])
-  let res = try? df.drop_column("C")
-  inspect(res, content="Err(ColumnNotFoundError(\"Column 'C' not found\"))")
+  let res = Ok(df.drop_column("C")) catch { e => Err(e) }
+  @debug.debug_inspect(
+    res,
+    content="Err(ColumnNotFoundError(\"Column 'C' not found\"))",
+  )
 }
 
 ///|
@@ -108,8 +114,11 @@ test "rename_column_error" {
     Series::new("A", SeriesInput::Int32([1, 2, 3, 4, 5, 6])),
     Series::new("B", SeriesInput::Float32([1.5, 2.0, 3.5, 4.0, 5.5, 6.0])),
   ])
-  let res = try? df.rename("C", "D")
-  inspect(res, content="Err(ColumnNotFoundError(\"Column 'C' not found\"))")
+  let res = Ok(df.rename("C", "D")) catch { e => Err(e) }
+  @debug.debug_inspect(
+    res,
+    content="Err(ColumnNotFoundError(\"Column 'C' not found\"))",
+  )
 }
 
 ///|
@@ -123,9 +132,9 @@ test "vstack" {
     Series::new("B", SeriesInput::Str(["d", "e", "f"])),
   ])
   let res = df1.vstack(df2)
-  inspect(res.shape(), content="[6, 2]")
-  inspect(res.data()[0].data(), content="Int([1, 2, 3, 4, 5, 6])")
-  inspect(
+  @debug.debug_inspect(res.shape(), content="[6, 2]")
+  @debug.debug_inspect(res.data()[0].data(), content="Int([1, 2, 3, 4, 5, 6])")
+  @debug.debug_inspect(
     res.data()[1].data(),
     content="Str([\"a\", \"b\", \"c\", \"d\", \"e\", \"f\"])",
   )
@@ -156,9 +165,16 @@ test "vstack" {
 ///|
 test "item" {
   let df = DataFrame::new([Series::new("A", SeriesInput::Int32([1, 2, 3]))])
-  inspect(df.item(1, ColumnSelector::Str("A")), content="Ok(Int(2))")
-  inspect(
-    df.item(0, ColumnSelector::Int(2)),
+  @debug.debug_inspect(
+    Ok(df.item(1, ColumnSelector::Str("A"))) catch {
+      e => Err(e)
+    },
+    content="Ok(Int(2))",
+  )
+  @debug.debug_inspect(
+    Ok(df.item(0, ColumnSelector::Int(2))) catch {
+      e => Err(e)
+    },
     content="Err(IndexOutOfBounds(\"Row index out of bounds\"))",
   )
 }
@@ -200,9 +216,9 @@ test "op_get" {
     Series::new("B", SeriesInput::Str(["a", "b", "c"])),
   ])
   let res = df[1]
-  inspect(res.shape(), content="[1, 2]")
-  inspect(res.data()[0].data(), content="Int([2])")
-  inspect(res.data()[1].data(), content="Str([\"b\"])")
+  @debug.debug_inspect(res.shape(), content="[1, 2]")
+  @debug.debug_inspect(res.data()[0].data(), content="Int([2])")
+  @debug.debug_inspect(res.data()[1].data(), content="Str([\"b\"])")
 }
 
 ///|
@@ -222,8 +238,11 @@ test "reverse" {
     Series::new("B", SeriesInput::Str(["a", "b", "c"])),
   ])
   df.reverse()
-  inspect(df.data()[0].data(), content="Int([3, 2, 1])")
-  inspect(df.data()[1].data(), content="Str([\"c\", \"b\", \"a\"])")
+  @debug.debug_inspect(df.data()[0].data(), content="Int([3, 2, 1])")
+  @debug.debug_inspect(
+    df.data()[1].data(),
+    content="Str([\"c\", \"b\", \"a\"])",
+  )
 }
 
 ///|
@@ -241,11 +260,11 @@ test "transpose" {
     Series::new("B", SeriesInput::Int32([4, 5, 6])),
   ])
   let trans_df = df.transpose()
-  inspect(trans_df.shape(), content="[2, 3]")
+  @debug.debug_inspect(trans_df.shape(), content="[2, 3]")
   let trans_df = df.transpose(include_header=true)
-  inspect(trans_df.data()[0].data(), content="Str([\"A\", \"B\"])")
+  @debug.debug_inspect(trans_df.data()[0].data(), content="Str([\"A\", \"B\"])")
   let trans_df = df.transpose(include_header=true, header_name="header")
-  inspect(trans_df.data()[0].data(), content="Str([\"A\", \"B\"])")
+  @debug.debug_inspect(trans_df.data()[0].data(), content="Str([\"A\", \"B\"])")
   inspect(trans_df.data()[0].name(), content="header")
   let trans_df = df.transpose(include_header=true, column_names=["x", "y", "z"])
   inspect(trans_df.data()[1].name(), content="y")
@@ -320,9 +339,9 @@ test "schema" {
     Series::new("D", SeriesInput::Str(["a", "b", "c"])),
   ])
   let schema = df.schema()
-  inspect(
+  @debug.debug_inspect(
     schema,
-    content="{\"A\": \"int32\", \"B\": \"float32\", \"C\": \"bool\", \"D\": \"string\"}",
+    content="{ \"A\": \"int32\", \"B\": \"float32\", \"C\": \"bool\", \"D\": \"string\" }",
   )
 }
 
@@ -345,7 +364,7 @@ test "dtypes" {
     Series::new("C", SeriesInput::Bool([true, false, true])),
     Series::new("D", SeriesInput::Str(["a", "b", "c"])),
   ])
-  inspect(
+  @debug.debug_inspect(
     df.dtypes(),
     content="[\"int32\", \"float32\", \"bool\", \"string\"]",
   )

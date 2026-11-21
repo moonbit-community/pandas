@@ -1,5 +1,6 @@
-///| sort the data by the indices
-fn[T] indices_sort(data : Array[T], indices : Array[Int]) -> Unit {
+///|
+/// sort the data by the indices
+fn[T] indices_sort(data : Array[T], indices : Array[Int32]) -> Unit {
   let n = data.length()
   let visited = Array::make(n, false)
   for i = 0; i < n; i = i + 1 {
@@ -48,7 +49,7 @@ fn type_check_operation(a : DataType, b : DataType) -> Bool {
 // }
 
 ///|
-fn quick_pow(base : Int64, exp : Int) -> Int64 {
+fn quick_pow(base : Int64, exp : Int32) -> Int64 {
   let mut result = 1L
   let mut base = base
   let mut exp = exp
