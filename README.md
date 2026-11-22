@@ -23,15 +23,18 @@ moon add smallbearrr/pandas
 ### Dependencies
 This package depends on the following libraries:
  - "moonbitlang/x/fs": A file system I/O library.
- - "xunyoyo/NyaCSV": A CSV parsing library.
+ - "moonbit-community/NyaCSV": A CSV parsing library.
 
   To install these dependencies, run the following command:
 ```moonbit
 moon add moonbitlang/x
-moon add xunyoyo/NyaCSV
+moon add moonbit-community/NyaCSV
 ```
 
 ## Usage
+
+The snippets below are meant to run inside a `test` block or a function that can raise errors.
+For brevity the types are written without the `@pandas.` prefix.
 
 ### DataFrame
 create a DataFrame
@@ -46,79 +49,188 @@ Display the first few(min(size, 5)) rows of the DataFrame
 ```moonbit
 df.head()
 ```
+```
+	A	B	C	
+0	1	1.5	1	
+1	2	2.5	null	
+2	3	3.5	3	
+```
 
 DataFrame already traits the `Show`, it can print the DataFrame directly:
 ```moonbit
 println(df)
 ```
+```
+	A	B	C	
+0	1	1.5	1	
+1	2	2.5	null	
+2	3	3.5	3	
+```
 
 Add a new column
 ```moonbit
-let new_col = Series::new("C", SeriesInput::Bool([true, false, true]))
-df.add_column!(new_col)
+let new_col = Series::new("D", SeriesInput::Bool([true, false, true]))
+df.add_column(new_col)
+println(df)
+```
+```
+	A	B	C	D	
+0	1	1.5	1	true	
+1	2	2.5	null	false	
+2	3	3.5	3	true	
 ```
 
 Drop a column
 ```moonbit
-df.drop_column!("C")
+df.drop_column("C")
+println(df)
 ```
-
-Rename a column
-```moonbit
-df.rename!("A", "A1")
+```
+	A	B	D	
+0	1	1.5	true	
+1	2	2.5	false	
+2	3	3.5	true	
 ```
 
 Select a column
 ```moonbit
 let df_col = df.column("A")
+println(df_col.data())
+```
+```
+Int([1, 2, 3])
 ```
 
 Select specific columns
 ```moonbit
-let df_cols = df.select_columns!(["A1", "B"])
+let df_cols = df.select_columns(["A", "B"])
+println(df_cols)
 ```
-
-Drop a row
-```moonbit
-df.drop_row!(0)
+```
+	A	B	
+0	1	1.5	
+1	2	2.5	
+2	3	3.5	
 ```
 
 Add a new row
 ```moonbit
-df.add_row!([SeriesValue::Int32(7), SeriesValue::Float32(7.5), SeriesValue::Bool(true), SeriesValue::Str("ok")])
+df.add_row([SeriesValue::Int(7), SeriesValue::Float(7.5), SeriesValue::Bool(true)])
+println(df)
+```
+```
+	A	B	D	
+0	1	1.5	true	
+1	2	2.5	false	
+2	3	3.5	true	
+3	7	7.5	true	
+```
+
+Drop a row (`drop_row` currently only works when every column was created from a nullable input such as `Int32_Nullable`, so this example uses a separate DataFrame)
+```moonbit
+let df_nullable = DataFrame::new([
+  Series::new("A", SeriesInput::Int32_Nullable([Some(1), None, Some(3)])),
+  Series::new("B", SeriesInput::Float32_Nullable([Some(1.5), Some(2.5), None])),
+])
+df_nullable.drop_row(0)
+println(df_nullable)
+```
+```
+	A	B	
+0	null	2.5	
+1	3	null	
 ```
 
 Select rows by range or by specific indices:
 ```moonbit
-let row_selected_range = df.select_rows!(range=(1, 3))
-let row_selected_indices = df.select_rows!(indices=[1, 3, 5])
+let row_selected_range = df.select_rows(range=(1, 3))
+let row_selected_indices = df.select_rows(indices=[0, 2])
+println(row_selected_range)
+println(row_selected_indices)
+```
+```
+	A	B	D	
+0	2	2.5	false	
+1	3	3.5	true	
+	A	B	D	
+0	1	1.5	true	
+1	3	3.5	true	
 ```
 
 Filter rows based on a condition applied to a specific column:
 ```moonbit
-let filtered = df.filter!("A", fn(x) -> Bool { x < DType::Int(3) })
+let filtered = df.filter("A", fn(x) { x < SeriesValue::Int(3) })
+println(filtered)
+```
+```
+	A	B	D	
+0	1	1.5	true	
+1	2	2.5	false	
 ```
 
 Sort the DataFrame by a specified column in ascending or descending order:
 ```moonbit
-df.sort!("A")
-df.sort!("B", descending=true)
+df.sort("A", descending=true)
+println(df)
+df.sort("B")
+println(df)
+```
+```
+	A	B	D	
+0	7	7.5	true	
+1	3	3.5	true	
+2	2	2.5	false	
+3	1	1.5	true	
+	A	B	D	
+0	1	1.5	true	
+1	2	2.5	false	
+2	3	3.5	true	
+3	7	7.5	true	
+```
+
+Rename a column (`rename` does not update the column lookup of the DataFrame, so do the renaming last)
+```moonbit
+df.rename("A", "A1")
+println(df)
+```
+```
+	A1	B	D	
+0	1	1.5	true	
+1	2	2.5	false	
+2	3	3.5	true	
+3	7	7.5	true	
 ```
 
 Convert Between `DataFrame` and `@NyaCSV.CSV`:
 ```moonbit
-let df = DataFrame::from_NyaCSV(csv)
 let csv = df.to_NyaCSV()
+let df_from_csv = DataFrame::from_NyaCSV(csv)
+println(df_from_csv)
+```
+```
+	A1	B	D	
+0	1	1.5	true	
+1	2	2.5	false	
+2	3	3.5	true	
+3	7	7.5	true	
+```
+
+Write the DataFrame to a CSV file (`write_csv` only writes to a file that already exists):
+```moonbit
+df.write_csv("./output.csv")
 ```
 
 Read a CSV file:
 ```moonbit
-let df = DataFrame::read_csv!("./data.csv")
+let df_read = DataFrame::read_csv("./output.csv")
+println(df_read)
 ```
-
-Write the DataFrame to a CSV file:
-```moonbit
-df.write_csv!("./output.csv")
+```
+	A1	B	D	
+0	1	1.5	true	
+1	2	2.5	false	
+2	3	3.5	true	
+3	7	7.5	true	
 ```
 
 ### Series
@@ -128,16 +240,39 @@ let series_int = Series::new("IntColumn", SeriesInput::Int32([1, 2, 3]))
 let series_float = Series::new("FloatColumn", SeriesInput::Float32([1.1, 2.2, 3.3]))
 let series_bool = Series::new("BoolColumn", SeriesInput::Bool([true, false, true]))
 let series_str = Series::new("StrColumn", SeriesInput::Str(["a", "b", "c"]))
+println(series_int.data())
+println(series_float.data())
+println(series_bool.data())
+println(series_str.data())
+```
+```
+Int([1, 2, 3])
+Float([1.1, 2.2, 3.3])
+Bool([true, false, true])
+Str([a, b, c])
 ```
 
-Erase element
+Erase element (`erase` currently only works on a Series created from a nullable input such as `Int32_Nullable`)
 ```moonbit
-series.erase(1)
+let series_null = Series::new("NullColumn", SeriesInput::Int32_Nullable([Some(1), None, Some(3)]))
+series_null.erase(1)
+println(series_null.data())
+```
+```
+Int([1, 3])
 ```
 
-Sort the SeriesData in Series and return the indices of the sorted elements
+Sort a Series in place, and get the indices that would sort it
 ```moonbit
-let indices = series.sort()
+let series = Series::new("S", SeriesInput::Int32([3, 1, 2]))
+let indices = series.argsort()
+series.sort()
+println(indices)
+println(series.data())
+```
+```
+[1, 2, 0]
+Int([1, 2, 3])
 ```
 
 Add two Series
@@ -145,6 +280,10 @@ Add two Series
 let series1 = Series::new("A", SeriesInput::Int32([1, 2, 3]))
 let series2 = Series::new("B", SeriesInput::Float32([1.5, 2.0, 3.5]))
 let add = series1 + series2
+println(add.data())
+```
+```
+Float([2.5, 4, 6.5])
 ```
 
 Operation of add, subtract, multiply and divide
@@ -153,6 +292,27 @@ let add_op = series1 + series2
 let sub_op = series1 - series2
 let mul_op = series1 * series2
 let div_op = series1 / series2
+println(add_op.data())
+println(sub_op.data())
+println(mul_op.data())
+println(div_op.data())
+```
+```
+Float([2.5, 4, 6.5])
+Float([0.5, 0, 0.5])
+Float([1.5, 4, 10.5])
+Float([1.5, 1, 1.1666666])
+```
+
+Extend a Series in-place with another Series of the same type
+```moonbit
+let a = Series::new("t", SeriesInput::Int32([1, 2]))
+let b = Series::new("t", SeriesInput::Int32([3, 4]))
+a.extend_from(b)
+println(a.data())
+```
+```
+Int([1, 2, 3, 4])
 ```
 
 ## Feature
@@ -190,8 +350,6 @@ let div_op = series1 / series2
 | `get_column_index` | Get the index of a column by its name                                       |
 | `with_row_index`   | Add a row index column to the DataFrame                                     |
 | `transpose`        | Transpose the DataFrame over the diagonal                                   |
-| `mean`             | Calculate the mean of each column in the DataFrame                          |
-| `var`              | Calculate the variance of each column in the DataFrame                      |
 | `count`            | Count the number of rows and columns in the DataFrame                       |
 | `max`              | Get the maximum value of each column in the DataFrame                       |
 | `max_horizontal`   | Get the maximum value of each row in the DataFrame                          |
@@ -225,13 +383,13 @@ let div_op = series1 / series2
 | `new`              | Create a new Series                                                         |
 | `data`             | Get the data of the Series                                                  |
 | `erase`            | Erase an element from the Series                                            |
-| `sort`             | Sort the SeriesData in Series and return the indices of the sorted elements |
+| `sort`             | Sort the Series in place                                                    |
 | `+`                | Add two Series                                                              |
 | `-`                | Subtract two Series                                                         |
 | `*`                | Multiply two Series                                                         |
 | `/`                | Divide two Series                                                           |
 | `mean`             | Calculate the mean of the Series                                            |
-| `var`              | Calculate the variance of the Series                                        |
+| `variance`         | Calculate the variance of the Series                                        |
 | `argsort`          | Return the indices that would sort the Series                               |
 | `copy`             | Create a copy of the Series                                                 |
 | `count`            | Count the number of elements in the Series                                  |
@@ -250,7 +408,7 @@ let div_op = series1 / series2
 | `clear`            | Remove all elements from the current Series                                 |
 | `concat`           | Concatenate multiple Series and return the result                           |
 | `cos`              | Return a new Series with the cosine of each element                         |
-| `extend`           | Extend the current Series in-place with another Series                      |
+| `extend_from`      | Extend the current Series in-place with another Series                      |
 | `has_null`         | Check if the current Series contains any null values                        |
 | `is_empty`         | Check if the current Series is empty                                        |
 | `is_not_null`      | Return a boolean Series indicating non-null elements                        |
@@ -282,3 +440,12 @@ If you have questions, feel free to open an issue in the repository. For other i
 
 ## License
 This project is licensed under the Apache-2.0 License. See the LICENSE file for details.
+
+## Changelog
+
+### 0.8.0
+- Adapted to moon 0.1.20261119 and the new `moon.mod` / `moon.pkg` format.
+- Dependencies are now `moonbit-community/NyaCSV@0.3.4` and `moonbitlang/x@0.5.8`.
+- `Series::extend` is renamed to `Series::extend_from`, because `extend` is now a keyword.
+- The old top-level function style (e.g. `@pandas.limit(df, n)`) is no longer available; use method calls such as `df.limit(n)`.
+- `Show` derived by the new standard library prints strings without quotes; use `Debug` for the old format.

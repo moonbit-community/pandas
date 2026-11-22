@@ -1,25 +1,49 @@
 ///|
-priv suberror EmptyArrayError String derive(Show)
+#derive(Show, Debug)
+priv suberror EmptyArrayError {
+  EmptyArrayError(String)
+}
 
 ///|
-suberror InconsistentSeriesLength String derive(Show)
+#derive(Show, Debug)
+suberror InconsistentSeriesLength {
+  InconsistentSeriesLength(String)
+}
 
 ///|
-priv suberror DuplicateColumnError String derive(Show)
+#derive(Show, Debug)
+priv suberror DuplicateColumnError {
+  DuplicateColumnError(String)
+}
 
 ///|
-suberror ColumnNotFoundError String derive(Show)
+#derive(Show, Debug)
+suberror ColumnNotFoundError {
+  ColumnNotFoundError(String)
+}
 
 ///|
-suberror IndexOutOfBounds String derive(Show)
+#derive(Show, Debug)
+suberror IndexOutOfBounds {
+  IndexOutOfBounds(String)
+}
 
 ///|
-suberror InvalidType String derive(Show)
+#derive(Show, Debug)
+suberror InvalidType {
+  InvalidType(String)
+}
 
 ///|
-priv suberror PathNotFound String derive(Show)
+#derive(Show, Debug)
+priv suberror PathNotFound {
+  PathNotFound(String)
+}
 
 ///|
-priv suberror NotCSVFile String derive(Show)
+#derive(Show, Debug)
+priv suberror NotCSVFile {
+  NotCSVFile(String)
+}
 
 // suberror TypeError String derive(Show)

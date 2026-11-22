@@ -1,0 +1,17 @@
+import {
+  "moonbitlang/x/fs",
+  "moonbit-community/NyaCSV",
+  "moonbitlang/core/byte",
+  "moonbitlang/core/cmp",
+  "moonbitlang/core/debug",
+  "moonbitlang/core/float",
+  "moonbitlang/core/hashmap",
+  "moonbitlang/core/hashset",
+  "moonbitlang/core/int",
+  "moonbitlang/core/int64",
+  "moonbitlang/core/math",
+}
+
+options(
+  "is-main": false,
+)

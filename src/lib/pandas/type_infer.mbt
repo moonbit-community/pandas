@@ -47,7 +47,7 @@ fn type_infer_from_array(data : Array[String]) -> DataType? {
 fn type_convert(
   data : String,
   type_? : DataType,
-  null~ : Bool = false
+  null~ : Bool = false,
 ) -> SeriesValue {
   let mut null = null
   let type_ = match type_ {
@@ -66,9 +66,9 @@ fn type_convert(
     false =>
       match type_ {
         DataType::Int32 => {
-          let mut num : Int = 0
+          let mut num : Int32 = 0
           for i in 0..<data.length() {
-            num = num * 10 + (data[i] - '0'.to_int())
+            num = num * 10 + (data[i].to_int() - '0'.to_int())
           }
           SeriesValue::Int(num)
         }
@@ -79,10 +79,11 @@ fn type_convert(
             if data[i] == '.' {
               dicimal = data.length() - i - 1
             } else {
-              num = num * 10 + (data[i] - '0'.to_int()).to_int64()
+              num = num * 10 + (data[i].to_int() - '0'.to_int()).to_int64()
             }
           }
-          let flt = num.to_float() / quick_pow(10, dicimal).to_float()
+          let flt = Float::from_int64(num) /
+            Float::from_int64(quick_pow(10, dicimal))
           SeriesValue::Float(flt)
         }
         DataType::String => SeriesValue::Str(data)
@@ -105,7 +106,7 @@ test "type_convert" {
   inspect(type_convert("true"), content="Bool(true)")
   inspect(type_convert("false"), content="Bool(false)")
   inspect(type_convert("True", null=true), content="Null")
-  inspect(
+  @debug.debug_inspect(
     type_convert("False", type_=DataType::String),
     content="Str(\"False\")",
   )
@@ -114,7 +115,7 @@ test "type_convert" {
 ///|
 fn type_convert_from_array(
   data : Array[String],
-  type_? : DataType
+  type_? : DataType,
 ) -> Array[SeriesValue] {
   let res = Array::make(data.length(), SeriesValue::Null)
   match type_ {

@@ -1,10 +1,11 @@
 ///|
+#derive(Show, Debug, Eq)
 priv struct BitMap {
   mut optional : Bool
   mut bitmap : Array[Bool]
-  mut length : Int
-  mut offset : Int
-} derive(Show, Eq)
+  mut length : Int32
+  mut offset : Int32
+}
 
 ///|
 let emptyBitMap : BitMap = BitMap::{
@@ -17,7 +18,7 @@ let emptyBitMap : BitMap = BitMap::{
 ///|
 fn[T] BitMap::new(data? : Array[T?]) -> BitMap {
   match data {
-    None => BitMap::{ optional: false, bitmap: [], length: 0, offset: 0 }
+    None => BitMap::{ optional: false, bitmap: [], length: 0, offset: 0, }
     Some(data) => {
       let bitmap = Array::makei(data.length(), fn(i) {
         match data[i] {
@@ -25,13 +26,13 @@ fn[T] BitMap::new(data? : Array[T?]) -> BitMap {
           Some(_) => false
         }
       })
-      BitMap::{ optional: true, bitmap, length: data.length(), offset: 0 }
+      BitMap::{ optional: true, bitmap, length: data.length(), offset: 0, }
     }
   }
 }
 
 ///|
-impl Add for BitMap with op_add(self : BitMap, other : BitMap) -> BitMap {
+impl Add for BitMap with fn add(self : BitMap, other : BitMap) -> BitMap {
   match (self.optional, other.optional) {
     (false, false) => emptyBitMap
     (true, false) => self
@@ -89,7 +90,8 @@ test "BitMap::op_add" {
 }
 
 ///|
-fn BitMap::op_get(self : BitMap, index : Int) -> Bool {
+#alias("_[_]")
+fn BitMap::get(self : BitMap, index : Int32) -> Bool {
   if self.optional == false {
     return false
   }
@@ -97,18 +99,19 @@ fn BitMap::op_get(self : BitMap, index : Int) -> Bool {
 }
 
 ///|
-fn BitMap::op_set(self : BitMap, index : Int, value : Bool) -> Unit {
+#alias("_[_]=_")
+fn BitMap::set(self : BitMap, index : Int32, value : Bool) -> Unit {
   self.bitmap[index] = value
 }
 
 ///|
-fn BitMap::slice(self : BitMap, start : Int, length? : Int) -> BitMap {
+fn BitMap::slice(self : BitMap, start : Int32, length? : Int32) -> BitMap {
   match self.optional {
     false => emptyBitMap
     true =>
       match length {
         None => {
-          let bitmap = self.bitmap.split_at(start).1
+          let bitmap = self.bitmap.exact_view(start~).to_owned()
           BitMap::{
             optional: self.optional,
             bitmap,
@@ -118,7 +121,10 @@ fn BitMap::slice(self : BitMap, start : Int, length? : Int) -> BitMap {
         }
         Some(length) => {
           let length = @cmp.minimum(length, self.length - start)
-          let bitmap = self.bitmap.split_at(start).1.split_at(length).0
+          let bitmap = self.bitmap
+            .exact_view(start~)
+            .exact_view(end=length)
+            .to_owned()
           BitMap::{
             optional: self.optional,
             bitmap,
@@ -141,8 +147,8 @@ fn BitMap::has_nulls(self : BitMap) -> Bool {
 ///|
 fn BitMap::clear(
   self : BitMap,
-  n~ : Int = 0,
-  inplace~ : Bool = false
+  n~ : Int32 = 0,
+  inplace~ : Bool = false,
 ) -> BitMap {
   match inplace {
     false => BitMap::new_by_size(n, optional=n != 0, value=true)
@@ -157,13 +163,13 @@ fn BitMap::clear(
 }
 
 ///|
-fn BitMap::erase(self : BitMap, index : Int) -> Unit {
+fn BitMap::erase(self : BitMap, index : Int32) -> Unit {
   self.length -= 1
   self.bitmap.remove(index) |> ignore
 }
 
 ///|
-fn BitMap::swap(self : BitMap, index1 : Int, index2 : Int) -> Unit {
+fn BitMap::swap(self : BitMap, index1 : Int32, index2 : Int32) -> Unit {
   self.bitmap.swap(index1, index2)
 }
 
@@ -179,14 +185,14 @@ fn BitMap::copy(self : BitMap) -> BitMap {
 
 ///|
 fn BitMap::reverse(self : BitMap) -> Unit {
-  self.bitmap.rev_inplace()
+  self.bitmap.rev_in_place()
 }
 
 ///|
 fn BitMap::new_by_size(
-  size : Int,
+  size : Int32,
   optional~ : Bool = true,
-  value~ : Bool = false
+  value~ : Bool = false,
 ) -> BitMap {
   BitMap::{
     optional,
@@ -197,14 +203,14 @@ fn BitMap::new_by_size(
 }
 
 ///|
-fn BitMap::select_rows(self : BitMap, rows : Array[Int]) -> BitMap {
+fn BitMap::select_rows(self : BitMap, rows : Array[Int32]) -> BitMap {
   match self.optional {
     false => emptyBitMap
     true => {
       rows.sort()
       let bitmap = Array::make(rows.length(), false)
       bitmap.iter().eachi(fn(i, _) { bitmap[i] = self.bitmap[rows[i]] })
-      BitMap::{ optional: true, bitmap, length: rows.length(), offset: 0 }
+      BitMap::{ optional: true, bitmap, length: rows.length(), offset: 0, }
     }
   }
 }
@@ -223,7 +229,7 @@ test "BitMap::select_rows" {
 fn BitMap::merge(
   self : BitMap,
   other : BitMap,
-  inplace~ : Bool = false
+  inplace~ : Bool = false,
 ) -> BitMap {
   match inplace {
     false =>
@@ -302,7 +308,7 @@ fn BitMap::new_from_SeriesValues_array(data : Array[SeriesValue]) -> BitMap {
           _ => false
         }
       })
-      BitMap::{ optional: true, bitmap, length: n, offset: 0 }
+      BitMap::{ optional: true, bitmap, length: n, offset: 0, }
     }
     false => emptyBitMap
   }

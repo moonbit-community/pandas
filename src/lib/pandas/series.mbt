@@ -1,5 +1,5 @@
 ///|
-impl Hash for SeriesData with hash_combine(self, hasher) {
+impl Hash for SeriesData with fn hash_combine(self, hasher) {
   match self {
     SeriesData::Int(data) =>
       for value in data {
@@ -21,12 +21,13 @@ impl Hash for SeriesData with hash_combine(self, hasher) {
 }
 
 ///|
-pub impl Hash for Series with hash_combine(self, hasher) {
-  self.name.hash_combine(hasher)
-  self.data.hash_combine(hasher)
+pub impl Hash for Series with fn hash_combine(self, hasher) {
+  Hash::hash_combine(self.name, hasher)
+  Hash::hash_combine(self.data, hasher)
 }
 
-///| Create a new Series
+///|
+/// Create a new Series
 ///
 /// ### Parameters
 ///
@@ -102,7 +103,8 @@ pub fn Series::new(name : String, values : SeriesInput) -> Series {
   }
 }
 
-///| 内部保证无null时使用
+///|
+/// 内部保证无null时使用
 fn Series::new_by_SeriesData(name : String, data : SeriesData) -> Series {
   Series::{
     name,
@@ -123,8 +125,9 @@ fn get_dtype(data : SeriesData) -> DataType {
   }
 }
 
-///| Get the length of the SeriesData
-fn SeriesData::length(self : SeriesData) -> Int {
+///|
+/// Get the length of the SeriesData
+fn SeriesData::length(self : SeriesData) -> Int32 {
   match self {
     SeriesData::Int(data) => data.length()
     SeriesData::Float(data) => data.length()
@@ -134,11 +137,12 @@ fn SeriesData::length(self : SeriesData) -> Int {
 }
 
 ///|
-pub fn Series::length(self : Series) -> Int {
+pub fn Series::length(self : Series) -> Int32 {
   self.length
 }
 
-///| SeriesData clear
+///|
+/// SeriesData clear
 pub fn SeriesData::clear(self : SeriesData) -> Unit {
   match self {
     SeriesData::Int(data) => data.clear()
@@ -148,7 +152,8 @@ pub fn SeriesData::clear(self : SeriesData) -> Unit {
   }
 }
 
-///| Create an empty copy of the current Series, with zero to ‘n’ elements
+///|
+/// Create an empty copy of the current Series, with zero to ‘n’ elements
 ///
 /// Parameters
 ///
@@ -165,7 +170,7 @@ pub fn SeriesData::clear(self : SeriesData) -> Unit {
 /// let empty_series = series.clear()
 /// inspect(empty_series.data, content="Int([])")
 /// ```
-pub fn Series::clear(self : Series, n~ : Int = 0) -> Series {
+pub fn Series::clear(self : Series, n~ : Int32 = 0) -> Series {
   Series::{
     name: self.name(),
     data: SeriesData::create_by_size(n, self.data_type),
@@ -175,12 +180,14 @@ pub fn Series::clear(self : Series, n~ : Int = 0) -> Series {
   }
 }
 
-///| Check if the SeriesData is empty
+///|
+/// Check if the SeriesData is empty
 fn SeriesData::empty(self : SeriesData) -> Bool {
   self.length() == 0
 }
 
-///| Erase an element from the SeriesData at a specified index
+///|
+/// Erase an element from the SeriesData at a specified index
 ///
 /// ### Parameters
 ///
@@ -195,7 +202,10 @@ fn SeriesData::empty(self : SeriesData) -> Bool {
 /// ```
 /// data.erase(1)
 /// ```
-fn SeriesData::erase(self : SeriesData, index : Int) -> Unit raise EmptyArrayError {
+fn SeriesData::erase(
+  self : SeriesData,
+  index : Int32,
+) -> Unit raise EmptyArrayError {
   if self.empty() {
     raise EmptyArrayError("Cannot erase from an empty array")
   }
@@ -207,7 +217,8 @@ fn SeriesData::erase(self : SeriesData, index : Int) -> Unit raise EmptyArrayErr
   }
 }
 
-///| Erase an element from the Series at a specified index
+///|
+/// Erase an element from the Series at a specified index
 ///
 /// ### Parameters
 ///
@@ -223,7 +234,7 @@ fn SeriesData::erase(self : SeriesData, index : Int) -> Unit raise EmptyArrayErr
 /// ```
 /// series.erase(1)
 /// ```
-pub fn Series::erase(self : Series, index : Int) -> Unit raise{
+pub fn Series::erase(self : Series, index : Int32) -> Unit raise {
   guard index >= 0 && index < self.length() else {
     raise IndexOutOfBounds("Index out of bounds")
   }
@@ -233,7 +244,8 @@ pub fn Series::erase(self : Series, index : Int) -> Unit raise{
   self.bitmap.erase(index)
 }
 
-///| Sort the SeriesData
+///|
+/// Sort the SeriesData
 /// cause when build Series use SeriesInput instead of SeriesData, SeriesData become to inner type
 fn SeriesData::sort(self : SeriesData) -> Unit {
   match self {
@@ -245,7 +257,8 @@ fn SeriesData::sort(self : SeriesData) -> Unit {
 }
 
 ///|
-fn SeriesData::op_get(self : SeriesData, index : Int) -> SeriesValue {
+#alias("_[_]")
+fn SeriesData::get(self : SeriesData, index : Int32) -> SeriesValue {
   match self {
     SeriesData::Int(data) => SeriesValue::Int(data[index])
     SeriesData::Float(data) => SeriesValue::Float(data[index])
@@ -255,10 +268,11 @@ fn SeriesData::op_get(self : SeriesData, index : Int) -> SeriesValue {
 }
 
 ///|
-fn SeriesData::op_set(
+#alias("_[_]=_")
+fn SeriesData::set(
   self : SeriesData,
-  index : Int,
-  value : SeriesValue
+  index : Int32,
+  value : SeriesValue,
 ) -> Unit {
   match (self, value) {
     (SeriesData::Int(data), SeriesValue::Int(v)) => data[index] = v
@@ -270,7 +284,7 @@ fn SeriesData::op_set(
 }
 
 ///|
-fn SeriesData::swap(self : SeriesData, i : Int, j : Int) -> Unit {
+fn SeriesData::swap(self : SeriesData, i : Int32, j : Int32) -> Unit {
   let tmp = self[i]
   self[i] = self[j]
   self[j] = tmp
@@ -279,29 +293,42 @@ fn SeriesData::swap(self : SeriesData, i : Int, j : Int) -> Unit {
 ///|
 fn SeriesData::split_at(
   self : SeriesData,
-  index : Int
+  index : Int32,
 ) -> (SeriesData, SeriesData) {
   match self {
     SeriesData::Int(data) => {
-      let (a, b) = data.split_at(index)
+      let (a, b) = (
+        data.exact_view(end=index).to_owned(),
+        data.exact_view(start=index).to_owned(),
+      )
       (SeriesData::Int(a), SeriesData::Int(b))
     }
     SeriesData::Float(data) => {
-      let (a, b) = data.split_at(index)
+      let (a, b) = (
+        data.exact_view(end=index).to_owned(),
+        data.exact_view(start=index).to_owned(),
+      )
       (SeriesData::Float(a), SeriesData::Float(b))
     }
     SeriesData::Bool(data) => {
-      let (a, b) = data.split_at(index)
+      let (a, b) = (
+        data.exact_view(end=index).to_owned(),
+        data.exact_view(start=index).to_owned(),
+      )
       (SeriesData::Bool(a), SeriesData::Bool(b))
     }
     SeriesData::Str(data) => {
-      let (a, b) = data.split_at(index)
+      let (a, b) = (
+        data.exact_view(end=index).to_owned(),
+        data.exact_view(start=index).to_owned(),
+      )
       (SeriesData::Str(a), SeriesData::Str(b))
     }
   }
 }
 
-///| Sort the Series
+///|
+/// Sort the Series
 ///
 /// Parameters
 ///
@@ -337,7 +364,8 @@ pub fn Series::sort(self : Series) -> Unit {
   }
 }
 
-///| Get the indices that would sort the SeriesData
+///|
+/// Get the indices that would sort the SeriesData
 ///
 /// Parameters
 ///
@@ -358,8 +386,8 @@ pub fn Series::sort(self : Series) -> Unit {
 /// ```
 pub fn SeriesData::get_argsort_indices(
   self : SeriesData,
-  descending~ : Bool = false
-) -> Array[Int] {
+  descending~ : Bool = false,
+) -> Array[Int32] {
   let indices = Array::makei(self.length(), fn(i) { i })
   match self {
     SeriesData::Int(data) => indices.sort_by_key(fn(i) { data[i] })
@@ -368,12 +396,13 @@ pub fn SeriesData::get_argsort_indices(
     SeriesData::Str(data) => indices.sort_by_key(fn(i) { data[i] })
   }
   if descending {
-    indices.rev_inplace()
+    indices.rev_in_place()
   }
   indices
 }
 
-///| Get the indices that would sort the Series
+///|
+/// Get the indices that would sort the Series
 ///
 /// Parameters
 ///
@@ -396,8 +425,8 @@ pub fn SeriesData::get_argsort_indices(
 pub fn Series::get_argsort_indices(
   self : Series,
   descending~ : Bool = false,
-  nulls_last~ : Bool = false
-) -> Array[Int] {
+  nulls_last~ : Bool = false,
+) -> Array[Int32] {
   match self.bitmap.optional {
     false => self.data.get_argsort_indices(descending~)
     true => {
@@ -412,7 +441,7 @@ pub fn Series::get_argsort_indices(
         (false, false) | (true, true) => {
           let mut r = self.length - 1
           for i = self.length - 1; i >= 0; i = i - 1 {
-            if not(self.bitmap[indices[i]]) {
+            if !self.bitmap[indices[i]] {
               indices.swap(i, r)
               r -= 1
             }
@@ -421,7 +450,7 @@ pub fn Series::get_argsort_indices(
         (true, false) | (false, true) => {
           let mut l = 0
           for i in 0..<self.length {
-            if not(self.bitmap[indices[i]]) {
+            if !self.bitmap[indices[i]] {
               indices.swap(i, l)
               l += 1
             }
@@ -429,15 +458,19 @@ pub fn Series::get_argsort_indices(
         }
       }
       if descending {
-        indices.rev_inplace()
+        indices.rev_in_place()
       }
       indices
     }
   }
 }
 
-///| Sort the SeriesData by the indices
-fn SeriesData::argsort_indices(self : SeriesData, indices : Array[Int]) -> Unit {
+///|
+/// Sort the SeriesData by the indices
+fn SeriesData::argsort_indices(
+  self : SeriesData,
+  indices : Array[Int32],
+) -> Unit {
   match self {
     SeriesData::Int(data) => indices_sort(data, indices)
     SeriesData::Float(data) => indices_sort(data, indices)
@@ -446,7 +479,8 @@ fn SeriesData::argsort_indices(self : SeriesData, indices : Array[Int]) -> Unit 
   }
 }
 
-///| Sort the SeriesData and return the indices of the sorted elements
+///|
+/// Sort the SeriesData and return the indices of the sorted elements
 ///
 /// ### Parameters
 ///
@@ -464,14 +498,15 @@ fn SeriesData::argsort_indices(self : SeriesData, indices : Array[Int]) -> Unit 
 /// ```
 fn SeriesData::argsort(
   self : SeriesData,
-  descending~ : Bool = false
-) -> Array[Int] {
+  descending~ : Bool = false,
+) -> Array[Int32] {
   let indices = self.get_argsort_indices(descending~)
   self.argsort_indices(indices)
   indices
 }
 
-///| Sort the SeriesData in Series and return the indices of the sorted elements
+///|
+/// Sort the SeriesData in Series and return the indices of the sorted elements
 ///
 /// ### Parameters
 ///
@@ -487,7 +522,10 @@ fn SeriesData::argsort(
 /// let series = Series :: { name: "A", data: SeriesData::Int([3, 1, 2]) }
 /// let sorted_indices = series.argsort()
 /// ```
-pub fn Series::argsort(self : Series, descending~ : Bool = false) -> Array[Int] {
+pub fn Series::argsort(
+  self : Series,
+  descending~ : Bool = false,
+) -> Array[Int32] {
   let indices = self.data.argsort(descending~)
   self.data.argsort_indices(indices)
   indices
@@ -513,8 +551,9 @@ fn SeriesData::get_type(self : SeriesData) -> DataType {
   }
 }
 
-///| SeriesData add
-impl Add for SeriesData with op_add(self : SeriesData, other : SeriesData) -> SeriesData {
+///|
+/// SeriesData add
+impl Add for SeriesData with fn add(self : SeriesData, other : SeriesData) -> SeriesData {
   match (self, other) {
     (SeriesData::Int(a), SeriesData::Int(b)) => {
       let res = a.copy()
@@ -530,7 +569,7 @@ impl Add for SeriesData with op_add(self : SeriesData, other : SeriesData) -> Se
     (SeriesData::Int(a), SeriesData::Float(b))
     | (SeriesData::Float(b), SeriesData::Int(a)) => {
       let res = b.copy()
-      res.eachi(fn(i, v) { res[i] = v + a[i].to_float() })
+      res.eachi(fn(i, v) { res[i] = v + Float::from_int(a[i]) })
       SeriesData::Float(res)
     }
     _ => abort("unsupported types")
@@ -559,7 +598,7 @@ fn emptySeriesData(dtype : DataType) -> SeriesData {
 }
 
 ///|
-fn SeriesData::create_by_size(n : Int, dtype : DataType) -> SeriesData {
+fn SeriesData::create_by_size(n : Int32, dtype : DataType) -> SeriesData {
   match dtype {
     Int32 => SeriesData::Int(Array::make(n, 0))
     Float32 => SeriesData::Float(Array::make(n, 0.0))
@@ -568,8 +607,9 @@ fn SeriesData::create_by_size(n : Int, dtype : DataType) -> SeriesData {
   }
 }
 
-///| Series add
-pub impl Add for Series with op_add(self : Series, other : Series) -> Series {
+///|
+/// Series add
+pub impl Add for Series with fn add(self : Series, other : Series) -> Series {
   Series::{
     name: self.name(),
     data: self.data() + other.data(),
@@ -579,8 +619,9 @@ pub impl Add for Series with op_add(self : Series, other : Series) -> Series {
   }
 }
 
-///| SeriesData sub
-impl Sub for SeriesData with op_sub(self : SeriesData, other : SeriesData) -> SeriesData {
+///|
+/// SeriesData sub
+impl Sub for SeriesData with fn sub(self : SeriesData, other : SeriesData) -> SeriesData {
   match (self, other) {
     (SeriesData::Int(a), SeriesData::Int(b)) => {
       let res = a.copy()
@@ -595,15 +636,15 @@ impl Sub for SeriesData with op_sub(self : SeriesData, other : SeriesData) -> Se
     (SeriesData::Int(a), SeriesData::Float(b))
     | (SeriesData::Float(b), SeriesData::Int(a)) => {
       let res = b.copy()
-      res.eachi(fn(i, v) { res[i] = v - a[i].to_float() })
+      res.eachi(fn(i, v) { res[i] = v - Float::from_int(a[i]) })
       SeriesData::Float(res)
     }
     _ => abort("unsupported types")
   }
 }
 
-///| 
-pub fn Series::op_get(self : Series, index : Int) -> SeriesValue {
+///|
+pub fn Series::op_get(self : Series, index : Int32) -> SeriesValue {
   if self.bitmap[index] {
     return SeriesValue::Null
   }
@@ -615,8 +656,9 @@ pub fn Series::op_get(self : Series, index : Int) -> SeriesValue {
   }
 }
 
-///| Series sub
-pub impl Sub for Series with op_sub(self : Series, other : Series) -> Series {
+///|
+/// Series sub
+pub impl Sub for Series with fn sub(self : Series, other : Series) -> Series {
   Series::{
     name: self.name(),
     data: self.data() - other.data(),
@@ -626,8 +668,9 @@ pub impl Sub for Series with op_sub(self : Series, other : Series) -> Series {
   }
 }
 
-///| SeriesData mul
-impl Mul for SeriesData with op_mul(self : SeriesData, other : SeriesData) -> SeriesData {
+///|
+/// SeriesData mul
+impl Mul for SeriesData with fn mul(self : SeriesData, other : SeriesData) -> SeriesData {
   match (self, other) {
     (SeriesData::Int(a), SeriesData::Int(b)) => {
       let res = a.copy()
@@ -642,15 +685,16 @@ impl Mul for SeriesData with op_mul(self : SeriesData, other : SeriesData) -> Se
     (SeriesData::Int(a), SeriesData::Float(b))
     | (SeriesData::Float(b), SeriesData::Int(a)) => {
       let res = b.copy()
-      res.eachi(fn(i, v) { res[i] = v * a[i].to_float() })
+      res.eachi(fn(i, v) { res[i] = v * Float::from_int(a[i]) })
       SeriesData::Float(res)
     }
     _ => abort("unsupported types")
   }
 }
 
-///| Series mul
-pub impl Mul for Series with op_mul(self : Series, other : Series) -> Series {
+///|
+/// Series mul
+pub impl Mul for Series with fn mul(self : Series, other : Series) -> Series {
   Series::{
     name: self.name(),
     data: self.data() * other.data(),
@@ -660,8 +704,9 @@ pub impl Mul for Series with op_mul(self : Series, other : Series) -> Series {
   }
 }
 
-///| SeriesData div
-impl Div for SeriesData with op_div(self : SeriesData, other : SeriesData) -> SeriesData {
+///|
+/// SeriesData div
+impl Div for SeriesData with fn div(self : SeriesData, other : SeriesData) -> SeriesData {
   match (self, other) {
     (SeriesData::Int(a), SeriesData::Int(b)) => {
       let res = a.copy()
@@ -676,15 +721,16 @@ impl Div for SeriesData with op_div(self : SeriesData, other : SeriesData) -> Se
     (SeriesData::Int(a), SeriesData::Float(b))
     | (SeriesData::Float(b), SeriesData::Int(a)) => {
       let res = b.copy()
-      res.eachi(fn(i, v) { res[i] = v / a[i].to_float() })
+      res.eachi(fn(i, v) { res[i] = v / Float::from_int(a[i]) })
       SeriesData::Float(res)
     }
     _ => abort("unsupported types")
   }
 }
 
-///| Series div
-pub impl Div for Series with op_div(self : Series, other : Series) -> Series {
+///|
+/// Series div
+pub impl Div for Series with fn div(self : Series, other : Series) -> Series {
   Series::{
     name: self.name(),
     data: self.data() / other.data(),
@@ -694,7 +740,8 @@ pub impl Div for Series with op_div(self : Series, other : Series) -> Series {
   }
 }
 
-///| Merge two Series immutably or in place
+///|
+/// Merge two Series immutably or in place
 ///
 /// Parameters
 ///
@@ -711,7 +758,7 @@ pub impl Div for Series with op_div(self : Series, other : Series) -> Series {
 /// - `InvalidType` : Raised if the data types of the two Series do not match
 ///
 /// Example
-/// ```moonbit
+/// ```moonbit nocheck
 /// let series1 = Series::new("test", SeriesInput::Int32([1, 2]))
 /// let series2 = Series::new("test", SeriesInput::Int32([3, 4]))
 /// let merged_series = series1.merge!(series2)
@@ -719,10 +766,10 @@ pub impl Div for Series with op_div(self : Series, other : Series) -> Series {
 /// let merged_series_inplace = series1.merge!(series2, inplace=true)
 /// inspect(series1.data, content="Int([1, 2, 3, 4])")
 /// ```
-pub fn merge(
+pub fn Series::merge(
   self : Series,
   other : Series,
-  inplace~ : Bool = false
+  inplace~ : Bool = false,
 ) -> Series raise InvalidType {
   guard self.data_type == other.data_type else {
     raise InvalidType("merger must be the same type")
@@ -763,7 +810,7 @@ test "Series::merge" {
 }
 
 ///|
-fn copy(self : SeriesData) -> SeriesData {
+fn SeriesData::copy(self : SeriesData) -> SeriesData {
   match self {
     SeriesData::Int(data) => SeriesData::Int(data.copy())
     SeriesData::Float(data) => SeriesData::Float(data.copy())
@@ -786,10 +833,10 @@ pub fn Series::copy(self : Series) -> Series {
 ///|
 fn SeriesData::reverse(self : SeriesData) -> Unit {
   match self {
-    SeriesData::Int(data) => data.rev_inplace()
-    SeriesData::Float(data) => data.rev_inplace()
-    SeriesData::Bool(data) => data.rev_inplace()
-    SeriesData::Str(data) => data.rev_inplace()
+    SeriesData::Int(data) => data.rev_in_place()
+    SeriesData::Float(data) => data.rev_in_place()
+    SeriesData::Bool(data) => data.rev_in_place()
+    SeriesData::Str(data) => data.rev_in_place()
   }
 }
 
@@ -810,7 +857,7 @@ fn DataType::to_string(self : DataType) -> String {
 }
 
 ///|
-pub fn get_type(self : Series) -> DataType {
+pub fn Series::get_type(self : Series) -> DataType {
   match self.data {
     SeriesData::Int(_) => DataType::Int32
     SeriesData::Float(_) => DataType::Float32
@@ -839,7 +886,7 @@ pub fn get_type(self : Series) -> DataType {
 /// let series = Series::new("test", SeriesInput::Int32([1, 3, 2]))
 /// inspect(series.max!(), content="Int(3)")
 /// ```
-pub fn Series::max(self : Series) -> SeriesValue raise{
+pub fn Series::max(self : Series) -> SeriesValue raise {
   if self.data.empty() {
     raise EmptyArrayError("Cannot find the maximum of an empty array")
   }
@@ -847,7 +894,7 @@ pub fn Series::max(self : Series) -> SeriesValue raise{
     SeriesData::Int(data) =>
       data.foldi(init=SeriesValue::Null, fn(i, acc, x) {
         if (acc == SeriesValue::Null || SeriesValue::Int(x) > acc) &&
-          not(self.bitmap[i]) {
+          !self.bitmap[i] {
           SeriesValue::Int(x)
         } else {
           acc
@@ -856,7 +903,7 @@ pub fn Series::max(self : Series) -> SeriesValue raise{
     SeriesData::Float(data) =>
       data.foldi(init=SeriesValue::Null, fn(i, acc, x) {
         if (acc == SeriesValue::Null || SeriesValue::Float(x) > acc) &&
-          not(self.bitmap[i]) {
+          !self.bitmap[i] {
           SeriesValue::Float(x)
         } else {
           acc
@@ -865,7 +912,7 @@ pub fn Series::max(self : Series) -> SeriesValue raise{
     SeriesData::Bool(data) =>
       data.foldi(init=SeriesValue::Null, fn(i, acc, x) {
         if (acc == SeriesValue::Null || SeriesValue::Bool(x) > acc) &&
-          not(self.bitmap[i]) {
+          !self.bitmap[i] {
           SeriesValue::Bool(x)
         } else {
           acc
@@ -874,7 +921,7 @@ pub fn Series::max(self : Series) -> SeriesValue raise{
     SeriesData::Str(data) =>
       data.foldi(init=SeriesValue::Null, fn(i, acc, x) {
         if (acc == SeriesValue::Null || SeriesValue::Str(x) > acc) &&
-          not(self.bitmap[i]) {
+          !self.bitmap[i] {
           SeriesValue::Str(x)
         } else {
           acc
@@ -899,11 +946,11 @@ pub fn Series::max(self : Series) -> SeriesValue raise{
 ///
 /// Example:
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 ///   let series = Series::new("test", SeriesData::Int([3, 1, 2]))
 ///   series.arg_min!()
 /// ```
-pub fn Series::min(self : Series) -> SeriesValue raise{
+pub fn Series::min(self : Series) -> SeriesValue raise {
   if self.data.empty() {
     raise EmptyArrayError("Cannot find the minimum of an empty array")
   }
@@ -911,7 +958,7 @@ pub fn Series::min(self : Series) -> SeriesValue raise{
     SeriesData::Int(data) =>
       data.foldi(init=SeriesValue::Null, fn(i, acc, x) {
         if (acc == SeriesValue::Null || SeriesValue::Int(x) < acc) &&
-          not(self.bitmap[i]) {
+          !self.bitmap[i] {
           SeriesValue::Int(x)
         } else {
           acc
@@ -920,7 +967,7 @@ pub fn Series::min(self : Series) -> SeriesValue raise{
     SeriesData::Float(data) =>
       data.foldi(init=SeriesValue::Null, fn(i, acc, x) {
         if (acc == SeriesValue::Null || SeriesValue::Float(x) < acc) &&
-          not(self.bitmap[i]) {
+          !self.bitmap[i] {
           SeriesValue::Float(x)
         } else {
           acc
@@ -929,7 +976,7 @@ pub fn Series::min(self : Series) -> SeriesValue raise{
     SeriesData::Bool(data) =>
       data.foldi(init=SeriesValue::Null, fn(i, acc, x) {
         if (acc == SeriesValue::Null || SeriesValue::Bool(x) < acc) &&
-          not(self.bitmap[i]) {
+          !self.bitmap[i] {
           SeriesValue::Bool(x)
         } else {
           acc
@@ -938,7 +985,7 @@ pub fn Series::min(self : Series) -> SeriesValue raise{
     SeriesData::Str(data) =>
       data.foldi(init=SeriesValue::Null, fn(i, acc, x) {
         if (acc == SeriesValue::Null || SeriesValue::Str(x) < acc) &&
-          not(self.bitmap[i]) {
+          !self.bitmap[i] {
           SeriesValue::Str(x)
         } else {
           acc
@@ -947,7 +994,8 @@ pub fn Series::min(self : Series) -> SeriesValue raise{
   }
 }
 
-///| Calculate the sum of the Series
+///|
+/// Calculate the sum of the Series
 ///
 /// ### Parameters
 ///
@@ -972,7 +1020,7 @@ pub fn Series::sum(self : Series) -> SeriesValue raise InvalidType {
         _ =>
           SeriesValue::Int(
             data.foldi(init=0, fn(i, acc, x) {
-              if not(self.bitmap[i]) {
+              if !self.bitmap[i] {
                 acc + x
               } else {
                 acc
@@ -985,7 +1033,7 @@ pub fn Series::sum(self : Series) -> SeriesValue raise InvalidType {
         _ =>
           SeriesValue::Float(
             data.foldi(init=0.0, fn(i, acc, x) {
-              if not(self.bitmap[i]) {
+              if !self.bitmap[i] {
                 acc + x
               } else {
                 acc
@@ -1015,13 +1063,13 @@ pub fn Series::sum(self : Series) -> SeriesValue raise InvalidType {
 ///
 /// Example:
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let series = Series::new("test", SeriesData::Int([1, 2, 3, 4, 5]))
 /// series.mean!()
 /// let float_series = Series::new("test", SeriesData::Float([1.5, 2.5, 3.5]))
 /// float_series.mean!()
 /// ```
-pub fn Series::mean(self : Series) -> Float raise{
+pub fn Series::mean(self : Series) -> Float raise {
   match self.data {
     SeriesData::Int(data) =>
       match data {
@@ -1029,14 +1077,14 @@ pub fn Series::mean(self : Series) -> Float raise{
         _ => {
           let mut cnt = 0
           let sum = data.foldi(init=0, fn(i, acc, x) {
-            if not(self.bitmap[i]) {
+            if !self.bitmap[i] {
               cnt += 1
               acc + x
             } else {
               acc
             }
           })
-          sum.to_float() / cnt.to_float()
+          Float::from_int(sum) / Float::from_int(cnt)
         }
       }
     SeriesData::Float(data) =>
@@ -1045,14 +1093,14 @@ pub fn Series::mean(self : Series) -> Float raise{
         _ => {
           let mut cnt = 0
           let sum = data.foldi(init=(0.0 : Float), fn(i, acc, x) {
-            if not(self.bitmap[i]) {
+            if !self.bitmap[i] {
               cnt += 1
               acc + x
             } else {
               acc
             }
           })
-          sum / cnt.to_float()
+          sum / Float::from_int(cnt)
         }
       }
     _ => raise InvalidType("unsupported type")
@@ -1081,7 +1129,7 @@ pub fn Series::mean(self : Series) -> Float raise{
 ///
 /// Example:
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// test "Series::var" {
 ///   let series = Series::new("test", SeriesData::Int([1, 2, 3, 4, 5]))
 ///   series.variance!()
@@ -1089,9 +1137,9 @@ pub fn Series::mean(self : Series) -> Float raise{
 ///   series.variance!()
 /// }
 /// ```
-pub fn Series::variance(self : Series, ddof~ : Int = 1) -> Float raise{
+pub fn Series::variance(self : Series, ddof~ : Int32 = 1) -> Float raise {
   let raw_float_data : Array[Float] = match self.data {
-    SeriesData::Int(arr) => arr.map(fn(x) { x.to_float() })
+    SeriesData::Int(arr) => arr.map(fn(x) { Float::from_int(x) })
     SeriesData::Float(arr) => arr
     SeriesData::Bool(arr) => arr.map(fn(x) { if x { 1.0 } else { 0.0 } })
     _ => raise InvalidType("unsupported type")
@@ -1099,7 +1147,7 @@ pub fn Series::variance(self : Series, ddof~ : Int = 1) -> Float raise{
   // have no filteri, use loop instead
   let float_data : Array[Float] = []
   for i in 0..<raw_float_data.length() {
-    if not(self.bitmap[i]) {
+    if !self.bitmap[i] {
       float_data.push(raw_float_data[i])
     }
   }
@@ -1109,19 +1157,19 @@ pub fn Series::variance(self : Series, ddof~ : Int = 1) -> Float raise{
   }
   let mean = float_data
     .iter()
-    .fold(init=Double::to_float(0.0), fn(acc, x) { acc + x }) /
-    n.to_float()
+    .fold(init=Float::from_double(0.0), fn(acc, x) { acc + x }) /
+    Float::from_int(n)
   let sum_squared_diff = float_data
     .iter()
-    .fold(init=Double::to_float(0.0), fn(acc, x) {
+    .fold(init=Float::from_double(0.0), fn(acc, x) {
       let diff = x - mean
       acc + diff * diff
     })
-  sum_squared_diff / (n - ddof).to_float()
+  sum_squared_diff / Float::from_int(n - ddof)
 }
 
 ///|
-pub fn Series::count(self : Series) -> Int {
+pub fn Series::count(self : Series) -> Int32 {
   self.length
 }
 
@@ -1134,7 +1182,7 @@ fn SeriesData::min(self : SeriesData, other : SeriesData) -> Unit {
       a.eachi(fn(i, v) { a[i] = @cmp.minimum(v, b[i]) })
     (SeriesData::Float(a), SeriesData::Int(b))
     | (SeriesData::Int(b), SeriesData::Float(a)) =>
-      a.eachi(fn(i, v) { a[i] = @cmp.minimum(v, b[i].to_float()) })
+      a.eachi(fn(i, v) { a[i] = @cmp.minimum(v, Float::from_int(b[i])) })
     _ => abort("unsupported types")
   }
 }
@@ -1148,13 +1196,13 @@ fn SeriesData::max(self : SeriesData, other : SeriesData) -> Unit {
       a.eachi(fn(i, v) { a[i] = @cmp.maximum(v, b[i]) })
     (SeriesData::Float(a), SeriesData::Int(b))
     | (SeriesData::Int(b), SeriesData::Float(a)) =>
-      a.eachi(fn(i, v) { a[i] = @cmp.maximum(v, b[i].to_float()) })
+      a.eachi(fn(i, v) { a[i] = @cmp.maximum(v, Float::from_int(b[i])) })
     _ => abort("unsupported types")
   }
 }
 
 ///|
-impl Compare for SeriesData with compare(self, other) -> Int {
+impl Compare for SeriesData with fn compare(self, other) -> Int32 {
   match (self, other) {
     (SeriesData::Int(a), SeriesData::Int(b)) => a.compare(b)
     (SeriesData::Float(a), SeriesData::Float(b)) => a.compare(b)
@@ -1164,7 +1212,8 @@ impl Compare for SeriesData with compare(self, other) -> Int {
   }
 }
 
-///| Check if all elements in the Series are true
+///|
+/// Check if all elements in the Series are true
 ///
 /// Parameters
 ///
@@ -1211,7 +1260,8 @@ test "Series::all" {
   inspect(series.all(), content="true")
 }
 
-///| Check if any element in the Series is true
+///|
+/// Check if any element in the Series is true
 ///
 /// Parameters
 ///
@@ -1226,7 +1276,7 @@ test "Series::all" {
 /// - `InvalidType` : Raised if the Series data type is not Bool
 ///
 /// Example
-/// ```moonbit
+/// ```moonbit nocheck
 /// let series = Series::new("test", SeriesData::Bool([true, false, true]))
 /// inspect(series.any!(), content="true")
 /// let series = Series::new("test", SeriesData::Bool([false, false, false]))
@@ -1258,7 +1308,8 @@ test "Series::any" {
   inspect(series.any(), content="false")
 }
 
-///| Negate all boolean values in the Series
+///|
+/// Negate all boolean values in the Series
 ///
 /// Parameters
 ///
@@ -1269,7 +1320,7 @@ test "Series::any" {
 /// - `Series` : A new Series with all boolean values negated
 ///
 /// Example
-/// ```moonbit
+/// ```moonbit nocheck
 /// let series = Series::new("test", SeriesData::Bool([true, false, true]))
 /// inspect(series.not_().data, content="Bool([false, true, false])")
 /// let series = Series::new("test", SeriesData::Bool([true, false, true]))
@@ -1279,12 +1330,12 @@ pub fn Series::not_(self : Series) -> Series {
   match self.data {
     SeriesData::Bool(data) =>
       // bitmap will not change
-      // Series::new_by_SeriesData(self.name(), SeriesData::Bool(data.map(fn(x) { not(x) })))
+      // Series::new_by_SeriesData(self.name(), SeriesData::Bool(data.map(fn(x) { !x })))
       match self.bitmap.optional {
         false =>
           Series::new_by_SeriesData(
             self.name(),
-            SeriesData::Bool(data.map(fn(x) { not(x) })),
+            SeriesData::Bool(data.map(fn(x) { !x })),
           )
         true =>
           Series::new_by_SeriesData(
@@ -1293,7 +1344,7 @@ pub fn Series::not_(self : Series) -> Series {
               data.mapi(fn(i, x) {
                 match self.bitmap[i] {
                   true => x
-                  false => not(x)
+                  false => !x
                 }
               }),
             ),
@@ -1324,7 +1375,7 @@ pub fn Series::has_null(self : Series) -> Bool {
 // }
 
 ///|
-fn SeriesData::resize(self : SeriesData, new_length : Int) -> Unit {
+fn SeriesData::resize(self : SeriesData, new_length : Int32) -> Unit {
   match self {
     SeriesData::Int(data) => data.resize(new_length, 0)
     SeriesData::Float(data) => data.resize(new_length, 0.0)
@@ -1333,12 +1384,14 @@ fn SeriesData::resize(self : SeriesData, new_length : Int) -> Unit {
   }
 }
 
-///| Check if the Series is empty.
+///|
+/// Check if the Series is empty.
 pub fn Series::is_empty(self : Series) -> Bool {
   self.length == 0
 }
 
-///| Returns a boolean Series indicating which values are null
+///|
+/// Returns a boolean Series indicating which values are null
 ///
 /// Parameters
 ///
@@ -1367,7 +1420,8 @@ pub fn Series::is_null(self : Series) -> Series {
   }
 }
 
-///| Returns a boolean Series indicating which values are not null
+///|
+/// Returns a boolean Series indicating which values are not null
 ///
 /// Parameters
 ///
@@ -1384,7 +1438,7 @@ pub fn Series::is_null(self : Series) -> Series {
 /// ```
 pub fn Series::is_not_null(self : Series) -> Series {
   let data = match self.bitmap.optional {
-    true => SeriesData::Bool(self.bitmap.bitmap.map(fn(x) { not(x) }))
+    true => SeriesData::Bool(self.bitmap.bitmap.map(fn(x) { !x }))
     false => SeriesData::Bool(Array::make(self.length, true))
   }
   Series::{
@@ -1396,7 +1450,8 @@ pub fn Series::is_not_null(self : Series) -> Series {
   }
 }
 
-///| Check if the Series is sorted
+///|
+/// Check if the Series is sorted
 ///
 /// Parameters
 ///
@@ -1424,7 +1479,7 @@ pub fn Series::is_not_null(self : Series) -> Series {
 pub fn Series::is_sorted(
   self : Series,
   descending~ : Bool = false,
-  nulls_last~ : Bool = false
+  nulls_last~ : Bool = false,
 ) -> Bool {
   let mut l = 0
   let mut r = self.length - 1
@@ -1439,8 +1494,7 @@ pub fn Series::is_sorted(
         r -= 1
       }
   }
-  guard not(self.bitmap.optional) ||
-    self.bitmap.bitmap[l:r + 1].all(fn(x) { not(x) }) else {
+  guard !self.bitmap.optional || self.bitmap.bitmap[l:r + 1].all(fn(x) { !x }) else {
     return false
   }
   // check order
@@ -1464,15 +1518,17 @@ pub fn Series::is_sorted(
   }
 }
 
-///| Count the null values in this Series.
-pub fn Series::null_count(self : Series) -> Int {
+///|
+/// Count the null values in this Series.
+pub fn Series::null_count(self : Series) -> Int32 {
   match self.bitmap.optional {
     true => self.bitmap.bitmap.iter().filter(fn(x) { x }).count()
     false => 0
   }
 }
 
-///| Count the number of unique values in this Series
+///|
+/// Count the number of unique values in this Series
 ///
 /// Parameters
 ///
@@ -1489,21 +1545,22 @@ pub fn Series::null_count(self : Series) -> Int {
 /// let series = Series::new("test", SeriesInput::Int32_Nullable([Some(1), None, Some(3), Some(1)]))
 /// inspect(series.n_unique(), content="2")
 /// ```
-pub fn Series::n_unique(self : Series) -> Int {
-  let st = @hashset.new()
+pub fn Series::n_unique(self : Series) -> Int32 {
+  let st = @hashset.HashSet([])
   for i in 0..<self.length {
-    if not(self.bitmap[i]) {
+    if !self.bitmap[i] {
       st.add(self.data[i])
     }
   }
-  st.size()
+  st.length()
 }
 
-///| Return the lower bound of this Series’ dtype as a unit Series.
+///|
+/// Return the lower bound of this Series’ dtype as a unit Series.
 pub fn Series::lower_bound(self : Series) -> Series {
   match self.data.get_type() {
     DataType::Int32 =>
-      Series::new(self.name, SeriesInput::Int32([@int.min_value]))
+      Series::new(self.name, SeriesInput::Int32([@int.MIN_VALUE]))
     DataType::Float32 =>
       Series::new(self.name, SeriesInput::Float32([@float.min_value]))
     DataType::Bool => Series::new(self.name, SeriesInput::Bool([false]))
@@ -1511,20 +1568,22 @@ pub fn Series::lower_bound(self : Series) -> Series {
   }
 }
 
-///| Return the upper bound of this Series’ dtype as a unit Series.
+///|
+/// Return the upper bound of this Series’ dtype as a unit Series.
 pub fn Series::upper_bound(self : Series) -> Series {
   match self.data.get_type() {
     DataType::Int32 =>
-      Series::new(self.name, SeriesInput::Int32([@int.max_value]))
+      Series::new(self.name, SeriesInput::Int32([@int.MAX_VALUE]))
     DataType::Float32 =>
       Series::new(self.name, SeriesInput::Float32([@float.max_value]))
     DataType::Bool => Series::new(self.name, SeriesInput::Bool([true]))
     DataType::String =>
-      Series::new(self.name, SeriesInput::Str([@byte.max_value.to_string()]))
+      Series::new(self.name, SeriesInput::Str([@byte.MAX_VALUE.to_string()]))
   }
 }
 
-///| Return a count of the unique values in the order of appearance
+///|
+/// Return a count of the unique values in the order of appearance
 ///
 /// Parameters
 ///
@@ -1542,10 +1601,10 @@ pub fn Series::upper_bound(self : Series) -> Series {
 /// inspect(series.unique_counts().data, content="Int([2, 1, 2])")
 /// ```
 pub fn Series::unique_counts(self : Series) -> Series {
-  let count : @hashmap.T[SeriesValue, Int] = @hashmap.new()
-  let order : Array[SeriesValue] = Array::new()
+  let count : @hashmap.HashMap[SeriesValue, Int32] = @hashmap.HashMap([])
+  let order : Array[SeriesValue] = []
   for i in 0..<self.length {
-    if not(count.contains(self.data[i])) {
+    if !count.contains(self.data[i]) {
       order.push(self.data[i])
     }
     count[self.data[i]] = (match count.get(self.data[i]) {
@@ -1554,7 +1613,7 @@ pub fn Series::unique_counts(self : Series) -> Series {
       }) +
       1
   }
-  let data : Array[Int] = Array::makei(order.length(), fn(i) {
+  let data : Array[Int32] = Array::makei(order.length(), fn(i) {
     match count.get(order[i]) {
       Some(val) => val
       // never happened
@@ -1564,7 +1623,8 @@ pub fn Series::unique_counts(self : Series) -> Series {
   Series::new(self.name, SeriesInput::Int32(data))
 }
 
-///| Append another Series to current Series
+///|
+/// Append another Series to current Series
 ///
 /// Parameters
 ///
@@ -1586,7 +1646,10 @@ pub fn Series::unique_counts(self : Series) -> Series {
 /// let series = series1.append!(series2)
 /// inspect(series.data, content="Int([1, 2, 3, 4])")
 /// ```
-pub fn Series::append(self : Series, other : Series) -> Series raise InvalidType {
+pub fn Series::append(
+  self : Series,
+  other : Series,
+) -> Series raise InvalidType {
   let data = match (self.data, other.data) {
     (SeriesData::Int(a), SeriesData::Int(b)) => SeriesData::Int(a + b)
     (SeriesData::Float(a), SeriesData::Float(b)) => SeriesData::Float(a + b)
@@ -1603,7 +1666,8 @@ pub fn Series::append(self : Series, other : Series) -> Series raise InvalidType
   }
 }
 
-///| Extend the current Series with another Series
+///|
+/// Extend the current Series with another Series
 ///
 /// Parameters
 ///
@@ -1618,10 +1682,13 @@ pub fn Series::append(self : Series, other : Series) -> Series raise InvalidType
 /// ```
 /// let series1 = Series::new("test", SeriesInput::Int32([1, 2]))
 /// let series2 = Series::new("test", SeriesInput::Int32([3, 4]))
-/// series1.extend!(series2)
+/// series1.extend_from(series2)
 /// inspect(series1.data, content="Int([1, 2, 3, 4])")
 /// ```
-pub fn Series::extend(self : Series, other : Series) -> Unit raise InvalidType {
+pub fn Series::extend_from(
+  self : Series,
+  other : Series,
+) -> Unit raise InvalidType {
   guard self.data.get_type() == other.data.get_type() else {
     raise InvalidType("extend must be the same type")
   }
@@ -1630,7 +1697,8 @@ pub fn Series::extend(self : Series, other : Series) -> Unit raise InvalidType {
   self.length += other.length
 }
 
-///| Concatenate multiple Series into one
+///|
+/// Concatenate multiple Series into one
 ///
 /// Parameters
 ///
@@ -1653,7 +1721,7 @@ pub fn Series::extend(self : Series, other : Series) -> Unit raise InvalidType {
 /// let series = Series::concat!([series1, series2, series3])
 /// inspect(series.data, content="Int([1, 2, 3, 4, 5])")
 /// ```
-pub fn Series::concat(data : Array[Series]) -> Series raise{
+pub fn Series::concat(data : Array[Series]) -> Series raise {
   // check
   guard data.length() > 0 else {
     raise EmptyArrayError("Cannot concatenate an empty array")
@@ -1662,7 +1730,6 @@ pub fn Series::concat(data : Array[Series]) -> Series raise{
     guard item.data_type == data[0].data_type else {
       raise InvalidType("concat must be the same type")
     }
-
   }
   let mut new_data = emptySeriesData(data[0].data_type)
   let mut bitmap = emptyBitMap
@@ -1681,7 +1748,8 @@ pub fn Series::concat(data : Array[Series]) -> Series raise{
   }
 }
 
-///| Slice the Series from start to end
+///|
+/// Slice the Series from start to end
 ///
 /// Parameters
 ///
@@ -1698,7 +1766,7 @@ pub fn Series::concat(data : Array[Series]) -> Series raise{
 /// let series = Series::new("test", SeriesInput::Int32([1, 2, 3, 4, 5]))
 /// inspect(series.slice(1, 3).data, content="Int([2, 3])")
 /// ```
-pub fn Series::slice(self : Series, start : Int, end : Int) -> Series {
+pub fn Series::slice(self : Series, start : Int32, end : Int32) -> Series {
   let data = self.data.split_at(end).0.split_at(start).1
   let bitmap = match self.bitmap.optional {
     true => self.bitmap.slice(start, length=end - start)
@@ -1713,7 +1781,8 @@ pub fn Series::slice(self : Series, start : Int, end : Int) -> Series {
   }
 }
 
-///| Fill null values in the Series using the specified value or strategy ( call by DataFrame::fill_null )
+///|
+/// Fill null values in the Series using the specified value or strategy ( call by DataFrame::fill_null )
 /// 
 /// Parameters
 ///
@@ -1739,8 +1808,8 @@ fn Series::fill_null(
   self : Series,
   value? : SeriesValue?,
   strategy? : String?,
-  limit? : Int?
-) -> Series raise{
+  limit? : Int32?,
+) -> Series raise {
   let serie = self.copy()
   if serie.bitmap.optional == false {
     return serie
@@ -1764,15 +1833,15 @@ fn Series::fill_null(
       Some(val) =>
         match val {
           Some(v) => v.to_int64()
-          None => @int64.max_value
+          None => @int64.MAX_VALUE
         }
-      None => @int64.max_value
+      None => @int64.MAX_VALUE
     }
     match operate {
       "forward" => {
         let mut fill_cnt : Int64 = 0
         for i in 1..<serie.length {
-          if serie.bitmap[i] && not(serie.bitmap[i - 1]) {
+          if serie.bitmap[i] && !serie.bitmap[i - 1] {
             fill_cnt += 1
             if fill_cnt > limit {
               break
@@ -1785,7 +1854,7 @@ fn Series::fill_null(
       "backward" => {
         let mut fill_cnt : Int64 = 0
         for i = serie.length - 2; i >= 0; i = i - 1 {
-          if serie.bitmap[i] && not(serie.bitmap[i + 1]) {
+          if serie.bitmap[i] && !serie.bitmap[i + 1] {
             fill_cnt += 1
             if fill_cnt > limit {
               break
@@ -1903,7 +1972,7 @@ test "Series::fill_null" {
 ///|
 fn SeriesData::cast_to_int32(
   self : SeriesData,
-  strict~ : Bool = true
+  strict~ : Bool = true,
 ) -> SeriesData raise InvalidType {
   match self {
     SeriesData::Int(_) => self
@@ -1922,14 +1991,14 @@ fn SeriesData::cast_to_int32(
 ///|
 fn SeriesData::cast_to_float32(
   self : SeriesData,
-  strict~ : Bool = true
+  strict~ : Bool = true,
 ) -> SeriesData raise InvalidType {
   match self {
     SeriesData::Int(data) =>
-      SeriesData::Float(data.map(fn(x : Int) { x.to_float() }))
+      SeriesData::Float(data.map(fn(x : Int32) { Float::from_int(x) }))
     SeriesData::Float(_) => self
     SeriesData::Bool(data) =>
-      SeriesData::Float(data.map(fn(x : Bool) { x.to_int().to_float() }))
+      SeriesData::Float(data.map(fn(x : Bool) { Float::from_int(x.to_int()) }))
     SeriesData::Str(data) =>
       match strict {
         true => raise InvalidType("Cannot cast String to Float32")
@@ -1941,7 +2010,8 @@ fn SeriesData::cast_to_float32(
 ///|
 fn SeriesData::cast_to_bool(self : SeriesData) -> SeriesData {
   match self {
-    SeriesData::Int(data) => SeriesData::Bool(data.map(fn(x : Int) { x != 0 }))
+    SeriesData::Int(data) =>
+      SeriesData::Bool(data.map(fn(x : Int32) { x != 0 }))
     SeriesData::Float(data) =>
       SeriesData::Bool(data.map(fn(x : Float) { x != 0.0 }))
     SeriesData::Bool(_) => self
@@ -1954,7 +2024,7 @@ fn SeriesData::cast_to_bool(self : SeriesData) -> SeriesData {
 fn SeriesData::cast_to_str(self : SeriesData) -> SeriesData {
   match self {
     SeriesData::Int(data) =>
-      SeriesData::Str(data.map(fn(x : Int) { x.to_string() }))
+      SeriesData::Str(data.map(fn(x : Int32) { x.to_string() }))
     SeriesData::Float(data) =>
       SeriesData::Str(data.map(fn(x : Float) { x.to_string() }))
     SeriesData::Bool(data) =>
@@ -1967,7 +2037,7 @@ fn SeriesData::cast_to_str(self : SeriesData) -> SeriesData {
 fn Series::cast(
   self : Series,
   dtype : DataType,
-  strict~ : Bool = true
+  strict~ : Bool = true,
 ) -> Series raise InvalidType {
   let data = match dtype {
     DataType::Int32 => self.data.cast_to_int32(strict~)
@@ -1994,14 +2064,19 @@ fn Series::cast(
 ///|
 fn SeriesData::to_init_repr(self : SeriesData) -> String {
   match self {
-    SeriesData::Int(data) => data.to_string()
-    SeriesData::Float(data) => data.to_string()
-    SeriesData::Bool(data) => data.to_string()
-    SeriesData::Str(data) => data.to_string()
+    SeriesData::Int(data) =>
+      "[" + data.map(fn(x) { x.to_string() }).join(", ") + "]"
+    SeriesData::Float(data) =>
+      "[" + data.map(fn(x) { x.to_string() }).join(", ") + "]"
+    SeriesData::Bool(data) =>
+      "[" + data.map(fn(x) { x.to_string() }).join(", ") + "]"
+    SeriesData::Str(data) =>
+      "[" + data.map(fn(x) { @debug.to_string(x) }).join(", ") + "]"
   }
 }
 
-///| Swap two elements in the Series
+///|
+/// Swap two elements in the Series
 ///
 /// Parameters
 ///
@@ -2019,7 +2094,11 @@ fn SeriesData::to_init_repr(self : SeriesData) -> String {
 /// series.swap!(0, 1)
 /// inspect(series.data.to_string(), content="Int([2, 1, 3])")
 /// ```
-pub fn Series::swap(self : Series, x : Int, y : Int) -> Unit raise IndexOutOfBounds {
+pub fn Series::swap(
+  self : Series,
+  x : Int32,
+  y : Int32,
+) -> Unit raise IndexOutOfBounds {
   guard x >= 0 && x < self.length && y >= 0 && y < self.length else {
     raise IndexOutOfBounds("Index out of bounds")
   }
@@ -2040,7 +2119,8 @@ test "Series::swap" {
   inspect(series.data, content="Int([2, 1, 3, 4, 5])")
 }
 
-///| Move null values to the front of the Series
+///|
+/// Move null values to the front of the Series
 ///
 /// Parameters
 ///
@@ -2061,7 +2141,7 @@ test "Series::swap" {
 /// ```
 pub fn Series::move_nulls_front(
   self : Series,
-  inplace~ : Bool = false
+  inplace~ : Bool = false,
 ) -> Series? {
   if self.bitmap.optional == false {
     match inplace {
@@ -2078,8 +2158,8 @@ pub fn Series::move_nulls_front(
     true => {
       let mut j = self.length - 1
       for i = self.length - 1; i >= 0; i = i - 1 {
-        if not(self.bitmap[i]) {
-          (try? self.swap(i, j)) |> ignore
+        if !self.bitmap[i] {
+          (Ok(self.swap(i, j)) catch { e => Err(e) }) |> ignore
           j -= 1
         }
       }
@@ -2103,7 +2183,8 @@ test "Series::move_nulls_front" {
   inspect(series.data, content="Int([1, 0, 3, 0])")
 }
 
-///| Move null values to the back of the Series
+///|
+/// Move null values to the back of the Series
 ///
 /// Parameters
 ///
@@ -2124,7 +2205,7 @@ test "Series::move_nulls_front" {
 /// ```
 pub fn Series::move_nulls_back(
   self : Series,
-  inplace~ : Bool = false
+  inplace~ : Bool = false,
 ) -> Series? {
   if self.bitmap.optional == false {
     match inplace {
@@ -2141,8 +2222,8 @@ pub fn Series::move_nulls_back(
     true => {
       let mut j = 0
       for i in 0..<self.length {
-        if not(self.bitmap[i]) {
-          (try? self.swap(i, j)) |> ignore
+        if !self.bitmap[i] {
+          (Ok(self.swap(i, j)) catch { e => Err(e) }) |> ignore
           j += 1
         }
       }
@@ -2166,7 +2247,8 @@ test "Series::move_nulls_back" {
   inspect(series.data, content="Int([1, 0, 3, 0])")
 }
 
-///| unsafe (use only one type)
+///|
+/// unsafe (use only one type)
 fn seriesValueArray_get_type(data : Array[SeriesValue]) -> DataType? {
   let mut dtype = None
   for i in 0..<data.length() {
@@ -2184,7 +2266,8 @@ fn seriesValueArray_get_type(data : Array[SeriesValue]) -> DataType? {
   dtype
 }
 
-///| unsafe (use only one type)
+///|
+/// unsafe (use only one type)
 fn seriesValueArray_to_seriesData(data : Array[SeriesValue]) -> SeriesData {
   let n = data.length()
   let dtype = seriesValueArray_get_type(data)

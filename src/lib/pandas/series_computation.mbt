@@ -1,4 +1,5 @@
-///| Compute absolute values.
+///|
+/// Compute absolute values.
 ///
 /// Example
 /// ```
@@ -17,7 +18,8 @@ pub fn Series::abs(self : Series) -> Series raise InvalidType {
   }
 }
 
-///| Compute the element-wise value for the cosine.
+///|
+/// Compute the element-wise value for the cosine.
 ///
 /// Example
 /// ```
@@ -30,21 +32,22 @@ pub fn Series::cos(self : Series) -> Series raise InvalidType {
       Series::new(
         self.name,
         SeriesInput::Float32(
-          data.map(fn(x) { @math.cos(x.to_double()).to_float() }),
+          data.map(fn(x) { Float::from_double(@math.cos(x.to_double())) }),
         ),
       )
     SeriesData::Float(data) =>
       Series::new(
         self.name,
         SeriesInput::Float32(
-          data.map(fn(x) { @math.cos(x.to_double()).to_float() }),
+          data.map(fn(x) { Float::from_double(@math.cos(x.to_double())) }),
         ),
       )
     _ => raise InvalidType("unsupported type")
   }
 }
 
-///| Compute the element-wise value for the sine.
+///|
+/// Compute the element-wise value for the sine.
 ///
 /// Example
 /// ```
@@ -57,21 +60,22 @@ pub fn Series::sin(self : Series) -> Series raise InvalidType {
       Series::new(
         self.name,
         SeriesInput::Float32(
-          data.map(fn(x) { @math.sin(x.to_double()).to_float() }),
+          data.map(fn(x) { Float::from_double(@math.sin(x.to_double())) }),
         ),
       )
     SeriesData::Float(data) =>
       Series::new(
         self.name,
         SeriesInput::Float32(
-          data.map(fn(x) { @math.sin(x.to_double()).to_float() }),
+          data.map(fn(x) { Float::from_double(@math.sin(x.to_double())) }),
         ),
       )
     _ => raise InvalidType("unsupported type")
   }
 }
 
-///| Compute the element-wise value for the tangent.
+///|
+/// Compute the element-wise value for the tangent.
 ///
 /// Example
 /// ```
@@ -84,21 +88,22 @@ pub fn Series::tan(self : Series) -> Series raise InvalidType {
       Series::new(
         self.name,
         SeriesInput::Float32(
-          data.map(fn(x) { @math.tan(x.to_double()).to_float() }),
+          data.map(fn(x) { Float::from_double(@math.tan(x.to_double())) }),
         ),
       )
     SeriesData::Float(data) =>
       Series::new(
         self.name,
         SeriesInput::Float32(
-          data.map(fn(x) { @math.tan(x.to_double()).to_float() }),
+          data.map(fn(x) { Float::from_double(@math.tan(x.to_double())) }),
         ),
       )
     _ => raise InvalidType("unsupported type")
   }
 }
 
-///| Compute the element-wise value for the acos.
+///|
+/// Compute the element-wise value for the acos.
 ///
 /// Example
 /// ```
@@ -111,21 +116,22 @@ pub fn Series::acos(self : Series) -> Series raise InvalidType {
       Series::new(
         self.name,
         SeriesInput::Float32(
-          data.map(fn(x) { @math.acos(x.to_double()).to_float() }),
+          data.map(fn(x) { Float::from_double(@math.acos(x.to_double())) }),
         ),
       )
     SeriesData::Float(data) =>
       Series::new(
         self.name,
         SeriesInput::Float32(
-          data.map(fn(x) { @math.acos(x.to_double()).to_float() }),
+          data.map(fn(x) { Float::from_double(@math.acos(x.to_double())) }),
         ),
       )
     _ => raise InvalidType("unsupported type")
   }
 }
 
-///| Compute the logarithm to a given base.
+///|
+/// Compute the logarithm to a given base.
 /// Parameters
 /// 
 /// - `base` : The base of the logarithm. Default is Euler's number (e).
@@ -138,7 +144,7 @@ pub fn Series::acos(self : Series) -> Series raise InvalidType {
 /// ```
 pub fn Series::log(
   self : Series,
-  base~ : Float = 2.718281828459045
+  base~ : Float = 2.718281828459045,
 ) -> Series raise InvalidType {
   match self.data {
     SeriesData::Int(data) =>
@@ -146,7 +152,9 @@ pub fn Series::log(
         self.name,
         SeriesInput::Float32(
           data.map(fn(x) {
-            (@math.ln(x.to_double()) / @math.ln(base.to_double())).to_float()
+            Float::from_double(
+              @math.ln(x.to_double()) / @math.ln(base.to_double()),
+            )
           }),
         ),
       )
@@ -155,7 +163,9 @@ pub fn Series::log(
         self.name,
         SeriesInput::Float32(
           data.map(fn(x) {
-            (@math.ln(x.to_double()) / @math.ln(base.to_double())).to_float()
+            Float::from_double(
+              @math.ln(x.to_double()) / @math.ln(base.to_double()),
+            )
           }),
         ),
       )
@@ -163,7 +173,8 @@ pub fn Series::log(
   }
 }
 
-///| Compute the base 10 logarithm of the input array, element-wise.
+///|
+/// Compute the base 10 logarithm of the input array, element-wise.
 /// 
 /// Example
 /// ```
@@ -176,14 +187,14 @@ pub fn Series::log10(self : Series) -> Series raise InvalidType {
       Series::new(
         self.name,
         SeriesInput::Float32(
-          data.map(fn(x) { @math.log10(x.to_double()).to_float() }),
+          data.map(fn(x) { Float::from_double(@math.log10(x.to_double())) }),
         ),
       )
     SeriesData::Float(data) =>
       Series::new(
         self.name,
         SeriesInput::Float32(
-          data.map(fn(x) { @math.log10(x.to_double()).to_float() }),
+          data.map(fn(x) { Float::from_double(@math.log10(x.to_double())) }),
         ),
       )
     _ => raise InvalidType("unsupported type")
