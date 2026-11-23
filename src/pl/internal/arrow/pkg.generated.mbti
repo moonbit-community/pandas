@@ -1,0 +1,113 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "smallbearrr/pandas/pl/internal/arrow"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+type Bitmap
+pub fn Bitmap::bit_and(Self, Self) -> Self
+pub fn Bitmap::bit_not(Self) -> Self
+pub fn Bitmap::bit_or(Self, Self) -> Self
+pub fn Bitmap::count_ones(Self) -> Int32
+pub fn Bitmap::count_zeros(Self) -> Int32
+pub fn Bitmap::filled(Int32, Bool) -> Self
+pub fn Bitmap::from_array(Array[Bool]) -> Self
+pub fn Bitmap::gather(Self, Array[Int32]) -> Self
+pub fn Bitmap::get(Self, Int32) -> Bool
+pub fn Bitmap::iter(Self) -> Iter[Bool]
+pub fn Bitmap::length(Self) -> Int32
+pub fn Bitmap::slice(Self, Int32, Int32) -> Self
+pub fn Bitmap::to_array(Self) -> Array[Bool]
+pub impl Eq for Bitmap
+pub impl @debug.Debug for Bitmap
+
+type BitmapBuilder
+pub fn BitmapBuilder::finish(Self) -> Bitmap
+pub fn BitmapBuilder::length(Self) -> Int32
+pub fn BitmapBuilder::new(capacity? : Int32) -> Self
+pub fn BitmapBuilder::push(Self, Bool) -> Unit
+
+type BoolArray
+pub fn BoolArray::from_array(Array[Bool]) -> Self
+pub fn BoolArray::from_options(Array[Bool?]) -> Self
+pub fn BoolArray::gather(Self, Array[Int32]) -> Self
+pub fn BoolArray::get(Self, Int32) -> Bool?
+pub fn BoolArray::is_valid(Self, Int32) -> Bool
+pub fn BoolArray::iter(Self) -> Iter[Bool?]
+pub fn BoolArray::length(Self) -> Int32
+pub fn BoolArray::new(Bitmap, Bitmap?) -> Self
+pub fn BoolArray::null_count(Self) -> Int32
+pub fn BoolArray::slice(Self, Int32, Int32) -> Self
+pub fn BoolArray::to_options(Self) -> Array[Bool?]
+pub fn BoolArray::validity(Self) -> Bitmap?
+pub fn BoolArray::value(Self, Int32) -> Bool
+pub impl Eq for BoolArray
+pub impl @debug.Debug for BoolArray
+
+type BoolBuilder
+pub fn BoolBuilder::finish(Self) -> BoolArray
+pub fn BoolBuilder::length(Self) -> Int32
+pub fn BoolBuilder::new(capacity? : Int32) -> Self
+pub fn BoolBuilder::push(Self, Bool) -> Unit
+pub fn BoolBuilder::push_null(Self) -> Unit
+pub fn BoolBuilder::push_option(Self, Bool?) -> Unit
+
+type PrimArray[T]
+pub fn[T] PrimArray::from_array(Array[T]) -> Self[T]
+pub fn[T : Default] PrimArray::from_options(Array[T?]) -> Self[T]
+pub fn[T] PrimArray::gather(Self[T], Array[Int32]) -> Self[T]
+pub fn[T] PrimArray::get(Self[T], Int32) -> T?
+pub fn[T] PrimArray::is_valid(Self[T], Int32) -> Bool
+pub fn[T] PrimArray::iter(Self[T]) -> Iter[T?]
+pub fn[T] PrimArray::length(Self[T]) -> Int32
+pub fn[T] PrimArray::new(FixedArray[T], Bitmap?) -> Self[T]
+pub fn[T] PrimArray::null_count(Self[T]) -> Int32
+pub fn[T] PrimArray::slice(Self[T], Int32, Int32) -> Self[T]
+pub fn[T] PrimArray::to_options(Self[T]) -> Array[T?]
+pub fn[T] PrimArray::validity(Self[T]) -> Bitmap?
+pub fn[T] PrimArray::value(Self[T], Int32) -> T
+pub impl[T : Eq] Eq for PrimArray[T]
+pub impl[T : @debug.Debug] @debug.Debug for PrimArray[T]
+
+type PrimBuilder[T]
+pub fn[T] PrimBuilder::finish(Self[T]) -> PrimArray[T]
+pub fn[T] PrimBuilder::length(Self[T]) -> Int32
+pub fn[T : Default] PrimBuilder::new(capacity? : Int32) -> Self[T]
+pub fn[T] PrimBuilder::push(Self[T], T) -> Unit
+pub fn[T] PrimBuilder::push_null(Self[T]) -> Unit
+pub fn[T] PrimBuilder::push_option(Self[T], T?) -> Unit
+
+type StrArray
+pub fn StrArray::from_array(Array[String]) -> Self
+pub fn StrArray::from_options(Array[String?]) -> Self
+pub fn StrArray::gather(Self, Array[Int32]) -> Self
+pub fn StrArray::get(Self, Int32) -> String?
+pub fn StrArray::is_valid(Self, Int32) -> Bool
+pub fn StrArray::iter(Self) -> Iter[String?]
+pub fn StrArray::length(Self) -> Int32
+pub fn StrArray::new(FixedArray[String], Bitmap?) -> Self
+pub fn StrArray::null_count(Self) -> Int32
+pub fn StrArray::slice(Self, Int32, Int32) -> Self
+pub fn StrArray::to_options(Self) -> Array[String?]
+pub fn StrArray::validity(Self) -> Bitmap?
+pub fn StrArray::value(Self, Int32) -> String
+pub impl Eq for StrArray
+pub impl @debug.Debug for StrArray
+
+type StrBuilder
+pub fn StrBuilder::finish(Self) -> StrArray
+pub fn StrBuilder::length(Self) -> Int32
+pub fn StrBuilder::new(capacity? : Int32) -> Self
+pub fn StrBuilder::push(Self, String) -> Unit
+pub fn StrBuilder::push_null(Self) -> Unit
+pub fn StrBuilder::push_option(Self, String?) -> Unit
+
+// Type aliases
+
+// Traits

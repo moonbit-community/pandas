@@ -1,0 +1,131 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "smallbearrr/pandas/pl"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+
+// Errors
+pub(all) suberror PolarsError {
+  ColumnNotFound(String)
+  DuplicateColumn(String)
+  SchemaMismatch(String)
+  ShapeMismatch(String)
+  OutOfBounds(String)
+  InvalidOperation(String)
+  ComputeError(String)
+  ParseError(String)
+}
+pub fn PolarsError::to_string(Self) -> String
+pub impl Show for PolarsError
+
+// Types and methods
+#derive(Eq, @debug.Debug)
+pub(all) enum AnyValue {
+  Null
+  Boolean(Bool)
+  Int32(Int32)
+  Int64(Int64)
+  Float32(Float)
+  Float64(Double)
+  String(String)
+  Date(Int32)
+  Datetime(Int64)
+}
+pub fn AnyValue::dtype(Self) -> DataType
+pub fn AnyValue::is_null(Self) -> Bool
+pub fn AnyValue::to_string(Self) -> String
+pub impl Show for AnyValue
+
+type DataFrame
+pub fn DataFrame::column(Self, String) -> Series raise PolarsError
+pub fn DataFrame::columns(Self) -> Array[String]
+pub fn DataFrame::dtypes(Self) -> Array[DataType]
+pub fn DataFrame::empty() -> Self
+pub fn DataFrame::equals(Self, Self) -> Bool
+pub fn DataFrame::gather(Self, Array[Int32]) -> Self raise PolarsError
+pub fn DataFrame::get(Self, Int32, String) -> AnyValue raise PolarsError
+pub fn DataFrame::get_column_index(Self, String) -> Int32?
+pub fn DataFrame::get_columns(Self) -> Array[Series]
+pub fn DataFrame::head(Self, n? : Int32) -> Self
+pub fn DataFrame::height(Self) -> Int32
+pub fn DataFrame::new(Array[Series]) -> Self raise PolarsError
+pub fn DataFrame::row(Self, Int32) -> Array[AnyValue] raise PolarsError
+pub fn DataFrame::schema(Self) -> Array[(String, DataType)]
+pub fn DataFrame::shape(Self) -> (Int32, Int32)
+pub fn DataFrame::slice(Self, Int32, length? : Int32) -> Self
+pub fn DataFrame::tail(Self, n? : Int32) -> Self
+pub fn DataFrame::to_string(Self) -> String
+pub fn DataFrame::width(Self) -> Int32
+pub impl Eq for DataFrame
+pub impl Show for DataFrame
+pub impl @debug.Debug for DataFrame
+
+#derive(Eq, Hash, @debug.Debug)
+pub(all) enum DataType {
+  Boolean
+  Int32
+  Int64
+  Float32
+  Float64
+  String
+  Date
+  Datetime
+  Null
+}
+pub fn DataType::is_float(Self) -> Bool
+pub fn DataType::is_integer(Self) -> Bool
+pub fn DataType::is_numeric(Self) -> Bool
+pub fn DataType::is_temporal(Self) -> Bool
+pub fn DataType::to_string(Self) -> String
+pub impl Show for DataType
+
+type Series
+pub fn Series::bool(String, Array[Bool]) -> Self
+pub fn Series::bool_nullable(String, Array[Bool?]) -> Self
+pub fn Series::cast(Self, DataType, strict? : Bool) -> Self raise PolarsError
+pub fn Series::date(String, Array[Int32]) -> Self
+pub fn Series::date_nullable(String, Array[Int32?]) -> Self
+pub fn Series::datetime(String, Array[Int64]) -> Self
+pub fn Series::datetime_nullable(String, Array[Int64?]) -> Self
+pub fn Series::dtype(Self) -> DataType
+pub fn Series::equals(Self, Self, check_names? : Bool, check_dtypes? : Bool) -> Bool
+pub fn Series::float32(String, Array[Float]) -> Self
+pub fn Series::float32_nullable(String, Array[Float?]) -> Self
+pub fn Series::float64(String, Array[Double]) -> Self
+pub fn Series::float64_nullable(String, Array[Double?]) -> Self
+pub fn Series::from_any_values(String, Array[AnyValue], dtype? : DataType) -> Self raise PolarsError
+pub fn Series::gather(Self, Array[Int32]) -> Self raise PolarsError
+pub fn Series::get(Self, Int32) -> AnyValue raise PolarsError
+pub fn Series::head(Self, n? : Int32) -> Self
+pub fn Series::int32(String, Array[Int32]) -> Self
+pub fn Series::int32_nullable(String, Array[Int32?]) -> Self
+pub fn Series::int64(String, Array[Int64]) -> Self
+pub fn Series::int64_nullable(String, Array[Int64?]) -> Self
+pub fn Series::is_empty(Self) -> Bool
+pub fn Series::len(Self) -> Int32
+pub fn Series::name(Self) -> String
+pub fn Series::null(String, Int32) -> Self
+pub fn Series::null_count(Self) -> Int32
+pub fn Series::rename(Self, String) -> Self
+pub fn Series::slice(Self, Int32, length? : Int32) -> Self
+pub fn Series::str(String, Array[String]) -> Self
+pub fn Series::str_nullable(String, Array[String?]) -> Self
+pub fn Series::tail(Self, n? : Int32) -> Self
+pub fn Series::to_bool_array(Self) -> Array[Bool?] raise PolarsError
+pub fn Series::to_float32_array(Self) -> Array[Float?] raise PolarsError
+pub fn Series::to_float64_array(Self) -> Array[Double?] raise PolarsError
+pub fn Series::to_int32_array(Self) -> Array[Int32?] raise PolarsError
+pub fn Series::to_int64_array(Self) -> Array[Int64?] raise PolarsError
+pub fn Series::to_list(Self) -> Array[AnyValue]
+pub fn Series::to_str_array(Self) -> Array[String?] raise PolarsError
+pub fn Series::to_string(Self) -> String
+pub impl Eq for Series
+pub impl Show for Series
+pub impl @debug.Debug for Series
+
+// Type aliases
+
+// Traits
