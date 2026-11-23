@@ -7,18 +7,23 @@
 // - strings longer than 30 characters are cut to 30 characters plus `…`;
 // - floats follow polars' `fmt_float`, which is not the cast-to-string text.
 //
-// Text widths use an approximation of Unicode East Asian widths (see
-// `char_width`); the golden data pins ASCII, CJK, Hangul, fullwidth and
-// halfwidth forms, combining and zero-width marks, emoji and U+FE0F sequences.
+// Text widths are measured from polars' own output (see `char_width.mbt`):
+// per code point, plus the sequence rules for variation selectors, ZWJ emoji,
+// modifiers and a few ligatures.
 
 ///|
 /// Longest string (in characters) printed before it is cut.
 let fmt_str_len : Int32 = 30
 
 ///|
-/// Widest a table cell line may be (the cut string plus the `…`); longer
-/// lines (only possible with wide characters) are wrapped.
+/// Widest a table column is (the cut string plus the `…` is 31 characters);
+/// wider cell lines (only possible with wide characters) are wrapped.
 let fmt_cell_width : Int32 = 31
+
+///|
+/// comfy-table does not split a word into a line with fewer free columns than
+/// this (not counting the joining space); the word starts the next line.
+let fmt_min_free : Int32 = 4
 
 ///|
 /// Row count above which tables and series are folded.
@@ -363,238 +368,112 @@ fn series_str(s : String) -> String {
 }
 
 ///|
-/// Display width of one character: 2 for East Asian wide and fullwidth
-/// characters and emoji, 0 for combining marks and zero-width characters,
-/// 1 otherwise (control characters count 1, as in polars' tables). This is a
-/// compact approximation of the Unicode width tables; a variation selector
-/// that makes a symbol an emoji is handled by `char_width_after`.
-fn char_width(c : Char) -> Int32 {
-  let u = c.to_int()
-  if u < 0x300 {
-    return 1
+/// Splits `word` for `split_long_word`: the longest prefix of whole grapheme
+/// clusters whose widths (each measured on its own) add up to at most `room`
+/// columns, and the rest. When not even the first cluster fits and `fresh` (the
+/// line is empty), one code point is taken anyway.
+fn split_long_word(
+  word : String,
+  room : Int32,
+  fresh : Bool,
+) -> (String, String) {
+  let cs : Array[Int32] = []
+  for c in word {
+    cs.push(c.to_int())
   }
-  // text-default symbols (some sit inside emoji blocks) are one column wide
-  if is_vs16_base(c) {
-    return 1
+  let n = cs.length()
+  let mut taken = 0
+  let mut w = 0
+  while taken < n {
+    let stop = grapheme_end(cs, taken)
+    let part : Array[Int32] = []
+    for k in taken..<stop {
+      part.push(cs[k])
+    }
+    let pw = code_points_width(part, part.length())
+    if w + pw > room {
+      break
+    }
+    w += pw
+    taken = stop
   }
-  if (u >= 0x300 && u <= 0x36f) ||
-    (u >= 0x200b && u <= 0x200f) ||
-    (u >= 0x2060 && u <= 0x2064) ||
-    (u >= 0xfe00 && u <= 0xfe0f) ||
-    u == 0xfeff {
-    return 0
+  if taken == 0 && fresh && n > 0 {
+    taken = 1
   }
-  if (u >= 0x1100 && u <= 0x115f) ||
-    (u >= 0x2e80 && u <= 0x303e) ||
-    (u >= 0x3041 && u <= 0x33ff) ||
-    (u >= 0x3400 && u <= 0x4dbf) ||
-    (u >= 0x4e00 && u <= 0x9fff) ||
-    (u >= 0xa000 && u <= 0xa4cf) ||
-    (u >= 0xa960 && u <= 0xa97f) ||
-    (u >= 0xac00 && u <= 0xd7a3) ||
-    (u >= 0xf900 && u <= 0xfaff) ||
-    (u >= 0xfe30 && u <= 0xfe6f) ||
-    (u >= 0xff00 && u <= 0xff60) ||
-    (u >= 0xffe0 && u <= 0xffe6) ||
-    (u >= 0x1f300 && u <= 0x1f64f) ||
-    (u >= 0x1f680 && u <= 0x1f6ff) ||
-    (u >= 0x1f900 && u <= 0x1f9ff) ||
-    (u >= 0x20000 && u <= 0x3fffd) {
-    return 2
-  }
-  1
-}
-
-///|
-/// Characters that are one column wide on their own but two columns wide when
-/// directly followed by U+FE0F (emoji presentation selector), as inclusive
-/// code point ranges in ascending order. Taken from polars 2.1.0's output for
-/// every code point; `#`, `*` and the digits are included.
-let vs16_bases : FixedArray[(Int32, Int32)] = [
-  (0x23, 0x23),
-  (0x2a, 0x2a),
-  (0x30, 0x39),
-  (0xa9, 0xa9),
-  (0xae, 0xae),
-  (0x203c, 0x203c),
-  (0x2049, 0x2049),
-  (0x2122, 0x2122),
-  (0x2139, 0x2139),
-  (0x2194, 0x2199),
-  (0x21a9, 0x21aa),
-  (0x2328, 0x2328),
-  (0x23cf, 0x23cf),
-  (0x23ed, 0x23ef),
-  (0x23f1, 0x23f2),
-  (0x23f8, 0x23fa),
-  (0x24c2, 0x24c2),
-  (0x25aa, 0x25ab),
-  (0x25b6, 0x25b6),
-  (0x25c0, 0x25c0),
-  (0x25fb, 0x25fc),
-  (0x2600, 0x2604),
-  (0x260e, 0x260e),
-  (0x2611, 0x2611),
-  (0x2618, 0x2618),
-  (0x261d, 0x261d),
-  (0x2620, 0x2620),
-  (0x2622, 0x2623),
-  (0x2626, 0x2626),
-  (0x262a, 0x262a),
-  (0x262e, 0x262f),
-  (0x2638, 0x263a),
-  (0x2640, 0x2640),
-  (0x2642, 0x2642),
-  (0x265f, 0x2660),
-  (0x2663, 0x2663),
-  (0x2665, 0x2666),
-  (0x2668, 0x2668),
-  (0x267b, 0x267b),
-  (0x267e, 0x267e),
-  (0x2692, 0x2692),
-  (0x2694, 0x2697),
-  (0x2699, 0x2699),
-  (0x269b, 0x269c),
-  (0x26a0, 0x26a0),
-  (0x26a7, 0x26a7),
-  (0x26b0, 0x26b1),
-  (0x26c8, 0x26c8),
-  (0x26cf, 0x26cf),
-  (0x26d1, 0x26d1),
-  (0x26d3, 0x26d3),
-  (0x26e9, 0x26e9),
-  (0x26f0, 0x26f1),
-  (0x26f4, 0x26f4),
-  (0x26f7, 0x26f9),
-  (0x2702, 0x2702),
-  (0x2708, 0x2709),
-  (0x270c, 0x270d),
-  (0x270f, 0x270f),
-  (0x2712, 0x2712),
-  (0x2714, 0x2714),
-  (0x2716, 0x2716),
-  (0x271d, 0x271d),
-  (0x2721, 0x2721),
-  (0x2733, 0x2734),
-  (0x2744, 0x2744),
-  (0x2747, 0x2747),
-  (0x2763, 0x2764),
-  (0x27a1, 0x27a1),
-  (0x2934, 0x2935),
-  (0x2b05, 0x2b07),
-  (0x1f170, 0x1f171),
-  (0x1f17e, 0x1f17f),
-  (0x1f321, 0x1f321),
-  (0x1f324, 0x1f32c),
-  (0x1f336, 0x1f336),
-  (0x1f37d, 0x1f37d),
-  (0x1f396, 0x1f397),
-  (0x1f399, 0x1f39b),
-  (0x1f39e, 0x1f39f),
-  (0x1f3cb, 0x1f3ce),
-  (0x1f3d4, 0x1f3df),
-  (0x1f3f3, 0x1f3f3),
-  (0x1f3f5, 0x1f3f5),
-  (0x1f3f7, 0x1f3f7),
-  (0x1f43f, 0x1f43f),
-  (0x1f441, 0x1f441),
-  (0x1f4fd, 0x1f4fd),
-  (0x1f549, 0x1f54a),
-  (0x1f56f, 0x1f570),
-  (0x1f573, 0x1f579),
-  (0x1f587, 0x1f587),
-  (0x1f58a, 0x1f58d),
-  (0x1f590, 0x1f590),
-  (0x1f5a5, 0x1f5a5),
-  (0x1f5a8, 0x1f5a8),
-  (0x1f5b1, 0x1f5b2),
-  (0x1f5bc, 0x1f5bc),
-  (0x1f5c2, 0x1f5c4),
-  (0x1f5d1, 0x1f5d3),
-  (0x1f5dc, 0x1f5de),
-  (0x1f5e1, 0x1f5e1),
-  (0x1f5e3, 0x1f5e3),
-  (0x1f5e8, 0x1f5e8),
-  (0x1f5ef, 0x1f5ef),
-  (0x1f5f3, 0x1f5f3),
-  (0x1f5fa, 0x1f5fa),
-  (0x1f6cb, 0x1f6cb),
-  (0x1f6cd, 0x1f6cf),
-  (0x1f6e0, 0x1f6e5),
-  (0x1f6e9, 0x1f6e9),
-  (0x1f6f0, 0x1f6f0),
-  (0x1f6f3, 0x1f6f3),
-]
-
-///|
-/// Whether `c` is in `vs16_bases` (binary search).
-fn is_vs16_base(c : Char) -> Bool {
-  let u = c.to_int()
-  let mut lo = 0
-  let mut hi = vs16_bases.length() - 1
-  while lo <= hi {
-    let mid = (lo + hi) / 2
-    let (a, b) = vs16_bases[mid]
-    if u < a {
-      hi = mid - 1
-    } else if u > b {
-      lo = mid + 1
+  let first = StringBuilder()
+  let rest = StringBuilder()
+  for k in 0..<n {
+    if k < taken {
+      first.write_char(cs[k].unsafe_to_char())
     } else {
-      return true
+      rest.write_char(cs[k].unsafe_to_char())
     }
   }
-  false
+  (first.to_string(), rest.to_string())
 }
 
 ///|
-/// Width of `c` when it directly follows `prev` (`None` at the start of a
-/// string): `char_width`, except that U+FE0F after a `vs16_bases` character
-/// adds the second column.
-fn char_width_after(prev : Char?, c : Char) -> Int32 {
-  match prev {
-    Some(p) if c.to_int() == 0xfe0f && is_vs16_base(p) => 1
-    _ => char_width(c)
+/// Wraps one line (no `\n`) to `limit` columns the way comfy-table's
+/// `split_line` does. A line that fits is kept. Otherwise it is split at
+/// single spaces into words that are laid out in order: a word that fits next
+/// to the text of the current line (one column for the joining space) is
+/// appended; a word wider than the column is cut into the free space of the
+/// current line, cluster by cluster, when at least `fmt_min_free` columns are
+/// free; any other word starts a new line. The spaces at the breaks are
+/// dropped, and so are leading spaces (the line is "empty" while it has no
+/// text).
+fn wrap_line(line : String, limit : Int32) -> Array[String] {
+  let out : Array[String] = []
+  if str_width(line) <= limit {
+    out.push(line)
+    return out
   }
-}
-
-///|
-/// Display width of a string.
-fn str_width(s : String) -> Int32 {
-  let mut w = 0
-  let mut prev : Char? = None
-  for c in s {
-    w += char_width_after(prev, c)
-    prev = Some(c)
+  let parts : Array[String] = []
+  for p in line.split(" ") {
+    parts.push(p.to_owned())
   }
-  w
+  // a stack: the next word is on top
+  let words : Array[String] = []
+  for k = parts.length() - 1; k >= 0; k = k - 1 {
+    words.push(parts[k])
+  }
+  let mut cur = ""
+  while words.pop() is Some(word) {
+    let join = if cur.length() > 0 { 1 } else { 0 }
+    let cw = str_width(cur)
+    let ww = str_width(word)
+    if join == 1 && limit - cw - 1 <= 0 {
+      // no column left, not even for a zero-width word
+      out.push(cur)
+      cur = ""
+      words.push(word)
+    } else if cw + join + ww <= limit {
+      cur = if join == 1 { cur + " " + word } else { word }
+    } else if ww > limit && (join == 0 || limit - cw >= fmt_min_free) {
+      let (first, rest) = split_long_word(word, limit - cw - join, join == 0)
+      out.push(if join == 1 { cur + " " + first } else { first })
+      cur = ""
+      words.push(rest)
+    } else {
+      out.push(cur)
+      cur = ""
+      words.push(word)
+    }
+  }
+  if cur.length() > 0 {
+    out.push(cur)
+  }
+  out
 }
 
 ///|
 /// The lines of a table cell: split at `\n` (a `\r` stays in the text and
-/// counts as one column) and every line hard-wrapped to `fmt_cell_width`
-/// columns.
-fn cell_lines(text : String) -> Array[String] {
+/// counts as one column) and every line wrapped to `limit` columns.
+fn cell_lines(text : String, limit : Int32) -> Array[String] {
   let out : Array[String] = []
   for part in text.split("\n") {
-    let line = part.to_owned()
-    if str_width(line) <= fmt_cell_width {
+    for line in wrap_line(part.to_owned(), limit) {
       out.push(line)
-    } else {
-      let sb = StringBuilder()
-      let mut w = 0
-      let mut prev : Char? = None
-      for c in line {
-        let cw = char_width_after(prev, c)
-        if w + cw > fmt_cell_width && w > 0 {
-          out.push(sb.to_string())
-          sb.reset()
-          w = 0
-        }
-        sb.write_char(c)
-        w += cw
-        prev = Some(c)
-      }
-      out.push(sb.to_string())
     }
   }
   out
@@ -701,17 +580,14 @@ priv struct TableColumn {
 }
 
 ///|
+/// The column is `limit` columns wide (or wider, if a line cannot be wrapped
+/// that narrow).
 fn TableColumn::new(
   header : Array[String],
   cells : Array[Array[String]],
-  natural : Int32,
+  limit : Int32,
 ) -> TableColumn {
-  // wrapped cells still make the column as wide as the wrap limit
-  let mut width = if natural > fmt_cell_width {
-    fmt_cell_width
-  } else {
-    natural
-  }
+  let mut width = limit
   for line in header {
     let w = str_width(line)
     if w > width {
@@ -743,9 +619,68 @@ fn cell_natural_width(text : String) -> Int32 {
 }
 
 ///|
+/// The bound polars puts on a cell when it lays a column out: twice its number
+/// of code points, but at most its length in UTF-8 bytes. Only U+17D8 (three
+/// columns, three bytes) is ever wider than that, see `column_limit`.
+fn cell_bound(text : String) -> Int32 {
+  let mut chars = 0
+  let mut bytes = 0
+  for c in text {
+    chars += 1
+    let u = c.to_int()
+    bytes += if u < 0x80 {
+      1
+    } else if u < 0x800 {
+      2
+    } else if u < 0x10000 {
+      3
+    } else {
+      4
+    }
+  }
+  if 2 * chars < bytes {
+    2 * chars
+  } else {
+    bytes
+  }
+}
+
+///|
+/// The width of a column, from the texts of all its cells (the name, `---` and
+/// the dtype included): the widest cell, where no cell counts for more than the
+/// largest `cell_bound` of the column, and at most `fmt_cell_width`. Cells
+/// wider than this are wrapped to it.
+fn column_limit(texts : Array[String]) -> Int32 {
+  let mut bound = 0
+  for t in texts {
+    let b = cell_bound(t)
+    if b > bound {
+      bound = b
+    }
+  }
+  let mut width = 0
+  for t in texts {
+    let w = cell_natural_width(t)
+    let w = if w > bound { bound } else { w }
+    if w > width {
+      width = w
+    }
+  }
+  if width > fmt_cell_width {
+    fmt_cell_width
+  } else {
+    width
+  }
+}
+
+///|
 /// The header lines of a column: name, `---`, dtype.
-fn header_lines(name : String, dtype : DataType) -> Array[String] {
-  let out = cell_lines(cell_str(name))
+fn header_lines(
+  name : String,
+  dtype : DataType,
+  limit : Int32,
+) -> Array[String] {
+  let out = cell_lines(cell_str(name), limit)
   out.push("---")
   out.push("\{dtype}")
   out
@@ -860,17 +795,16 @@ pub impl Show for DataFrame with fn output(self, logger) {
           cell_text(value_at(s, i))
         }
       })
-      let mut natural = cell_natural_width(cell_str(s.name()))
-      for text in texts {
-        let w = cell_natural_width(text)
-        if w > natural {
-          natural = w
-        }
+      let name_text = cell_str(s.name())
+      let all = [name_text, "---", "\{s.dtype()}"]
+      for t in texts {
+        all.push(t)
       }
+      let natural = column_limit(all)
       cols.push(
         TableColumn::new(
-          header_lines(s.name(), s.dtype()),
-          texts.map(cell_lines),
+          header_lines(s.name(), s.dtype(), natural),
+          texts.map(t => cell_lines(t, natural)),
           natural,
         ),
       )

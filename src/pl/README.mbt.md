@@ -110,15 +110,19 @@ test "errors" {
   let s = @pl.Series::int32("n", [1, 2, 3])
   try s.get(3) catch {
     @pl.OutOfBounds(msg) =>
-      inspect(msg, content="index 3 is out of bounds for length 3")
+      inspect(msg, content="index 3 is out of bounds for sequence of length 3")
     _ => fail("expected OutOfBounds")
   } noraise {
     _ => fail("expected an error")
   }
   let text = @pl.Series::str("t", ["1", "x"])
   try text.cast(Int64) catch {
-    @pl.PolarsError::ComputeError(_) => ()
-    _ => fail("expected a cast error")
+    @pl.InvalidOperation(msg) =>
+      inspect(
+        msg,
+        content="conversion from `str` to `i64` failed in column 't' for 1 out of 2 values: [\"x\"]",
+      )
+    _ => fail("expected InvalidOperation")
   } noraise {
     _ => fail("expected an error")
   }

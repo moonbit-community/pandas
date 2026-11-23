@@ -243,11 +243,16 @@ fn clamp64(v : Int64, hi : Int64) -> Int64 {
 
 ///|
 /// Resolves a possibly negative index (negative counts from the end) against
-/// `len` rows; raises `OutOfBounds` when it falls outside `[0, len)`.
-fn normalize_index(len : Int32, i : Int32) -> Int32 raise PolarsError {
+/// `len` rows; `None` when it falls outside `[0, len)`.
+///
+/// It returns an option rather than raising so that every caller can word the
+/// `OutOfBounds` message for its own context (`Series::get`, `Series::gather`,
+/// `DataFrame::row`, ...), using the index exactly as the user passed it.
+fn normalize_index(len : Int32, i : Int32) -> Int32? {
   let j = if i < 0 { i.to_int64() + len.to_int64() } else { i.to_int64() }
   if j < 0L || j >= len.to_int64() {
-    raise OutOfBounds("index \{i} is out of bounds for length \{len}")
+    None
+  } else {
+    Some(j.to_int())
   }
-  j.to_int()
 }

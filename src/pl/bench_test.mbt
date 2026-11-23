@@ -73,6 +73,33 @@ test "bench Series::cast i64->f64 n=1000000" (it : @bench.T) {
 }
 
 ///|
+test "bench Series::cast i64->str n=1000000" (it : @bench.T) {
+  let s = @pl.Series::int64("a", bench_i64_values())
+  it.bench(fn() { it.keep(must(() => s.cast(String))) })
+}
+
+///|
+test "bench Series::cast str->f64 n=1000000" (it : @bench.T) {
+  let s = @pl.Series::str("a", Array::makei(bench_n, i => "\{i}.\{i % 1000}"))
+  it.bench(fn() { it.keep(must(() => s.cast(Float64))) })
+}
+
+///|
+test "bench Series::cast f64->i32 10% null n=1000000" (it : @bench.T) {
+  let s = @pl.Series::float64_nullable(
+    "a",
+    Array::makei(bench_n, i => {
+      if i % 10 == 0 {
+        None
+      } else {
+        Some(i.to_double() + 0.5)
+      }
+    }),
+  )
+  it.bench(fn() { it.keep(must(() => s.cast(Int32))) })
+}
+
+///|
 test "bench Bitmap::bit_and offsets 3/5 n=1000000" (it : @bench.T) {
   let bits = Array::makei(bench_n + 8, i => i % 3 != 0)
   let base = @arrow.Bitmap::from_array(bits)

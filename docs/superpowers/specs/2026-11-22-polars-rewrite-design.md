@@ -133,8 +133,8 @@ pub suberror PolarsError {
   SchemaMismatch(String)      // 类型不匹配
   ShapeMismatch(String)       // 长度或形状不匹配
   OutOfBounds(String)
-  InvalidOperation(String)    // 当前类型不支持该操作
-  ComputeError(String)        // 其它运行时错误，例如 strict cast 失败
+  InvalidOperation(String)    // 当前类型不支持该操作，包括严格 cast 失败（2026-11-23 改为与 polars 一致）
+  ComputeError(String)        // 其它运行时错误，例如超范围日期的转换
   ParseError(String)          // CSV/文本解析，message 里带行号和列号
 }
 ```
