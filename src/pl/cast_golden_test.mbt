@@ -14,8 +14,8 @@ test "cast matches the polars golden data" {
   guard @json.parse(golden_cast) is Array(cases) else {
     fail("golden_cast is not a JSON array")
   }
-  // 9 source types x 9 target types x {strict, lenient}
-  assert_eq(cases.length(), 162)
+  // (9 source columns + 9 empty + 8 all-null) x 9 target types x {strict, lenient}
+  assert_eq(cases.length(), 468)
   let failures : Array[String] = []
   let mut checked = 0
   for c in cases {
@@ -40,15 +40,24 @@ test "cast matches the polars golden data" {
       e => Err(e)
     }
     match obj.get("error") {
-      Some(String("InvalidOperation")) =>
-        if !(outcome is Err(@pl.InvalidOperation(_))) {
-          failures.push("\{label}: expected InvalidOperation")
+      Some(String(kind)) => {
+        // the variant and the whole first line of polars' message
+        guard obj.get("message") is Some(String(message)) else {
+          fail("\{id}: error case without message")
         }
-      Some(String("ComputeError")) =>
-        if !(outcome is Err(@pl.ComputeError(_))) {
-          failures.push("\{label}: expected ComputeError")
+        let (actual_kind, actual_message) = match outcome {
+          Err(@pl.InvalidOperation(m)) => ("InvalidOperation", m)
+          Err(@pl.ComputeError(m)) => ("ComputeError", m)
+          Err(e) => ("other: \{e}", "")
+          Ok(_) => ("no error", "")
         }
-      Some(_) => fail("\{id}: unknown error kind")
+        if actual_kind != kind || actual_message != message {
+          failures.push(
+            "\{label}: expected \{kind}(\{message}), got \{actual_kind}(\{actual_message})",
+          )
+        }
+      }
+      Some(_) => fail("\{id}: error kind is not a string")
       None => {
         guard obj.get("result") is Some(result_json) else {
           fail("\{id}: neither result nor error")
@@ -72,5 +81,5 @@ test "cast matches the polars golden data" {
       failures.join("\n"),
     )
   }
-  assert_eq(checked + golden_cast_skips.length(), 162)
+  assert_eq(checked + golden_cast_skips.length(), 468)
 }

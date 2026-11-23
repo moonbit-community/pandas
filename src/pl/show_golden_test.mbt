@@ -18,7 +18,7 @@ test "show matches the polars golden data" {
   guard @json.parse(golden_show) is Array(cases) else {
     fail("golden_show is not a JSON array")
   }
-  assert_eq(cases.length(), 81)
+  assert_eq(cases.length(), 363)
   let failures : Array[String] = []
   let mut checked = 0
   for c in cases {
@@ -46,5 +46,5 @@ test "show matches the polars golden data" {
       failures.join("\n\n"),
     )
   }
-  assert_eq(checked + golden_show_skips.length(), 81)
+  assert_eq(checked + golden_show_skips.length(), 363)
 }

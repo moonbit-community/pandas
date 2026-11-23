@@ -17,6 +17,11 @@ let all_ones : UInt64 = 0xFFFFFFFFFFFFFFFFUL
 
 ///|
 /// Number of 64-bit words needed to hold `n` bits.
+///
+/// Assumes `0 <= n <= Int32::max_value() - 63`: the `n + 63` below is done in
+/// `Int32` and wraps for larger `n`. Bit counts anywhere near 2^31 (a 256 MiB
+/// bitmap) are far beyond what this library handles; `Bitmap::filled` and the
+/// builders do not guard against it.
 fn words_for(n : Int32) -> Int32 {
   (n + 63) >> 6
 }
@@ -295,8 +300,13 @@ pub fn BitmapBuilder::length(self : BitmapBuilder) -> Int32 {
 }
 
 ///|
-/// Finishes the builder into a `Bitmap` (offset 0). The builder is left empty
-/// and may be reused.
+/// Finishes the builder into a `Bitmap` (offset 0).
+///
+/// The words are copied out and the builder is reset to the state of a new
+/// builder: `length()` is 0 and nothing of the previous contents carries over.
+/// It may therefore be reused: later `push` calls start a fresh bitmap and
+/// never modify the bitmap returned here, and calling `finish` again right
+/// away returns an empty bitmap.
 pub fn BitmapBuilder::finish(self : BitmapBuilder) -> Bitmap {
   let n = self.length
   let src = self.words

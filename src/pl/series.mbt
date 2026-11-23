@@ -306,9 +306,18 @@ pub fn Series::null_count(self : Series) -> Int32 {
 /// Value at row `index`; a negative index counts from the end.
 ///
 /// # Errors
-/// Raises `OutOfBounds` unless `-len <= index < len`.
+/// Raises `OutOfBounds` unless `-len <= index < len`; the message is
+/// `index {index} is out of bounds for sequence of length {len}` (the index is
+/// shown as passed, negative or not).
 pub fn Series::get(self : Series, index : Int32) -> AnyValue raise PolarsError {
-  self.col.get(normalize_index(self.col.length(), index))
+  let len = self.col.length()
+  match normalize_index(len, index) {
+    Some(i) => self.col.get(i)
+    None =>
+      raise OutOfBounds(
+        "index \{index} is out of bounds for sequence of length \{len}",
+      )
+  }
 }
 
 ///|
@@ -354,7 +363,9 @@ pub fn Series::tail(self : Series, n~ : Int32 = 10) -> Series {
 /// indices count from the end.
 ///
 /// # Errors
-/// Raises `OutOfBounds` when any index is outside `-len <= i < len`.
+/// Raises `OutOfBounds` when any index is outside `-len <= i < len`; the
+/// message names the first offending index as passed:
+/// `gather indices are out of bounds: index {i} in column '{name}' of length {len}`.
 pub fn Series::gather(
   self : Series,
   indices : Array[Int32],
@@ -362,7 +373,13 @@ pub fn Series::gather(
   let len = self.col.length()
   let norm : Array[Int32] = Array(capacity=indices.length())
   for i in indices {
-    norm.push(normalize_index(len, i))
+    match normalize_index(len, i) {
+      Some(j) => norm.push(j)
+      None =>
+        raise OutOfBounds(
+          "gather indices are out of bounds: index \{i} in column '\{self.name}' of length \{len}",
+        )
+    }
   }
   Series::make(self.name, self.col.gather(norm))
 }

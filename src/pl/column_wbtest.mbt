@@ -1,14 +1,4 @@
 ///|
-fn[T] wb_raises(f : () -> T raise PolarsError) -> PolarsError? {
-  try {
-    ignore(f())
-    None
-  } catch {
-    e => Some(e)
-  }
-}
-
-///|
 test "normalize_slice basics" {
   assert_eq(normalize_slice(5, 0, None), (0, 5))
   assert_eq(normalize_slice(5, 2, None), (2, 3))
@@ -37,25 +27,24 @@ test "normalize_slice extremes do not overflow" {
 
 ///|
 test "normalize_index" {
-  assert_eq(normalize_index(3, 0), 0)
-  assert_eq(normalize_index(3, 2), 2)
-  assert_eq(normalize_index(3, -1), 2)
-  assert_eq(normalize_index(3, -3), 0)
-  assert_true(wb_raises(() => normalize_index(3, 3)) is Some(OutOfBounds(_)))
-  assert_true(wb_raises(() => normalize_index(3, -4)) is Some(OutOfBounds(_)))
-  assert_true(
-    wb_raises(() => normalize_index(3, @int.MIN_VALUE)) is Some(OutOfBounds(_)),
+  assert_eq(normalize_index(3, 0), Some(0))
+  assert_eq(normalize_index(3, 2), Some(2))
+  assert_eq(normalize_index(3, -1), Some(2))
+  assert_eq(normalize_index(3, -3), Some(0))
+  assert_eq(normalize_index(3, 3), None)
+  assert_eq(normalize_index(3, -4), None)
+  assert_eq(normalize_index(3, @int.MIN_VALUE), None)
+  assert_eq(normalize_index(3, @int.MAX_VALUE), None)
+  assert_eq(normalize_index(0, 0), None)
+  assert_eq(normalize_index(0, -1), None)
+  // the largest legal frame: the sum `i + len` must not overflow
+  assert_eq(normalize_index(@int.MAX_VALUE, -1), Some(@int.MAX_VALUE - 1))
+  assert_eq(normalize_index(@int.MAX_VALUE, @int.MIN_VALUE), None)
+  assert_eq(
+    normalize_index(@int.MAX_VALUE, @int.MAX_VALUE - 1),
+    Some(@int.MAX_VALUE - 1),
   )
-  assert_true(
-    wb_raises(() => normalize_index(3, @int.MAX_VALUE)) is Some(OutOfBounds(_)),
-  )
-  assert_true(wb_raises(() => normalize_index(0, 0)) is Some(OutOfBounds(_)))
-  assert_true(wb_raises(() => normalize_index(0, -1)) is Some(OutOfBounds(_)))
-  match wb_raises(() => normalize_index(3, -4)) {
-    Some(OutOfBounds(m)) =>
-      assert_eq(m, "index -4 is out of bounds for length 3")
-    _ => fail("expected OutOfBounds")
-  }
+  assert_eq(normalize_index(@int.MAX_VALUE, @int.MAX_VALUE), None)
 }
 
 ///|

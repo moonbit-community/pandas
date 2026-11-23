@@ -1,4 +1,13 @@
 ///|
+/// Text (`<Variant>: <message>`) of the error raised by `f`, or `"no error"`.
+fn[T] err_text(f : () -> T raise @pl.PolarsError) -> String {
+  match raises(f) {
+    Some(e) => e.to_string()
+    None => "no error"
+  }
+}
+
+///|
 test "series basics" {
   let s = @pl.Series::int64_nullable("a", [Some(1L), None, Some(3L)])
   assert_eq(s.len(), 3)
@@ -18,15 +27,18 @@ test "series errors" {
   assert_true(raises(() => s.get(1)) is Some(@pl.OutOfBounds(_)))
   assert_true(raises(() => s.get(-2)) is Some(@pl.OutOfBounds(_)))
   assert_true(raises(() => s.gather([0, 5])) is Some(@pl.OutOfBounds(_)))
-  assert_true(raises(() => s.to_int64_array()) is Some(@pl.SchemaMismatch(_)))
-  assert_true(
-    raises(() => {
+  assert_eq(
+    err_text(() => s.to_int64_array()),
+    "SchemaMismatch: column \"s\": expected i64 but the series has type str",
+  )
+  assert_eq(
+    err_text(() => {
       @pl.Series::from_any_values("m", [
         @pl.AnyValue::Int64(1L),
         @pl.AnyValue::String("x"),
       ])
-    })
-    is Some(@pl.SchemaMismatch(_)),
+    }),
+    "SchemaMismatch: column \"m\": expected i64 but found str at index 1",
   )
 }
 
@@ -87,7 +99,10 @@ test "null series slice gather get" {
   assert_eq(n.to_list(), [@pl.AnyValue::Null, Null, Null])
   assert_true(raises(() => n.get(3)) is Some(@pl.OutOfBounds(_)))
   assert_true(raises(() => n.gather([-4])) is Some(@pl.OutOfBounds(_)))
-  assert_true(raises(() => n.to_int64_array()) is Some(@pl.SchemaMismatch(_)))
+  assert_eq(
+    err_text(() => n.to_int64_array()),
+    "SchemaMismatch: column \"n\": expected i64 but the series has type null",
+  )
   assert_true(n.equals(@pl.Series::null("n", 3)))
   assert_false(n.equals(@pl.Series::null("n", 2)))
   assert_eq(@pl.Series::null("z", 0).len(), 0)
@@ -138,22 +153,36 @@ test "constructors and accessors for every type" {
 ///|
 test "to_*_array type mismatch for every accessor" {
   let s = @pl.Series::int64("a", [1L])
-  assert_true(raises(() => s.to_bool_array()) is Some(@pl.SchemaMismatch(_)))
-  assert_true(raises(() => s.to_int32_array()) is Some(@pl.SchemaMismatch(_)))
-  assert_true(raises(() => s.to_float32_array()) is Some(@pl.SchemaMismatch(_)))
-  assert_true(raises(() => s.to_float64_array()) is Some(@pl.SchemaMismatch(_)))
-  assert_true(raises(() => s.to_str_array()) is Some(@pl.SchemaMismatch(_)))
+  assert_eq(
+    err_text(() => s.to_bool_array()),
+    "SchemaMismatch: column \"a\": expected bool but the series has type i64",
+  )
+  assert_eq(
+    err_text(() => s.to_int32_array()),
+    "SchemaMismatch: column \"a\": expected i32 but the series has type i64",
+  )
+  assert_eq(
+    err_text(() => s.to_float32_array()),
+    "SchemaMismatch: column \"a\": expected f32 but the series has type i64",
+  )
+  assert_eq(
+    err_text(() => s.to_float64_array()),
+    "SchemaMismatch: column \"a\": expected f64 but the series has type i64",
+  )
+  assert_eq(
+    err_text(() => s.to_str_array()),
+    "SchemaMismatch: column \"a\": expected str but the series has type i64",
+  )
   let d = @pl.Series::date("d", [1])
-  assert_true(raises(() => d.to_int32_array()) is Some(@pl.SchemaMismatch(_)))
+  assert_eq(
+    err_text(() => d.to_int32_array()),
+    "SchemaMismatch: column \"d\": expected i32 but the series has type date",
+  )
   let t = @pl.Series::datetime("t", [1L])
-  assert_true(raises(() => t.to_int64_array()) is Some(@pl.SchemaMismatch(_)))
-  match raises(() => s.to_str_array()) {
-    Some(@pl.SchemaMismatch(m)) => {
-      assert_true(m.contains("a"))
-      assert_true(m.contains("i64"))
-    }
-    _ => fail("expected SchemaMismatch")
-  }
+  assert_eq(
+    err_text(() => t.to_int64_array()),
+    "SchemaMismatch: column \"t\": expected i64 but the series has type datetime[μs]",
+  )
 }
 
 ///|
@@ -203,34 +232,34 @@ test "from_any_values" {
     assert_eq(r.to_list(), [v, Null])
   }
   // errors: no implicit promotion
-  assert_true(
-    raises(() => {
+  assert_eq(
+    err_text(() => {
       @pl.Series::from_any_values(
         "m",
         [@pl.AnyValue::Int32(1)],
         dtype=@pl.DataType::Int64,
       )
-    })
-    is Some(@pl.SchemaMismatch(_)),
+    }),
+    "SchemaMismatch: column \"m\": expected i64 but found i32 at index 0",
   )
-  assert_true(
-    raises(() => {
+  assert_eq(
+    err_text(() => {
       @pl.Series::from_any_values("m", [
         @pl.AnyValue::Int32(1),
         @pl.AnyValue::Float64(1.0),
       ])
-    })
-    is Some(@pl.SchemaMismatch(_)),
+    }),
+    "SchemaMismatch: column \"m\": expected i32 but found f64 at index 1",
   )
-  assert_true(
-    raises(() => {
+  assert_eq(
+    err_text(() => {
       @pl.Series::from_any_values(
         "m",
         [@pl.AnyValue::String("x")],
         dtype=@pl.DataType::Null,
       )
-    })
-    is Some(@pl.SchemaMismatch(_)),
+    }),
+    "SchemaMismatch: column \"m\": expected null but found str at index 0",
   )
 }
 
@@ -250,7 +279,7 @@ test "get extreme indices" {
   )
   match raises(() => s.get(3)) {
     Some(@pl.OutOfBounds(m)) =>
-      assert_eq(m, "index 3 is out of bounds for length 3")
+      assert_eq(m, "index 3 is out of bounds for sequence of length 3")
     _ => fail("expected OutOfBounds")
   }
   let e = @pl.Series::int32("e", [])
@@ -471,10 +500,14 @@ test "equals details" {
 ///|
 test "series debug output shows name, dtype and values" {
   let s = @pl.Series::int64_nullable("col", [Some(1L), None])
-  let text = @debug.render(@debug.Debug::to_repr(s))
-  assert_true(text.contains("col"))
-  assert_true(text.contains("Int64"))
-  assert_true(text.contains("Null"))
+  assert_eq(
+    @debug.render(@debug.Debug::to_repr(s)),
+    "(\"col\", Int64, [Int64(1), Null])",
+  )
+  assert_eq(
+    @debug.render(@debug.Debug::to_repr(@pl.Series::null("n", 1))),
+    "(\"n\", Null, [Null])",
+  )
   assert_true(@pl.Series::int64("e", []) == @pl.Series::int64("e", []))
   assert_true(@pl.Series::int64("e", []) != @pl.Series::int64("f", []))
 }
@@ -666,83 +699,70 @@ test "date series null_count and slice" {
 ///|
 test "from_any_values mismatch reports dtype and index for every type" {
   // one bad value (a String) at index 2 for every non-String target type
-  let good : Array[(@pl.DataType, @pl.AnyValue)] = [
-    (Boolean, Boolean(true)),
-    (Int32, Int32(1)),
-    (Int64, Int64(1L)),
-    (Float32, Float32(1.0)),
-    (Float64, Float64(1.0)),
-    (Date, Date(1)),
-    (Datetime, Datetime(1L)),
+  let good : Array[(@pl.DataType, @pl.AnyValue, String)] = [
+    (Boolean, Boolean(true), "bool"),
+    (Int32, Int32(1), "i32"),
+    (Int64, Int64(1L), "i64"),
+    (Float32, Float32(1.0), "f32"),
+    (Float64, Float64(1.0), "f64"),
+    (Date, Date(1), "date"),
+    (Datetime, Datetime(1L), "datetime[μs]"),
   ]
   for p in good {
-    let (dt, v) = p
+    let (dt, v, name) = p
     let bad : @pl.AnyValue = String("x")
-    match
-      raises(() => @pl.Series::from_any_values("c", [v, Null, bad, v], dtype=dt)) {
-      Some(@pl.SchemaMismatch(msg)) => {
-        assert_true(msg.contains("index 2"))
-        assert_true(msg.contains("expected \{dt}"))
-        assert_true(msg.contains("found str"))
-        assert_true(msg.contains("\"c\""))
-      }
-      _ => fail("expected SchemaMismatch for \{dt}")
-    }
+    assert_eq(
+      err_text(() => {
+        @pl.Series::from_any_values("c", [v, Null, bad, v], dtype=dt)
+      }),
+      "SchemaMismatch: column \"c\": expected \{name} but found str at index 2",
+    )
     // a mismatch at index 0 and at the last index
-    match raises(() => @pl.Series::from_any_values("c", [bad, v], dtype=dt)) {
-      Some(@pl.SchemaMismatch(msg)) => assert_true(msg.contains("index 0"))
-      _ => fail("expected SchemaMismatch for \{dt} at 0")
-    }
-    match
-      raises(() => @pl.Series::from_any_values("c", [v, v, v, v, bad], dtype=dt)) {
-      Some(@pl.SchemaMismatch(msg)) => assert_true(msg.contains("index 4"))
-      _ => fail("expected SchemaMismatch for \{dt} at 4")
-    }
+    assert_eq(
+      err_text(() => @pl.Series::from_any_values("c", [bad, v], dtype=dt)),
+      "SchemaMismatch: column \"c\": expected \{name} but found str at index 0",
+    )
+    assert_eq(
+      err_text(() => {
+        @pl.Series::from_any_values("c", [v, v, v, v, bad], dtype=dt)
+      }),
+      "SchemaMismatch: column \"c\": expected \{name} but found str at index 4",
+    )
   }
   // String target: bad value is an Int32 at index 2
-  match
-    raises(() => {
+  assert_eq(
+    err_text(() => {
       @pl.Series::from_any_values(
         "c",
         [String("a"), Null, Int32(7)],
         dtype=@pl.DataType::String,
       )
-    }) {
-    Some(@pl.SchemaMismatch(msg)) => {
-      assert_true(msg.contains("index 2"))
-      assert_true(msg.contains("expected str"))
-      assert_true(msg.contains("found i32"))
-    }
-    _ => fail("expected SchemaMismatch for str")
-  }
+    }),
+    "SchemaMismatch: column \"c\": expected str but found i32 at index 2",
+  )
   // Null target: the offending non-null value's index
-  match
-    raises(() => {
+  assert_eq(
+    err_text(() => {
       @pl.Series::from_any_values(
         "c",
         [Null, Null, Int64(1L)],
         dtype=@pl.DataType::Null,
       )
-    }) {
-    Some(@pl.SchemaMismatch(msg)) => assert_true(msg.contains("index 2"))
-    _ => fail("expected SchemaMismatch for null")
-  }
+    }),
+    "SchemaMismatch: column \"c\": expected null but found i64 at index 2",
+  )
   // inferred dtype: the first non-null value decides, the later one fails
-  match
-    raises(() => {
+  assert_eq(
+    err_text(() => {
       @pl.Series::from_any_values("c", [
         Null,
         Boolean(true),
         Boolean(false),
         Int32(1),
       ])
-    }) {
-    Some(@pl.SchemaMismatch(msg)) => {
-      assert_true(msg.contains("index 3"))
-      assert_true(msg.contains("expected bool"))
-    }
-    _ => fail("expected SchemaMismatch for inferred bool")
-  }
+    }),
+    "SchemaMismatch: column \"c\": expected bool but found i32 at index 3",
+  )
 }
 
 ///|
@@ -750,4 +770,90 @@ test "null series with a negative length is empty" {
   assert_eq(@pl.Series::null("z", -1).len(), 0)
   assert_eq(@pl.Series::null("z", @int.MIN_VALUE).len(), 0)
   assert_eq(@pl.Series::null("z", -1).null_count(), 0)
+}
+
+///|
+test "Series::get out-of-bounds message" {
+  let s = @pl.Series::int32("a", [10, 20, 30])
+  assert_eq(
+    err_text(() => s.get(3)),
+    "OutOfBounds: index 3 is out of bounds for sequence of length 3",
+  )
+  assert_eq(
+    err_text(() => s.get(-4)),
+    "OutOfBounds: index -4 is out of bounds for sequence of length 3",
+  )
+  assert_eq(
+    err_text(() => s.get(@int.MIN_VALUE)),
+    "OutOfBounds: index -2147483648 is out of bounds for sequence of length 3",
+  )
+  assert_eq(
+    err_text(() => s.get(@int.MAX_VALUE)),
+    "OutOfBounds: index 2147483647 is out of bounds for sequence of length 3",
+  )
+  // empty and Null-typed series
+  let e = @pl.Series::int32("e", [])
+  assert_eq(
+    err_text(() => e.get(0)),
+    "OutOfBounds: index 0 is out of bounds for sequence of length 0",
+  )
+  assert_eq(
+    err_text(() => e.get(-1)),
+    "OutOfBounds: index -1 is out of bounds for sequence of length 0",
+  )
+  let n = @pl.Series::null("n", 2)
+  assert_eq(
+    err_text(() => n.get(2)),
+    "OutOfBounds: index 2 is out of bounds for sequence of length 2",
+  )
+  assert_eq(
+    err_text(() => n.get(-3)),
+    "OutOfBounds: index -3 is out of bounds for sequence of length 2",
+  )
+}
+
+///|
+test "Series::gather out-of-bounds message" {
+  let s = @pl.Series::int32("a", [10, 20, 30])
+  assert_eq(
+    err_text(() => s.gather([0, 5])),
+    "OutOfBounds: gather indices are out of bounds: index 5 in column 'a' of length 3",
+  )
+  assert_eq(
+    err_text(() => s.gather([-4])),
+    "OutOfBounds: gather indices are out of bounds: index -4 in column 'a' of length 3",
+  )
+  assert_eq(
+    err_text(() => s.gather([@int.MIN_VALUE])),
+    "OutOfBounds: gather indices are out of bounds: index -2147483648 in column 'a' of length 3",
+  )
+  assert_eq(
+    err_text(() => s.gather([@int.MAX_VALUE])),
+    "OutOfBounds: gather indices are out of bounds: index 2147483647 in column 'a' of length 3",
+  )
+  // the first offending index is reported, later ones are not
+  assert_eq(
+    err_text(() => s.gather([1, 7, -9])),
+    "OutOfBounds: gather indices are out of bounds: index 7 in column 'a' of length 3",
+  )
+  assert_eq(
+    err_text(() => s.gather([-9, 7])),
+    "OutOfBounds: gather indices are out of bounds: index -9 in column 'a' of length 3",
+  )
+  let e = @pl.Series::str("txt", [])
+  assert_eq(
+    err_text(() => e.gather([0])),
+    "OutOfBounds: gather indices are out of bounds: index 0 in column 'txt' of length 0",
+  )
+  let n = @pl.Series::null("nul", 2)
+  assert_eq(
+    err_text(() => n.gather([1, 2])),
+    "OutOfBounds: gather indices are out of bounds: index 2 in column 'nul' of length 2",
+  )
+  // valid indices (including negative ones) do not raise
+  assert_eq(s.gather([-3, 2, 0]).to_int32_array(), [
+    Some(10),
+    Some(30),
+    Some(10),
+  ])
 }

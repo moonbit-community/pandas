@@ -153,7 +153,9 @@ pub fn DataFrame::slice(
 ///
 /// # Errors
 /// Raises `OutOfBounds` when any index is outside `-height <= i < height`
-/// (so any index is out of bounds for a frame without rows).
+/// (so any index is out of bounds for a frame without rows); the message
+/// names the first offending index as passed:
+/// `gather indices are out of bounds: index {i} for DataFrame of height {height}`.
 pub fn DataFrame::gather(
   self : DataFrame,
   indices : Array[Int32],
@@ -161,7 +163,13 @@ pub fn DataFrame::gather(
   let h = self.height()
   let norm : Array[Int32] = Array(capacity=indices.length())
   for i in indices {
-    norm.push(normalize_index(h, i))
+    match normalize_index(h, i) {
+      Some(j) => norm.push(j)
+      None =>
+        raise OutOfBounds(
+          "gather indices are out of bounds: index \{i} for DataFrame of height \{h}",
+        )
+    }
   }
   DataFrame::from_valid(
     self.cols.map(s => Series::make(s.name, s.col.gather(norm))),
@@ -172,27 +180,43 @@ pub fn DataFrame::gather(
 /// All values of row `i` in column order; a negative `i` counts from the end.
 ///
 /// # Errors
-/// Raises `OutOfBounds` unless `-height <= i < height`.
+/// Raises `OutOfBounds` unless `-height <= i < height`; the message is
+/// `index {i} is out of bounds for DataFrame of height {height}`.
 pub fn DataFrame::row(
   self : DataFrame,
   i : Int32,
 ) -> Array[AnyValue] raise PolarsError {
-  let j = normalize_index(self.height(), i)
-  self.cols.map(s => s.col.get(j))
+  let h = self.height()
+  match normalize_index(h, i) {
+    Some(j) => self.cols.map(s => s.col.get(j))
+    None =>
+      raise OutOfBounds(
+        "index \{i} is out of bounds for DataFrame of height \{h}",
+      )
+  }
 }
 
 ///|
 /// The value at `row` (negative counts from the end) in column `column`.
 ///
 /// # Errors
-/// Raises `ColumnNotFound` for an unknown column and `OutOfBounds` for a
-/// row outside `-height <= row < height`.
+/// Raises `ColumnNotFound` for an unknown column (checked first) and
+/// `OutOfBounds` for a row outside `-height <= row < height`; the message is
+/// `index {row} is out of bounds for column '{column}' of length {height}`.
 pub fn DataFrame::get(
   self : DataFrame,
   row : Int32,
   column : String,
 ) -> AnyValue raise PolarsError {
-  self.column(column).get(row)
+  let s = self.column(column)
+  let h = s.col.length()
+  match normalize_index(h, row) {
+    Some(j) => s.col.get(j)
+    None =>
+      raise OutOfBounds(
+        "index \{row} is out of bounds for column '\{column}' of length \{h}",
+      )
+  }
 }
 
 ///|

@@ -2,11 +2,18 @@
 //
 // Semantics follow polars 2.1.0 (see docs/golden/cast.json):
 // - the same type is returned as is;
-// - pairs polars rejects even with `strict=False` raise `InvalidOperation`;
+// - pairs polars rejects even with `strict=False` raise `InvalidOperation`
+//   with polars' message, unless the series is empty or all null (that casts
+//   to every type);
 // - a non-null value that cannot be converted becomes null with
-//   `strict=false` and raises `ComputeError` (first bad value and index)
-//   with `strict=true`;
+//   `strict=false` and raises `InvalidOperation` with polars' message
+//   (`conversion from `str` to `i64` failed in column 'a' for 3 out of 4
+//   values: [...]`) with `strict=true`;
 // - nulls stay null.
+//
+// The conversion loops run directly over the typed arrays (no `AnyValue` per
+// element); a value only becomes an `AnyValue` when it fails and has to be
+// reported.
 
 ///|
 /// Microseconds per day.
@@ -32,7 +39,11 @@ fn float_digits(text : String) -> (String, Int32) {
       mantissa = body[:k].to_owned()
       let es = body[k + 1:].to_owned()
       let es = if es.has_prefix("+") { es[1:].to_owned() } else { es }
-      exp10 = @string.parse_int(es) catch { _ => 0 }
+      // The text is `to_string` output of this library's own floats, so the
+      // exponent always parses; anything else is a broken invariant.
+      exp10 = @string.parse_int(es) catch {
+        _ => abort("float_digits: cannot parse the exponent of \{text}")
+      }
     }
     None => ()
   }
@@ -206,11 +217,22 @@ fn parse_int64_text(s : String) -> Int64? {
 }
 
 ///|
-/// Parses a decimal float: optional sign, digits with an optional fraction
+/// The syntactic shape of a float text. The parts are views into the text.
+priv enum FloatText {
+  /// `inf`, `infinity` (signed) or `nan`.
+  Special(Double)
+  /// Sign, integer digits, fraction digits and the exponent text (empty, or
+  /// `e-5`, `e+5`, `e5`, `E5`); at least one digit in the integer or fraction
+  /// part.
+  Decimal(Bool, StringView, StringView, StringView)
+}
+
+///|
+/// Scans a decimal float: optional sign, digits with an optional fraction
 /// (`5.`, `.5`), optional exponent; or `inf` / `infinity` / `nan` in any
-/// letter case. Overflow gives infinity. `None` on any other shape (spaces,
-/// underscores, hex, a bare exponent).
-fn parse_double_text(s : String) -> Double? {
+/// letter case. `None` on any other shape (spaces, underscores, hex, a bare
+/// exponent).
+fn scan_float_text(s : String) -> FloatText? {
   let n = s.length()
   let mut i = 0
   let mut neg = false
@@ -221,34 +243,38 @@ fn parse_double_text(s : String) -> Double? {
   if i >= n {
     return None
   }
-  let rest = s[i:].to_owned().to_lower()
-  if rest == "inf" || rest == "infinity" {
-    return Some(if neg { -1.0 / 0.0 } else { 1.0 / 0.0 })
-  }
-  if rest == "nan" {
-    return Some(0.0 / 0.0)
+  // only a text that starts with a letter can be `inf`, `infinity` or `nan`
+  if s[i] != '.' && (s[i] < '0' || s[i] > '9') {
+    let rest = s[i:].to_owned().to_lower()
+    if rest == "inf" || rest == "infinity" {
+      return Some(Special(if neg { -1.0 / 0.0 } else { 1.0 / 0.0 }))
+    }
+    if rest == "nan" {
+      return Some(Special(0.0 / 0.0))
+    }
+    return None
   }
   let int_start = i
   while i < n && s[i] >= '0' && s[i] <= '9' {
     i += 1
   }
-  let int_part = s[int_start:i].to_owned()
-  let mut frac_part = ""
+  let int_part = s[int_start:i]
+  let mut frac_part = s[0:0]
   if i < n && s[i] == '.' {
     i += 1
     let frac_start = i
     while i < n && s[i] >= '0' && s[i] <= '9' {
       i += 1
     }
-    frac_part = s[frac_start:i].to_owned()
+    frac_part = s[frac_start:i]
   }
   if int_part.length() + frac_part.length() == 0 {
     return None
   }
-  let mut exp_part = ""
+  let mut exp_part = s[0:0]
   if i < n && (s[i] == 'e' || s[i] == 'E') {
-    i += 1
     let exp_start = i
+    i += 1
     if i < n && (s[i] == '-' || s[i] == '+') {
       i += 1
     }
@@ -259,21 +285,230 @@ fn parse_double_text(s : String) -> Double? {
     if i == digits_start {
       return None
     }
-    exp_part = "e" + s[exp_start:i].to_owned()
+    exp_part = s[exp_start:i]
   }
   if i != n {
     return None
   }
-  let normalized = (if int_part.is_empty() { "0" } else { int_part }) +
-    "." +
-    (if frac_part.is_empty() { "0" } else { frac_part }) +
-    exp_part
-  // `parse_double` raises when the value is out of the `Double` range; the
-  // exponent's sign then says which way it went (infinity or zero).
-  let v = @string.parse_double(normalized) catch {
-    _ => if exp_part.has_prefix("e-") { 0.0 } else { 1.0 / 0.0 }
+  Some(Decimal(neg, int_part, frac_part, exp_part))
+}
+
+///|
+/// The value of a decimal text that `parse_double` rejects, which happens
+/// when it is outside the `Double` range: infinity when it is at least 1 (a
+/// long mantissa can overflow whatever the sign of the exponent is), zero
+/// otherwise. `neg` is not applied.
+fn out_of_range_double(
+  int_part : StringView,
+  frac_part : StringView,
+  exp_part : StringView,
+) -> Double {
+  let exp = if exp_part.is_empty() { 0 } else { saturated_exponent(exp_part) }
+  // the value is 0.DIGITS * 10^point, DIGITS starting at the first non-zero
+  // digit
+  let mut k = 0
+  while k < int_part.length() && int_part[k] == '0' {
+    k += 1
   }
-  Some(if neg { -v } else { v })
+  if k < int_part.length() {
+    return if int_part.length() - k + exp > 0 { 1.0 / 0.0 } else { 0.0 }
+  }
+  k = 0
+  while k < frac_part.length() && frac_part[k] == '0' {
+    k += 1
+  }
+  if k < frac_part.length() && exp - k > 0 {
+    1.0 / 0.0
+  } else {
+    0.0
+  }
+}
+
+///|
+/// Parses a float text (see `scan_float_text`) to the nearest `Double`.
+/// Overflow gives infinity. `None` on any other shape.
+fn parse_double_text(s : String) -> Double? {
+  match scan_float_text(s) {
+    None => None
+    Some(Special(v)) => Some(v)
+    Some(Decimal(neg, int_part, frac_part, exp_part)) =>
+      // the shape is valid, so `parse_double` (which handles the sign, `5.`
+      // and `.5`) raises only when the value is out of the `Double` range
+      Some(
+        @string.parse_double(s) catch {
+          _ => {
+            let v = out_of_range_double(int_part, frac_part, exp_part)
+            if neg {
+              -v
+            } else {
+              v
+            }
+          }
+        },
+      )
+  }
+}
+
+///|
+/// 2^128, the first value past `f32::MAX`.
+let two_pow_128 : Double = 4294967296.0 *
+  4294967296.0 *
+  4294967296.0 *
+  4294967296.0
+
+///|
+/// Bit pattern of positive infinity as a `Float`.
+let f32_inf_bits : UInt32 = 0x7F800000U
+
+///|
+/// The value of a non-negative `Float` bit pattern as a `Double`; infinity
+/// (`0x7F800000`) stands for 2^128, the edge the rounding rule uses.
+fn f32_edge(bits : UInt32) -> Double {
+  if bits >= f32_inf_bits {
+    two_pow_128
+  } else {
+    Float::reinterpret_from_uint(bits).to_double()
+  }
+}
+
+///|
+/// The exponent of a float text as an `Int32`, saturated at +-100 million
+/// (anything that large is far outside every float's range anyway).
+fn saturated_exponent(exp_part : StringView) -> Int32 {
+  let cap = 100_000_000
+  let mut i = 1 // skip the `e`
+  let mut neg = false
+  if i < exp_part.length() && (exp_part[i] == '-' || exp_part[i] == '+') {
+    neg = exp_part[i] == '-'
+    i += 1
+  }
+  let mut acc = 0
+  while i < exp_part.length() {
+    acc = acc * 10 + (exp_part[i].to_int() - 48)
+    if acc > cap {
+      acc = cap
+    }
+    i += 1
+  }
+  if neg {
+    -acc
+  } else {
+    acc
+  }
+}
+
+///|
+/// Compares the decimal `0.DIGITS * 10^point` (`digits` has no leading or
+/// trailing zero) with the positive double `m`, both exactly: negative, zero
+/// or positive as the decimal is smaller than, equal to or larger than `m`.
+fn compare_decimal_double(digits : String, point : Int32, m : Double) -> Int32 {
+  let (md, mp) = exact_decimal(m)
+  if point != mp {
+    return if point < mp { -1 } else { 1 }
+  }
+  let n = if digits.length() < md.length() {
+    digits.length()
+  } else {
+    md.length()
+  }
+  for i in 0..<n {
+    let d = digits[i].to_int() - 48
+    if d != md[i] {
+      return if d < md[i] { -1 } else { 1 }
+    }
+  }
+  if digits.length() == md.length() {
+    0
+  } else if digits.length() < md.length() {
+    -1
+  } else {
+    1
+  }
+}
+
+///|
+/// Bit pattern of the `Float` nearest to the exact positive decimal
+/// `0.DIGITS * 10^point` (`digits` has no leading or trailing zero and
+/// `-46 <= point <= 40`), ties to even; `x` is the nearest `Double` to it.
+///
+/// Rounding `x` to `Float` is right except when `x` itself is the exact
+/// midpoint of two adjacent `Float` values (a midpoint is a `Double`, so no
+/// other value of the decimal can lie on the far side of one): then the exact
+/// decimal decides, which is what a direct decimal-to-`Float` parse (Rust's
+/// `f32::from_str`) does.
+fn round_decimal_to_f32_bits(
+  digits : String,
+  point : Int32,
+  x : Double,
+) -> UInt32 {
+  if x >= two_pow_128 {
+    return f32_inf_bits
+  }
+  let f = Float::from_double(x)
+  let bits = f.reinterpret_as_uint()
+  let g = f32_edge(bits)
+  if g == x {
+    return bits
+  }
+  let (lower, mid) = if g < x {
+    (bits, (g + f32_edge(bits + 1U)) / 2.0)
+  } else {
+    (bits - 1U, (f32_edge(bits - 1U) + g) / 2.0)
+  }
+  if x != mid {
+    return bits
+  }
+  let c = compare_decimal_double(digits, point, mid)
+  if c < 0 || (c == 0 && lower % 2U == 0U) {
+    lower
+  } else {
+    lower + 1U
+  }
+}
+
+///|
+/// Parses a float text to the `Float` nearest to its exact value (ties to
+/// even), like Rust's `f32::from_str`: no double rounding through `Double`,
+/// and only a value at or above 2^128 - 2^103 (`f32::MAX` plus half an ulp)
+/// overflows to infinity. `None` on any other shape.
+fn parse_float32_text(s : String) -> Float? {
+  match scan_float_text(s) {
+    None => None
+    Some(Special(v)) => Some(Float::from_double(v))
+    Some(Decimal(neg, int_part, frac_part, exp_part)) => {
+      let all = int_part.to_owned() + frac_part.to_owned()
+      let mut start = 0
+      while start < all.length() && all[start] == '0' {
+        start += 1
+      }
+      let mut stop = all.length()
+      while stop > start && all[stop - 1] == '0' {
+        stop -= 1
+      }
+      let sign = if neg { 0x80000000U } else { 0U }
+      let with_sign = bits => Float::reinterpret_from_uint(bits | sign)
+      if start == stop {
+        return Some(with_sign(0U))
+      }
+      let digits = all[start:stop].to_owned()
+      // value = 0.DIGITS * 10^point
+      let point = int_part.length() - start + saturated_exponent(exp_part)
+      // 0.1 * 10^41 is above 2^128 and 10^-47 is below half the smallest
+      // subnormal (2^-150), whatever the digits are
+      if point > 40 {
+        return Some(with_sign(f32_inf_bits))
+      }
+      if point < -46 {
+        return Some(with_sign(0U))
+      }
+      let rest = if digits.length() > 1 { digits[1:].to_owned() } else { "0" }
+      let text = digits[:1].to_owned() + "." + rest + "e\{point - 1}"
+      let x = @string.parse_double(text) catch {
+        _ => abort("parse_float32_text: cannot parse \{text}")
+      }
+      Some(with_sign(round_decimal_to_f32_bits(digits, point, x)))
+    }
+  }
 }
 
 ///|
@@ -308,6 +543,16 @@ fn int64_to_int32(v : Int64) -> Int32? {
 }
 
 ///|
+/// Parses a signed run of ASCII digits to `Int32`; `None` on any other shape
+/// or when it does not fit.
+fn parse_int32_text(s : String) -> Int32? {
+  match parse_int64_text(s) {
+    Some(x) => int64_to_int32(x)
+    None => None
+  }
+}
+
+///|
 /// Days to microseconds; `None` when it overflows `Int64`.
 fn days_to_micros(days : Int32) -> Int64? {
   let d = days.to_int64()
@@ -316,115 +561,6 @@ fn days_to_micros(days : Int32) -> Int64? {
     None
   } else {
     Some(d * micros_per_day)
-  }
-}
-
-///|
-/// Converts one non-null value to the target type; `None` when the value
-/// cannot be converted. The (source, target) pair must already have been
-/// checked with `cast_supported`.
-fn convert_value(v : AnyValue, to : DataType) -> AnyValue? {
-  match to {
-    Null => None
-    Boolean =>
-      match v {
-        Boolean(_) => Some(v)
-        Int32(x) => Some(Boolean(x != 0))
-        Int64(x) => Some(Boolean(x != 0L))
-        Float32(x) => Some(Boolean(x != 0.0))
-        Float64(x) => Some(Boolean(x != 0.0))
-        _ => None
-      }
-    Int32 =>
-      match v {
-        Boolean(b) => Some(Int32(if b { 1 } else { 0 }))
-        Int32(_) => Some(v)
-        Int64(x) => int64_to_int32(x).map(r => AnyValue::Int32(r))
-        Float32(x) =>
-          double_to_int32(x.to_double()).map(r => AnyValue::Int32(r))
-        Float64(x) => double_to_int32(x).map(r => AnyValue::Int32(r))
-        String(s) =>
-          match parse_int64_text(s) {
-            Some(x) => int64_to_int32(x).map(r => AnyValue::Int32(r))
-            None => None
-          }
-        Date(d) => Some(Int32(d))
-        Datetime(t) => int64_to_int32(t).map(r => AnyValue::Int32(r))
-        Null => None
-      }
-    Int64 =>
-      match v {
-        Boolean(b) => Some(Int64(if b { 1L } else { 0L }))
-        Int32(x) => Some(Int64(x.to_int64()))
-        Int64(_) => Some(v)
-        Float32(x) =>
-          double_to_int64(x.to_double()).map(r => AnyValue::Int64(r))
-        Float64(x) => double_to_int64(x).map(r => AnyValue::Int64(r))
-        String(s) => parse_int64_text(s).map(r => AnyValue::Int64(r))
-        Date(d) => Some(Int64(d.to_int64()))
-        Datetime(t) => Some(Int64(t))
-        Null => None
-      }
-    Float32 =>
-      match v {
-        Boolean(b) => Some(Float32(if b { 1.0 } else { 0.0 }))
-        Int32(x) => Some(Float32(Float::from_int(x)))
-        Int64(x) => Some(Float32(Float::from_int64(x)))
-        Float32(_) => Some(v)
-        Float64(x) => Some(Float32(Float::from_double(x)))
-        String(s) =>
-          parse_double_text(s).map(x => AnyValue::Float32(Float::from_double(x)))
-        Date(d) => Some(Float32(Float::from_int(d)))
-        Datetime(t) => Some(Float32(Float::from_int64(t)))
-        Null => None
-      }
-    Float64 =>
-      match v {
-        Boolean(b) => Some(Float64(if b { 1.0 } else { 0.0 }))
-        Int32(x) => Some(Float64(x.to_double()))
-        Int64(x) => Some(Float64(x.to_double()))
-        Float32(x) => Some(Float64(x.to_double()))
-        Float64(_) => Some(v)
-        String(s) => parse_double_text(s).map(r => AnyValue::Float64(r))
-        Date(d) => Some(Float64(d.to_double()))
-        Datetime(t) => Some(Float64(t.to_double()))
-        Null => None
-      }
-    String =>
-      match v {
-        Boolean(b) => Some(String(if b { "true" } else { "false" }))
-        Int32(x) => Some(String(x.to_string()))
-        Int64(x) => Some(String(x.to_string()))
-        Float32(x) => Some(String(format_f32(x)))
-        Float64(x) => Some(String(format_f64(x)))
-        String(_) => Some(v)
-        Date(d) => format_date_checked(d).map(r => AnyValue::String(r))
-        Datetime(t) => Some(String(format_datetime(t)))
-        Null => None
-      }
-    Date =>
-      match v {
-        Boolean(b) => Some(Date(if b { 1 } else { 0 }))
-        Int32(x) => Some(Date(x))
-        Int64(x) => int64_to_int32(x).map(r => AnyValue::Date(r))
-        Float32(x) => double_to_int32(x.to_double()).map(r => AnyValue::Date(r))
-        Float64(x) => double_to_int32(x).map(r => AnyValue::Date(r))
-        Date(_) => Some(v)
-        Datetime(t) => Some(Date(floor_div64(t, micros_per_day).to_int()))
-        _ => None
-      }
-    Datetime =>
-      match v {
-        Boolean(b) => Some(Datetime(if b { 1L } else { 0L }))
-        Int32(x) => Some(Datetime(x.to_int64()))
-        Int64(x) => Some(Datetime(x))
-        Float32(x) =>
-          double_to_int64(x.to_double()).map(r => AnyValue::Datetime(r))
-        Float64(x) => double_to_int64(x).map(r => AnyValue::Datetime(r))
-        Date(d) => days_to_micros(d).map(r => AnyValue::Datetime(r))
-        Datetime(_) => Some(v)
-        _ => None
-      }
   }
 }
 
@@ -443,18 +579,564 @@ fn cast_supported(from : DataType, to : DataType) -> Bool {
 }
 
 ///|
-/// Short rendering of a value for error messages.
+/// The first line of polars 2.1.0's `InvalidOperationError` for a pair
+/// `cast_supported` rejects (the messages are polars' own wording, including
+/// `Utf8View` and the missing period after `not supported`).
+fn unsupported_cast_message(from : DataType, to : DataType) -> String {
+  match (from, to) {
+    (String, Boolean) => "casting from Utf8View to Boolean not supported"
+    (String, Date) => "casting from string to date is not supported."
+    (String, Datetime) => "casting from string to datetime is not supported."
+    (Date, Boolean) => "casting from Date to Boolean not supported"
+    (Date, Null) => "casting from Date to Null not supported"
+    (Datetime, Boolean) =>
+      "casting from Datetime('\u{3bc}s') to Boolean not supported"
+    (Datetime, Null) =>
+      "casting from Datetime('\u{3bc}s') to Null not supported"
+    _ => abort("unsupported_cast_message: \{from} to \{to} is supported")
+  }
+}
+
+///|
+/// Short rendering of the first failing value for the out-of-range date
+/// errors. Only `Date` values reach it (`CastLog::check` raises that error
+/// for a `Date` source only), so any other value is a library bug.
 fn describe_value(v : AnyValue) -> String {
   match v {
-    Null => "null"
-    Boolean(b) => b.to_string()
-    Int32(x) => x.to_string()
-    Int64(x) => x.to_string()
-    Float32(x) => format_f32(x)
-    Float64(x) => format_f64(x)
-    String(s) => "\"" + s + "\""
     Date(d) => "date(\{d})"
-    Datetime(t) => "datetime(\{t})"
+    _ => abort("describe_value: only Date values are described, got \{v}")
+  }
+}
+
+///|
+/// A failing value as polars lists it in `conversion from ... failed`: the
+/// text of a table cell, except that strings are wrapped in double quotes
+/// and are neither escaped nor cut (so `a"b` is `"a"b"` and newlines stay).
+fn fail_value_text(v : AnyValue) -> String {
+  match v {
+    String(s) => "\"" + s + "\""
+    _ => cell_text(v)
+  }
+}
+
+///|
+/// The failures of one strict conversion.
+///
+/// polars collects the first ten failing values (the count is complete) and
+/// prints the list `[a, b, c]` for up to three of them and `[a, b, … z]`
+/// (first two, an ellipsis, the last one collected) for more. Measured on
+/// polars 2.1.0: 1..3 failing values `["x0", "x1", "x2"]`; 4 to 10 failing
+/// values `["x0", "x1", … "x3"]`; 11 or more failing values still end at the
+/// tenth, `["x0", "x1", … "x9"]` (`for 20 out of 20 values`).
+priv struct CastLog {
+  mut count : Int32
+  mut first_index : Int32
+  mut first : AnyValue
+  shown : Array[AnyValue]
+}
+
+///|
+fn CastLog::new() -> CastLog {
+  { count: 0, first_index: -1, first: AnyValue::Null, shown: [], }
+}
+
+///|
+/// Records that the value `x` at index `i` could not be converted; `wrap`
+/// turns it into an `AnyValue` only for the ten that are kept.
+fn[S] CastLog::fail(
+  self : CastLog,
+  i : Int32,
+  x : S,
+  wrap : (S) -> AnyValue,
+) -> Unit {
+  if self.count < 10 {
+    let v = wrap(x)
+    if self.count == 0 {
+      self.first_index = i
+      self.first = v
+    }
+    self.shown.push(v)
+  }
+  self.count += 1
+}
+
+///|
+/// polars' bracketed list of the collected failing values.
+fn CastLog::list_text(self : CastLog) -> String {
+  let parts = self.shown.map(fail_value_text)
+  let n = parts.length()
+  if n <= 3 {
+    "[" + parts.join(", ") + "]"
+  } else {
+    "[" + parts[0] + ", " + parts[1] + ", \u{2026} " + parts[n - 1] + "]"
+  }
+}
+
+///|
+/// Raises when anything failed (strict mode). Date values beyond what can be
+/// formatted or converted are the exception to polars' wording: polars panics
+/// there, so they keep a `ComputeError` that names the first value and index.
+fn CastLog::check(
+  self : CastLog,
+  name : String,
+  from : DataType,
+  to : DataType,
+  length : Int32,
+) -> Unit raise PolarsError {
+  if self.count == 0 {
+    return
+  }
+  if from == DataType::Date &&
+    (to == DataType::String || to == DataType::Datetime) {
+    raise ComputeError(
+      "column \"\{name}\": cannot cast \{from} to \{to}: value \{describe_value(self.first)} at index \{self.first_index} cannot be converted (use strict=false to turn it into null)",
+    )
+  }
+  raise InvalidOperation(
+    "conversion from `\{from}` to `\{to}` failed in column '\{name}' for \{self.count} out of \{length} values: \{self.list_text()}",
+  )
+}
+
+///|
+/// Applies the total function `f` to every valid slot (null slots stay null).
+fn[S, T : Default] map_prim(
+  src : @arrow.PrimArray[S],
+  f : (S) -> T,
+) -> @arrow.PrimArray[T] {
+  let n = src.length()
+  let b : @arrow.PrimBuilder[T] = @arrow.PrimBuilder::new(capacity=n)
+  for i in 0..<n {
+    if src.is_valid(i) {
+      b.push(f(src.value(i)))
+    } else {
+      b.push_null()
+    }
+  }
+  b.finish()
+}
+
+///|
+/// Like `map_prim` for a function that can fail: a failing value becomes null
+/// and is recorded in `log`.
+fn[S, T : Default] try_map_prim(
+  src : @arrow.PrimArray[S],
+  f : (S) -> T?,
+  wrap : (S) -> AnyValue,
+  log : CastLog,
+) -> @arrow.PrimArray[T] {
+  let n = src.length()
+  let b : @arrow.PrimBuilder[T] = @arrow.PrimBuilder::new(capacity=n)
+  for i in 0..<n {
+    if src.is_valid(i) {
+      let x = src.value(i)
+      match f(x) {
+        Some(r) => b.push(r)
+        None => {
+          log.fail(i, x, wrap)
+          b.push_null()
+        }
+      }
+    } else {
+      b.push_null()
+    }
+  }
+  b.finish()
+}
+
+///|
+fn[T : Default] map_bool(
+  src : @arrow.BoolArray,
+  f : (Bool) -> T,
+) -> @arrow.PrimArray[T] {
+  let n = src.length()
+  let b : @arrow.PrimBuilder[T] = @arrow.PrimBuilder::new(capacity=n)
+  for i in 0..<n {
+    if src.is_valid(i) {
+      b.push(f(src.value(i)))
+    } else {
+      b.push_null()
+    }
+  }
+  b.finish()
+}
+
+///|
+fn[T : Default] try_map_str(
+  src : @arrow.StrArray,
+  f : (String) -> T?,
+  log : CastLog,
+) -> @arrow.PrimArray[T] {
+  let n = src.length()
+  let b : @arrow.PrimBuilder[T] = @arrow.PrimBuilder::new(capacity=n)
+  for i in 0..<n {
+    if src.is_valid(i) {
+      let x = src.value(i)
+      match f(x) {
+        Some(r) => b.push(r)
+        None => {
+          log.fail(i, x, v => AnyValue::String(v))
+          b.push_null()
+        }
+      }
+    } else {
+      b.push_null()
+    }
+  }
+  b.finish()
+}
+
+///|
+fn[S] prim_to_bool(
+  src : @arrow.PrimArray[S],
+  f : (S) -> Bool,
+) -> @arrow.BoolArray {
+  let n = src.length()
+  let b = @arrow.BoolBuilder::new(capacity=n)
+  for i in 0..<n {
+    if src.is_valid(i) {
+      b.push(f(src.value(i)))
+    } else {
+      b.push_null()
+    }
+  }
+  b.finish()
+}
+
+///|
+fn[S] prim_to_str(
+  src : @arrow.PrimArray[S],
+  f : (S) -> String,
+) -> @arrow.StrArray {
+  let n = src.length()
+  let b = @arrow.StrBuilder::new(capacity=n)
+  for i in 0..<n {
+    if src.is_valid(i) {
+      b.push(f(src.value(i)))
+    } else {
+      b.push_null()
+    }
+  }
+  b.finish()
+}
+
+///|
+fn[S] try_prim_to_str(
+  src : @arrow.PrimArray[S],
+  f : (S) -> String?,
+  wrap : (S) -> AnyValue,
+  log : CastLog,
+) -> @arrow.StrArray {
+  let n = src.length()
+  let b = @arrow.StrBuilder::new(capacity=n)
+  for i in 0..<n {
+    if src.is_valid(i) {
+      let x = src.value(i)
+      match f(x) {
+        Some(r) => b.push(r)
+        None => {
+          log.fail(i, x, wrap)
+          b.push_null()
+        }
+      }
+    } else {
+      b.push_null()
+    }
+  }
+  b.finish()
+}
+
+///|
+fn bool_to_str(src : @arrow.BoolArray) -> @arrow.StrArray {
+  let n = src.length()
+  let b = @arrow.StrBuilder::new(capacity=n)
+  for i in 0..<n {
+    if src.is_valid(i) {
+      b.push(if src.value(i) { "true" } else { "false" })
+    } else {
+      b.push_null()
+    }
+  }
+  b.finish()
+}
+
+///|
+fn[T : Default] null_prim(n : Int32) -> @arrow.PrimArray[T] {
+  let b : @arrow.PrimBuilder[T] = @arrow.PrimBuilder::new(capacity=n)
+  for _ in 0..<n {
+    b.push_null()
+  }
+  b.finish()
+}
+
+///|
+/// A column of `n` nulls of type `to`.
+fn null_column(to : DataType, n : Int32) -> Column {
+  match to {
+    Null => Column::Null(n)
+    Boolean => {
+      let b = @arrow.BoolBuilder::new(capacity=n)
+      for _ in 0..<n {
+        b.push_null()
+      }
+      Column::Boolean(b.finish())
+    }
+    Int32 => Column::Int32(null_prim(n))
+    Int64 => Column::Int64(null_prim(n))
+    Float32 => Column::Float32(null_prim(n))
+    Float64 => Column::Float64(null_prim(n))
+    String => {
+      let b = @arrow.StrBuilder::new(capacity=n)
+      for _ in 0..<n {
+        b.push_null()
+      }
+      Column::String(b.finish())
+    }
+    Date => Column::Date(null_prim(n))
+    Datetime => Column::Datetime(null_prim(n))
+  }
+}
+
+///|
+fn unsupported_source(target : String, col : Column) -> Unit {
+  abort("cast to \{target}: unsupported source type \{col.dtype()}")
+}
+
+///|
+fn cast_to_null(col : Column, log : CastLog) -> Column {
+  // every non-null value is a failure
+  let n = col.length()
+  match col {
+    Boolean(a) =>
+      for i in 0..<n {
+        if a.is_valid(i) {
+          log.fail(i, a.value(i), x => AnyValue::Boolean(x))
+        }
+      }
+    Int32(a) =>
+      for i in 0..<n {
+        if a.is_valid(i) {
+          log.fail(i, a.value(i), x => AnyValue::Int32(x))
+        }
+      }
+    Int64(a) =>
+      for i in 0..<n {
+        if a.is_valid(i) {
+          log.fail(i, a.value(i), x => AnyValue::Int64(x))
+        }
+      }
+    Float32(a) =>
+      for i in 0..<n {
+        if a.is_valid(i) {
+          log.fail(i, a.value(i), x => AnyValue::Float32(x))
+        }
+      }
+    Float64(a) =>
+      for i in 0..<n {
+        if a.is_valid(i) {
+          log.fail(i, a.value(i), x => AnyValue::Float64(x))
+        }
+      }
+    String(a) =>
+      for i in 0..<n {
+        if a.is_valid(i) {
+          log.fail(i, a.value(i), x => AnyValue::String(x))
+        }
+      }
+    // polars cannot cast dates to null at all, `cast_supported` stops them
+    Date(_) | Datetime(_) => unsupported_source("null", col)
+    Null(_) => ()
+  }
+  Column::Null(n)
+}
+
+///|
+fn cast_to_bool(col : Column) -> Column {
+  match col {
+    Int32(a) => Column::Boolean(prim_to_bool(a, x => x != 0))
+    Int64(a) => Column::Boolean(prim_to_bool(a, x => x != 0L))
+    Float32(a) => Column::Boolean(prim_to_bool(a, x => x != 0.0))
+    Float64(a) => Column::Boolean(prim_to_bool(a, x => x != 0.0))
+    _ => {
+      unsupported_source("bool", col)
+      col
+    }
+  }
+}
+
+///|
+fn cast_to_int32(col : Column, log : CastLog) -> Column {
+  match col {
+    Boolean(a) => Column::Int32(map_bool(a, b => if b { 1 } else { 0 }))
+    Int64(a) =>
+      Column::Int32(
+        try_map_prim(a, int64_to_int32, x => AnyValue::Int64(x), log),
+      )
+    Float32(a) =>
+      Column::Int32(
+        try_map_prim(
+          a,
+          x => double_to_int32(x.to_double()),
+          x => AnyValue::Float32(x),
+          log,
+        ),
+      )
+    Float64(a) =>
+      Column::Int32(
+        try_map_prim(a, double_to_int32, x => AnyValue::Float64(x), log),
+      )
+    String(a) => Column::Int32(try_map_str(a, parse_int32_text, log))
+    Date(a) => Column::Int32(map_prim(a, d => d))
+    Datetime(a) =>
+      Column::Int32(
+        try_map_prim(a, int64_to_int32, x => AnyValue::Datetime(x), log),
+      )
+    _ => {
+      unsupported_source("i32", col)
+      col
+    }
+  }
+}
+
+///|
+fn cast_to_int64(col : Column, log : CastLog) -> Column {
+  match col {
+    Boolean(a) => Column::Int64(map_bool(a, b => if b { 1L } else { 0L }))
+    Int32(a) => Column::Int64(map_prim(a, x => x.to_int64()))
+    Float32(a) =>
+      Column::Int64(
+        try_map_prim(
+          a,
+          x => double_to_int64(x.to_double()),
+          x => AnyValue::Float32(x),
+          log,
+        ),
+      )
+    Float64(a) =>
+      Column::Int64(
+        try_map_prim(a, double_to_int64, x => AnyValue::Float64(x), log),
+      )
+    String(a) => Column::Int64(try_map_str(a, parse_int64_text, log))
+    Date(a) => Column::Int64(map_prim(a, d => d.to_int64()))
+    Datetime(a) => Column::Int64(map_prim(a, t => t))
+    _ => {
+      unsupported_source("i64", col)
+      col
+    }
+  }
+}
+
+///|
+fn cast_to_float32(col : Column, log : CastLog) -> Column {
+  match col {
+    Boolean(a) => Column::Float32(map_bool(a, b => if b { 1.0 } else { 0.0 }))
+    Int32(a) => Column::Float32(map_prim(a, x => Float::from_int(x)))
+    Int64(a) => Column::Float32(map_prim(a, x => Float::from_int64(x)))
+    Float64(a) => Column::Float32(map_prim(a, x => Float::from_double(x)))
+    String(a) => Column::Float32(try_map_str(a, parse_float32_text, log))
+    Date(a) => Column::Float32(map_prim(a, d => Float::from_int(d)))
+    Datetime(a) => Column::Float32(map_prim(a, t => Float::from_int64(t)))
+    _ => {
+      unsupported_source("f32", col)
+      col
+    }
+  }
+}
+
+///|
+fn cast_to_float64(col : Column, log : CastLog) -> Column {
+  match col {
+    Boolean(a) => Column::Float64(map_bool(a, b => if b { 1.0 } else { 0.0 }))
+    Int32(a) => Column::Float64(map_prim(a, x => x.to_double()))
+    Int64(a) => Column::Float64(map_prim(a, x => x.to_double()))
+    Float32(a) => Column::Float64(map_prim(a, x => x.to_double()))
+    String(a) => Column::Float64(try_map_str(a, parse_double_text, log))
+    Date(a) => Column::Float64(map_prim(a, d => d.to_double()))
+    Datetime(a) => Column::Float64(map_prim(a, t => t.to_double()))
+    _ => {
+      unsupported_source("f64", col)
+      col
+    }
+  }
+}
+
+///|
+fn cast_to_str(col : Column, log : CastLog) -> Column {
+  match col {
+    Boolean(a) => Column::String(bool_to_str(a))
+    Int32(a) => Column::String(prim_to_str(a, x => x.to_string()))
+    Int64(a) => Column::String(prim_to_str(a, x => x.to_string()))
+    Float32(a) => Column::String(prim_to_str(a, format_f32))
+    Float64(a) => Column::String(prim_to_str(a, format_f64))
+    Date(a) =>
+      Column::String(
+        try_prim_to_str(a, format_date_checked, x => AnyValue::Date(x), log),
+      )
+    Datetime(a) => Column::String(prim_to_str(a, format_datetime))
+    _ => {
+      unsupported_source("str", col)
+      col
+    }
+  }
+}
+
+///|
+fn cast_to_date(col : Column, log : CastLog) -> Column {
+  match col {
+    Boolean(a) => Column::Date(map_bool(a, b => if b { 1 } else { 0 }))
+    Int32(a) => Column::Date(map_prim(a, x => x))
+    Int64(a) =>
+      Column::Date(
+        try_map_prim(a, int64_to_int32, x => AnyValue::Int64(x), log),
+      )
+    Float32(a) =>
+      Column::Date(
+        try_map_prim(
+          a,
+          x => double_to_int32(x.to_double()),
+          x => AnyValue::Float32(x),
+          log,
+        ),
+      )
+    Float64(a) =>
+      Column::Date(
+        try_map_prim(a, double_to_int32, x => AnyValue::Float64(x), log),
+      )
+    Datetime(a) =>
+      Column::Date(map_prim(a, t => floor_div64(t, micros_per_day).to_int()))
+    _ => {
+      unsupported_source("date", col)
+      col
+    }
+  }
+}
+
+///|
+fn cast_to_datetime(col : Column, log : CastLog) -> Column {
+  match col {
+    Boolean(a) => Column::Datetime(map_bool(a, b => if b { 1L } else { 0L }))
+    Int32(a) => Column::Datetime(map_prim(a, x => x.to_int64()))
+    Int64(a) => Column::Datetime(map_prim(a, x => x))
+    Float32(a) =>
+      Column::Datetime(
+        try_map_prim(
+          a,
+          x => double_to_int64(x.to_double()),
+          x => AnyValue::Float32(x),
+          log,
+        ),
+      )
+    Float64(a) =>
+      Column::Datetime(
+        try_map_prim(a, double_to_int64, x => AnyValue::Float64(x), log),
+      )
+    Date(a) =>
+      Column::Datetime(
+        try_map_prim(a, days_to_micros, x => AnyValue::Date(x), log),
+      )
+    _ => {
+      unsupported_source("datetime", col)
+      col
+    }
   }
 }
 
@@ -471,9 +1153,11 @@ fn describe_value(v : AnyValue) -> String {
 ///   `YYYY-MM-DD HH:MM:SS.ffffff`.
 /// - Strings parse to integers (optional sign, digits only) and floats
 ///   (decimal or exponent form, `inf`, `nan`); they cannot be cast to
-///   `Boolean`, `Date` or `Datetime`.
-/// - Nulls stay null. A `Null` series casts to every type; casting to `Null`
-///   only works for null values.
+///   `Boolean`, `Date` or `Datetime`. A string parsed to `Float32` is the
+///   `f32` nearest to the exact decimal value (ties to even), not the `f64`
+///   rounded again.
+/// - Nulls stay null. A `Null`, empty or all-null series casts to every type;
+///   casting to `Null` only works for null values.
 ///
 /// A non-null value that does not fit the target (an out-of-range number, an
 /// unparsable string, a date beyond +-110 million days) becomes null with
@@ -482,9 +1166,20 @@ fn describe_value(v : AnyValue) -> String {
 /// # Errors
 /// - `InvalidOperation` when the type pair is unsupported (`str` to `bool`,
 ///   `date` or `datetime`; `date` or `datetime` to `bool` or `null`), in both
-///   modes.
-/// - `ComputeError` with `strict=true` (default) naming the first value that
-///   cannot be converted and its index.
+///   modes; the message is polars' (`casting from Date to Boolean not
+///   supported`). It is only raised when the series has at least one non-null
+///   value: an empty or all-null series casts to every type, giving an
+///   all-null series of that type with the same name and length.
+/// - `InvalidOperation` with `strict=true` (default) when a non-null value
+///   cannot be converted, with polars' message `conversion from `str` to
+///   `i64` failed in column 'a' for 3 out of 4 values: ["x", "y", "z"]`: the
+///   number of failing values, the length, and the first failing values (all
+///   up to three, otherwise the first two, an ellipsis and the last of the
+///   first ten). This includes casting non-null values to `Null`.
+/// - `ComputeError` with `strict=true` for a `Date` that is out of range when
+///   cast to `Datetime` (more than 106 751 991 days) or to `String` (more than
+///   110 million days); polars panics there. The message names the first such
+///   value and its index.
 pub fn Series::cast(
   self : Series,
   to : DataType,
@@ -494,28 +1189,29 @@ pub fn Series::cast(
   if from == to {
     return self
   }
-  if !cast_supported(from, to) {
-    raise InvalidOperation("cannot cast \{from} to \{to}")
-  }
   let n = self.len()
-  let out : Array[AnyValue] = Array(capacity=n)
-  for i in 0..<n {
-    let v = self.col.get(i)
-    if v.is_null() {
-      out.push(AnyValue::Null)
-      continue
-    }
-    match convert_value(v, to) {
-      Some(r) => out.push(r)
-      None =>
-        if strict {
-          raise ComputeError(
-            "column \"\{self.name}\": cannot cast \{from} to \{to}: value \{describe_value(v)} at index \{i} cannot be converted (use strict=false to turn it into null)",
-          )
-        } else {
-          out.push(AnyValue::Null)
-        }
-    }
+  // polars casts an empty or all-null series to every type, even a pair it
+  // rejects for real values (the check only looks at the values)
+  if self.null_count() == n {
+    return Series::make(self.name, null_column(to, n))
   }
-  Series::from_any_values(self.name, out, dtype=to)
+  if !cast_supported(from, to) {
+    raise InvalidOperation(unsupported_cast_message(from, to))
+  }
+  let log = CastLog::new()
+  let col = match to {
+    Null => cast_to_null(self.col, log)
+    Boolean => cast_to_bool(self.col)
+    Int32 => cast_to_int32(self.col, log)
+    Int64 => cast_to_int64(self.col, log)
+    Float32 => cast_to_float32(self.col, log)
+    Float64 => cast_to_float64(self.col, log)
+    String => cast_to_str(self.col, log)
+    Date => cast_to_date(self.col, log)
+    Datetime => cast_to_datetime(self.col, log)
+  }
+  if strict {
+    log.check(self.name, from, to, n)
+  }
+  Series::make(self.name, col)
 }
