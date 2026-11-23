@@ -1,0 +1,17 @@
+import {
+  "moonbitlang/core/debug",
+  "moonbitlang/core/int",
+  "moonbitlang/core/int64",
+  "moonbitlang/core/string",
+  "smallbearrr/pandas/pl/internal/arrow",
+}
+
+import {
+  "moonbitlang/core/bench",
+  "moonbitlang/core/json",
+  "moonbitlang/core/quickcheck",
+} for "test"
+
+import {
+  "moonbitlang/core/quickcheck",
+} for "wbtest"
