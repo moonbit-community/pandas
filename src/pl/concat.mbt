@@ -26,6 +26,24 @@ pub(all) enum ConcatHow {
   Diagonal
 }
 
+///|
+/// Formats the option with its polars name (`vertical`, `vertical_relaxed`, `horizontal`, `diagonal`).
+pub impl Show for ConcatHow with fn output(self, logger) {
+  logger.write_string(
+    match self {
+      Vertical => "vertical"
+      VerticalRelaxed => "vertical_relaxed"
+      Horizontal => "horizontal"
+      Diagonal => "diagonal"
+    },
+  )
+}
+
+///|
+/// Makes `to_string` callable as a method, giving the same polars name as
+/// `Show`.
+pub extend ConcatHow with Show::{to_string}
+
 // ---------------------------------------------------------------------------
 // Column::concat
 // ---------------------------------------------------------------------------

@@ -254,3 +254,195 @@ test "bench select of a weak literal chain of 10000 terms" (it : @bench.T) {
   let e = deep_weak_sum(10000)
   it.bench(fn() { it.keep(must(() => df.select([e]))) })
 }
+
+///|
+/// The M3 benchmark table (n = 1,000,000 rows): `gi` an `Int64` key with exactly
+/// `groups` distinct values (every key `groups` apart in a scrambled order),
+/// `gs` the same key as a `String` (`"key<value>"`), `v` an `Int64` value.
+/// Inputs are built outside the timed closure.
+fn m3_bench_df(groups : Int32) -> @pl.DataFrame raise @pl.PolarsError {
+  let keys : Array[Int64] = Array::makei(bench_n, i => {
+    i.to_int64() * 7919L % groups.to_int64()
+  })
+  @pl.DataFrame::new([
+    @pl.Series::int64("gi", keys),
+    @pl.Series::str("gs", keys.map(k => "key\{k}")),
+    @pl.Series::int64("v", Array::makei(bench_n, i => (i % 1000).to_int64())),
+  ])
+}
+
+///|
+/// The aggregations of the M3 `group_by` benchmarks.
+fn m3_bench_aggs() -> Array[@pl.Expr] {
+  [
+    @pl.col("v").sum().alias("sum"),
+    @pl.col("v").mean().alias("mean"),
+    @pl.len().alias("len"),
+  ]
+}
+
+///|
+test "bench m3 group_by Int64 key 1000 groups sum/mean/len n=1000000" (
+  it : @bench.T,
+) {
+  let df = must(() => m3_bench_df(1000))
+  it.bench(fn() {
+    it.keep(must(() => df.group_by([@pl.col("gi")]).agg(m3_bench_aggs())))
+  })
+}
+
+///|
+test "bench m3 group_by Int64 key 500000 groups sum/mean/len n=1000000" (
+  it : @bench.T,
+) {
+  let df = must(() => m3_bench_df(500000))
+  it.bench(fn() {
+    it.keep(must(() => df.group_by([@pl.col("gi")]).agg(m3_bench_aggs())))
+  })
+}
+
+///|
+test "bench m3 group_by String key 1000 groups sum/mean/len n=1000000" (
+  it : @bench.T,
+) {
+  let df = must(() => m3_bench_df(1000))
+  it.bench(fn() {
+    it.keep(must(() => df.group_by([@pl.col("gs")]).agg(m3_bench_aggs())))
+  })
+}
+
+///|
+test "bench m3 group_by String key 500000 groups sum/mean/len n=1000000" (
+  it : @bench.T,
+) {
+  let df = must(() => m3_bench_df(500000))
+  it.bench(fn() {
+    it.keep(must(() => df.group_by([@pl.col("gs")]).agg(m3_bench_aggs())))
+  })
+}
+
+///|
+test "bench m3 over sum Int64 key 1000 groups n=1000000" (it : @bench.T) {
+  let df = must(() => m3_bench_df(1000))
+  it.bench(fn() {
+    it.keep(
+      must(() => {
+        df.with_columns([
+          @pl.col("v").sum().over([@pl.col("gi")]).alias("total"),
+        ])
+      }),
+    )
+  })
+}
+
+///|
+test "bench m3 over sum Int64 key 500000 groups n=1000000" (it : @bench.T) {
+  let df = must(() => m3_bench_df(500000))
+  it.bench(fn() {
+    it.keep(
+      must(() => {
+        df.with_columns([
+          @pl.col("v").sum().over([@pl.col("gi")]).alias("total"),
+        ])
+      }),
+    )
+  })
+}
+
+///|
+test "bench m3 over sum String key 1000 groups n=1000000" (it : @bench.T) {
+  let df = must(() => m3_bench_df(1000))
+  it.bench(fn() {
+    it.keep(
+      must(() => {
+        df.with_columns([
+          @pl.col("v").sum().over([@pl.col("gs")]).alias("total"),
+        ])
+      }),
+    )
+  })
+}
+
+///|
+test "bench m3 over sum String key 500000 groups n=1000000" (it : @bench.T) {
+  let df = must(() => m3_bench_df(500000))
+  it.bench(fn() {
+    it.keep(
+      must(() => {
+        df.with_columns([
+          @pl.col("v").sum().over([@pl.col("gs")]).alias("total"),
+        ])
+      }),
+    )
+  })
+}
+
+///|
+/// Left: the keys 0..1M in a scrambled order (unique). Right: 1M rows whose
+/// keys are `i / 2` (500 000 distinct keys, each twice). Every left key below
+/// 500 000 matches twice, so the inner join has 1M rows. The unique-key
+/// joins are in `join_bench_test.mbt`.
+fn m3_join_dup_frames() -> (@pl.DataFrame, @pl.DataFrame) {
+  let l = join_bench_frame(join_bench_permutation(7), "i")
+  let r = join_bench_frame(Array::makei(bench_n, i => (i / 2).to_int64()), "j")
+  (l, r)
+}
+
+///|
+test "bench m3 join inner int64 right keys repeated twice 1M x 1M" (
+  it : @bench.T,
+) {
+  let (l, r) = m3_join_dup_frames()
+  it.bench(fn() { it.keep(must(() => l.join(r, on=[@pl.col("k")]))) })
+}
+
+///|
+test "bench m3 join left int64 right keys repeated twice 1M x 1M" (
+  it : @bench.T,
+) {
+  let (l, r) = m3_join_dup_frames()
+  it.bench(fn() { it.keep(must(() => l.join(r, on=[@pl.col("k")], how=Left))) })
+}
+
+///|
+test "bench m3 group_by Int64 key 1 group sum/mean/len n=1000000" (
+  it : @bench.T,
+) {
+  let df = must(() => m3_bench_df(1))
+  it.bench(fn() {
+    it.keep(must(() => df.group_by([@pl.col("gi")]).agg(m3_bench_aggs())))
+  })
+}
+
+///|
+test "bench m3 group_by String key 1 group sum/mean/len n=1000000" (
+  it : @bench.T,
+) {
+  let df = must(() => m3_bench_df(1))
+  it.bench(fn() {
+    it.keep(must(() => df.group_by([@pl.col("gs")]).agg(m3_bench_aggs())))
+  })
+}
+
+///|
+/// Left: 1M rows, the key is `i % 10` (10 distinct keys). Right: 10 rows that
+/// all have the key 0. The 100 000 left rows with key 0 match 10 rows each, so
+/// the Inner join has 1,000,000 rows (the Left join 1,900,000); the cost must
+/// follow the output.
+fn m3_join_same_key_frames() -> (@pl.DataFrame, @pl.DataFrame) {
+  let l = join_bench_frame(Array::makei(bench_n, i => (i % 10).to_int64()), "i")
+  let r = join_bench_frame(Array::makei(10, _ => 0L), "j")
+  (l, r)
+}
+
+///|
+test "bench m3 join inner int64 right keys all equal 1M x 10" (it : @bench.T) {
+  let (l, r) = m3_join_same_key_frames()
+  it.bench(fn() { it.keep(must(() => l.join(r, on=[@pl.col("k")]))) })
+}
+
+///|
+test "bench m3 join left int64 right keys all equal 1M x 10" (it : @bench.T) {
+  let (l, r) = m3_join_same_key_frames()
+  it.bench(fn() { it.keep(must(() => l.join(r, on=[@pl.col("k")], how=Left))) })
+}

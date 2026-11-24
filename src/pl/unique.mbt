@@ -15,6 +15,24 @@ pub(all) enum UniqueKeep {
 }
 
 ///|
+/// Formats the option with its polars name (`any`, `first`, `last`, `none`).
+pub impl Show for UniqueKeep with fn output(self, logger) {
+  logger.write_string(
+    match self {
+      Any => "any"
+      First => "first"
+      Last => "last"
+      KeepNone => "none"
+    },
+  )
+}
+
+///|
+/// Makes `to_string` callable as a method, giving the same polars name as
+/// `Show`.
+pub extend UniqueKeep with Show::{to_string}
+
+///|
 /// The rows `keep` retains when rows are compared on all `cols` (null equals
 /// null, NaN equals NaN, `-0.0` equals `0.0`), as row numbers in ascending
 /// order, so the original order is always preserved. A hash table makes this

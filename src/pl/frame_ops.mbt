@@ -70,6 +70,26 @@ fn frame_named_columns(
 // ---------------------------------------------------------------------------
 
 ///|
+/// `node` with every `is_in` of an empty series that is the node itself, under
+/// an alias, or an operand of `&` or `|` (also under an alias) replaced by the
+/// literal `false`. The operand of each replaced `is_in` is appended to
+/// `operands`.
+fn fold_empty_is_in(node : ExprNode, operands : Array[ExprNode]) -> ExprNode {
+  match node {
+    Alias(x, name) => Alias(fold_empty_is_in(x, operands), name)
+    Binary(And, l, r) =>
+      Binary(And, fold_empty_is_in(l, operands), fold_empty_is_in(r, operands))
+    Binary(Or, l, r) =>
+      Binary(Or, fold_empty_is_in(l, operands), fold_empty_is_in(r, operands))
+    IsIn(x, values) if values.len() == 0 => {
+      operands.push(x)
+      Literal(AnyValue::Boolean(false), Strong)
+    }
+    _ => node
+  }
+}
+
+///|
 /// The rows of the frame where `predicate` is true; rows where it is null are
 /// dropped. The columns and their types are kept.
 ///
@@ -77,9 +97,12 @@ fn frame_named_columns(
 ///   high, or to a single value (`lit_bool(true)` keeps every row,
 ///   `lit_bool(false)` none, also on a frame without rows).
 /// - `all()` and `cols` are fine when they stand for exactly one column.
-/// - A predicate that is `is_in` of an empty series (also aliased) keeps no
-///   row whatever the types, as in polars; `select` and `Series::is_in` raise
-///   `InvalidOperation` for an empty series of an incompatible type.
+/// - An `is_in` of an empty series is "no row" whatever the types, as in
+///   polars, when it is the predicate (also aliased) or an operand of `&` or
+///   `|`, at any depth of a chain of those: `a.is_in(empty) | g` is `g`,
+///   `a.is_in(empty) & g` keeps no row. Anywhere else (`~`, a comparison,
+///   `is_null`, `when`), as in `select` and `Series::is_in`, an empty series
+///   of an incompatible type raises `InvalidOperation`.
 ///
 /// ```mbt check
 /// test {
@@ -118,16 +141,14 @@ pub fn DataFrame::filter(
   }
   let node = nodes[0]
   check_columns(self, node)
-  // polars folds `is_in` of an empty set of any type inside a filter to "no
-  // row" before it looks at the types (`select` and `Series::is_in` still
-  // raise); the checked operand is evaluated for its own errors
-  let mut inner = node
-  while inner is Alias(x, _) {
-    inner = x
-  }
-  if inner is IsIn(x, values) && values.len() == 0 {
+  // polars folds `is_in` of an empty set of any type inside a filter to
+  // `false` before it looks at the types, when it stands for the predicate or
+  // for an operand of `&` or `|` (`select` and `Series::is_in` still raise);
+  // the checked operands are evaluated for their own errors
+  let folded : Array[ExprNode] = []
+  let node = fold_empty_is_in(node, folded)
+  for x in folded {
     ignore(eval_operand(self, x))
-    return frame_gather(self, [])
   }
   // a folding of weak literals that leaves the `Int64` / `Float64` range
   // (zero divisor, overflow, a null operand, a bitwise operator) is a

@@ -10,36 +10,36 @@ fn seq_i64(name : String, vs : Array[Int64?]) -> @pl.Series {
 ///|
 test "shift moves values down and leaves null in the first rows" {
   let s = seq_i64("a", [Some(1L), None, Some(3L), Some(4L)])
-  let down = s.shift(1)
+  let down = s.shift(n=1)
   assert_eq(down.to_int64_array(), [None, Some(1L), None, Some(3L)])
   assert_eq(down.name(), "a")
   assert_eq(down.dtype(), @pl.DataType::Int64)
-  assert_eq(s.shift(-1).to_int64_array(), [None, Some(3L), Some(4L), None])
-  assert_eq(s.shift(0).to_int64_array(), s.to_int64_array())
+  assert_eq(s.shift(n=-1).to_int64_array(), [None, Some(3L), Some(4L), None])
+  assert_eq(s.shift(n=0).to_int64_array(), s.to_int64_array())
   // beyond the length (either way) nothing is left
-  assert_eq(s.shift(10).to_int64_array(), [None, None, None, None])
-  assert_eq(s.shift(-4).to_int64_array(), [None, None, None, None])
+  assert_eq(s.shift(n=10).to_int64_array(), [None, None, None, None])
+  assert_eq(s.shift(n=-4).to_int64_array(), [None, None, None, None])
   // n at the edge of Int32 does not overflow
-  assert_eq(s.shift(-2147483648).null_count(), 4)
-  assert_eq(s.shift(2147483647).null_count(), 4)
-  assert_eq(seq_i64("e", []).shift(3).len(), 0)
+  assert_eq(s.shift(n=-2147483648).null_count(), 4)
+  assert_eq(s.shift(n=2147483647).null_count(), 4)
+  assert_eq(seq_i64("e", []).shift(n=3).len(), 0)
 }
 
 ///|
 test "shift keeps every dtype" {
   let b = @pl.Series::bool_nullable("b", [Some(true), None, Some(false)])
-  assert_eq(b.shift(1).to_bool_array(), [None, Some(true), None])
+  assert_eq(b.shift(n=1).to_bool_array(), [None, Some(true), None])
   let f = @pl.Series::float64("f", [1.5, 0.0 / 0.0])
-  assert_true(f.shift(-1).get(0) is Float64(x) && x.is_nan())
+  assert_true(f.shift(n=-1).get(0) is Float64(x) && x.is_nan())
   let s = @pl.Series::str_nullable("s", [Some("a"), None, Some("\u{1F600}")])
-  assert_eq(s.shift(2).to_str_array(), [None, None, Some("a")])
+  assert_eq(s.shift(n=2).to_str_array(), [None, None, Some("a")])
   let d = @pl.Series::date("d", [1, 2])
-  assert_eq(d.shift(1).get(1), @pl.AnyValue::Date(1))
-  assert_eq(d.shift(1).dtype(), @pl.DataType::Date)
+  assert_eq(d.shift(n=1).get(1), @pl.AnyValue::Date(1))
+  assert_eq(d.shift(n=1).dtype(), @pl.DataType::Date)
   let t = @pl.Series::datetime("t", [1L, 2L])
-  assert_eq(t.shift(-1).get(0), @pl.AnyValue::Datetime(2L))
+  assert_eq(t.shift(n=-1).get(0), @pl.AnyValue::Datetime(2L))
   // a null series stays null
-  let n = @pl.Series::null("n", 3).shift(1)
+  let n = @pl.Series::null("n", 3).shift(n=1)
   assert_eq(n.dtype(), @pl.DataType::Null)
   assert_eq(n.len(), 3)
 }
@@ -47,34 +47,34 @@ test "shift keeps every dtype" {
 ///|
 test "shift fill_value: same type, supertype, null series" {
   let s = @pl.Series::int32_nullable("a", [Some(1), None, Some(3)])
-  let r = s.shift(1, fill_value=@pl.AnyValue::Int32(9))
+  let r = s.shift(n=1, fill_value=@pl.AnyValue::Int32(9))
   assert_eq(r.to_int32_array(), [Some(9), Some(1), None])
   // an existing null stays null, only the new rows are filled
-  assert_eq(s.shift(-1, fill_value=@pl.AnyValue::Int32(9)).to_int32_array(), [
+  assert_eq(s.shift(n=-1, fill_value=@pl.AnyValue::Int32(9)).to_int32_array(), [
     None,
     Some(3),
     Some(9),
   ])
   // supertype of Int32 and Int64 / Float64 / String
-  let wide = s.shift(1, fill_value=@pl.AnyValue::Int64(3000000000L))
+  let wide = s.shift(n=1, fill_value=@pl.AnyValue::Int64(3000000000L))
   assert_eq(wide.dtype(), @pl.DataType::Int64)
   assert_eq(wide.get(0), @pl.AnyValue::Int64(3000000000L))
-  let fl = s.shift(1, fill_value=@pl.AnyValue::Float64(1.5))
+  let fl = s.shift(n=1, fill_value=@pl.AnyValue::Float64(1.5))
   assert_eq(fl.dtype(), @pl.DataType::Float64)
   assert_eq(fl.get(1), @pl.AnyValue::Float64(1.0))
-  let st = s.shift(1, fill_value=@pl.AnyValue::String("x"))
+  let st = s.shift(n=1, fill_value=@pl.AnyValue::String("x"))
   assert_eq(st.to_str_array(), [Some("x"), Some("1"), None])
   // an explicit null fill is the same as no fill, the type is kept
   assert_eq(
-    s.shift(1, fill_value=@pl.AnyValue::Null).dtype(),
+    s.shift(n=1, fill_value=@pl.AnyValue::Null).dtype(),
     @pl.DataType::Int32,
   )
   // a null series takes the type of the value
-  let n = @pl.Series::null("n", 2).shift(1, fill_value=@pl.AnyValue::Int32(5))
+  let n = @pl.Series::null("n", 2).shift(n=1, fill_value=@pl.AnyValue::Int32(5))
   assert_eq(n.dtype(), @pl.DataType::Int32)
   assert_eq(n.to_int32_array(), [Some(5), None])
   // all rows are fill rows
-  assert_eq(s.shift(10, fill_value=@pl.AnyValue::Int32(0)).to_int32_array(), [
+  assert_eq(s.shift(n=10, fill_value=@pl.AnyValue::Int32(0)).to_int32_array(), [
     Some(0),
     Some(0),
     Some(0),
@@ -84,21 +84,21 @@ test "shift fill_value: same type, supertype, null series" {
 ///|
 test "shift fill_value: Boolean in Date, Date in Boolean" {
   let d = @pl.Series::date("d", [10, 20])
-  let r = d.shift(1, fill_value=@pl.AnyValue::Boolean(true))
+  let r = d.shift(n=1, fill_value=@pl.AnyValue::Boolean(true))
   assert_eq(r.dtype(), @pl.DataType::Date)
   assert_eq(r.to_list(), [@pl.AnyValue::Date(1), @pl.AnyValue::Date(10)])
   let t = @pl.Series::datetime("t", [10L, 20L])
   assert_eq(
-    t.shift(-1, fill_value=@pl.AnyValue::Boolean(false)).get(1),
+    t.shift(n=-1, fill_value=@pl.AnyValue::Boolean(false)).get(1),
     @pl.AnyValue::Datetime(0L),
   )
   let b = @pl.Series::bool("b", [true])
   assert_true(
-    raises(() => b.shift(1, fill_value=@pl.AnyValue::Date(100)))
+    raises(() => b.shift(n=1, fill_value=@pl.AnyValue::Date(100)))
     is Some(@pl.ComputeError("fill value '1970-04-11' is not supported")),
   )
   assert_true(
-    raises(() => b.shift(1, fill_value=@pl.AnyValue::Datetime(5L)))
+    raises(() => b.shift(n=1, fill_value=@pl.AnyValue::Datetime(5L)))
     is Some(
       @pl.ComputeError(
         "fill value '1970-01-01 00:00:00.000005' is not supported",
@@ -423,7 +423,7 @@ test "reverse every dtype, with nulls" {
 ///|
 test "rank Ordinal is Int64 and Average is Float64" {
   let s = @pl.Series::int32("a", [30, 10, 20])
-  let o = s.rank(method=@pl.RankMethod::Ordinal)
+  let o = s.rank(method_=@pl.RankMethod::Ordinal)
   assert_eq(o.dtype(), @pl.DataType::Int64)
   assert_eq(o.to_int64_array(), [Some(3L), Some(1L), Some(2L)])
   let a = s.rank()
@@ -455,7 +455,7 @@ test "rank: all methods on ties, nulls take no rank" {
   ])
   let rk = fn(m : @pl.RankMethod, d : Bool) {
     s
-    .rank(method=m, descending=d)
+    .rank(method_=m, descending=d)
     .to_list()
     .map(v => {
       match v {
@@ -482,7 +482,7 @@ test "rank: NaN above numbers and equal to itself, zeros tie, strings by code po
   let nan = 0.0 / 0.0
   let inf = 1.0 / 0.0
   let f = @pl.Series::float64("f", [1.0, nan, -inf, -0.0, 0.0, inf, nan])
-  assert_eq(f.rank(method=@pl.RankMethod::Min).to_int64_array(), [
+  assert_eq(f.rank(method_=@pl.RankMethod::Min).to_int64_array(), [
     Some(4L),
     Some(6L),
     Some(1L),
@@ -492,7 +492,7 @@ test "rank: NaN above numbers and equal to itself, zeros tie, strings by code po
     Some(6L),
   ])
   let s = @pl.Series::str("s", ["\u{1F600}", "\u{FF61}", "a", "", "Z"])
-  assert_eq(s.rank(method=@pl.RankMethod::Ordinal).to_int64_array(), [
+  assert_eq(s.rank(method_=@pl.RankMethod::Ordinal).to_int64_array(), [
     Some(5L),
     Some(4L),
     Some(3L),
@@ -512,14 +512,14 @@ test "rank: NaN above numbers and equal to itself, zeros tie, strings by code po
 test "rank: empty and Null series" {
   assert_eq(seq_i64("e", []).rank().dtype(), @pl.DataType::Float64)
   assert_eq(
-    seq_i64("e", []).rank(method=@pl.RankMethod::Dense).dtype(),
+    seq_i64("e", []).rank(method_=@pl.RankMethod::Dense).dtype(),
     @pl.DataType::Int64,
   )
   let n = @pl.Series::null("n", 3)
   let a = n.rank()
   assert_eq(a.dtype(), @pl.DataType::Float64)
   assert_eq(a.null_count(), 3)
-  let o = n.rank(method=@pl.RankMethod::Ordinal)
+  let o = n.rank(method_=@pl.RankMethod::Ordinal)
   assert_eq(o.dtype(), @pl.DataType::Int64)
   assert_eq(o.null_count(), 3)
   let all_null = seq_i64("a", [None, None]).rank()
@@ -531,10 +531,10 @@ test "rank takes O(n log n): 200000 rows" {
   let n = 200000
   let xs : Array[Int64] = Array::makei(n, i => (i * 7919 % 1000).to_int64())
   let s = @pl.Series::int64("a", xs)
-  let r = s.rank(method=@pl.RankMethod::Dense)
+  let r = s.rank(method_=@pl.RankMethod::Dense)
   assert_eq(r.get(0), @pl.AnyValue::Int64(1L))
   assert_eq(r.len(), n)
-  let o = s.rank(method=@pl.RankMethod::Ordinal)
+  let o = s.rank(method_=@pl.RankMethod::Ordinal)
   // ordinal ranks are a permutation of 1..n
   assert_eq(o.max(), @pl.AnyValue::Int64(n.to_int64()))
   assert_eq(o.min(), @pl.AnyValue::Int64(1L))

@@ -24,6 +24,9 @@ priv enum StrOp {
   Replace(String, String, Bool, Bool)
   /// `Strip(characters, side)`
   Strip(String?, StripSide)
+  /// `ToDate(strict)` and `ToDatetime(strict)` (`date_parse.mbt`)
+  ToDate(Bool)
+  ToDatetime(Bool)
 }
 
 ///|
@@ -52,6 +55,8 @@ fn StrOp::text(self : StrOp) -> String {
         None => "str.\{name}([null])"
       }
     }
+    // polars prints both, strict or not, as `strptime` with the mode "raise"
+    ToDate(_) | ToDatetime(_) => "str.strptime([\"raise\"])"
   }
 }
 
@@ -69,6 +74,8 @@ fn StrOp::apply(self : StrOp, s : Series) -> Series raise PolarsError {
     Replace(pattern, value, literal, all) =>
       str_replace(s, pattern, value, literal, all)
     Strip(chars, side) => str_strip_chars(s, chars, side)
+    ToDate(strict) => str_to_temporal(s, Date, strict)
+    ToDatetime(strict) => str_to_temporal(s, Datetime, strict)
   }
 }
 
@@ -210,4 +217,57 @@ pub fn ExprStr::strip_chars_start(self : ExprStr, characters? : String) -> Expr 
 /// Removes characters from the end only; see `ExprStr::strip_chars`.
 pub fn ExprStr::strip_chars_end(self : ExprStr, characters? : String) -> Expr {
   self.op(StrOp::Strip(characters, End))
+}
+
+///|
+/// Reads each string as a `Date`, like polars' `str.to_date()` without a
+/// `format`: polars finds the format itself, and so does this library, for the
+/// ISO texts `YYYY-MM-DD` and `YYYY/MM/DD` (one or two digits for month and
+/// day). An explicit format is not supported. A null stays null. With
+/// `strict=false` a text that is not a date is null; with `strict=true` it is
+/// an error. See `docs/golden/known-diffs/date_parse.md`.
+///
+/// ```mbt check
+/// test {
+///   let df = @pl.DataFrame::new([@pl.Series::str("d", ["2024-01-15", "x"])])
+///   let out = df.select([@pl.col("d").str().to_date(strict=false)])
+///   assert_eq(out.column("d").to_list(), [
+///     @pl.AnyValue::Date(19737),
+///     @pl.AnyValue::Null,
+///   ])
+/// }
+/// ```
+///
+/// # Errors
+/// Evaluating it raises `SchemaMismatch` for a column that is not `String`
+/// (as `ExprStr::to_lowercase`); with `strict=true` `InvalidOperation`
+/// (`conversion from `str` to `date` failed in column 'd' for 1 out of 2
+/// values: ["x"]`) for texts that are not dates; `ComputeError` (`could not
+/// find an appropriate format to parse dates, please define a format`) when
+/// no text in the column is a date (with `strict=false` too for a `Datetime`
+/// but not for a `Date`, which then gives only nulls).
+pub fn ExprStr::to_date(self : ExprStr, strict~ : Bool = true) -> Expr {
+  self.op(StrOp::ToDate(strict))
+}
+
+///|
+/// Reads each string as a `Datetime` in microseconds, like polars'
+/// `str.to_datetime(time_unit="us")` without a `format`: a date alone
+/// (midnight), or a date followed by `T` or a space and a time of day with an
+/// optional fraction, then optionally a UTC offset (`Z`, `+02:00`), which
+/// gives the UTC time (the library has no time zones, so the result is a plain
+/// `Datetime`; polars gives `datetime[us, UTC]`). An explicit format is not
+/// supported. Otherwise as `ExprStr::to_date`.
+///
+/// ```mbt check
+/// test {
+///   let df = @pl.DataFrame::new([@pl.Series::str("t", ["2024-01-15 10:20:30"])])
+///   let out = df.select([@pl.col("t").str().to_datetime()])
+///   assert_eq(out.column("t").to_list(), [
+///     @pl.AnyValue::Datetime(1705314030000000L),
+///   ])
+/// }
+/// ```
+pub fn ExprStr::to_datetime(self : ExprStr, strict~ : Bool = true) -> Expr {
+  self.op(StrOp::ToDatetime(strict))
 }

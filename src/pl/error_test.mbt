@@ -29,7 +29,7 @@ test "error show for every variant" {
 test "error to_string method on a caught error" {
   let df = @pl.DataFrame::new([@pl.Series::int64("a", [1L])])
   try df.column("x") catch {
-    e => assert_eq(e.to_string(), "ColumnNotFound: column 'x' not found")
+    e => assert_eq(e.to_string(), "ColumnNotFound: \"x\" not found")
   } noraise {
     _ => fail("expected an error")
   }

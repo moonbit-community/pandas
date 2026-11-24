@@ -23,6 +23,13 @@ priv enum ElemFunc {
   Log(Double)
   /// `Round(decimals)`
   Round(Int32)
+  /// the trigonometric functions (`trig.mbt`)
+  Sin
+  Cos
+  Tan
+  ArcSin
+  ArcCos
+  ArcTan
 }
 
 ///|
@@ -39,6 +46,12 @@ fn ElemFunc::text(self : ElemFunc) -> String {
     Exp => "exp()"
     Log(base) => "log([dyn float: \{rust_display_float(base)}])"
     Round(_) => "round()"
+    Sin => "sin()"
+    Cos => "cos()"
+    Tan => "tan()"
+    ArcSin => "arcsin()"
+    ArcCos => "arccos()"
+    ArcTan => "arctan()"
   }
 }
 
@@ -54,6 +67,12 @@ fn ElemFunc::apply(self : ElemFunc, s : Series) -> Series raise PolarsError {
     Exp => s.exp()
     Log(base) => s.log(base~)
     Round(decimals) => s.round(decimals~)
+    Sin => s.sin()
+    Cos => s.cos()
+    Tan => s.tan()
+    ArcSin => s.arcsin()
+    ArcCos => s.arccos()
+    ArcTan => s.arctan()
   }
 }
 
@@ -210,6 +229,11 @@ fn xagg_fill_null(
   }
   let (s, f) = xagg_resolve(x, v, ao, bo)
   let t = xagg_common_type(s.dtype(), f.dtype())
+  if s.len() != f.len() && s.len() != 1 && f.len() != 1 {
+    raise ShapeMismatch(
+      "arguments for `fill_null` have different lengths (\{s.len()} != \{f.len()})",
+    )
+  }
   let n = binary_length("fill_null", s.len(), f.len())
   let base = s.col.cast_lenient(t).expand(n)
   let fill = f.col.cast_lenient(t).expand(n)

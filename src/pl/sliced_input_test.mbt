@@ -133,7 +133,7 @@ fn sl_ops() -> Array[(String, (@pl.Series) -> String)] {
     ("neg", s => sl_show(() => s.neg())),
     ("cum_sum", s => sl_show(() => s.cum_sum())),
     ("cum_max reverse", s => sl_show(() => s.cum_max(reverse=true))),
-    ("shift", s => sl_show(() => s.shift(1))),
+    ("shift", s => sl_show(() => s.shift(n=1))),
     ("diff", s => sl_show(() => s.diff())),
     ("rank", s => "\{s.rank()}"),
     ("reverse", s => "\{s.reverse()}"),

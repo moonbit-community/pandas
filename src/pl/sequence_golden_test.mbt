@@ -65,9 +65,9 @@ fn golden_sequence_op(
       match obj.get("fill") {
         Some(f) => {
           let fill = golden_sequence_fill(f)
-          () => s.shift(n, fill_value=fill)
+          () => s.shift(n~, fill_value=fill)
         }
-        None => () => s.shift(n)
+        None => () => s.shift(n~)
       }
     "diff" => () => s.diff(n~)
     "cum_sum" => () => s.cum_sum(reverse~)
@@ -82,7 +82,7 @@ fn golden_sequence_op(
       }
       let method = golden_sequence_method(m)
       let descending = obj.get("descending") is Some(True)
-      () => s.rank(method~, descending~)
+      () => s.rank(method_=method, descending~)
     }
     "fill_null" => {
       guard obj.get("strategy") is Some(String(st)) else {

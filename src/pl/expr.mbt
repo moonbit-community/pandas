@@ -12,8 +12,11 @@
 /// `is_finite`, `is_infinite`, `abs`, `sqrt`, `exp`, `log`, `round`,
 /// `fill_null`, `is_in`, `between`), the sequence operations (`shift`, `diff`,
 /// `cum_sum`, `cum_min`, `cum_max`, `cum_prod`, `cum_count`, `rank`,
-/// `reverse`, `fill_null_strategy`), the `str()` and `dt()` functions and
-/// `when(...).then(...).otherwise(...)`.
+/// `reverse`, `fill_null_strategy`), `sort`, `arg_sort`, `sort_by`, `head`,
+/// `tail`, `slice`, `unique`, `drop_nulls`, `filter`, `any`, `all`, the
+/// trigonometric functions (`sin`, `cos`, `tan`, `arcsin`, `arccos`,
+/// `arctan`), `sum_horizontal` / `min_horizontal` / `max_horizontal`, the
+/// `str()` and `dt()` functions and `when(...).then(...).otherwise(...)`.
 /// An expression is a value: building one does no work and an expression can
 /// be used many times.
 ///
@@ -99,6 +102,20 @@ priv enum ExprNode {
   Str(StrOp, ExprNode)
   /// A date or time field (`expr_dt.mbt`): `dt().year()`, ...
   Dt(DtField, ExprNode)
+  /// `len()`: the number of rows of the frame (of the group in `agg`)
+  Len
+  /// A sort, a cut or a de-duplication (`expr_shape.mbt`): `sort`, `head`, `unique`, ...
+  Shape(ShapeOp, ExprNode)
+  /// `Filter(expr, predicate)`
+  Filter(ExprNode, ExprNode)
+  /// `SortBy(expr, keys, descending, nulls_last)`
+  SortBy(ExprNode, Array[ExprNode], Array[Bool], Bool)
+  /// `AnyAll(is_any, ignore_nulls, expr)`: a reduction to one `Boolean`
+  AnyAll(Bool, Bool, ExprNode)
+  /// `Horizontal(op, inputs, ignore_nulls)` (`horizontal.mbt`)
+  Horizontal(HorizOp, Array[ExprNode], Bool)
+  /// `Over(expr, partition_by)` (`window.mbt`): `expr` evaluated per partition
+  Over(ExprNode, Array[ExprNode])
 }
 
 ///|
@@ -150,6 +167,25 @@ pub fn cols(names : Array[String]) -> Expr {
 /// `all().alias("x")` names every column `x` and fails with `DuplicateColumn`.
 pub fn all() -> Expr {
   Expr::of(ExprNode::All)
+}
+
+///|
+/// The number of rows, an `Int64` named `len` (polars' `pl.len()`). In
+/// `select` and `with_columns` it is the height of the frame (0 for a frame
+/// without columns), repeated next to longer columns like any one-row
+/// result; in `group_by(...).agg(...)` it is the number of rows of each
+/// group, null keys included (`col("a").count()` skips nulls, `len()` does
+/// not).
+///
+/// ```mbt check
+/// test {
+///   let df = @pl.DataFrame::new([@pl.Series::int32("a", [1, 2, 3])])
+///   let out = df.select([@pl.len()])
+///   assert_eq(out.column("len").to_int64_array(), [Some(3L)])
+/// }
+/// ```
+pub fn len() -> Expr {
+  Expr::of(ExprNode::Len)
 }
 
 ///|
@@ -476,6 +512,27 @@ fn ExprNode::write_text(self : ExprNode, sb : StringBuilder) -> Unit {
     Seq(op, x) => x.write_then(sb, ".\{op.text()}")
     Str(op, x) => x.write_then(sb, ".\{op.text()}")
     Dt(f, x) => x.write_then(sb, ".\{f.text()}")
+    Len => sb.write_string("len()")
+    Shape(op, x) => x.write_then(sb, ".\{op.text()}")
+    Filter(x, p) => {
+      x.write_then(sb, ".filter(")
+      p.write_then(sb, ")")
+    }
+    SortBy(x, keys, descending, nulls_last) =>
+      x.write_sort_by(keys, descending, nulls_last, sb)
+    AnyAll(is_any, ignore_nulls, x) =>
+      x.write_then(sb, ".\{any_all_name(is_any, ignore_nulls)}")
+    Horizontal(op, xs, _) => ExprNode::write_horizontal(op, xs, sb)
+    Over(x, keys) => {
+      x.write_then(sb, ".over([")
+      for i, k in keys {
+        if i > 0 {
+          sb.write_string(", ")
+        }
+        k.write_text(sb)
+      }
+      sb.write_string("])")
+    }
   }
 }
 

@@ -14,6 +14,8 @@ pub fn cols(Array[String]) -> Expr
 
 pub fn concat(Array[DataFrame], how? : ConcatHow) -> DataFrame raise PolarsError
 
+pub fn len() -> Expr
+
 pub fn lit(AnyValue) -> Expr
 
 pub fn lit_bool(Bool) -> Expr
@@ -23,6 +25,12 @@ pub fn lit_float(Double) -> Expr
 pub fn lit_int(Int64) -> Expr
 
 pub fn lit_str(String) -> Expr
+
+pub fn max_horizontal(Array[Expr]) -> Expr
+
+pub fn min_horizontal(Array[Expr]) -> Expr
+
+pub fn sum_horizontal(Array[Expr], ignore_nulls? : Bool) -> Expr
 
 pub fn when(Expr) -> When
 
@@ -53,6 +61,8 @@ pub(all) enum AnyValue {
   Date(Int32)
   Datetime(Int64)
 }
+pub fn AnyValue::date_ymd(Int32, Int32, Int32) -> Self raise PolarsError
+pub fn AnyValue::datetime_ymd(Int32, Int32, Int32, hour? : Int32, minute? : Int32, second? : Int32, microsecond? : Int32) -> Self raise PolarsError
 pub fn AnyValue::dtype(Self) -> DataType
 pub fn AnyValue::is_null(Self) -> Bool
 pub fn AnyValue::to_double(Self) -> Double?
@@ -67,6 +77,8 @@ pub(all) enum ClosedInterval {
   Right
   Neither
 }
+pub fn ClosedInterval::to_string(Self) -> String
+pub impl Show for ClosedInterval
 
 #derive(Eq, @debug.Debug)
 pub(all) enum ConcatHow {
@@ -75,6 +87,8 @@ pub(all) enum ConcatHow {
   Horizontal
   Diagonal
 }
+pub fn ConcatHow::to_string(Self) -> String
+pub impl Show for ConcatHow
 
 type DataFrame
 pub fn DataFrame::column(Self, String) -> Series raise PolarsError
@@ -89,14 +103,18 @@ pub fn DataFrame::fill_null(Self, Expr) -> Self raise PolarsError
 pub fn DataFrame::fill_null_strategy(Self, FillStrategy, limit? : Int32) -> Self raise PolarsError
 pub fn DataFrame::filter(Self, Expr) -> Self raise PolarsError
 pub fn DataFrame::gather(Self, Array[Int32]) -> Self raise PolarsError
+pub fn DataFrame::gather_every(Self, Int32, offset? : Int32) -> Self raise PolarsError
 pub fn DataFrame::get(Self, Int32, String) -> AnyValue raise PolarsError
 pub fn DataFrame::get_column_index(Self, String) -> Int32?
 pub fn DataFrame::get_columns(Self) -> Array[Series]
+pub fn DataFrame::group_by(Self, Array[Expr], maintain_order? : Bool) -> GroupBy
 pub fn DataFrame::head(Self, n? : Int32) -> Self
 pub fn DataFrame::height(Self) -> Int32
 pub fn DataFrame::hstack(Self, Array[Series]) -> Self raise PolarsError
+pub fn DataFrame::join(Self, Self, on? : Array[Expr], left_on? : Array[Expr], right_on? : Array[Expr], how? : JoinHow, suffix? : String, validate? : JoinValidation, nulls_equal? : Bool, coalesce? : Bool) -> Self raise PolarsError
 pub fn DataFrame::new(Array[Series]) -> Self raise PolarsError
 pub fn DataFrame::null_count(Self) -> Self
+pub fn DataFrame::pivot(Self, Array[String], index? : Array[String], values? : Array[String], aggregate_function? : PivotAgg, sort_columns? : Bool, separator? : String) -> Self raise PolarsError
 pub fn DataFrame::rename(Self, Map[String, String], strict? : Bool) -> Self raise PolarsError
 pub fn DataFrame::row(Self, Int32) -> Array[AnyValue] raise PolarsError
 pub fn DataFrame::schema(Self) -> Array[(String, DataType)]
@@ -105,8 +123,11 @@ pub fn DataFrame::shape(Self) -> (Int32, Int32)
 pub fn DataFrame::slice(Self, Int32, length? : Int32) -> Self
 pub fn DataFrame::sort(Self, Array[Expr], descending? : Array[Bool], nulls_last? : Bool) -> Self raise PolarsError
 pub fn DataFrame::tail(Self, n? : Int32) -> Self
+pub fn DataFrame::to_dict(Self) -> Map[String, Series]
 pub fn DataFrame::to_string(Self) -> String
+pub fn DataFrame::transpose(Self, include_header? : Bool, header_name? : String, column_names? : Array[String]) -> Self raise PolarsError
 pub fn DataFrame::unique(Self, subset? : Array[String], keep? : UniqueKeep, maintain_order? : Bool) -> Self raise PolarsError
+pub fn DataFrame::unpivot(Self, on? : Array[String], index? : Array[String], variable_name? : String, value_name? : String) -> Self raise PolarsError
 pub fn DataFrame::vstack(Self, Self) -> Self raise PolarsError
 pub fn DataFrame::width(Self) -> Int32
 pub fn DataFrame::with_columns(Self, Array[Expr]) -> Self raise PolarsError
@@ -137,8 +158,15 @@ pub impl Show for DataType
 type Expr
 pub fn Expr::abs(Self) -> Self
 pub fn Expr::alias(Self, String) -> Self
+pub fn Expr::all(Self, ignore_nulls? : Bool) -> Self
+pub fn Expr::any(Self, ignore_nulls? : Bool) -> Self
+pub fn Expr::arccos(Self) -> Self
+pub fn Expr::arcsin(Self) -> Self
+pub fn Expr::arctan(Self) -> Self
+pub fn Expr::arg_sort(Self, descending? : Bool, nulls_last? : Bool) -> Self
 pub fn Expr::between(Self, Self, Self, closed? : ClosedInterval) -> Self
 pub fn Expr::cast(Self, DataType, strict? : Bool) -> Self
+pub fn Expr::cos(Self) -> Self
 pub fn Expr::count(Self) -> Self
 pub fn Expr::cum_count(Self, reverse? : Bool) -> Self
 pub fn Expr::cum_max(Self, reverse? : Bool) -> Self
@@ -146,15 +174,18 @@ pub fn Expr::cum_min(Self, reverse? : Bool) -> Self
 pub fn Expr::cum_prod(Self, reverse? : Bool) -> Self
 pub fn Expr::cum_sum(Self, reverse? : Bool) -> Self
 pub fn Expr::diff(Self, n? : Int32) -> Self
+pub fn Expr::drop_nulls(Self) -> Self
 pub fn Expr::dt(Self) -> ExprDt
 pub fn Expr::eq(Self, Self) -> Self
 pub fn Expr::exp(Self) -> Self
 pub fn Expr::fill_null(Self, Self) -> Self
 pub fn Expr::fill_null_strategy(Self, FillStrategy, limit? : Int32) -> Self
+pub fn Expr::filter(Self, Self) -> Self
 pub fn Expr::first(Self) -> Self
 pub fn Expr::floor_div(Self, Self) -> Self
 pub fn Expr::ge(Self, Self) -> Self
 pub fn Expr::gt(Self, Self) -> Self
+pub fn Expr::head(Self, n? : Int32) -> Self
 pub fn Expr::is_finite(Self) -> Self
 pub fn Expr::is_in(Self, Series) -> Self
 pub fn Expr::is_infinite(Self) -> Self
@@ -174,17 +205,25 @@ pub fn Expr::min(Self) -> Self
 pub fn Expr::n_unique(Self) -> Self
 pub fn Expr::neq(Self, Self) -> Self
 pub fn Expr::not_(Self) -> Self
+pub fn Expr::over(Self, Array[Self]) -> Self
 pub fn Expr::product(Self) -> Self
 pub fn Expr::quantile(Self, Double, interpolation? : QuantileMethod) -> Self
-pub fn Expr::rank(Self, method? : RankMethod, descending? : Bool) -> Self
+pub fn Expr::rank(Self, method_? : RankMethod, descending? : Bool) -> Self
 pub fn Expr::reverse(Self) -> Self
 pub fn Expr::round(Self, decimals? : Int32) -> Self
-pub fn Expr::shift(Self, Int32, fill_value? : AnyValue) -> Self
+pub fn Expr::shift(Self, n? : Int32, fill_value? : AnyValue) -> Self
+pub fn Expr::sin(Self) -> Self
+pub fn Expr::slice(Self, Int32, length? : Int32) -> Self
+pub fn Expr::sort(Self, descending? : Bool, nulls_last? : Bool) -> Self
+pub fn Expr::sort_by(Self, Array[Self], descending? : Array[Bool], nulls_last? : Bool) -> Self
 pub fn Expr::sqrt(Self) -> Self
 pub fn Expr::std(Self, ddof? : Int32) -> Self
 pub fn Expr::str(Self) -> ExprStr
 pub fn Expr::sum(Self) -> Self
+pub fn Expr::tail(Self, n? : Int32) -> Self
+pub fn Expr::tan(Self) -> Self
 pub fn Expr::to_string(Self) -> String
+pub fn Expr::unique(Self, maintain_order? : Bool) -> Self
 pub fn Expr::var_(Self, ddof? : Int32) -> Self
 pub impl Add for Expr
 pub impl BitAnd for Expr
@@ -217,6 +256,8 @@ pub fn ExprStr::starts_with(Self, String) -> Expr
 pub fn ExprStr::strip_chars(Self, characters? : String) -> Expr
 pub fn ExprStr::strip_chars_end(Self, characters? : String) -> Expr
 pub fn ExprStr::strip_chars_start(Self, characters? : String) -> Expr
+pub fn ExprStr::to_date(Self, strict? : Bool) -> Expr
+pub fn ExprStr::to_datetime(Self, strict? : Bool) -> Expr
 pub fn ExprStr::to_lowercase(Self) -> Expr
 pub fn ExprStr::to_uppercase(Self) -> Expr
 
@@ -232,6 +273,47 @@ pub(all) enum FillStrategy {
 }
 pub fn FillStrategy::to_string(Self) -> String
 pub impl Show for FillStrategy
+
+type GroupBy
+pub fn GroupBy::agg(Self, Array[Expr]) -> DataFrame raise PolarsError
+pub fn GroupBy::len(Self, name? : String) -> DataFrame raise PolarsError
+
+#derive(Eq, @debug.Debug)
+pub(all) enum JoinHow {
+  Inner
+  Left
+  Right
+  Full
+  Semi
+  Anti
+  Cross
+}
+pub fn JoinHow::to_string(Self) -> String
+pub impl Show for JoinHow
+
+#derive(Eq, @debug.Debug)
+pub(all) enum JoinValidation {
+  ManyToMany
+  OneToMany
+  ManyToOne
+  OneToOne
+}
+pub fn JoinValidation::to_string(Self) -> String
+pub impl Show for JoinValidation
+
+#derive(Eq, @debug.Debug)
+pub(all) enum PivotAgg {
+  First
+  Last
+  Sum
+  Min
+  Max
+  Mean
+  Median
+  Len
+}
+pub fn PivotAgg::to_string(Self) -> String
+pub impl Show for PivotAgg
 
 #derive(Eq, @debug.Debug)
 pub(all) enum QuantileMethod {
@@ -259,13 +341,19 @@ pub impl Show for RankMethod
 type Series
 pub fn Series::abs(Self) -> Self raise PolarsError
 pub fn Series::add(Self, Self) -> Self raise PolarsError
+pub fn Series::all(Self, ignore_nulls? : Bool) -> Bool? raise PolarsError
 pub fn Series::and_(Self, Self) -> Self raise PolarsError
+pub fn Series::any(Self, ignore_nulls? : Bool) -> Bool? raise PolarsError
 pub fn Series::append(Self, Self) -> Self raise PolarsError
+pub fn Series::arccos(Self) -> Self raise PolarsError
+pub fn Series::arcsin(Self) -> Self raise PolarsError
+pub fn Series::arctan(Self) -> Self raise PolarsError
 pub fn Series::arg_sort(Self, descending? : Bool, nulls_last? : Bool) -> Self
 pub fn Series::between(Self, Self, Self, closed? : ClosedInterval) -> Self raise PolarsError
 pub fn Series::bool(String, Array[Bool]) -> Self
 pub fn Series::bool_nullable(String, Array[Bool?]) -> Self
 pub fn Series::cast(Self, DataType, strict? : Bool) -> Self raise PolarsError
+pub fn Series::cos(Self) -> Self raise PolarsError
 pub fn Series::count(Self) -> Int32
 pub fn Series::cum_count(Self, reverse? : Bool) -> Self
 pub fn Series::cum_max(Self, reverse? : Bool) -> Self raise PolarsError
@@ -293,6 +381,7 @@ pub fn Series::float64_nullable(String, Array[Double?]) -> Self
 pub fn Series::floor_div(Self, Self) -> Self raise PolarsError
 pub fn Series::from_any_values(String, Array[AnyValue], dtype? : DataType) -> Self raise PolarsError
 pub fn Series::gather(Self, Array[Int32]) -> Self raise PolarsError
+pub fn Series::gather_every(Self, Int32, offset? : Int32) -> Self raise PolarsError
 pub fn Series::ge(Self, Self) -> Self raise PolarsError
 pub fn Series::get(Self, Int32) -> AnyValue raise PolarsError
 pub fn Series::gt(Self, Self) -> Self raise PolarsError
@@ -309,6 +398,7 @@ pub fn Series::is_nan(Self) -> Self raise PolarsError
 pub fn Series::is_not_nan(Self) -> Self raise PolarsError
 pub fn Series::is_not_null(Self) -> Self
 pub fn Series::is_null(Self) -> Self
+pub fn Series::is_sorted(Self, descending? : Bool, nulls_last? : Bool) -> Bool
 pub fn Series::last(Self) -> AnyValue raise PolarsError
 pub fn Series::le(Self, Self) -> Self raise PolarsError
 pub fn Series::len(Self) -> Int32
@@ -329,12 +419,13 @@ pub fn Series::null_count(Self) -> Int32
 pub fn Series::or_(Self, Self) -> Self raise PolarsError
 pub fn Series::product(Self) -> AnyValue raise PolarsError
 pub fn Series::quantile(Self, Double, interpolation? : QuantileMethod) -> AnyValue raise PolarsError
-pub fn Series::rank(Self, method? : RankMethod, descending? : Bool) -> Self
+pub fn Series::rank(Self, method_? : RankMethod, descending? : Bool) -> Self
 pub fn Series::rem(Self, Self) -> Self raise PolarsError
 pub fn Series::rename(Self, String) -> Self
 pub fn Series::reverse(Self) -> Self
 pub fn Series::round(Self, decimals? : Int32) -> Self raise PolarsError
-pub fn Series::shift(Self, Int32, fill_value? : AnyValue) -> Self raise PolarsError
+pub fn Series::shift(Self, n? : Int32, fill_value? : AnyValue) -> Self raise PolarsError
+pub fn Series::sin(Self) -> Self raise PolarsError
 pub fn Series::slice(Self, Int32, length? : Int32) -> Self
 pub fn Series::sort(Self, descending? : Bool, nulls_last? : Bool) -> Self
 pub fn Series::sqrt(Self) -> Self raise PolarsError
@@ -344,6 +435,7 @@ pub fn Series::str_nullable(String, Array[String?]) -> Self
 pub fn Series::sub(Self, Self) -> Self raise PolarsError
 pub fn Series::sum(Self) -> AnyValue raise PolarsError
 pub fn Series::tail(Self, n? : Int32) -> Self
+pub fn Series::tan(Self) -> Self raise PolarsError
 pub fn Series::to_bool_array(Self) -> Array[Bool?] raise PolarsError
 pub fn Series::to_float32_array(Self) -> Array[Float?] raise PolarsError
 pub fn Series::to_float64_array(Self) -> Array[Double?] raise PolarsError
@@ -354,6 +446,8 @@ pub fn Series::to_list(Self) -> Array[AnyValue]
 pub fn Series::to_str_array(Self) -> Array[String?] raise PolarsError
 pub fn Series::to_string(Self) -> String
 pub fn Series::unique(Self, maintain_order? : Bool) -> Self
+pub fn Series::unique_counts(Self) -> Self
+pub fn Series::value_counts(Self, sort? : Bool, name? : String, normalize? : Bool) -> DataFrame raise PolarsError
 pub fn Series::var_(Self, ddof? : Int32) -> AnyValue raise PolarsError
 pub impl Eq for Series
 pub impl Show for Series
@@ -370,6 +464,8 @@ pub(all) enum UniqueKeep {
   Last
   KeepNone
 }
+pub fn UniqueKeep::to_string(Self) -> String
+pub impl Show for UniqueKeep
 
 type When
 pub fn When::then(Self, Expr) -> Then

@@ -5,6 +5,26 @@
 // `eval_exprs` does both for a list, checks the names and broadcasts length-1
 // results.
 // Nothing is cached: an expression is evaluated every time it is used.
+//
+// Which nodes are row-wise (row `i` of the result is a function of row `i` of
+// the inputs only), for a group-by or `over` that runs expressions per group:
+//
+// - NOT row-wise (the result depends on other rows or has another length;
+//   a group-by cannot run them per row and they are not scalars): `Seq`
+//   (shift, diff, cum_*, rank, reverse, fill_null_strategy), `Shape` (sort,
+//   arg_sort, head, tail, slice, unique, drop_nulls), `Filter`, `SortBy`.
+// - Reductions to one value per group (group scalars; not row-wise either):
+//   `Agg`, `NUnique`, `AnyAll`.
+// - `Over` (a window, `window.mbt`): not row-wise (it partitions the rows it
+//   sees) and a list per group, not a scalar, in a group-by.
+// - Row-wise: `Column`, `Literal`, `Binary`, `Not`, `Neg`, `Alias`, `Cast`,
+//   `IsNull`, `IsNotNull`, `Func` (also the trigonometric functions),
+//   `FillNull`, `IsIn`, `Between`, `Ternary`, `Str`, `Dt`, and `Horizontal`
+//   (row-wise over its inputs: a group scalar only when all its inputs are).
+//
+// `nonscalar_shape` (expr_shape.mbt) tells which results are columns that
+// happen to have one row rather than scalars (they are not repeated next to
+// longer results).
 
 // ---------------------------------------------------------------------------
 // Output names
@@ -13,10 +33,8 @@
 ///|
 /// The name of the column an (expanded) expression produces: the leftmost
 /// column it reads, `literal` for a literal, the alias when there is one.
-/// `|` with a temporal operand or a Boolean next to a number, and `~` on a
-/// type polars has no bitwise not for (`~` on `Int32` and `Int64` is valid in
-/// polars; this library rejects it only when the kernel runs, see
-/// `Series::not_`, so it is not a plan time error here).lit(1) + col("a")` is called `literal`.
+/// So `col("a") + lit(1)` is called `a`, `lit(1) + col("a")` is called
+/// `literal`, and `(col("a") + 1).alias("b")` is called `b`.
 fn output_name(node : ExprNode) -> String {
   match node {
     Column(name) => name
@@ -34,6 +52,11 @@ fn output_name(node : ExprNode) -> String {
     // a sequence operation, a string function or a date field is named after
     // its input
     Seq(_, x) | Str(_, x) | Dt(_, x) => output_name(x)
+    Len => "len"
+    Shape(_, x) | Filter(x, _) | SortBy(x, _, _, _) | AnyAll(_, _, x) =>
+      output_name(x)
+    Horizontal(_, xs, _) => output_name(xs[0])
+    Over(x, _) => output_name(x)
   }
 }
 
@@ -43,7 +66,8 @@ fn output_name(node : ExprNode) -> String {
 
 ///|
 /// Escapes `s` like Rust's `Debug` for a string (the part of it polars shows
-/// in "valid columns: [...]").
+/// in "valid columns: [...]"): `\"`, `\\`, `\n`, `\r`, `\t`, `\0`, and `\u{..}` for
+/// the characters that are not printable or are combining (`debug_escaped`).
 fn debug_quote(s : String) -> String {
   let sb = StringBuilder()
   sb.write_char('"')
@@ -54,7 +78,13 @@ fn debug_quote(s : String) -> String {
       '\n' => sb.write_string("\\n")
       '\r' => sb.write_string("\\r")
       '\t' => sb.write_string("\\t")
-      _ => sb.write_char(c)
+      '\u0000' => sb.write_string("\\0")
+      _ =>
+        if debug_escaped(c.to_int()) {
+          sb.write_string("\\u{\{c.to_int().to_string(radix=16)}}")
+        } else {
+          sb.write_char(c)
+        }
     }
   }
   sb.write_char('"')
@@ -220,6 +250,39 @@ fn expand_node(
     }
     Str(op, x) => expand_unary(df, x, y => Str(op, y))
     Dt(f, x) => expand_unary(df, x, y => Dt(f, y))
+    Len => [node]
+    Shape(op, x) => expand_unary(df, x, y => Shape(op, y))
+    AnyAll(a, i, x) => expand_unary(df, x, y => AnyAll(a, i, y))
+    Filter(x, p) => expand_n(df, [x, p], g => Filter(g[0], g[1]))
+    SortBy(x, keys, descending, nulls_last) => {
+      sort_by_check(descending, keys.length())
+      expand_n(df, [x, ..keys], g => {
+        SortBy(g[0], g[1:].to_owned(), descending, nulls_last)
+      })
+    }
+    // the expression and the keys pair up like the operands of an operator:
+    // a selector of n columns gives n outputs (`cols(["a", "b"]).sum()
+    // .over(cols(["k", "j"]))` is `a` over `k` and `b` over `j`)
+    Over(x, keys) =>
+      expand_n(df, [x, ..keys], g => Over(g[0], g[1:].to_owned()))
+    // the inputs (selectors included) make one list: one output
+    Horizontal(op, xs, ignore_nulls) => {
+      if xs.length() == 0 {
+        raise ComputeError(
+          "cannot return empty fold because the number of output rows is unknown",
+        )
+      }
+      let inputs : Array[ExprNode] = []
+      for x in xs {
+        inputs.append(expand_node(df, x))
+      }
+      if inputs.length() == 0 {
+        raise InvalidOperation(
+          "expected at least 1 input in null.\{op.name()}()",
+        )
+      }
+      [Horizontal(op, inputs, ignore_nulls)]
+    }
   }
 }
 
@@ -254,7 +317,7 @@ fn check_columns(df : DataFrame, node : ExprNode) -> Unit raise PolarsError {
       if df.get_column_index(name) is None {
         raise column_not_found(df, name)
       }
-    Columns(_) | All | Literal(_, _) => ()
+    Columns(_) | All | Literal(_, _) | Len => ()
     Binary(_, l, r) => {
       check_columns(df, l)
       check_columns(df, r)
@@ -277,6 +340,27 @@ fn check_columns(df : DataFrame, node : ExprNode) -> Unit raise PolarsError {
       check_columns(df, o)
     }
     Seq(_, x) | Str(_, x) | Dt(_, x) => check_columns(df, x)
+    Shape(_, x) | AnyAll(_, _, x) => check_columns(df, x)
+    Filter(x, p) => {
+      check_columns(df, x)
+      check_columns(df, p)
+    }
+    SortBy(x, keys, _, _) => {
+      check_columns(df, x)
+      for k in keys {
+        check_columns(df, k)
+      }
+    }
+    Horizontal(_, xs, _) =>
+      for x in xs {
+        check_columns(df, x)
+      }
+    Over(x, keys) => {
+      check_columns(df, x)
+      for k in keys {
+        check_columns(df, k)
+      }
+    }
   }
 }
 
@@ -774,6 +858,16 @@ fn eval_node(df : DataFrame, node : ExprNode) -> Series raise PolarsError {
     Seq(op, x) => op.apply(eval_node(df, x))
     Str(op, x) => op.apply(eval_node(df, x))
     Dt(f, x) => dt_field(eval_node(df, x), f)
+    Len => Series::int64("len", [df.height().to_int64()])
+    Shape(op, x) => op.apply(eval_node(df, x))
+    Filter(x, p) => filter_eval(df, x, p)
+    SortBy(x, keys, descending, nulls_last) =>
+      sort_by_eval(df, x, keys, descending, nulls_last)
+    AnyAll(is_any, ignore_nulls, x) =>
+      any_all_series(eval_node(df, x), is_any, ignore_nulls)
+    Horizontal(op, xs, ignore_nulls) =>
+      horizontal_eval(df, op, xs, ignore_nulls)
+    Over(x, keys) => eval_over(df, x, keys)
   }
 }
 
@@ -852,9 +946,11 @@ fn broadcast_results(
 /// expression (before it looks at the output names), as opposed to when it
 /// runs the kernel: arithmetic with a `Date` or `Datetime` operand, `&` and
 /// `|` with a temporal operand or a Boolean next to a number, and `~` on a
-/// type that has no bitwise not in polars. `~` on `Int32` and `Int64` is
-/// valid in polars; this library rejects it only when the kernel runs
-/// (`Series::not_`), so that error is not a plan time one.
+/// type that has no bitwise not in polars. Two exceptions, valid in polars
+/// and rejected by this library only when the kernel runs, so not plan time
+/// errors here: `~` on `Int32` and `Int64` (`Series::not_`) and a
+/// subtraction with a temporal type on both sides (`Date - Date` is a
+/// `Duration` in polars, which this library has not; `Series::sub`).
 fn is_plan_time_error(e : PolarsError) -> Bool {
   match e {
     InvalidOperation(m) =>
@@ -865,7 +961,9 @@ fn is_plan_time_error(e : PolarsError) -> Bool {
       ) ||
       (
         m.contains("operation not supported for dtypes `") &&
-        (m.contains("`date`") || m.contains("`datetime"))
+        (m.contains("`date`") || m.contains("`datetime")) &&
+        !(m.has_prefix("sub operation not supported for dtypes `date") &&
+        m.contains("` and `date"))
       )
     ComputeError(m) =>
       (m.has_prefix("& on ") || m.has_prefix("| on ")) &&
@@ -875,13 +973,120 @@ fn is_plan_time_error(e : PolarsError) -> Bool {
 }
 
 ///|
+/// What `plan_check` needs to know about an expression: the operations it
+/// holds that can fail while the type is resolved, whether a temporal type
+/// can be involved, and the columns it reads.
+priv struct PlanScan {
+  mut logic : Bool
+  mut arith : Bool
+  mut temporal : Bool
+  cols : Array[String]
+  seen : Map[String, Bool]
+}
+
+///|
+fn PlanScan::walk(self : PlanScan, df : DataFrame, node : ExprNode) -> Unit {
+  match node {
+    Column(name) => {
+      if !self.seen.contains(name) {
+        self.seen[name] = true
+        self.cols.push(name)
+      }
+      match df.get_column_index(name) {
+        Some(i) =>
+          if df.cols[i].dtype() is (Date | Datetime) {
+            self.temporal = true
+          }
+        None => ()
+      }
+    }
+    Literal(Date(_), _) | Literal(Datetime(_), _) => self.temporal = true
+    Binary(And, _, _) | Binary(Or, _, _) | Not(_) => self.logic = true
+    Binary(Add, _, _)
+    | Binary(Sub, _, _)
+    | Binary(Mul, _, _)
+    | Binary(Div, _, _)
+    | Binary(FloorDiv, _, _)
+    | Binary(Rem, _, _) => self.arith = true
+    Cast(_, Date, _) | Cast(_, Datetime, _) => self.temporal = true
+    Str(ToDate(_), _) | Str(ToDatetime(_), _) => self.temporal = true
+    Seq(Shift(_, Date(_)), _) | Seq(Shift(_, Datetime(_)), _) =>
+      self.temporal = true
+    _ => ()
+  }
+  for child in node.children() {
+    self.walk(df, child)
+  }
+}
+
+///|
+fn plan_scan(df : DataFrame, node : ExprNode) -> PlanScan {
+  let scan = {
+    logic: false,
+    arith: false,
+    temporal: false,
+    cols: [],
+    seen: Map([]),
+  }
+  scan.walk(df, node)
+  scan
+}
+
+///|
+/// The frame `plan_check` evaluates on: no row, and only the columns `names`
+/// of `df` (its cost does not depend on the width of `df`; a name the frame
+/// lacks is left out).
+fn plan_frame_of(df : DataFrame, names : Array[String]) -> DataFrame {
+  let cols : Array[Series] = []
+  for name in names {
+    if df.get_column_index(name) is Some(i) {
+      cols.push(df.cols[i].head(n=0))
+    }
+  }
+  DataFrame::from_valid(cols)
+}
+
+///|
+/// `node` as `plan_check` evaluates it: the value set of every `is_in` is
+/// replaced by an empty series of the same type (the type errors do not
+/// depend on the values, and preparing a large set takes time).
+fn plan_check_node(node : ExprNode) -> ExprNode {
+  match node {
+    IsIn(x, values) => IsIn(plan_check_node(x), values.head(n=0))
+    _ => node.with_children(node.children().map(plan_check_node))
+  }
+}
+
+///|
+/// The frame `plan_check` evaluates `node` on, or `None` when no type error
+/// can occur and the evaluation is skipped: `&`, `|` or `~` are in the
+/// expression, or an arithmetic operator and a temporal type (a `Date` or
+/// `Datetime` column or literal, a cast to one, a `str().to_date()` or
+/// `to_datetime()`, a shift with a temporal fill).
+fn plan_check_frame(df : DataFrame, node : ExprNode) -> DataFrame? {
+  let scan = plan_scan(df, node)
+  if scan.logic || (scan.arith && scan.temporal) {
+    Some(plan_frame_of(df, scan.cols))
+  } else {
+    None
+  }
+}
+
+///|
 /// Raises the type resolution error of `node` that polars raises before it
 /// checks the output names: the expression is evaluated on a frame with the
 /// same columns and no row (the type errors do not depend on the values) and
 /// only an error of that class is kept; any other is left to the real
 /// evaluation, which raises it in its turn.
-fn plan_check(df0 : DataFrame, node : ExprNode) -> Unit raise PolarsError {
-  ignore(eval_node(df0, node)) catch {
+///
+/// That evaluation only happens when such an error is possible: `&`, `|` or
+/// `~` are in the expression, or an arithmetic operator and a temporal type
+/// (a `Date` or `Datetime` column or literal, a cast to one). The frame holds
+/// only the columns the expression reads and the value set of an `is_in` is
+/// empty (`plan_frame_of`, `plan_check_node`).
+fn plan_check(df : DataFrame, node : ExprNode) -> Unit raise PolarsError {
+  guard plan_check_frame(df, node) is Some(df0) else { return }
+  ignore(eval_node(df0, plan_check_node(node))) catch {
     e => if is_plan_time_error(e) { raise e }
   }
 }
@@ -914,7 +1119,6 @@ fn eval_unbroadcast(
     groups.push(expand_selectors(df, e))
   }
   let seen : Map[String, Bool] = Map([])
-  let df0 = df.head(n=0)
   // the outputs one expression expands to are checked against each other
   // before their types are resolved (polars: `cols(["s", "d"]).not_()` ...)
   let group_names = (g : Array[ExprNode]) => {
@@ -930,7 +1134,7 @@ fn eval_unbroadcast(
     if !with_columns {
       group_names(g)
       for node in g {
-        plan_check(df0, node)
+        plan_check(df, node)
         claim_name(seen, output_name(node), false)
       }
     }
@@ -939,7 +1143,7 @@ fn eval_unbroadcast(
     for g in groups {
       group_names(g)
       for node in g {
-        plan_check(df0, node)
+        plan_check(df, node)
         claim_name(seen, output_name(node), true)
       }
     }
@@ -950,6 +1154,22 @@ fn eval_unbroadcast(
       results.push(eval_node(df, node))
     }
   }
+  // a one-row result that is not a scalar does not stretch (expr_shape.mbt)
+  let flags : Array[Bool] = []
+  for g in groups {
+    for node in g {
+      flags.push(nonscalar_shape(node))
+    }
+  }
+  check_unit_results(
+    results,
+    flags,
+    if with_columns {
+      Some(df.height())
+    } else {
+      None
+    },
+  )
   results
 }
 

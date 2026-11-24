@@ -19,62 +19,63 @@ fn seq_out(e : @pl.Expr) -> @pl.Series raise @pl.PolarsError {
 ///|
 test "Expr::shift: values, fill value, direction, types and names" {
   let a = @pl.col("a")
-  let out = seq_out(a.shift(1))
+  let out = seq_out(a.shift(n=1))
   assert_eq(out.name(), "a")
   assert_eq(out.dtype(), @pl.DataType::Int32)
   assert_eq(out.to_int32_array(), [None, Some(1), None, Some(3)])
-  assert_eq(seq_out(a.shift(-1)).to_int32_array(), [
+  assert_eq(seq_out(a.shift(n=-1)).to_int32_array(), [
     None,
     Some(3),
     Some(4),
     None,
   ])
-  assert_eq(seq_out(a.shift(0)).to_int32_array(), [
+  assert_eq(seq_out(a.shift(n=0)).to_int32_array(), [
     Some(1),
     None,
     Some(3),
     Some(4),
   ])
-  assert_eq(seq_out(a.shift(9)).to_int32_array(), [None, None, None, None])
+  assert_eq(seq_out(a.shift(n=9)).to_int32_array(), [None, None, None, None])
   assert_eq(
-    seq_out(a.shift(1, fill_value=@pl.AnyValue::Int32(7))).to_int32_array(),
+    seq_out(a.shift(n=1, fill_value=@pl.AnyValue::Int32(7))).to_int32_array(),
     [Some(7), Some(1), None, Some(3)],
   )
   // the fill value is typed: the result is the supertype
-  let wide = seq_out(a.shift(1, fill_value=@pl.AnyValue::Float64(0.5)))
+  let wide = seq_out(a.shift(n=1, fill_value=@pl.AnyValue::Float64(0.5)))
   assert_eq(wide.dtype(), @pl.DataType::Float64)
   assert_eq(wide.to_float64_array(), [Some(0.5), Some(1.0), None, Some(3.0)])
   assert_eq(
-    seq_out(@pl.col("s").shift(1, fill_value=@pl.AnyValue::String("z"))).to_str_array(),
+    seq_out(@pl.col("s").shift(n=1, fill_value=@pl.AnyValue::String("z"))).to_str_array(),
     [Some("z"), Some("b"), None, Some("a")],
   )
   // a Null column stays Null
-  let n = seq_out(@pl.col("n").shift(2))
+  let n = seq_out(@pl.col("n").shift(n=2))
   assert_eq(n.dtype(), @pl.DataType::Null)
   assert_eq(n.len(), 4)
   // Boolean and Date
-  assert_eq(seq_out(@pl.col("p").shift(1)).to_bool_array(), [
+  assert_eq(seq_out(@pl.col("p").shift(n=1)).to_bool_array(), [
     None,
     Some(true),
     None,
     Some(false),
   ])
-  assert_eq(seq_out(@pl.col("d").shift(1)).dtype(), @pl.DataType::Date)
+  assert_eq(seq_out(@pl.col("d").shift(n=1)).dtype(), @pl.DataType::Date)
   // a fill value that does not fit raises when evaluated
   assert_true(
     raises(() => {
-      seq_out(@pl.col("p").shift(1, fill_value=@pl.AnyValue::Date(1)))
+      seq_out(@pl.col("p").shift(n=1, fill_value=@pl.AnyValue::Date(1)))
     })
     is Some(@pl.ComputeError(_)),
   )
   assert_true(
     raises(() => {
-      seq_out(@pl.col("a").shift(1, fill_value=@pl.AnyValue::Boolean(true)))
+      seq_out(@pl.col("a").shift(n=1, fill_value=@pl.AnyValue::Boolean(true)))
     })
     is None,
   )
   assert_true(
-    raises(() => seq_out(@pl.col("zz").shift(1))) is Some(@pl.ColumnNotFound(_)),
+    raises(() => seq_out(@pl.col("zz").shift(n=1)))
+    is Some(@pl.ColumnNotFound(_)),
   )
 }
 
@@ -187,10 +188,10 @@ test "Expr::rank and Expr::reverse" {
   let r = seq_out(a.rank())
   assert_eq(r.dtype(), @pl.DataType::Float64)
   assert_eq(r.to_float64_array(), [Some(1.0), None, Some(2.0), Some(3.0)])
-  let d = seq_out(a.rank(method=@pl.RankMethod::Dense, descending=true))
+  let d = seq_out(a.rank(method_=@pl.RankMethod::Dense, descending=true))
   assert_eq(d.dtype(), @pl.DataType::Int64)
   assert_eq(d.to_int64_array(), [Some(3L), None, Some(2L), Some(1L)])
-  let s = seq_out(@pl.col("s").rank(method=@pl.RankMethod::Ordinal))
+  let s = seq_out(@pl.col("s").rank(method_=@pl.RankMethod::Ordinal))
   assert_eq(s.to_int64_array(), [Some(2L), None, Some(1L), Some(3L)])
   assert_eq(seq_out(@pl.col("n").rank()).dtype(), @pl.DataType::Float64)
   assert_eq(seq_out(a.reverse()).to_int32_array(), [
@@ -302,10 +303,10 @@ test "Expr::fill_null_strategy: strategies, limit, errors" {
 ///|
 test "sequence expressions: show text" {
   let a = @pl.col("a")
-  assert_eq(a.shift(1).to_string(), "col(\"a\").shift([dyn int: 1])")
-  assert_eq(a.shift(-2).to_string(), "col(\"a\").shift([dyn int: -2])")
+  assert_eq(a.shift(n=1).to_string(), "col(\"a\").shift([dyn int: 1])")
+  assert_eq(a.shift(n=-2).to_string(), "col(\"a\").shift([dyn int: -2])")
   assert_eq(
-    a.shift(1, fill_value=@pl.AnyValue::Int32(5)).to_string(),
+    a.shift(n=1, fill_value=@pl.AnyValue::Int32(5)).to_string(),
     "col(\"a\").shift_and_fill([dyn int: 1, 5])",
   )
   assert_eq(a.diff(n=2).to_string(), "col(\"a\").diff([dyn int: 2])")
@@ -334,14 +335,14 @@ test "sequence expressions: composition, broadcasting and selectors" {
   )
   // the difference with the previous row, and a running total in place
   let out = df.with_columns([
-    (@pl.col("f") - @pl.col("f").shift(1)).alias("df"),
+    (@pl.col("f") - @pl.col("f").shift(n=1)).alias("df"),
     @pl.col("a").cum_sum().alias("a"),
   ])
   assert_eq(out.columns(), ["a", "f", "s", "p", "d", "n", "df"])
   assert_eq(out.column("a").to_int32_array(), [Some(1), None, Some(4), Some(8)])
   assert_eq(out.column("df").to_float64_array(), [None, Some(1.0), None, None])
   // selectors
-  let sel = df.select([@pl.cols(["a", "f"]).shift(1)])
+  let sel = df.select([@pl.cols(["a", "f"]).shift(n=1)])
   assert_eq(sel.columns(), ["a", "f"])
   assert_eq(sel.column("f").to_float64_array(), [
     None,
@@ -359,11 +360,11 @@ test "sequence expressions: composition, broadcasting and selectors" {
     Some(1L),
   ])
   // an aggregate shifted by one is a null of length 1
-  let c = df.select([@pl.col("a").sum().shift(1)])
+  let c = df.select([@pl.col("a").sum().shift(n=1)])
   assert_eq(c.column("a").to_int32_array(), [None])
   // duplicated output names
   assert_true(
-    raises(() => df.select([@pl.col("a"), @pl.col("a").shift(1)]))
+    raises(() => df.select([@pl.col("a"), @pl.col("a").shift(n=1)]))
     is Some(@pl.DuplicateColumn(_)),
   )
   // empty frames
@@ -508,7 +509,7 @@ test "sequence expressions on a Null column and on a weak literal" {
     @pl.DataType::Int64,
   )
   assert_eq(
-    seq_out(@pl.col("n").rank(method=@pl.RankMethod::Dense)).dtype(),
+    seq_out(@pl.col("n").rank(method_=@pl.RankMethod::Dense)).dtype(),
     @pl.DataType::Int64,
   )
   // a lone weak literal is an Int64 (spec 5.5; polars gives Int32 here)
@@ -516,7 +517,7 @@ test "sequence expressions on a Null column and on a weak literal" {
   assert_eq(lit.dtype(), @pl.DataType::Int64)
   assert_eq(lit.name(), "literal")
   assert_eq(lit.to_int64_array(), [Some(5L)])
-  assert_eq(seq_out(@pl.lit_int(5L).shift(1)).to_int64_array(), [None])
+  assert_eq(seq_out(@pl.lit_int(5L).shift(n=1)).to_int64_array(), [None])
   // a typed literal keeps its type
   let typed = seq_out(@pl.lit(@pl.AnyValue::Int32(5)).cum_sum())
   assert_eq(typed.dtype(), @pl.DataType::Int32)
@@ -556,11 +557,11 @@ test "sequence expressions: Int32 limits and long runs do not trap" {
   ])
   // the shift distance can be as large as an Int
   assert_eq(
-    df.select([@pl.col("a").shift(2147483647)]).column("a").null_count(),
+    df.select([@pl.col("a").shift(n=2147483647)]).column("a").null_count(),
     2,
   )
   assert_eq(
-    df.select([@pl.col("a").shift(-2147483647 - 1)]).column("a").null_count(),
+    df.select([@pl.col("a").shift(n=-2147483647 - 1)]).column("a").null_count(),
     2,
   )
 }

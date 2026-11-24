@@ -12,24 +12,15 @@ let all_types : Array[DataType] = [
 ]
 
 ///|
-/// `supertype(row, column)` for the nine types, in the order of `all_types`;
-/// `-` is `None`. It is polars 2.1.0's supertype
-/// (`pl.concat(..., how="vertical_relaxed")`) with two differences: `str` with
-/// a number is `None` here (polars says `str`, but both comparison and
-/// arithmetic reject that pair).
-let expected_supertypes : Array[Array[String]] = [
-  ["bool", "i32", "i64", "f32", "f64", "str", "-", "-", "bool"],
-  ["i32", "i32", "i64", "f64", "f64", "-", "i32", "i64", "i32"],
-  ["i64", "i64", "i64", "f64", "f64", "-", "i64", "i64", "i64"],
-  ["f32", "f64", "f64", "f32", "f64", "-", "f32", "f64", "f32"],
-  ["f64", "f64", "f64", "f64", "f64", "-", "f64", "f64", "f64"],
-  ["str", "-", "-", "-", "-", "str", "str", "str", "str"],
-  ["-", "i32", "i64", "f32", "f64", "str", "date", "datetime[μs]", "date"],
-  [
-    "-", "i64", "i64", "f64", "f64", "str", "datetime[μs]", "datetime[μs]", "datetime[μs]",
-  ],
-  ["bool", "i32", "i64", "f32", "f64", "str", "date", "datetime[μs]", "null"],
-]
+/// The type with the display name `name` (`DataType`'s `Show` text).
+fn supertype_dtype(name : String) -> DataType raise {
+  for t in all_types {
+    if t.to_string() == name {
+      return t
+    }
+  }
+  fail("supertype golden data: unknown type \{name}")
+}
 
 ///|
 fn supertype_text(a : DataType, b : DataType) -> String {
@@ -40,12 +31,43 @@ fn supertype_text(a : DataType, b : DataType) -> String {
 }
 
 ///|
+/// `supertype` of all 81 pairs against polars 2.1.0's supertype of two
+/// columns (`pl.concat(..., how="vertical_relaxed")`, data from
+/// `docs/golden/scripts/supertype.py`). A pair polars refuses is `-`. One
+/// difference is deliberate (the golden case is `restricted`): `str` with a
+/// number is `-` here (polars says `str`, but both comparison and arithmetic
+/// reject that pair).
 test "supertype matches the polars table for all 81 pairs" {
-  for i, a in all_types {
-    for j, b in all_types {
-      assert_eq(supertype_text(a, b), expected_supertypes[i][j])
-    }
+  guard @json.parse(golden_supertype) is Object(doc) else {
+    fail("golden_supertype is not a JSON object")
   }
+  guard doc.get("cases") is Some(Array(cases)) else {
+    fail("golden_supertype has no cases")
+  }
+  assert_eq(cases.length(), 81)
+  let mut restricted = 0
+  for c in cases {
+    guard c is Object(obj) else { fail("case is not an object") }
+    guard obj.get("id") is Some(String(id)) else { fail("case without id") }
+    guard obj.get("a") is Some(String(a)) else { fail("\{id}: no a") }
+    guard obj.get("b") is Some(String(b)) else { fail("\{id}: no b") }
+    let expected = if obj.get("restricted") is Some(True) {
+      restricted += 1
+      "-"
+    } else {
+      match obj.get("result") {
+        Some(String(r)) => r
+        Some(Null) => "-"
+        _ => fail("\{id}: no result")
+      }
+    }
+    assert_eq(
+      supertype_text(supertype_dtype(a), supertype_dtype(b)),
+      expected,
+      msg=id,
+    )
+  }
+  assert_eq(restricted, 8)
 }
 
 ///|

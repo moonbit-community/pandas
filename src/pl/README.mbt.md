@@ -3,12 +3,14 @@
 A polars-style data layer for MoonBit: typed, nullable, immutable columns
 (`Series`) grouped into a `DataFrame`, plus expressions (`Expr`) to describe
 what to compute and eager operations that run them: `select`,
-`with_columns`, `filter`, `sort`, aggregation, `unique`, `concat`,
-`describe`, `cast` and printing.
+`with_columns`, `filter`, `sort`, aggregation, `group_by`, `join`, window
+expressions (`over`), `pivot` and `unpivot`, `unique`, `concat`, `describe`,
+`cast` and printing.
 
 Every fallible call raises `PolarsError`; nothing aborts on bad user input.
 Coming from the old `lib/pandas` package? See `docs/migration.md`. Not here
-yet: `group_by`, joins and CSV (planned).
+yet: CSV (planned). There is no `List` type: see
+[group_by and agg](#group_by-and-agg).
 
 ## Quick start
 
@@ -63,8 +65,14 @@ test "quick start" {
 | build a table, check its shape and types, print it | [DataFrame](#dataframe), [Series](#series) |
 | compute new columns, keep some rows, order them | [Expressions](#expressions): `select`, `with_columns`, `filter`, `sort` |
 | totals, means, quantiles, a value per column | [Aggregations and broadcasting](#aggregations-and-broadcasting) |
+| one result per group | [group_by and agg](#group_by-and-agg) |
+| combine two tables on a key | [join](#join) |
+| a group's total next to every row, a rank inside the group | [Window expressions: over](#window-expressions-over) |
+| the top N rows of each group, or all the values of a group | [group_by and agg](#group_by-and-agg) (the top-N recipe) |
+| spread values into columns, or fold columns into rows | [pivot, unpivot and counting](#pivot-unpivot-and-counting) |
+| sort, cut or filter inside an expression, trigonometry, row-wise sums | [More expression functions](#more-expression-functions) |
 | handle nulls | [Missing values](#missing-values) |
-| text and dates | [Strings and dates](#strings-and-dates) |
+| text and dates (`to_date`, `date_ymd`) | [Strings and dates](#strings-and-dates) |
 | stack tables, drop duplicates, summarize | [concat, unique and describe](#concat-unique-and-describe) |
 | work on one column without a table | [Series operations](#series-operations) |
 | change a type | [Cast](#cast) |
@@ -244,7 +252,7 @@ fn people() -> @pl.DataFrame raise @pl.PolarsError {
 
 ///|
 test "an expression prints as its polars spelling" {
-  let e = (@pl.col("age") * @pl.lit_int(2L) + @pl.lit_int(1L)).alias("x")
+  let e = (@pl.col("age") * @pl.lit_int(2) + @pl.lit_int(1)).alias("x")
   inspect(
     e,
     content=(
@@ -285,7 +293,7 @@ test "select, with_columns and filter" {
     ),
   )
   inspect(
-    df.with_columns([(@pl.col("age") + @pl.lit_int(1L)).alias("next_age")]),
+    df.with_columns([(@pl.col("age") + @pl.lit_int(1)).alias("next_age")]),
     content=(
       #|shape: (4, 4)
       #|┌──────┬─────┬───────┬──────────┐
@@ -303,7 +311,7 @@ test "select, with_columns and filter" {
   // A result named like an existing column replaces that column.
   inspect(
     df
-    .with_columns([(@pl.col("age") * @pl.lit_int(2L)).alias("age")])
+    .with_columns([(@pl.col("age") * @pl.lit_int(2)).alias("age")])
     .select([@pl.col("age")]),
     content=(
       #|shape: (4, 1)
@@ -321,7 +329,7 @@ test "select, with_columns and filter" {
   )
   inspect(
     df.filter(
-      @pl.col("age").ge(@pl.lit_int(30L)) & @pl.col("score").is_not_null(),
+      @pl.col("age").ge(@pl.lit_int(30)) & @pl.col("score").is_not_null(),
     ),
     content=(
       #|shape: (2, 3)
@@ -338,10 +346,30 @@ test "select, with_columns and filter" {
 }
 ```
 
-A literal such as `lit_int(1L)` adapts to the other operand: `Int32 column +
-lit_int(1L)` stays `i32`, and a value that does not fit widens the result to
+A literal such as `lit_int(1)` adapts to the other operand: `Int32 column +
+lit_int(1)` stays `i32`, and a value that does not fit widens the result to
 `i64` instead of wrapping. A literal on its own is `i64` (`lit_int`) or `f64`
 (`lit_float`).
+
+Conditions are combined with `&` and `|`. When you mix the two operators,
+write the grouping with parentheses: `(a & b) | c`. MoonBit warns about the
+ambiguous precedence of a bare `a & b | c`, and the grouping you meant is easy
+to get wrong. The comparison methods (`ge`, `eq`, ...) need no parentheses of
+their own.
+
+```mbt check
+///|
+test "combining conditions with & and |" {
+  let df = people()
+  let a = @pl.col("age").ge(@pl.lit_int(30))
+  let b = @pl.col("score").is_not_null()
+  let c = @pl.col("name").eq(@pl.lit_str("Dee"))
+  @debug.debug_inspect(
+    df.filter((a & b) | c).column("name").to_str_array(),
+    content="[Some(\"Ann\"), Some(\"Cy\"), Some(\"Dee\")]",
+  )
+}
+```
 
 ### sort
 
@@ -444,7 +472,7 @@ test "aggregations" {
 ///|
 test "when/then/otherwise" {
   let df = people()
-  let band = @pl.when(@pl.col("age").ge(@pl.lit_int(30L)))
+  let band = @pl.when(@pl.col("age").ge(@pl.lit_int(30)))
     .then(@pl.lit_str("senior"))
     .otherwise(@pl.lit_str("junior"))
     .alias("band")
@@ -523,19 +551,23 @@ test "missing values" {
 
 `e.str()` gives the string functions: `contains`, `starts_with`, `ends_with`,
 `replace`, `replace_all`, `to_lowercase`, `to_uppercase`, `len_chars`,
-`len_bytes` and `strip_chars` (with `_start` / `_end` variants). `contains`
-and `replace` take a regular expression unless you pass `literal=true`; the
-engine is MoonBit's `Regex`, whose syntax is close to but not the same as
-Rust's (see `docs/migration.md`). `e.dt()` gives `year`, `month`, `day`,
-`hour`, `minute`, `second`, `weekday` and `ordinal_day` for `Date` and
-`Datetime` columns.
+`len_bytes`, `strip_chars` (with `_start` / `_end` variants), `to_date` and
+`to_datetime`. `contains` and `replace` take a regular expression unless you
+pass `literal=true`; the engine is MoonBit's `Regex`, whose syntax is close to
+but not the same as Rust's (see `docs/migration.md`). `e.dt()` gives `year`,
+`month`, `day`, `hour`, `minute`, `second`, `weekday` and `ordinal_day` for
+`Date` and `Datetime` columns.
 
 ```mbt check
 ///|
 test "str and dt namespaces" {
   let df = @pl.DataFrame::new([
     @pl.Series::str("name", ["Ann", "bob", "Cy"]),
-    @pl.Series::date("born", [0, 365, 19000]),
+    @pl.Series::from_any_values("born", [
+      @pl.AnyValue::date_ymd(1970, 1, 1),
+      @pl.AnyValue::date_ymd(1971, 1, 1),
+      @pl.AnyValue::date_ymd(2022, 1, 8),
+    ]),
   ])
   inspect(
     df.select([
@@ -558,6 +590,88 @@ test "str and dt namespaces" {
       #|└───────┴─────────┴───────┴──────┴───────┘
     ),
   )
+}
+```
+
+**Building dates.** A `Date` is stored as the number of days since 1970-01-01
+and a `Datetime` as microseconds since 1970-01-01 00:00:00 (no time zone), but
+you rarely want to write those numbers. `AnyValue::date_ymd(2024, 1, 15)` and
+`AnyValue::datetime_ymd(2024, 1, 15, hour=10, minute=30)` build the values from
+a calendar date (the optional `second` and `microsecond` default to 0); an
+invalid date such as February 30 raises `ComputeError`. Put them in a column
+with `Series::from_any_values`. To read text, use
+`col(name).str().to_date()` and `.str().to_datetime()`: ISO texts
+`2024-01-15`, `2024/1/5`, and for `to_datetime` also `2024-01-15 10:20:30` or
+`2024-01-15T10:20:30` (fraction and `Z` / `+02:00` offset allowed). There is no
+`format` argument. With the default `strict=true` a text that is not a date
+raises `InvalidOperation`; with `strict=false` it becomes null.
+
+```mbt check
+///|
+test "dates from numbers and from text" {
+  let df = @pl.DataFrame::new([
+    @pl.Series::str("d", ["2024-01-15", "2024/1/5", "x"]),
+    @pl.Series::str("t", ["2024-01-15 10:20:30", "2024-01-15T00:00:01", "x"]),
+  ])
+  // Lenient: the text "x" is null.
+  inspect(
+    df.select([
+      @pl.col("d").str().to_date(strict=false),
+      @pl.col("t").str().to_datetime(strict=false),
+    ]),
+    content=(
+      #|shape: (3, 2)
+      #|┌────────────┬─────────────────────┐
+      #|│ d          ┆ t                   │
+      #|│ ---        ┆ ---                 │
+      #|│ date       ┆ datetime[μs]        │
+      #|╞════════════╪═════════════════════╡
+      #|│ 2024-01-15 ┆ 2024-01-15 10:20:30 │
+      #|│ 2024-01-05 ┆ 2024-01-15 00:00:01 │
+      #|│ null       ┆ null                │
+      #|└────────────┴─────────────────────┘
+    ),
+  )
+  // Strict (the default): the same column raises.
+  try df.select([@pl.col("d").str().to_date()]) catch {
+    @pl.InvalidOperation(msg) =>
+      inspect(
+        msg,
+        content=(
+          #|conversion from `str` to `date` failed in column 'd' for 1 out of 3 values: ["x"]
+        ),
+      )
+    _ => fail("expected InvalidOperation")
+  } noraise {
+    _ => fail("expected an error")
+  }
+  // From numbers: a date, a datetime, and an invalid date.
+  let built = @pl.DataFrame::new([
+    @pl.Series::from_any_values("at", [
+      @pl.AnyValue::datetime_ymd(2024, 1, 15, hour=10, minute=30),
+      @pl.AnyValue::datetime_ymd(2024, 1, 15),
+    ]),
+  ])
+  inspect(
+    built,
+    content=(
+      #|shape: (2, 1)
+      #|┌─────────────────────┐
+      #|│ at                  │
+      #|│ ---                 │
+      #|│ datetime[μs]        │
+      #|╞═════════════════════╡
+      #|│ 2024-01-15 10:30:00 │
+      #|│ 2024-01-15 00:00:00 │
+      #|└─────────────────────┘
+    ),
+  )
+  try @pl.AnyValue::date_ymd(2024, 2, 30) |> ignore catch {
+    @pl.ComputeError(msg) => inspect(msg, content="invalid date: 2024-2-30")
+    _ => fail("expected ComputeError")
+  } noraise {
+    _ => fail("expected an error")
+  }
 }
 ```
 
@@ -645,7 +759,7 @@ test "expression errors" {
   } noraise {
     _ => fail("expected an error")
   }
-  try df.select([@pl.col("name") + @pl.lit_int(1L)]) catch {
+  try df.select([@pl.col("name") + @pl.lit_int(1)]) catch {
     @pl.InvalidOperation(msg) =>
       inspect(
         msg,
@@ -657,6 +771,708 @@ test "expression errors" {
   } noraise {
     _ => fail("expected an error")
   }
+}
+```
+
+## group_by and agg
+
+`df.group_by(keys)` splits the table by the values of the key expressions;
+`.agg(expressions)` gives one row per group: the key columns first, then one
+column per aggregation. Keys are expressions (`col("a")`,
+`col("a") % lit_int(2)`, `all()`, ...), and null is a key value of its own.
+Groups come out in the order
+of their first appearance (polars promises that only with
+`maintain_order=true`; this package always does it, and the argument is
+accepted for compatibility). `df.group_by(keys).len()` is the shortcut for
+counting the rows of every group.
+
+The examples below use this table.
+
+```mbt check
+///|
+fn orders() -> @pl.DataFrame raise @pl.PolarsError {
+  @pl.DataFrame::new([
+    @pl.Series::int64("id", [1L, 2L, 3L, 4L, 5L, 6L]),
+    @pl.Series::str("region", [
+      "north", "south", "north", "east", "south", "north",
+    ]),
+    @pl.Series::int64("units", [10L, 4L, 7L, 12L, 6L, 3L]),
+    @pl.Series::float64("price", [2.5, 4.0, 2.5, 1.5, 4.0, 3.0]),
+  ])
+}
+
+///|
+test "group_by and agg" {
+  let df = orders()
+  inspect(
+    df
+    .group_by([@pl.col("region")])
+    .agg([
+      @pl.col("units").sum().alias("units"),
+      (@pl.col("units") * @pl.col("price")).sum().alias("revenue"),
+      @pl.col("price").mean().alias("avg_price"),
+      @pl.len().alias("orders"),
+    ]),
+    content=(
+      #|shape: (3, 5)
+      #|┌────────┬───────┬─────────┬───────────┬────────┐
+      #|│ region ┆ units ┆ revenue ┆ avg_price ┆ orders │
+      #|│ ---    ┆ ---   ┆ ---     ┆ ---       ┆ ---    │
+      #|│ str    ┆ i64   ┆ f64     ┆ f64       ┆ i64    │
+      #|╞════════╪═══════╪═════════╪═══════════╪════════╡
+      #|│ north  ┆ 20    ┆ 51.5    ┆ 2.666667  ┆ 3      │
+      #|│ south  ┆ 10    ┆ 40.0    ┆ 4.0       ┆ 2      │
+      #|│ east   ┆ 12    ┆ 18.0    ┆ 1.5       ┆ 1      │
+      #|└────────┴───────┴─────────┴───────────┴────────┘
+    ),
+  )
+  // Only the key and a count: group_by(...).len()
+  inspect(
+    df.group_by([@pl.col("region")]).len(name="rows"),
+    content=(
+      #|shape: (3, 2)
+      #|┌────────┬──────┐
+      #|│ region ┆ rows │
+      #|│ ---    ┆ ---  │
+      #|│ str    ┆ i64  │
+      #|╞════════╪══════╡
+      #|│ north  ┆ 3    │
+      #|│ south  ┆ 2    │
+      #|│ east   ┆ 1    │
+      #|└────────┴──────┘
+    ),
+  )
+  // A key can be an expression; it is named like the expression's output.
+  inspect(
+    df
+    .group_by([(@pl.col("units") % @pl.lit_int(2)).alias("odd")])
+    .agg([@pl.col("units").max()]),
+    content=(
+      #|shape: (2, 2)
+      #|┌─────┬───────┐
+      #|│ odd ┆ units │
+      #|│ --- ┆ ---   │
+      #|│ i64 ┆ i64   │
+      #|╞═════╪═══════╡
+      #|│ 0   ┆ 12    │
+      #|│ 1   ┆ 7     │
+      #|└─────┴───────┘
+    ),
+  )
+}
+```
+
+**Names of the aggregated columns.** An aggregation keeps the name of its
+column (`col("units").sum()` is called `units`), so aggregating one column
+twice needs `alias`; without it the two outputs clash and `agg` raises
+`DuplicateColumn`. There is no null-count method on `Expr`; count the nulls
+of a group with `col("x").is_null().sum()`. There is no `Expr::value_counts`
+or `Expr::unique_counts` either: use `group_by(...).len()` to count the rows
+of each key and `Series::value_counts` for one column.
+
+```mbt check
+///|
+test "aggregation names and null counts" {
+  let df = orders()
+  try
+    df
+    .group_by([@pl.col("region")])
+    .agg([@pl.col("units").sum(), @pl.col("units").mean()])
+  catch {
+    @pl.DuplicateColumn(msg) =>
+      inspect(
+        msg,
+        content="column with name 'units' has more than one occurrence",
+      )
+    _ => fail("expected DuplicateColumn")
+  } noraise {
+    _ => fail("expected an error")
+  }
+  inspect(
+    df
+    .group_by([@pl.col("region")])
+    .agg([
+      @pl.col("units").sum().alias("total"),
+      @pl.col("units").mean().alias("avg"),
+    ]),
+    content=(
+      #|shape: (3, 3)
+      #|┌────────┬───────┬──────────┐
+      #|│ region ┆ total ┆ avg      │
+      #|│ ---    ┆ ---   ┆ ---      │
+      #|│ str    ┆ i64   ┆ f64      │
+      #|╞════════╪═══════╪══════════╡
+      #|│ north  ┆ 20    ┆ 6.666667 │
+      #|│ south  ┆ 10    ┆ 5.0      │
+      #|│ east   ┆ 12    ┆ 12.0     │
+      #|└────────┴───────┴──────────┘
+    ),
+  )
+  // Nulls per group: a Boolean column sums to the number of `true`s.
+  let readings = @pl.DataFrame::new([
+    @pl.Series::str("sensor", ["a", "a", "b", "b", "b"]),
+    @pl.Series::int64_nullable("x", [Some(1L), None, None, None, Some(5L)]),
+  ])
+  inspect(
+    readings
+    .group_by([@pl.col("sensor")])
+    .agg([@pl.col("x").is_null().sum().alias("missing")]),
+    content=(
+      #|shape: (2, 2)
+      #|┌────────┬─────────┐
+      #|│ sensor ┆ missing │
+      #|│ ---    ┆ ---     │
+      #|│ str    ┆ i64     │
+      #|╞════════╪═════════╡
+      #|│ a      ┆ 1       │
+      #|│ b      ┆ 2       │
+      #|└────────┴─────────┘
+    ),
+  )
+}
+```
+
+**There is no `List` type.** In polars an expression in `agg` that does not
+reduce a group to one value (`col("units")` on its own, `col("units").sort()`,
+`col("units").head(2)`) gives a `list` column. This package cannot build one,
+so it raises `InvalidOperation` with a fixed text that names the expression.
+The decision looks at the shape of the expression only, never at how many rows
+a group has: `col("units")` is refused even when every group has one row.
+Aggregate the column (`first()`, `sum()`, `len()`, ...), or an expression built
+on the sorted or cut column (`col("units").sort().first()`).
+
+```mbt check
+///|
+test "agg needs one value per group" {
+  let df = orders()
+  try df.group_by([@pl.col("region")]).agg([@pl.col("units")]) catch {
+    @pl.InvalidOperation(msg) =>
+      inspect(
+        msg,
+        content=(
+          #|expression col("units") does not reduce each group to one value; this library has no List type, so aggregate it (for example with first(), sum() or len())
+        ),
+      )
+    _ => fail("expected InvalidOperation")
+  } noraise {
+    _ => fail("expected an error")
+  }
+  // The sorted column is still a column; its first value is one value.
+  inspect(
+    df
+    .group_by([@pl.col("region")])
+    .agg([@pl.col("units").sort(descending=true).first().alias("top")]),
+    content=(
+      #|shape: (3, 2)
+      #|┌────────┬─────┐
+      #|│ region ┆ top │
+      #|│ ---    ┆ --- │
+      #|│ str    ┆ i64 │
+      #|╞════════╪═════╡
+      #|│ north  ┆ 10  │
+      #|│ south  ┆ 6   │
+      #|│ east   ┆ 12  │
+      #|└────────┴─────┘
+    ),
+  )
+}
+```
+
+**All the values of a group, or the top N of each group.** What a polars user
+usually wants behind `agg([col("units")])` or `agg([col("units").head(2)])` is
+the rows themselves, not a list. Keep the rows and cut them with a window
+expression ([`over`](#window-expressions-over)), which stays one value per
+row: rank the rows inside each group, then `filter` on the rank. For the top N
+use `rank(descending=true)` and keep the ranks up to N. The default rank method
+`Average` gives fractional ranks for ties (two tied leaders are both 1.5); pass
+`method_=Ordinal` (ties broken by row order) to get exactly the ranks
+1 to n in each group, so the filter keeps exactly N rows per group. The
+argument is spelled `method_` because `method` is a reserved word in MoonBit
+and would warn at every call, the same convention as `var_`. When you want a
+single row per group, `sort_by` inside `agg` gives it: pick the value of
+another column at the extreme.
+
+```mbt check
+///|
+test "top N per group" {
+  let df = orders().select([@pl.col("id"), @pl.col("region"), @pl.col("units")])
+  let by_region = [@pl.col("region")]
+  // The two biggest orders of each region: rank 1 is the biggest.
+  inspect(
+    df.filter(
+      @pl.col("units")
+      .rank(descending=true)
+      .over(by_region)
+      .le(@pl.lit_float(2.0)),
+    ),
+    content=(
+      #|shape: (5, 3)
+      #|┌─────┬────────┬───────┐
+      #|│ id  ┆ region ┆ units │
+      #|│ --- ┆ ---    ┆ ---   │
+      #|│ i64 ┆ str    ┆ i64   │
+      #|╞═════╪════════╪═══════╡
+      #|│ 1   ┆ north  ┆ 10    │
+      #|│ 2   ┆ south  ┆ 4     │
+      #|│ 3   ┆ north  ┆ 7     │
+      #|│ 4   ┆ east   ┆ 12    │
+      #|│ 5   ┆ south  ┆ 6     │
+      #|└─────┴────────┴───────┘
+    ),
+  )
+  // One row per group: the id of the biggest order of each region.
+  inspect(
+    df
+    .group_by(by_region)
+    .agg([
+      @pl.col("id")
+      .sort_by([@pl.col("units")], descending=[true])
+      .first()
+      .alias("biggest_id"),
+    ]),
+    content=(
+      #|shape: (3, 2)
+      #|┌────────┬────────────┐
+      #|│ region ┆ biggest_id │
+      #|│ ---    ┆ ---        │
+      #|│ str    ┆ i64        │
+      #|╞════════╪════════════╡
+      #|│ north  ┆ 1          │
+      #|│ south  ┆ 5          │
+      #|│ east   ┆ 4          │
+      #|└────────┴────────────┘
+    ),
+  )
+  // `over` needs a result as long as the group: `sort()` is fine, `head(2)`
+  // is not.
+  try df.select([@pl.col("units").head(n=2).over(by_region)]) catch {
+    @pl.ShapeMismatch(msg) =>
+      inspect(
+        msg,
+        content="the length of the window expression did not match that of the group",
+      )
+    _ => fail("expected ShapeMismatch")
+  } noraise {
+    _ => fail("expected an error")
+  }
+}
+```
+
+## join
+
+`left.join(right, on=[...], how=...)` combines two tables on key expressions.
+`how` is `Inner` (the default), `Left`, `Right`, `Full`, `Semi`, `Anti` or
+`Cross`. Use `on` when both tables call the key the same, `left_on` and
+`right_on` otherwise (each is an `Array[Expr]`, so a key can be computed). For
+`Inner` and `Left` the two key columns become one (the left one); a right
+column whose name the left table already has gets the `suffix` (default
+`_right`). `Right` also gives one key column, but it holds the right table's
+key and comes after the other columns of the left table (`v, region, manager`
+for `a.join(b, on=[col("region")], how=Right)`). `Full` keeps both key
+columns (`region` and `region_right`), each null where the other table had no
+match. `coalesce` overrides this: `coalesce=true` merges the two key columns
+into one (the left value, or the right one where the left row is missing), and
+`coalesce=false` keeps both key columns for any `how` that has them.
+
+The rows come out in a fixed order: for `Inner`, `Left`, `Semi` and `Anti` the
+order of the left table, and for one left row its matches in the order of the
+right table. `Right` follows the right table. There is no `maintain_order`
+argument.
+
+```mbt check
+///|
+fn customers() -> @pl.DataFrame raise @pl.PolarsError {
+  @pl.DataFrame::new([
+    @pl.Series::str("region", ["north", "south", "west"]),
+    @pl.Series::str("manager", ["Ann", "Bob", "Cy"]),
+  ])
+}
+
+///|
+test "inner, left and anti joins" {
+  let df = orders().select([@pl.col("id"), @pl.col("region"), @pl.col("units")])
+  let managers = customers()
+  // Inner: only the rows whose key is on both sides.
+  inspect(
+    df.join(managers, on=[@pl.col("region")]),
+    content=(
+      #|shape: (5, 4)
+      #|┌─────┬────────┬───────┬─────────┐
+      #|│ id  ┆ region ┆ units ┆ manager │
+      #|│ --- ┆ ---    ┆ ---   ┆ ---     │
+      #|│ i64 ┆ str    ┆ i64   ┆ str     │
+      #|╞═════╪════════╪═══════╪═════════╡
+      #|│ 1   ┆ north  ┆ 10    ┆ Ann     │
+      #|│ 2   ┆ south  ┆ 4     ┆ Bob     │
+      #|│ 3   ┆ north  ┆ 7     ┆ Ann     │
+      #|│ 5   ┆ south  ┆ 6     ┆ Bob     │
+      #|│ 6   ┆ north  ┆ 3     ┆ Ann     │
+      #|└─────┴────────┴───────┴─────────┘
+    ),
+  )
+  // Left: every left row; the right columns are null where nothing matches.
+  inspect(
+    df.join(managers, on=[@pl.col("region")], how=Left),
+    content=(
+      #|shape: (6, 4)
+      #|┌─────┬────────┬───────┬─────────┐
+      #|│ id  ┆ region ┆ units ┆ manager │
+      #|│ --- ┆ ---    ┆ ---   ┆ ---     │
+      #|│ i64 ┆ str    ┆ i64   ┆ str     │
+      #|╞═════╪════════╪═══════╪═════════╡
+      #|│ 1   ┆ north  ┆ 10    ┆ Ann     │
+      #|│ 2   ┆ south  ┆ 4     ┆ Bob     │
+      #|│ 3   ┆ north  ┆ 7     ┆ Ann     │
+      #|│ 4   ┆ east   ┆ 12    ┆ null    │
+      #|│ 5   ┆ south  ┆ 6     ┆ Bob     │
+      #|│ 6   ┆ north  ┆ 3     ┆ Ann     │
+      #|└─────┴────────┴───────┴─────────┘
+    ),
+  )
+  // Anti: the left rows with no match (Semi is the opposite). Only the left
+  // columns remain.
+  inspect(
+    df.join(managers, on=[@pl.col("region")], how=Anti),
+    content=(
+      #|shape: (1, 3)
+      #|┌─────┬────────┬───────┐
+      #|│ id  ┆ region ┆ units │
+      #|│ --- ┆ ---    ┆ ---   │
+      #|│ i64 ┆ str    ┆ i64   │
+      #|╞═════╪════════╪═══════╡
+      #|│ 4   ┆ east   ┆ 12    │
+      #|└─────┴────────┴───────┘
+    ),
+  )
+}
+
+///|
+test "full join and coalesce" {
+  let a = @pl.DataFrame::new([
+    @pl.Series::str("region", ["north", "south", "east"]),
+    @pl.Series::int64("v", [1L, 2L, 3L]),
+  ])
+  let b = customers()
+  // Full: every row of both sides; the two key columns stay apart.
+  inspect(
+    a.join(b, on=[@pl.col("region")], how=Full),
+    content=(
+      #|shape: (4, 4)
+      #|┌────────┬──────┬──────────────┬─────────┐
+      #|│ region ┆ v    ┆ region_right ┆ manager │
+      #|│ ---    ┆ ---  ┆ ---          ┆ ---     │
+      #|│ str    ┆ i64  ┆ str          ┆ str     │
+      #|╞════════╪══════╪══════════════╪═════════╡
+      #|│ north  ┆ 1    ┆ north        ┆ Ann     │
+      #|│ south  ┆ 2    ┆ south        ┆ Bob     │
+      #|│ east   ┆ 3    ┆ null         ┆ null    │
+      #|│ null   ┆ null ┆ west         ┆ Cy      │
+      #|└────────┴──────┴──────────────┴─────────┘
+    ),
+  )
+  // coalesce=true: one key column that is never null here.
+  inspect(
+    a.join(b, on=[@pl.col("region")], how=Full, coalesce=true),
+    content=(
+      #|shape: (4, 3)
+      #|┌────────┬──────┬─────────┐
+      #|│ region ┆ v    ┆ manager │
+      #|│ ---    ┆ ---  ┆ ---     │
+      #|│ str    ┆ i64  ┆ str     │
+      #|╞════════╪══════╪═════════╡
+      #|│ north  ┆ 1    ┆ Ann     │
+      #|│ south  ┆ 2    ┆ Bob     │
+      #|│ east   ┆ 3    ┆ null    │
+      #|│ west   ┆ null ┆ Cy      │
+      #|└────────┴──────┴─────────┘
+    ),
+  )
+}
+
+///|
+test "different key names, suffix and null keys" {
+  let a = @pl.DataFrame::new([
+    @pl.Series::int64_nullable("k", [Some(1L), None, Some(2L)]),
+    @pl.Series::str("v", ["a", "b", "c"]),
+  ])
+  let b = @pl.DataFrame::new([
+    @pl.Series::int64_nullable("key", [None, Some(2L), Some(2L)]),
+    @pl.Series::str("v", ["x", "y", "z"]),
+  ])
+  // Different names: left_on and right_on. The right `v` becomes `v_right`
+  // and the key column keeps the left name. A null key matches nothing...
+  inspect(
+    a.join(b, left_on=[@pl.col("k")], right_on=[@pl.col("key")]),
+    content=(
+      #|shape: (2, 3)
+      #|┌─────┬─────┬─────────┐
+      #|│ k   ┆ v   ┆ v_right │
+      #|│ --- ┆ --- ┆ ---     │
+      #|│ i64 ┆ str ┆ str     │
+      #|╞═════╪═════╪═════════╡
+      #|│ 2   ┆ c   ┆ y       │
+      #|│ 2   ┆ c   ┆ z       │
+      #|└─────┴─────┴─────────┘
+    ),
+  )
+  // ...unless nulls_equal=true.
+  inspect(
+    a.join(
+      b,
+      left_on=[@pl.col("k")],
+      right_on=[@pl.col("key")],
+      nulls_equal=true,
+      suffix="_b",
+    ),
+    content=(
+      #|shape: (3, 3)
+      #|┌──────┬─────┬─────┐
+      #|│ k    ┆ v   ┆ v_b │
+      #|│ ---  ┆ --- ┆ --- │
+      #|│ i64  ┆ str ┆ str │
+      #|╞══════╪═════╪═════╡
+      #|│ null ┆ b   ┆ x   │
+      #|│ 2    ┆ c   ┆ y   │
+      #|│ 2    ┆ c   ┆ z   │
+      #|└──────┴─────┴─────┘
+    ),
+  )
+}
+```
+
+Keys of different types are an error unless polars would promote them
+(`Int32` with `Int64`, `Float32` with `Float64`); `validate` checks that the
+sides are `OneToMany`, `ManyToOne` or `OneToOne` and raises when they are
+not. See `docs/golden/known-diffs/join.md`.
+
+## Window expressions: over
+
+`expr.over([keys])` computes `expr` per group of the keys and puts the result
+on every row of that group, so the table keeps its height. It is the
+`group_to_rows` mapping of polars; `order_by` and the other mapping strategies
+are not provided. Aggregations give one value repeated on the group's rows;
+sequence operations (`cum_sum`, `shift`, `rank`, `sort`, ...) see the rows of
+the group in table order.
+
+```mbt check
+///|
+test "over" {
+  let df = orders().select([@pl.col("id"), @pl.col("region"), @pl.col("units")])
+  inspect(
+    df.with_columns([
+      @pl.col("units").sum().over([@pl.col("region")]).alias("region_total"),
+      (@pl.col("units").cast(Float64) /
+      @pl.col("units").sum().over([@pl.col("region")]).cast(Float64)).alias(
+        "share",
+      ),
+      @pl.col("units").cum_sum().over([@pl.col("region")]).alias("running"),
+    ]),
+    content=(
+      #|shape: (6, 6)
+      #|┌─────┬────────┬───────┬──────────────┬───────┬─────────┐
+      #|│ id  ┆ region ┆ units ┆ region_total ┆ share ┆ running │
+      #|│ --- ┆ ---    ┆ ---   ┆ ---          ┆ ---   ┆ ---     │
+      #|│ i64 ┆ str    ┆ i64   ┆ i64          ┆ f64   ┆ i64     │
+      #|╞═════╪════════╪═══════╪══════════════╪═══════╪═════════╡
+      #|│ 1   ┆ north  ┆ 10    ┆ 20           ┆ 0.5   ┆ 10      │
+      #|│ 2   ┆ south  ┆ 4     ┆ 10           ┆ 0.4   ┆ 4       │
+      #|│ 3   ┆ north  ┆ 7     ┆ 20           ┆ 0.35  ┆ 17      │
+      #|│ 4   ┆ east   ┆ 12    ┆ 12           ┆ 1.0   ┆ 12      │
+      #|│ 5   ┆ south  ┆ 6     ┆ 10           ┆ 0.6   ┆ 10      │
+      #|│ 6   ┆ north  ┆ 3     ┆ 20           ┆ 0.15  ┆ 20      │
+      #|└─────┴────────┴───────┴──────────────┴───────┴─────────┘
+    ),
+  )
+}
+```
+
+`over` needs one value per row: an expression whose result has the group's
+length is fine (`col("units").over(...)`, `sort()`, `rank()`, `cum_sum()`; a
+`sort` puts the sorted values back on the group's rows in table order), and a
+result of another length (`head(2)`) raises `ShapeMismatch`. A window `rank`
+numbers the rows inside each group; see
+[the top-N recipe](#group_by-and-agg) for filtering on it.
+
+```mbt check
+///|
+test "rank within a group" {
+  let df = orders().select([@pl.col("id"), @pl.col("region"), @pl.col("units")])
+  // 1.0 is the biggest order of its region (the default method is Average,
+  // so the ranks are Float64).
+  inspect(
+    df.with_columns([
+      @pl.col("units")
+      .rank(descending=true)
+      .over([@pl.col("region")])
+      .alias("rank_in_region"),
+    ]),
+    content=(
+      #|shape: (6, 4)
+      #|┌─────┬────────┬───────┬────────────────┐
+      #|│ id  ┆ region ┆ units ┆ rank_in_region │
+      #|│ --- ┆ ---    ┆ ---   ┆ ---            │
+      #|│ i64 ┆ str    ┆ i64   ┆ f64            │
+      #|╞═════╪════════╪═══════╪════════════════╡
+      #|│ 1   ┆ north  ┆ 10    ┆ 1.0            │
+      #|│ 2   ┆ south  ┆ 4     ┆ 2.0            │
+      #|│ 3   ┆ north  ┆ 7     ┆ 2.0            │
+      #|│ 4   ┆ east   ┆ 12    ┆ 1.0            │
+      #|│ 5   ┆ south  ┆ 6     ┆ 1.0            │
+      #|│ 6   ┆ north  ┆ 3     ┆ 3.0            │
+      #|└─────┴────────┴───────┴────────────────┘
+    ),
+  )
+}
+```
+
+## pivot, unpivot and counting
+
+`pivot` turns the values of the `on` columns into new columns: one row per
+`index` value, one column per `on` value, the `values` column in the cells.
+When a cell would get more than one row you must pass `aggregate_function`
+(`First`, `Last`, `Sum`, `Min`, `Max`, `Mean`, `Median` or `Len`); otherwise
+it raises. `unpivot` is the opposite: it folds columns into `variable` and
+`value` rows. `Series::value_counts` counts the rows per value.
+
+```mbt check
+///|
+test "pivot and unpivot" {
+  let sales = @pl.DataFrame::new([
+    @pl.Series::str("region", ["north", "north", "south", "south", "south"]),
+    @pl.Series::str("quarter", ["Q1", "Q2", "Q1", "Q1", "Q2"]),
+    @pl.Series::int64("units", [10L, 4L, 7L, 12L, 6L]),
+  ])
+  // South has two rows in Q1, so a function says how to combine them.
+  let wide = sales.pivot(
+    ["quarter"],
+    index=["region"],
+    values=["units"],
+    aggregate_function=Sum,
+  )
+  inspect(
+    wide,
+    content=(
+      #|shape: (2, 3)
+      #|┌────────┬─────┬─────┐
+      #|│ region ┆ Q1  ┆ Q2  │
+      #|│ ---    ┆ --- ┆ --- │
+      #|│ str    ┆ i64 ┆ i64 │
+      #|╞════════╪═════╪═════╡
+      #|│ north  ┆ 10  ┆ 4   │
+      #|│ south  ┆ 19  ┆ 6   │
+      #|└────────┴─────┴─────┘
+    ),
+  )
+  // Back to long: `region` stays, the other columns become rows.
+  inspect(
+    wide.unpivot(index=["region"], variable_name="quarter", value_name="units"),
+    content=(
+      #|shape: (4, 3)
+      #|┌────────┬─────────┬───────┐
+      #|│ region ┆ quarter ┆ units │
+      #|│ ---    ┆ ---     ┆ ---   │
+      #|│ str    ┆ str     ┆ i64   │
+      #|╞════════╪═════════╪═══════╡
+      #|│ north  ┆ Q1      ┆ 10    │
+      #|│ south  ┆ Q1      ┆ 19    │
+      #|│ north  ┆ Q2      ┆ 4     │
+      #|│ south  ┆ Q2      ┆ 6     │
+      #|└────────┴─────────┴───────┘
+    ),
+  )
+  try sales.pivot(["quarter"], index=["region"], values=["units"]) catch {
+    @pl.ComputeError(msg) =>
+      inspect(
+        msg,
+        content=(
+          #|aggregation 'item' expected no or a single value, got 2 values
+        ),
+      )
+    _ => fail("expected ComputeError")
+  } noraise {
+    _ => fail("expected an error")
+  }
+}
+
+///|
+test "value_counts" {
+  let s = @pl.Series::str("region", ["north", "south", "north", "north"])
+  inspect(
+    s.value_counts(sort=true),
+    content=(
+      #|shape: (2, 2)
+      #|┌────────┬───────┐
+      #|│ region ┆ count │
+      #|│ ---    ┆ ---   │
+      #|│ str    ┆ i64   │
+      #|╞════════╪═══════╡
+      #|│ north  ┆ 3     │
+      #|│ south  ┆ 1     │
+      #|└────────┴───────┘
+    ),
+  )
+}
+```
+
+`DataFrame::transpose` swaps rows and columns (all columns are cast to their
+common type), and `DataFrame::to_dict` gives the columns as a
+`Map[String, Series]`.
+
+## More expression functions
+
+Expressions can also reorder or cut a column, which changes its length:
+`sort`, `sort_by`, `arg_sort`, `head`, `tail`, `slice`, `unique`, `drop_nulls`
+and `filter`. Only literals and aggregations are repeated against longer
+columns in a `select`; a column cut to a different length next to a full
+column is a `ShapeMismatch`. `any` and `all` reduce a column to one `Boolean`.
+`sin`, `cos`, `tan`, `arcsin`, `arccos` and `arctan` work on numbers, and
+`sum_horizontal`, `min_horizontal` and `max_horizontal` combine columns row by
+row. `Series` has `any`, `all`, `is_sorted`, `gather_every`, `value_counts` and
+`unique_counts`; `DataFrame` has `gather_every`.
+
+```mbt check
+///|
+test "expressions that change the length" {
+  let df = orders()
+  inspect(
+    df.select([
+      @pl.col("units").sort(descending=true).head(n=3).alias("top3"),
+      @pl.col("region").unique(maintain_order=true).head(n=3).alias("regions"),
+    ]),
+    content=(
+      #|shape: (3, 2)
+      #|┌──────┬─────────┐
+      #|│ top3 ┆ regions │
+      #|│ ---  ┆ ---     │
+      #|│ i64  ┆ str     │
+      #|╞══════╪═════════╡
+      #|│ 12   ┆ north   │
+      #|│ 10   ┆ south   │
+      #|│ 7    ┆ east    │
+      #|└──────┴─────────┘
+    ),
+  )
+  inspect(
+    df.select([
+      @pl.sum_horizontal([@pl.col("units"), @pl.col("id")]).alias("both"),
+      @pl.col("units").gt(@pl.lit_int(5)).any().alias("any_big"),
+    ]),
+    content=(
+      #|shape: (6, 2)
+      #|┌──────┬─────────┐
+      #|│ both ┆ any_big │
+      #|│ ---  ┆ ---     │
+      #|│ i64  ┆ bool    │
+      #|╞══════╪═════════╡
+      #|│ 11   ┆ true    │
+      #|│ 6    ┆ true    │
+      #|│ 10   ┆ true    │
+      #|│ 16   ┆ true    │
+      #|│ 11   ┆ true    │
+      #|│ 9    ┆ true    │
+      #|└──────┴─────────┘
+    ),
+  )
 }
 ```
 
@@ -698,6 +1514,24 @@ test "Series operations" {
   inspect(s.sum(), content="6")
   @debug.debug_inspect(s.sum().to_int64(), content="Some(6)")
   @debug.debug_inspect(s.mean().to_double(), content="Some(2)")
+}
+```
+
+`Series::any` and `Series::all` work on `Boolean` series and return a `Bool?`,
+as polars' `bool | None`. With the default `ignore_nulls=true` the result is
+never `None`, but it is still an `Option`, so `if s.any() { ... }` does not
+compile: compare it, as in `s.any() == Some(true)`.
+
+```mbt check
+///|
+test "any and all" {
+  let flags = @pl.Series::bool("b", [false, true])
+  if flags.any() == Some(true) {
+    inspect("some", content="some")
+  } else {
+    fail("expected true")
+  }
+  inspect(flags.all() == Some(true), content="false")
 }
 ```
 
@@ -759,15 +1593,27 @@ The package follows polars 2.1.0; the full list of differences is in
 
 - **`fill_null` has three shapes.** `Series::fill_null` takes an
   `AnyValue`, while `Expr::fill_null` and `DataFrame::fill_null` take an
-  expression (`lit_int(0L)`, or a column).
+  expression (`lit_int(0)`, or a column).
 - **A `Series` has no `str()` or `dt()`.** Put it in a table and use the
   expression namespaces.
 - **Mixed `&` and `|` need parentheses**: `(a & b) | c`. MoonBit warns about
   the ambiguous precedence otherwise.
-- **`lit_int(1L)` and friends adapt to the other operand**, as polars'
+- **`lit_int(1)` and friends adapt to the other operand**, as polars'
   literals do. On their own they are `i64` and `f64` (polars: `i32`).
 - **`head` and `tail` default to 5 rows for a `DataFrame` and 10 for a
   `Series`**, as in polars.
+- **There is no `List` type.** Inside `group_by(...).agg(...)` every
+  expression must give one value per group; anything that polars would turn
+  into a `list` column raises `InvalidOperation` (see
+  [group_by and agg](#group_by-and-agg)). `explode` is not provided for the
+  same reason.
+- **Row order is always deterministic.** Groups come out in order of first
+  appearance, joins follow the left table (the right one for `Right`),
+  `value_counts` lists values by first appearance. polars guarantees this only
+  with `maintain_order`, which this package does not need.
+- **`over` takes `partition_by` only**: no `order_by`, no `mapping_strategy`.
+- **Keys are expressions**: `group_by([col("a")])`, `join(on=[col("a")])`,
+  not plain strings.
 
 ```mbt check
 ///|
@@ -780,7 +1626,7 @@ test "differences you meet first" {
   )
   let df = @pl.DataFrame::new([s])
   @debug.debug_inspect(
-    df.fill_null(@pl.lit_int(0L)).column("a").to_int64_array(),
+    df.fill_null(@pl.lit_int(0)).column("a").to_int64_array(),
     content="[Some(1), Some(0)]",
   )
   // text functions on a Series go through a table

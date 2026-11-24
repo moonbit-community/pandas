@@ -17,6 +17,27 @@ python docs/golden/scripts/char_width.py   # 宽度表，见下面“字符宽�
 
 M2 又加了 `agg.py`、`arith.py`、`concat_describe.py`、`df_new.py`、`elementwise.py`、`expr.py`、`expr_agg.py`、`expr_seq.py`、`frame_ops.py`、`sequence.py`、`sort.py`、`str_dt.py`（对照数据，用法见各脚本开头的说明）和 `case_tables.py`、`grapheme.py`（`case_data.mbt`、`grapheme_data.mbt` 的数据表，生成后跑 `moon fmt`）。`emit.py` 是它们共用的输出函数。
 
+M3 又加了 `group_by.py`、`group_by_ext.py`、`group_final.py`、`join.py`、`expr_shape.py`、`window.py`、`reshape.py`、`date_parse.py`（`shape_base.py` 是 `window.py` 和 `group_by_ext.py` 共用的基础，不单独生成文件）。这些脚本都在 lab5 上用 polars 2.1.0 跑，命令统一是：
+
+```
+ulimit -v 16000000; POLARS_MAX_THREADS=4 /data/lly-moonbit/polars-venv/bin/python docs/golden/scripts/<脚本>.py
+```
+
+M3 的对照数据（用例数以各文件为准）：
+
+| 文件 | 内容 | 用例数 |
+| --- | --- | --- |
+| `group_by.json` | `group_by(...).agg(...)`、`GroupBy::len`、`pl.len()`，一律 `maintain_order=True` | 814 |
+| `group_by_ext.json` | `agg` 里的 `filter`/`sort_by`/`head`/`any`/`sum_horizontal`/`over` 等 | 757 |
+| `group_final.json` | `agg` 和 `over` 里 `str().to_date()` / `to_datetime()` 按组猜格式；无键、键是单个值（字面量、聚合、`len()`）时浮点 `sum`/`mean`/`std`/`var` 用整列内核；表达式用例的 `op` 是 `group_by`、`select` 或 `with_columns` | 269 |
+| `join.json` | `join` 的七种 `how`、键类型、null 和浮点键、列名、`validate`、错误顺序；`maintain_order` 取 `left_right`（Right 取 `right_left`） | 793 |
+| `expr_shape.json` | `sort`/`head`/`unique`/`filter`/`any`/`all`、三角函数、`*_horizontal`，加 Series 与 DataFrame 的对应方法 | 见文件（表达式、Series、DataFrame 三类） |
+| `window.json` | `over(partition_by)` | 574 |
+| `reshape.json` | `value_counts`、`unique_counts`、`pivot`、`unpivot`、`transpose`、`to_dict` | 715 |
+| `date_parse.json` | `str().to_date()`/`to_datetime()` 和 `AnyValue::date_ymd`/`datetime_ymd` | 1141 |
+
+M3 全部对照用例（含 M1、M2）共 21 030 条，`check_annotations.py` 通过；M3 的 `known-diffs/*.md`（`group_by`、`join`、`expr_shape`、`window`、`reshape`、`date_parse`）是英文，写给库的使用者看。
+
 **每个用例都有 `polars` 字段**，写明对应的 polars 写法（spec 第 7 节“测试注释”）：`cast.json` 是 `s.cast(pl.Int32, strict=True)`，`show.json` 是 `str(pl.DataFrame(frame))` 或 `str(series)`，其余各文件的写法见各自的数据。检查与复现：
 
 ```
@@ -25,7 +46,7 @@ python3 docs/golden/scripts/check_annotations.py        # 遍历 docs/golden/*.j
     --repro <新建的临时目录> [--ucd <UCD 目录>] [--moonfmt <moonfmt 路径>]
 ```
 
-`--repro` 把每个生成脚本在临时拷贝里跑两遍，比较两遍写出的每个文件的 sha256（以及与已提交文件是否相同，`.mbt` 文件先过 `moonfmt` 再比）。终审修复轮的结果（`--moonfmt` 给了，没给 `--ucd`，所以 `grapheme.py` 跳过）：除跳过的一个外，所有生成脚本写出的文件两遍的 sha256 相同，也与已提交的相同（37 个文件）。`concat_describe.py` 在导入 polars 前把 `POLARS_MAX_THREADS` 固定为 4（`describe` 的 `std` 末位和三个以上表的 `concat` 随线程池大小而变），对 `describe` 另外跑 100 次取稳定值，原因和细节见 `known-diffs/concat_describe.md`。
+`--repro` 把每个生成脚本在临时拷贝里跑两遍，比较两遍写出的每个文件的 sha256（以及与已提交文件是否相同，`.mbt` 文件先过 `moonfmt` 再比）。终审修复轮之后的结果（`--moonfmt` 给了，没给 `--ucd`，所以 `grapheme.py` 跳过）：除跳过的一个外，所有生成脚本写出的 61 个文件两遍的 sha256 相同，也与已提交的相同（其中 13 个 `.mbt` 的原始输出与提交的只差 `moon fmt`，其余 48 个逐字节相同；`shape_base.py` 是共用的基础模块，不写文件，不在检查范围内）。`concat_describe.py` 在导入 polars 前把 `POLARS_MAX_THREADS` 固定为 4（`describe` 的 `std` 末位和三个以上表的 `concat` 随线程池大小而变），对 `describe` 另外跑 100 次取稳定值，原因和细节见 `known-diffs/concat_describe.md`。
 
 （Python 会在 `scripts/` 下生成 `__pycache__/`，已在 `.gitignore` 里忽略；也可设 `PYTHONDONTWRITEBYTECODE=1`。）
 
@@ -37,6 +58,21 @@ python3 docs/golden/scripts/check_annotations.py        # 遍历 docs/golden/*.j
 | `src/pl/golden_<name>_data_test.mbt` | 同一份 JSON 嵌成 `let golden_<name> : String`，因为 wasm 下测试读不了文件 |
 
 测试里用 `@json.parse(golden_<name>)` 解析，`src/pl/golden_helpers_test.mbt` 的 `golden_series` 把 Series 的 JSON 编码还原成 `@pl.Series`。
+
+### 生成的 `.mbt` 文件：提交的是 `moon fmt` 之后的内容
+
+脚本写出的 `src/pl/golden_<name>_data_test.mbt`（嵌入的数据）和 `src/pl/<name>_cases_test.mbt`（每个用例 id 对应的 MoonBit 表达式）是脚本的原始输出，行宽和换行不一定合 `moon fmt`。**提交进仓库的是跑过 `moon fmt` 之后的文件**（`moon fmt --check` 要通过），所以重新生成后必须再跑一次 `moon fmt`，不然 `git diff` 里会出现只是排版的改动。复现一个脚本的结果：
+
+```
+# 在 lab5 的仓库根目录
+ulimit -v 16000000; POLARS_MAX_THREADS=4 /data/lly-moonbit/polars-venv/bin/python docs/golden/scripts/<脚本>.py
+moon fmt                      # 把写出的 .mbt 格式化成提交的样子
+git diff --stat               # 没有改动就是复现了
+```
+
+两遍运行逐字节相同由 `check_annotations.py --repro` 检查（见上）：它对每个生成脚本在临时拷贝里跑两遍，比较两遍的 sha256，再把 `.mbt` 过一遍 `--moonfmt` 指定的 `moonfmt`（lab5 上是 `/data/lly-moonbit/moon/bin/moonfmt`），与提交的文件比较；输出里“= committed after moonfmt”表示脚本原始输出与提交的差别只在 `moon fmt`，“= committed”表示原始输出本来就合 `moon fmt`。JSON 文件不经过 `moon fmt`，必须与提交的逐字节相同。
+
+`method_` 提示：`rank` 的参数叫 `method_`（`method` 是 MoonBit 的保留字），`expr_seq.py` 及依赖它的生成脚本（`expr_shape.py`、`group_by.py`、`group_by_ext.py`、`window.py`、`group_final.py`）写出的用例也用 `rank(method_=...)`；polars 一侧的文本（`polars` 字段）仍是 `rank(method='...')`。
 
 ## Series 的 JSON 编码
 
@@ -114,7 +150,7 @@ date/datetime（1970 年之前、年份超过 9999、负年份、毫秒/微秒�
 
 ## 已知差异
 
-面向使用者的汇总（M1 和 M2 全部差异，英文）在 [`docs/migration.md`](../migration.md) 的 “Differences from polars” 一节；M2 各任务的详细记录在 `known-diffs/*.md`。下面是 M1（cast、Show、Series 基础）的记录。
+面向使用者的汇总（M1、M2 和 M3 全部差异，英文）在 [`docs/migration.md`](../migration.md) 的 “Differences from polars” 一节；M2、M3 各任务的详细记录在 `known-diffs/*.md`。下面是 M1（cast、Show、Series 基础）的记录。
 
 没有被跳过的用例：cast 的 468 条和 show 的 363 条全部与 polars 一致（cast 里有 3 条为避开 polars 的 panic 去掉了个别输入值，见上）。下面是对照数据没覆盖、或实现有意不同的地方（其中前几条是 polars 在这些输入上 panic，没有可对照的结果）：
 
