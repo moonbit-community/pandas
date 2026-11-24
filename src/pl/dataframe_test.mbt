@@ -58,13 +58,17 @@ test "dataframe error messages" {
   let a = @pl.Series::int64("a", [1L])
   match raises(() => @pl.DataFrame::new([a, a])) {
     Some(@pl.DuplicateColumn(m)) =>
-      assert_eq(m, "column with name 'a' has more than one occurrence")
+      assert_eq(
+        m, "could not create a new DataFrame: column with name 'a' has more than one occurrence",
+      )
     _ => fail("expected DuplicateColumn")
   }
   match
     raises(() => @pl.DataFrame::new([a, @pl.Series::int64("b", [1L, 2L])])) {
     Some(@pl.ShapeMismatch(m)) =>
-      assert_eq(m, "column 'b' has length 2 but column 'a' has length 1")
+      assert_eq(
+        m, "could not create a new DataFrame: height of column 'b' (2) does not match height of column 'a' (1)",
+      )
     _ => fail("expected ShapeMismatch")
   }
   // the third column is compared with the first one, not with its neighbour
@@ -76,7 +80,7 @@ test "dataframe error messages" {
         @pl.Series::str("z", ["p", "q", "r"]),
       ])
     }),
-    "ShapeMismatch: column 'z' has length 3 but column 'x' has length 2",
+    "ShapeMismatch: could not create a new DataFrame: height of column 'z' (3) does not match height of column 'x' (2)",
   )
   // a 0-row column against a non-empty one
   assert_eq(
@@ -86,7 +90,7 @@ test "dataframe error messages" {
         @pl.Series::null("n", 0),
       ])
     }),
-    "ShapeMismatch: column 'n' has length 0 but column 'a' has length 1",
+    "ShapeMismatch: could not create a new DataFrame: height of column 'n' (0) does not match height of column 'a' (1)",
   )
   match raises(() => @pl.DataFrame::new([a]).column("zz")) {
     Some(@pl.ColumnNotFound(m)) => assert_eq(m, "column 'zz' not found")
@@ -560,4 +564,34 @@ test "dataframe debug" {
     "[(\"a\", Int64, [Int64(1)]), (\"b\", String, [Null])]",
   )
   assert_eq(@debug.render(@debug.Debug::to_repr(@pl.DataFrame::empty())), "[]")
+}
+
+///|
+test "head and tail default rows" {
+  // polars 2.1.0: DataFrame.head()/tail() default 5, Series.head()/tail() 10
+  let vals : Array[Int32] = []
+  for i in 0..<20 {
+    vals.push(i)
+  }
+  let df = @pl.DataFrame::new([@pl.Series::int32("a", vals)])
+  assert_eq(df.head().height(), 5)
+  assert_eq(df.tail().height(), 5)
+  assert_eq(df.head().column("a").to_int32_array(), [
+    Some(0),
+    Some(1),
+    Some(2),
+    Some(3),
+    Some(4),
+  ])
+  assert_eq(df.tail().column("a").to_int32_array(), [
+    Some(15),
+    Some(16),
+    Some(17),
+    Some(18),
+    Some(19),
+  ])
+  assert_eq(df.column("a").head().len(), 10)
+  assert_eq(df.column("a").tail().len(), 10)
+  // fewer rows than the default
+  assert_eq(df.head(n=3).head().height(), 3)
 }

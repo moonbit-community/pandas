@@ -14,6 +14,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool->bool/strict",
+  #|  "polars": "s.cast(pl.Boolean, strict=True)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -37,6 +38,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool->bool/lenient",
+  #|  "polars": "s.cast(pl.Boolean, strict=False)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -60,6 +62,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool->i32/strict",
+  #|  "polars": "s.cast(pl.Int32, strict=True)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -83,6 +86,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool->i32/lenient",
+  #|  "polars": "s.cast(pl.Int32, strict=False)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -106,6 +110,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool->i64/strict",
+  #|  "polars": "s.cast(pl.Int64, strict=True)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -129,6 +134,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool->i64/lenient",
+  #|  "polars": "s.cast(pl.Int64, strict=False)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -152,6 +158,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool->f32/strict",
+  #|  "polars": "s.cast(pl.Float32, strict=True)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -175,6 +182,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool->f32/lenient",
+  #|  "polars": "s.cast(pl.Float32, strict=False)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -198,6 +206,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool->f64/strict",
+  #|  "polars": "s.cast(pl.Float64, strict=True)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -221,6 +230,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool->f64/lenient",
+  #|  "polars": "s.cast(pl.Float64, strict=False)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -244,6 +254,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool->str/strict",
+  #|  "polars": "s.cast(pl.String, strict=True)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -267,6 +278,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool->str/lenient",
+  #|  "polars": "s.cast(pl.String, strict=False)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -290,6 +302,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool->date/strict",
+  #|  "polars": "s.cast(pl.Date, strict=True)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -313,6 +326,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool->date/lenient",
+  #|  "polars": "s.cast(pl.Date, strict=False)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -336,6 +350,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool->datetime[μs]/strict",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=True)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -359,6 +374,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool->datetime[μs]/lenient",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=False)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -384,6 +400,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "bool->null/strict",
   #|  "message": "conversion from `bool` to `null` failed in column 'a' for 2 out of 3 values: [true, false]",
+  #|  "polars": "s.cast(pl.Null, strict=True)",
   #|  "strict": true,
   #|  "to": "null"
   #| },
@@ -398,6 +415,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool->null/lenient",
+  #|  "polars": "s.cast(pl.Null, strict=False)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -424,6 +442,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32->bool/strict",
+  #|  "polars": "s.cast(pl.Boolean, strict=True)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -453,6 +472,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32->bool/lenient",
+  #|  "polars": "s.cast(pl.Boolean, strict=False)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -482,6 +502,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32->i32/strict",
+  #|  "polars": "s.cast(pl.Int32, strict=True)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -511,6 +532,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32->i32/lenient",
+  #|  "polars": "s.cast(pl.Int32, strict=False)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -540,6 +562,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32->i64/strict",
+  #|  "polars": "s.cast(pl.Int64, strict=True)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -569,6 +592,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32->i64/lenient",
+  #|  "polars": "s.cast(pl.Int64, strict=False)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -598,6 +622,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32->f32/strict",
+  #|  "polars": "s.cast(pl.Float32, strict=True)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -627,6 +652,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32->f32/lenient",
+  #|  "polars": "s.cast(pl.Float32, strict=False)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -656,6 +682,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32->f64/strict",
+  #|  "polars": "s.cast(pl.Float64, strict=True)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -685,6 +712,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32->f64/lenient",
+  #|  "polars": "s.cast(pl.Float64, strict=False)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -714,6 +742,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32->str/strict",
+  #|  "polars": "s.cast(pl.String, strict=True)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -743,6 +772,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32->str/lenient",
+  #|  "polars": "s.cast(pl.String, strict=False)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -772,6 +802,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32->date/strict",
+  #|  "polars": "s.cast(pl.Date, strict=True)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -801,6 +832,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32->date/lenient",
+  #|  "polars": "s.cast(pl.Date, strict=False)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -830,6 +862,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32->datetime[μs]/strict",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=True)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -859,6 +892,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32->datetime[μs]/lenient",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=False)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -890,6 +924,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "i32->null/strict",
   #|  "message": "conversion from `i32` to `null` failed in column 'a' for 5 out of 6 values: [0, 1, … -2147483648]",
+  #|  "polars": "s.cast(pl.Null, strict=True)",
   #|  "strict": true,
   #|  "to": "null"
   #| },
@@ -907,6 +942,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32->null/lenient",
+  #|  "polars": "s.cast(pl.Null, strict=False)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -941,6 +977,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i64->bool/strict",
+  #|  "polars": "s.cast(pl.Boolean, strict=True)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -980,6 +1017,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i64->bool/lenient",
+  #|  "polars": "s.cast(pl.Boolean, strict=False)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -1021,6 +1059,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "i64->i32/strict",
   #|  "message": "conversion from `i64` to `i32` failed in column 'a' for 5 out of 11 values: [2147483648, 9223372036854775807, … -2147483649]",
+  #|  "polars": "s.cast(pl.Int32, strict=True)",
   #|  "strict": true,
   #|  "to": "i32"
   #| },
@@ -1043,6 +1082,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i64->i32/lenient",
+  #|  "polars": "s.cast(pl.Int32, strict=False)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -1082,6 +1122,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i64->i64/strict",
+  #|  "polars": "s.cast(pl.Int64, strict=True)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -1121,6 +1162,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i64->i64/lenient",
+  #|  "polars": "s.cast(pl.Int64, strict=False)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -1160,6 +1202,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i64->f32/strict",
+  #|  "polars": "s.cast(pl.Float32, strict=True)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -1199,6 +1242,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i64->f32/lenient",
+  #|  "polars": "s.cast(pl.Float32, strict=False)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -1238,6 +1282,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i64->f64/strict",
+  #|  "polars": "s.cast(pl.Float64, strict=True)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -1277,6 +1322,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i64->f64/lenient",
+  #|  "polars": "s.cast(pl.Float64, strict=False)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -1316,6 +1362,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i64->str/strict",
+  #|  "polars": "s.cast(pl.String, strict=True)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -1355,6 +1402,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i64->str/lenient",
+  #|  "polars": "s.cast(pl.String, strict=False)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -1396,6 +1444,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "i64->date/strict",
   #|  "message": "conversion from `i64` to `date` failed in column 'a' for 5 out of 11 values: [2147483648, 9223372036854775807, … -2147483649]",
+  #|  "polars": "s.cast(pl.Date, strict=True)",
   #|  "strict": true,
   #|  "to": "date"
   #| },
@@ -1418,6 +1467,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i64->date/lenient",
+  #|  "polars": "s.cast(pl.Date, strict=False)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -1457,6 +1507,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i64->datetime[μs]/strict",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=True)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -1496,6 +1547,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i64->datetime[μs]/lenient",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=False)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -1537,6 +1589,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "i64->null/strict",
   #|  "message": "conversion from `i64` to `null` failed in column 'a' for 10 out of 11 values: [0, 1, … -2147483649]",
+  #|  "polars": "s.cast(pl.Null, strict=True)",
   #|  "strict": true,
   #|  "to": "null"
   #| },
@@ -1559,6 +1612,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i64->null/lenient",
+  #|  "polars": "s.cast(pl.Null, strict=False)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -1596,6 +1650,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f32->bool/strict",
+  #|  "polars": "s.cast(pl.Boolean, strict=True)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -1631,6 +1686,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f32->bool/lenient",
+  #|  "polars": "s.cast(pl.Boolean, strict=False)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -1668,6 +1724,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "f32->i32/strict",
   #|  "message": "conversion from `f32` to `i32` failed in column 'a' for 4 out of 9 values: [3.4000e38, NaN, … -inf]",
+  #|  "polars": "s.cast(pl.Int32, strict=True)",
   #|  "strict": true,
   #|  "to": "i32"
   #| },
@@ -1688,6 +1745,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f32->i32/lenient",
+  #|  "polars": "s.cast(pl.Int32, strict=False)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -1725,6 +1783,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "f32->i64/strict",
   #|  "message": "conversion from `f32` to `i64` failed in column 'a' for 4 out of 9 values: [3.4000e38, NaN, … -inf]",
+  #|  "polars": "s.cast(pl.Int64, strict=True)",
   #|  "strict": true,
   #|  "to": "i64"
   #| },
@@ -1745,6 +1804,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f32->i64/lenient",
+  #|  "polars": "s.cast(pl.Int64, strict=False)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -1780,6 +1840,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f32->f32/strict",
+  #|  "polars": "s.cast(pl.Float32, strict=True)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -1815,6 +1876,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f32->f32/lenient",
+  #|  "polars": "s.cast(pl.Float32, strict=False)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -1850,6 +1912,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f32->f64/strict",
+  #|  "polars": "s.cast(pl.Float64, strict=True)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -1885,6 +1948,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f32->f64/lenient",
+  #|  "polars": "s.cast(pl.Float64, strict=False)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -1920,6 +1984,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f32->str/strict",
+  #|  "polars": "s.cast(pl.String, strict=True)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -1955,6 +2020,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f32->str/lenient",
+  #|  "polars": "s.cast(pl.String, strict=False)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -1992,6 +2058,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "f32->date/strict",
   #|  "message": "conversion from `f32` to `date` failed in column 'a' for 4 out of 9 values: [3.4000e38, NaN, … -inf]",
+  #|  "polars": "s.cast(pl.Date, strict=True)",
   #|  "strict": true,
   #|  "to": "date"
   #| },
@@ -2012,6 +2079,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f32->date/lenient",
+  #|  "polars": "s.cast(pl.Date, strict=False)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -2049,6 +2117,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "f32->datetime[μs]/strict",
   #|  "message": "conversion from `f32` to `datetime[μs]` failed in column 'a' for 4 out of 9 values: [3.4000e38, NaN, … -inf]",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=True)",
   #|  "strict": true,
   #|  "to": "datetime[μs]"
   #| },
@@ -2069,6 +2138,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f32->datetime[μs]/lenient",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=False)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -2106,6 +2176,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "f32->null/strict",
   #|  "message": "conversion from `f32` to `null` failed in column 'a' for 8 out of 9 values: [0.0, -0.0, … -inf]",
+  #|  "polars": "s.cast(pl.Null, strict=True)",
   #|  "strict": true,
   #|  "to": "null"
   #| },
@@ -2126,6 +2197,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f32->null/lenient",
+  #|  "polars": "s.cast(pl.Null, strict=False)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -2170,6 +2242,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f64->bool/strict",
+  #|  "polars": "s.cast(pl.Boolean, strict=True)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -2223,6 +2296,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f64->bool/lenient",
+  #|  "polars": "s.cast(pl.Boolean, strict=False)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -2278,6 +2352,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "f64->i32/strict",
   #|  "message": "conversion from `f64` to `i32` failed in column 'a' for 9 out of 18 values: [1.0000e20, 1.0000e300, … 9.2234e18]",
+  #|  "polars": "s.cast(pl.Int32, strict=True)",
   #|  "strict": true,
   #|  "to": "i32"
   #| },
@@ -2307,6 +2382,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f64->i32/lenient",
+  #|  "polars": "s.cast(pl.Int32, strict=False)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -2362,6 +2438,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "f64->i64/strict",
   #|  "message": "conversion from `f64` to `i64` failed in column 'a' for 6 out of 18 values: [1.0000e20, 1.0000e300, … 9.2234e18]",
+  #|  "polars": "s.cast(pl.Int64, strict=True)",
   #|  "strict": true,
   #|  "to": "i64"
   #| },
@@ -2391,6 +2468,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f64->i64/lenient",
+  #|  "polars": "s.cast(pl.Int64, strict=False)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -2444,6 +2522,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f64->f32/strict",
+  #|  "polars": "s.cast(pl.Float32, strict=True)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -2497,6 +2576,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f64->f32/lenient",
+  #|  "polars": "s.cast(pl.Float32, strict=False)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -2550,6 +2630,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f64->f64/strict",
+  #|  "polars": "s.cast(pl.Float64, strict=True)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -2603,6 +2684,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f64->f64/lenient",
+  #|  "polars": "s.cast(pl.Float64, strict=False)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -2656,6 +2738,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f64->str/strict",
+  #|  "polars": "s.cast(pl.String, strict=True)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -2709,6 +2792,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f64->str/lenient",
+  #|  "polars": "s.cast(pl.String, strict=False)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -2764,6 +2848,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "f64->date/strict",
   #|  "message": "conversion from `f64` to `date` failed in column 'a' for 9 out of 18 values: [1.0000e20, 1.0000e300, … 9.2234e18]",
+  #|  "polars": "s.cast(pl.Date, strict=True)",
   #|  "strict": true,
   #|  "to": "date"
   #| },
@@ -2793,6 +2878,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f64->date/lenient",
+  #|  "polars": "s.cast(pl.Date, strict=False)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -2848,6 +2934,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "f64->datetime[μs]/strict",
   #|  "message": "conversion from `f64` to `datetime[μs]` failed in column 'a' for 6 out of 18 values: [1.0000e20, 1.0000e300, … 9.2234e18]",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=True)",
   #|  "strict": true,
   #|  "to": "datetime[μs]"
   #| },
@@ -2877,6 +2964,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f64->datetime[μs]/lenient",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=False)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -2932,6 +3020,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "f64->null/strict",
   #|  "message": "conversion from `f64` to `null` failed in column 'a' for 17 out of 18 values: [0.0, -0.0, … inf]",
+  #|  "polars": "s.cast(pl.Null, strict=True)",
   #|  "strict": true,
   #|  "to": "null"
   #| },
@@ -2961,6 +3050,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f64->null/lenient",
+  #|  "polars": "s.cast(pl.Null, strict=False)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -3062,6 +3152,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "str->bool/strict",
   #|  "message": "casting from Utf8View to Boolean not supported",
+  #|  "polars": "s.cast(pl.Boolean, strict=True)",
   #|  "strict": true,
   #|  "to": "bool"
   #| },
@@ -3139,6 +3230,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "str->bool/lenient",
   #|  "message": "casting from Utf8View to Boolean not supported",
+  #|  "polars": "s.cast(pl.Boolean, strict=False)",
   #|  "strict": false,
   #|  "to": "bool"
   #| },
@@ -3216,6 +3308,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "str->i32/strict",
   #|  "message": "conversion from `str` to `i32` failed in column 'a' for 59 out of 64 values: [\" 3\", \"1.5\", … \"abc\"]",
+  #|  "polars": "s.cast(pl.Int32, strict=True)",
   #|  "strict": true,
   #|  "to": "i32"
   #| },
@@ -3291,6 +3384,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "str->i32/lenient",
+  #|  "polars": "s.cast(pl.Int32, strict=False)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -3438,6 +3532,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "str->i64/strict",
   #|  "message": "conversion from `str` to `i64` failed in column 'a' for 59 out of 64 values: [\" 3\", \"1.5\", … \"abc\"]",
+  #|  "polars": "s.cast(pl.Int64, strict=True)",
   #|  "strict": true,
   #|  "to": "i64"
   #| },
@@ -3513,6 +3608,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "str->i64/lenient",
+  #|  "polars": "s.cast(pl.Int64, strict=False)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -3660,6 +3756,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "str->f32/strict",
   #|  "message": "conversion from `str` to `f32` failed in column 'a' for 9 out of 64 values: [\" 3\", \"true\", … \"\"]",
+  #|  "polars": "s.cast(pl.Float32, strict=True)",
   #|  "strict": true,
   #|  "to": "f32"
   #| },
@@ -3735,6 +3832,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "str->f32/lenient",
+  #|  "polars": "s.cast(pl.Float32, strict=False)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -3882,6 +3980,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "str->f64/strict",
   #|  "message": "conversion from `str` to `f64` failed in column 'a' for 9 out of 64 values: [\" 3\", \"true\", … \"\"]",
+  #|  "polars": "s.cast(pl.Float64, strict=True)",
   #|  "strict": true,
   #|  "to": "f64"
   #| },
@@ -3957,6 +4056,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "str->f64/lenient",
+  #|  "polars": "s.cast(pl.Float64, strict=False)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -4102,6 +4202,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "str->str/strict",
+  #|  "polars": "s.cast(pl.String, strict=True)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -4247,6 +4348,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "str->str/lenient",
+  #|  "polars": "s.cast(pl.String, strict=False)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -4394,6 +4496,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "str->date/strict",
   #|  "message": "casting from string to date is not supported.",
+  #|  "polars": "s.cast(pl.Date, strict=True)",
   #|  "strict": true,
   #|  "to": "date"
   #| },
@@ -4471,6 +4574,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "str->date/lenient",
   #|  "message": "casting from string to date is not supported.",
+  #|  "polars": "s.cast(pl.Date, strict=False)",
   #|  "strict": false,
   #|  "to": "date"
   #| },
@@ -4548,6 +4652,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "str->datetime[μs]/strict",
   #|  "message": "casting from string to datetime is not supported.",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=True)",
   #|  "strict": true,
   #|  "to": "datetime[μs]"
   #| },
@@ -4625,6 +4730,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "str->datetime[μs]/lenient",
   #|  "message": "casting from string to datetime is not supported.",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=False)",
   #|  "strict": false,
   #|  "to": "datetime[μs]"
   #| },
@@ -4702,6 +4808,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "str->null/strict",
   #|  "message": "conversion from `str` to `null` failed in column 'a' for 63 out of 64 values: [\"1\", \"-7\", … \"2024-01-01 12:34:56\"]",
+  #|  "polars": "s.cast(pl.Null, strict=True)",
   #|  "strict": true,
   #|  "to": "null"
   #| },
@@ -4777,6 +4884,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "str->null/lenient",
+  #|  "polars": "s.cast(pl.Null, strict=False)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -4870,6 +4978,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "date->bool/strict",
   #|  "message": "casting from Date to Boolean not supported",
+  #|  "polars": "s.cast(pl.Boolean, strict=True)",
   #|  "strict": true,
   #|  "to": "bool"
   #| },
@@ -4893,6 +5002,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "date->bool/lenient",
   #|  "message": "casting from Date to Boolean not supported",
+  #|  "polars": "s.cast(pl.Boolean, strict=False)",
   #|  "strict": false,
   #|  "to": "bool"
   #| },
@@ -4914,6 +5024,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "date->i32/strict",
+  #|  "polars": "s.cast(pl.Int32, strict=True)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -4951,6 +5062,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "date->i32/lenient",
+  #|  "polars": "s.cast(pl.Int32, strict=False)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -4988,6 +5100,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "date->i64/strict",
+  #|  "polars": "s.cast(pl.Int64, strict=True)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -5025,6 +5138,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "date->i64/lenient",
+  #|  "polars": "s.cast(pl.Int64, strict=False)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -5062,6 +5176,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "date->f32/strict",
+  #|  "polars": "s.cast(pl.Float32, strict=True)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -5099,6 +5214,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "date->f32/lenient",
+  #|  "polars": "s.cast(pl.Float32, strict=False)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -5136,6 +5252,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "date->f64/strict",
+  #|  "polars": "s.cast(pl.Float64, strict=True)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -5173,6 +5290,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "date->f64/lenient",
+  #|  "polars": "s.cast(pl.Float64, strict=False)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -5212,6 +5330,7 @@ let golden_cast : String =
   #|   "-106751991",
   #|   "-106751992"
   #|  ],
+  #|  "polars": "s.cast(pl.String, strict=True)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -5247,6 +5366,7 @@ let golden_cast : String =
   #|   "-106751991",
   #|   "-106751992"
   #|  ],
+  #|  "polars": "s.cast(pl.String, strict=False)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -5280,6 +5400,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "date->date/strict",
+  #|  "polars": "s.cast(pl.Date, strict=True)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -5317,6 +5438,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "date->date/lenient",
+  #|  "polars": "s.cast(pl.Date, strict=False)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -5356,6 +5478,7 @@ let golden_cast : String =
   #|   "106751992",
   #|   "-106751992"
   #|  ],
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=True)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -5391,6 +5514,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "date->datetime[μs]/lenient",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=False)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -5430,6 +5554,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "date->null/strict",
   #|  "message": "casting from Date to Null not supported",
+  #|  "polars": "s.cast(pl.Null, strict=True)",
   #|  "strict": true,
   #|  "to": "null"
   #| },
@@ -5453,6 +5578,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "date->null/lenient",
   #|  "message": "casting from Date to Null not supported",
+  #|  "polars": "s.cast(pl.Null, strict=False)",
   #|  "strict": false,
   #|  "to": "null"
   #| },
@@ -5473,6 +5599,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "datetime[μs]->bool/strict",
   #|  "message": "casting from Datetime('μs') to Boolean not supported",
+  #|  "polars": "s.cast(pl.Boolean, strict=True)",
   #|  "strict": true,
   #|  "to": "bool"
   #| },
@@ -5493,6 +5620,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "datetime[μs]->bool/lenient",
   #|  "message": "casting from Datetime('μs') to Boolean not supported",
+  #|  "polars": "s.cast(pl.Boolean, strict=False)",
   #|  "strict": false,
   #|  "to": "bool"
   #| },
@@ -5513,6 +5641,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "datetime[μs]->i32/strict",
   #|  "message": "conversion from `datetime[μs]` to `i32` failed in column 'a' for 4 out of 7 values: [2024-02-29 12:34:56.123456, 1970-01-01 23:59:59.999999, … +38504-08-18 16:35:26.323713]",
+  #|  "polars": "s.cast(pl.Int32, strict=True)",
   #|  "strict": true,
   #|  "to": "i32"
   #| },
@@ -5531,6 +5660,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "datetime[μs]->i32/lenient",
+  #|  "polars": "s.cast(pl.Int32, strict=False)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -5562,6 +5692,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "datetime[μs]->i64/strict",
+  #|  "polars": "s.cast(pl.Int64, strict=True)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -5593,6 +5724,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "datetime[μs]->i64/lenient",
+  #|  "polars": "s.cast(pl.Int64, strict=False)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -5624,6 +5756,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "datetime[μs]->f32/strict",
+  #|  "polars": "s.cast(pl.Float32, strict=True)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -5655,6 +5788,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "datetime[μs]->f32/lenient",
+  #|  "polars": "s.cast(pl.Float32, strict=False)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -5686,6 +5820,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "datetime[μs]->f64/strict",
+  #|  "polars": "s.cast(pl.Float64, strict=True)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -5717,6 +5852,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "datetime[μs]->f64/lenient",
+  #|  "polars": "s.cast(pl.Float64, strict=False)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -5748,6 +5884,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "datetime[μs]->str/strict",
+  #|  "polars": "s.cast(pl.String, strict=True)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -5779,6 +5916,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "datetime[μs]->str/lenient",
+  #|  "polars": "s.cast(pl.String, strict=False)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -5810,6 +5948,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "datetime[μs]->date/strict",
+  #|  "polars": "s.cast(pl.Date, strict=True)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -5841,6 +5980,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "datetime[μs]->date/lenient",
+  #|  "polars": "s.cast(pl.Date, strict=False)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -5872,6 +6012,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "datetime[μs]->datetime[μs]/strict",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=True)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -5903,6 +6044,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "datetime[μs]->datetime[μs]/lenient",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=False)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -5936,6 +6078,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "datetime[μs]->null/strict",
   #|  "message": "casting from Datetime('μs') to Null not supported",
+  #|  "polars": "s.cast(pl.Null, strict=True)",
   #|  "strict": true,
   #|  "to": "null"
   #| },
@@ -5956,6 +6099,7 @@ let golden_cast : String =
   #|  },
   #|  "id": "datetime[μs]->null/lenient",
   #|  "message": "casting from Datetime('μs') to Null not supported",
+  #|  "polars": "s.cast(pl.Null, strict=False)",
   #|  "strict": false,
   #|  "to": "null"
   #| },
@@ -5969,6 +6113,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "null->bool/strict",
+  #|  "polars": "s.cast(pl.Boolean, strict=True)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -5990,6 +6135,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "null->bool/lenient",
+  #|  "polars": "s.cast(pl.Boolean, strict=False)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -6011,6 +6157,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "null->i32/strict",
+  #|  "polars": "s.cast(pl.Int32, strict=True)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -6032,6 +6179,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "null->i32/lenient",
+  #|  "polars": "s.cast(pl.Int32, strict=False)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -6053,6 +6201,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "null->i64/strict",
+  #|  "polars": "s.cast(pl.Int64, strict=True)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -6074,6 +6223,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "null->i64/lenient",
+  #|  "polars": "s.cast(pl.Int64, strict=False)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -6095,6 +6245,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "null->f32/strict",
+  #|  "polars": "s.cast(pl.Float32, strict=True)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -6116,6 +6267,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "null->f32/lenient",
+  #|  "polars": "s.cast(pl.Float32, strict=False)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -6137,6 +6289,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "null->f64/strict",
+  #|  "polars": "s.cast(pl.Float64, strict=True)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -6158,6 +6311,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "null->f64/lenient",
+  #|  "polars": "s.cast(pl.Float64, strict=False)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -6179,6 +6333,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "null->str/strict",
+  #|  "polars": "s.cast(pl.String, strict=True)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -6200,6 +6355,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "null->str/lenient",
+  #|  "polars": "s.cast(pl.String, strict=False)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -6221,6 +6377,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "null->date/strict",
+  #|  "polars": "s.cast(pl.Date, strict=True)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -6242,6 +6399,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "null->date/lenient",
+  #|  "polars": "s.cast(pl.Date, strict=False)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -6263,6 +6421,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "null->datetime[μs]/strict",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=True)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -6284,6 +6443,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "null->datetime[μs]/lenient",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=False)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -6305,6 +6465,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "null->null/strict",
+  #|  "polars": "s.cast(pl.Null, strict=True)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -6326,6 +6487,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "null->null/lenient",
+  #|  "polars": "s.cast(pl.Null, strict=False)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -6344,6 +6506,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "bool[empty]->bool/strict",
+  #|  "polars": "s.cast(pl.Boolean, strict=True)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -6359,6 +6522,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "bool[empty]->bool/lenient",
+  #|  "polars": "s.cast(pl.Boolean, strict=False)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -6374,6 +6538,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "bool[empty]->i32/strict",
+  #|  "polars": "s.cast(pl.Int32, strict=True)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -6389,6 +6554,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "bool[empty]->i32/lenient",
+  #|  "polars": "s.cast(pl.Int32, strict=False)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -6404,6 +6570,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "bool[empty]->i64/strict",
+  #|  "polars": "s.cast(pl.Int64, strict=True)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -6419,6 +6586,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "bool[empty]->i64/lenient",
+  #|  "polars": "s.cast(pl.Int64, strict=False)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -6434,6 +6602,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "bool[empty]->f32/strict",
+  #|  "polars": "s.cast(pl.Float32, strict=True)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -6449,6 +6618,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "bool[empty]->f32/lenient",
+  #|  "polars": "s.cast(pl.Float32, strict=False)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -6464,6 +6634,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "bool[empty]->f64/strict",
+  #|  "polars": "s.cast(pl.Float64, strict=True)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -6479,6 +6650,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "bool[empty]->f64/lenient",
+  #|  "polars": "s.cast(pl.Float64, strict=False)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -6494,6 +6666,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "bool[empty]->str/strict",
+  #|  "polars": "s.cast(pl.String, strict=True)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -6509,6 +6682,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "bool[empty]->str/lenient",
+  #|  "polars": "s.cast(pl.String, strict=False)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -6524,6 +6698,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "bool[empty]->date/strict",
+  #|  "polars": "s.cast(pl.Date, strict=True)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -6539,6 +6714,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "bool[empty]->date/lenient",
+  #|  "polars": "s.cast(pl.Date, strict=False)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -6554,6 +6730,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "bool[empty]->datetime[μs]/strict",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=True)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -6569,6 +6746,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "bool[empty]->datetime[μs]/lenient",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=False)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -6584,6 +6762,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "bool[empty]->null/strict",
+  #|  "polars": "s.cast(pl.Null, strict=True)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -6599,6 +6778,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "bool[empty]->null/lenient",
+  #|  "polars": "s.cast(pl.Null, strict=False)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -6618,6 +6798,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool[all-null]->bool/strict",
+  #|  "polars": "s.cast(pl.Boolean, strict=True)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -6641,6 +6822,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool[all-null]->bool/lenient",
+  #|  "polars": "s.cast(pl.Boolean, strict=False)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -6664,6 +6846,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool[all-null]->i32/strict",
+  #|  "polars": "s.cast(pl.Int32, strict=True)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -6687,6 +6870,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool[all-null]->i32/lenient",
+  #|  "polars": "s.cast(pl.Int32, strict=False)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -6710,6 +6894,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool[all-null]->i64/strict",
+  #|  "polars": "s.cast(pl.Int64, strict=True)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -6733,6 +6918,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool[all-null]->i64/lenient",
+  #|  "polars": "s.cast(pl.Int64, strict=False)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -6756,6 +6942,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool[all-null]->f32/strict",
+  #|  "polars": "s.cast(pl.Float32, strict=True)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -6779,6 +6966,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool[all-null]->f32/lenient",
+  #|  "polars": "s.cast(pl.Float32, strict=False)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -6802,6 +6990,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool[all-null]->f64/strict",
+  #|  "polars": "s.cast(pl.Float64, strict=True)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -6825,6 +7014,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool[all-null]->f64/lenient",
+  #|  "polars": "s.cast(pl.Float64, strict=False)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -6848,6 +7038,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool[all-null]->str/strict",
+  #|  "polars": "s.cast(pl.String, strict=True)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -6871,6 +7062,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool[all-null]->str/lenient",
+  #|  "polars": "s.cast(pl.String, strict=False)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -6894,6 +7086,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool[all-null]->date/strict",
+  #|  "polars": "s.cast(pl.Date, strict=True)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -6917,6 +7110,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool[all-null]->date/lenient",
+  #|  "polars": "s.cast(pl.Date, strict=False)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -6940,6 +7134,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool[all-null]->datetime[μs]/strict",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=True)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -6963,6 +7158,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool[all-null]->datetime[μs]/lenient",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=False)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -6986,6 +7182,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool[all-null]->null/strict",
+  #|  "polars": "s.cast(pl.Null, strict=True)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -7009,6 +7206,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "bool[all-null]->null/lenient",
+  #|  "polars": "s.cast(pl.Null, strict=False)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -7028,6 +7226,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i32[empty]->bool/strict",
+  #|  "polars": "s.cast(pl.Boolean, strict=True)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -7043,6 +7242,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i32[empty]->bool/lenient",
+  #|  "polars": "s.cast(pl.Boolean, strict=False)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -7058,6 +7258,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i32[empty]->i32/strict",
+  #|  "polars": "s.cast(pl.Int32, strict=True)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -7073,6 +7274,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i32[empty]->i32/lenient",
+  #|  "polars": "s.cast(pl.Int32, strict=False)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -7088,6 +7290,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i32[empty]->i64/strict",
+  #|  "polars": "s.cast(pl.Int64, strict=True)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -7103,6 +7306,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i32[empty]->i64/lenient",
+  #|  "polars": "s.cast(pl.Int64, strict=False)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -7118,6 +7322,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i32[empty]->f32/strict",
+  #|  "polars": "s.cast(pl.Float32, strict=True)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -7133,6 +7338,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i32[empty]->f32/lenient",
+  #|  "polars": "s.cast(pl.Float32, strict=False)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -7148,6 +7354,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i32[empty]->f64/strict",
+  #|  "polars": "s.cast(pl.Float64, strict=True)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -7163,6 +7370,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i32[empty]->f64/lenient",
+  #|  "polars": "s.cast(pl.Float64, strict=False)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -7178,6 +7386,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i32[empty]->str/strict",
+  #|  "polars": "s.cast(pl.String, strict=True)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -7193,6 +7402,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i32[empty]->str/lenient",
+  #|  "polars": "s.cast(pl.String, strict=False)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -7208,6 +7418,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i32[empty]->date/strict",
+  #|  "polars": "s.cast(pl.Date, strict=True)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -7223,6 +7434,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i32[empty]->date/lenient",
+  #|  "polars": "s.cast(pl.Date, strict=False)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -7238,6 +7450,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i32[empty]->datetime[μs]/strict",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=True)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -7253,6 +7466,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i32[empty]->datetime[μs]/lenient",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=False)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -7268,6 +7482,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i32[empty]->null/strict",
+  #|  "polars": "s.cast(pl.Null, strict=True)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -7283,6 +7498,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i32[empty]->null/lenient",
+  #|  "polars": "s.cast(pl.Null, strict=False)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -7302,6 +7518,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32[all-null]->bool/strict",
+  #|  "polars": "s.cast(pl.Boolean, strict=True)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -7325,6 +7542,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32[all-null]->bool/lenient",
+  #|  "polars": "s.cast(pl.Boolean, strict=False)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -7348,6 +7566,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32[all-null]->i32/strict",
+  #|  "polars": "s.cast(pl.Int32, strict=True)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -7371,6 +7590,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32[all-null]->i32/lenient",
+  #|  "polars": "s.cast(pl.Int32, strict=False)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -7394,6 +7614,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32[all-null]->i64/strict",
+  #|  "polars": "s.cast(pl.Int64, strict=True)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -7417,6 +7638,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32[all-null]->i64/lenient",
+  #|  "polars": "s.cast(pl.Int64, strict=False)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -7440,6 +7662,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32[all-null]->f32/strict",
+  #|  "polars": "s.cast(pl.Float32, strict=True)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -7463,6 +7686,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32[all-null]->f32/lenient",
+  #|  "polars": "s.cast(pl.Float32, strict=False)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -7486,6 +7710,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32[all-null]->f64/strict",
+  #|  "polars": "s.cast(pl.Float64, strict=True)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -7509,6 +7734,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32[all-null]->f64/lenient",
+  #|  "polars": "s.cast(pl.Float64, strict=False)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -7532,6 +7758,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32[all-null]->str/strict",
+  #|  "polars": "s.cast(pl.String, strict=True)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -7555,6 +7782,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32[all-null]->str/lenient",
+  #|  "polars": "s.cast(pl.String, strict=False)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -7578,6 +7806,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32[all-null]->date/strict",
+  #|  "polars": "s.cast(pl.Date, strict=True)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -7601,6 +7830,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32[all-null]->date/lenient",
+  #|  "polars": "s.cast(pl.Date, strict=False)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -7624,6 +7854,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32[all-null]->datetime[μs]/strict",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=True)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -7647,6 +7878,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32[all-null]->datetime[μs]/lenient",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=False)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -7670,6 +7902,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32[all-null]->null/strict",
+  #|  "polars": "s.cast(pl.Null, strict=True)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -7693,6 +7926,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i32[all-null]->null/lenient",
+  #|  "polars": "s.cast(pl.Null, strict=False)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -7712,6 +7946,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i64[empty]->bool/strict",
+  #|  "polars": "s.cast(pl.Boolean, strict=True)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -7727,6 +7962,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i64[empty]->bool/lenient",
+  #|  "polars": "s.cast(pl.Boolean, strict=False)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -7742,6 +7978,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i64[empty]->i32/strict",
+  #|  "polars": "s.cast(pl.Int32, strict=True)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -7757,6 +7994,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i64[empty]->i32/lenient",
+  #|  "polars": "s.cast(pl.Int32, strict=False)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -7772,6 +8010,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i64[empty]->i64/strict",
+  #|  "polars": "s.cast(pl.Int64, strict=True)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -7787,6 +8026,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i64[empty]->i64/lenient",
+  #|  "polars": "s.cast(pl.Int64, strict=False)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -7802,6 +8042,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i64[empty]->f32/strict",
+  #|  "polars": "s.cast(pl.Float32, strict=True)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -7817,6 +8058,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i64[empty]->f32/lenient",
+  #|  "polars": "s.cast(pl.Float32, strict=False)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -7832,6 +8074,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i64[empty]->f64/strict",
+  #|  "polars": "s.cast(pl.Float64, strict=True)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -7847,6 +8090,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i64[empty]->f64/lenient",
+  #|  "polars": "s.cast(pl.Float64, strict=False)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -7862,6 +8106,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i64[empty]->str/strict",
+  #|  "polars": "s.cast(pl.String, strict=True)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -7877,6 +8122,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i64[empty]->str/lenient",
+  #|  "polars": "s.cast(pl.String, strict=False)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -7892,6 +8138,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i64[empty]->date/strict",
+  #|  "polars": "s.cast(pl.Date, strict=True)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -7907,6 +8154,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i64[empty]->date/lenient",
+  #|  "polars": "s.cast(pl.Date, strict=False)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -7922,6 +8170,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i64[empty]->datetime[μs]/strict",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=True)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -7937,6 +8186,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i64[empty]->datetime[μs]/lenient",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=False)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -7952,6 +8202,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i64[empty]->null/strict",
+  #|  "polars": "s.cast(pl.Null, strict=True)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -7967,6 +8218,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "i64[empty]->null/lenient",
+  #|  "polars": "s.cast(pl.Null, strict=False)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -7986,6 +8238,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i64[all-null]->bool/strict",
+  #|  "polars": "s.cast(pl.Boolean, strict=True)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -8009,6 +8262,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i64[all-null]->bool/lenient",
+  #|  "polars": "s.cast(pl.Boolean, strict=False)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -8032,6 +8286,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i64[all-null]->i32/strict",
+  #|  "polars": "s.cast(pl.Int32, strict=True)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -8055,6 +8310,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i64[all-null]->i32/lenient",
+  #|  "polars": "s.cast(pl.Int32, strict=False)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -8078,6 +8334,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i64[all-null]->i64/strict",
+  #|  "polars": "s.cast(pl.Int64, strict=True)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -8101,6 +8358,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i64[all-null]->i64/lenient",
+  #|  "polars": "s.cast(pl.Int64, strict=False)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -8124,6 +8382,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i64[all-null]->f32/strict",
+  #|  "polars": "s.cast(pl.Float32, strict=True)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -8147,6 +8406,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i64[all-null]->f32/lenient",
+  #|  "polars": "s.cast(pl.Float32, strict=False)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -8170,6 +8430,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i64[all-null]->f64/strict",
+  #|  "polars": "s.cast(pl.Float64, strict=True)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -8193,6 +8454,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i64[all-null]->f64/lenient",
+  #|  "polars": "s.cast(pl.Float64, strict=False)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -8216,6 +8478,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i64[all-null]->str/strict",
+  #|  "polars": "s.cast(pl.String, strict=True)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -8239,6 +8502,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i64[all-null]->str/lenient",
+  #|  "polars": "s.cast(pl.String, strict=False)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -8262,6 +8526,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i64[all-null]->date/strict",
+  #|  "polars": "s.cast(pl.Date, strict=True)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -8285,6 +8550,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i64[all-null]->date/lenient",
+  #|  "polars": "s.cast(pl.Date, strict=False)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -8308,6 +8574,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i64[all-null]->datetime[μs]/strict",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=True)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -8331,6 +8598,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i64[all-null]->datetime[μs]/lenient",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=False)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -8354,6 +8622,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i64[all-null]->null/strict",
+  #|  "polars": "s.cast(pl.Null, strict=True)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -8377,6 +8646,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "i64[all-null]->null/lenient",
+  #|  "polars": "s.cast(pl.Null, strict=False)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -8396,6 +8666,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f32[empty]->bool/strict",
+  #|  "polars": "s.cast(pl.Boolean, strict=True)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -8411,6 +8682,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f32[empty]->bool/lenient",
+  #|  "polars": "s.cast(pl.Boolean, strict=False)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -8426,6 +8698,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f32[empty]->i32/strict",
+  #|  "polars": "s.cast(pl.Int32, strict=True)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -8441,6 +8714,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f32[empty]->i32/lenient",
+  #|  "polars": "s.cast(pl.Int32, strict=False)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -8456,6 +8730,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f32[empty]->i64/strict",
+  #|  "polars": "s.cast(pl.Int64, strict=True)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -8471,6 +8746,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f32[empty]->i64/lenient",
+  #|  "polars": "s.cast(pl.Int64, strict=False)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -8486,6 +8762,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f32[empty]->f32/strict",
+  #|  "polars": "s.cast(pl.Float32, strict=True)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -8501,6 +8778,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f32[empty]->f32/lenient",
+  #|  "polars": "s.cast(pl.Float32, strict=False)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -8516,6 +8794,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f32[empty]->f64/strict",
+  #|  "polars": "s.cast(pl.Float64, strict=True)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -8531,6 +8810,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f32[empty]->f64/lenient",
+  #|  "polars": "s.cast(pl.Float64, strict=False)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -8546,6 +8826,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f32[empty]->str/strict",
+  #|  "polars": "s.cast(pl.String, strict=True)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -8561,6 +8842,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f32[empty]->str/lenient",
+  #|  "polars": "s.cast(pl.String, strict=False)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -8576,6 +8858,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f32[empty]->date/strict",
+  #|  "polars": "s.cast(pl.Date, strict=True)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -8591,6 +8874,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f32[empty]->date/lenient",
+  #|  "polars": "s.cast(pl.Date, strict=False)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -8606,6 +8890,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f32[empty]->datetime[μs]/strict",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=True)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -8621,6 +8906,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f32[empty]->datetime[μs]/lenient",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=False)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -8636,6 +8922,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f32[empty]->null/strict",
+  #|  "polars": "s.cast(pl.Null, strict=True)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -8651,6 +8938,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f32[empty]->null/lenient",
+  #|  "polars": "s.cast(pl.Null, strict=False)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -8670,6 +8958,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f32[all-null]->bool/strict",
+  #|  "polars": "s.cast(pl.Boolean, strict=True)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -8693,6 +8982,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f32[all-null]->bool/lenient",
+  #|  "polars": "s.cast(pl.Boolean, strict=False)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -8716,6 +9006,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f32[all-null]->i32/strict",
+  #|  "polars": "s.cast(pl.Int32, strict=True)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -8739,6 +9030,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f32[all-null]->i32/lenient",
+  #|  "polars": "s.cast(pl.Int32, strict=False)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -8762,6 +9054,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f32[all-null]->i64/strict",
+  #|  "polars": "s.cast(pl.Int64, strict=True)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -8785,6 +9078,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f32[all-null]->i64/lenient",
+  #|  "polars": "s.cast(pl.Int64, strict=False)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -8808,6 +9102,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f32[all-null]->f32/strict",
+  #|  "polars": "s.cast(pl.Float32, strict=True)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -8831,6 +9126,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f32[all-null]->f32/lenient",
+  #|  "polars": "s.cast(pl.Float32, strict=False)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -8854,6 +9150,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f32[all-null]->f64/strict",
+  #|  "polars": "s.cast(pl.Float64, strict=True)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -8877,6 +9174,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f32[all-null]->f64/lenient",
+  #|  "polars": "s.cast(pl.Float64, strict=False)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -8900,6 +9198,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f32[all-null]->str/strict",
+  #|  "polars": "s.cast(pl.String, strict=True)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -8923,6 +9222,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f32[all-null]->str/lenient",
+  #|  "polars": "s.cast(pl.String, strict=False)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -8946,6 +9246,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f32[all-null]->date/strict",
+  #|  "polars": "s.cast(pl.Date, strict=True)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -8969,6 +9270,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f32[all-null]->date/lenient",
+  #|  "polars": "s.cast(pl.Date, strict=False)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -8992,6 +9294,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f32[all-null]->datetime[μs]/strict",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=True)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -9015,6 +9318,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f32[all-null]->datetime[μs]/lenient",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=False)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -9038,6 +9342,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f32[all-null]->null/strict",
+  #|  "polars": "s.cast(pl.Null, strict=True)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -9061,6 +9366,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f32[all-null]->null/lenient",
+  #|  "polars": "s.cast(pl.Null, strict=False)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -9080,6 +9386,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f64[empty]->bool/strict",
+  #|  "polars": "s.cast(pl.Boolean, strict=True)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -9095,6 +9402,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f64[empty]->bool/lenient",
+  #|  "polars": "s.cast(pl.Boolean, strict=False)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -9110,6 +9418,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f64[empty]->i32/strict",
+  #|  "polars": "s.cast(pl.Int32, strict=True)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -9125,6 +9434,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f64[empty]->i32/lenient",
+  #|  "polars": "s.cast(pl.Int32, strict=False)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -9140,6 +9450,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f64[empty]->i64/strict",
+  #|  "polars": "s.cast(pl.Int64, strict=True)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -9155,6 +9466,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f64[empty]->i64/lenient",
+  #|  "polars": "s.cast(pl.Int64, strict=False)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -9170,6 +9482,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f64[empty]->f32/strict",
+  #|  "polars": "s.cast(pl.Float32, strict=True)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -9185,6 +9498,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f64[empty]->f32/lenient",
+  #|  "polars": "s.cast(pl.Float32, strict=False)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -9200,6 +9514,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f64[empty]->f64/strict",
+  #|  "polars": "s.cast(pl.Float64, strict=True)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -9215,6 +9530,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f64[empty]->f64/lenient",
+  #|  "polars": "s.cast(pl.Float64, strict=False)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -9230,6 +9546,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f64[empty]->str/strict",
+  #|  "polars": "s.cast(pl.String, strict=True)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -9245,6 +9562,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f64[empty]->str/lenient",
+  #|  "polars": "s.cast(pl.String, strict=False)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -9260,6 +9578,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f64[empty]->date/strict",
+  #|  "polars": "s.cast(pl.Date, strict=True)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -9275,6 +9594,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f64[empty]->date/lenient",
+  #|  "polars": "s.cast(pl.Date, strict=False)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -9290,6 +9610,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f64[empty]->datetime[μs]/strict",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=True)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -9305,6 +9626,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f64[empty]->datetime[μs]/lenient",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=False)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -9320,6 +9642,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f64[empty]->null/strict",
+  #|  "polars": "s.cast(pl.Null, strict=True)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -9335,6 +9658,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "f64[empty]->null/lenient",
+  #|  "polars": "s.cast(pl.Null, strict=False)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -9354,6 +9678,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f64[all-null]->bool/strict",
+  #|  "polars": "s.cast(pl.Boolean, strict=True)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -9377,6 +9702,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f64[all-null]->bool/lenient",
+  #|  "polars": "s.cast(pl.Boolean, strict=False)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -9400,6 +9726,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f64[all-null]->i32/strict",
+  #|  "polars": "s.cast(pl.Int32, strict=True)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -9423,6 +9750,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f64[all-null]->i32/lenient",
+  #|  "polars": "s.cast(pl.Int32, strict=False)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -9446,6 +9774,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f64[all-null]->i64/strict",
+  #|  "polars": "s.cast(pl.Int64, strict=True)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -9469,6 +9798,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f64[all-null]->i64/lenient",
+  #|  "polars": "s.cast(pl.Int64, strict=False)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -9492,6 +9822,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f64[all-null]->f32/strict",
+  #|  "polars": "s.cast(pl.Float32, strict=True)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -9515,6 +9846,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f64[all-null]->f32/lenient",
+  #|  "polars": "s.cast(pl.Float32, strict=False)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -9538,6 +9870,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f64[all-null]->f64/strict",
+  #|  "polars": "s.cast(pl.Float64, strict=True)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -9561,6 +9894,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f64[all-null]->f64/lenient",
+  #|  "polars": "s.cast(pl.Float64, strict=False)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -9584,6 +9918,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f64[all-null]->str/strict",
+  #|  "polars": "s.cast(pl.String, strict=True)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -9607,6 +9942,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f64[all-null]->str/lenient",
+  #|  "polars": "s.cast(pl.String, strict=False)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -9630,6 +9966,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f64[all-null]->date/strict",
+  #|  "polars": "s.cast(pl.Date, strict=True)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -9653,6 +9990,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f64[all-null]->date/lenient",
+  #|  "polars": "s.cast(pl.Date, strict=False)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -9676,6 +10014,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f64[all-null]->datetime[μs]/strict",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=True)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -9699,6 +10038,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f64[all-null]->datetime[μs]/lenient",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=False)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -9722,6 +10062,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f64[all-null]->null/strict",
+  #|  "polars": "s.cast(pl.Null, strict=True)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -9745,6 +10086,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "f64[all-null]->null/lenient",
+  #|  "polars": "s.cast(pl.Null, strict=False)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -9764,6 +10106,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "str[empty]->bool/strict",
+  #|  "polars": "s.cast(pl.Boolean, strict=True)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -9779,6 +10122,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "str[empty]->bool/lenient",
+  #|  "polars": "s.cast(pl.Boolean, strict=False)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -9794,6 +10138,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "str[empty]->i32/strict",
+  #|  "polars": "s.cast(pl.Int32, strict=True)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -9809,6 +10154,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "str[empty]->i32/lenient",
+  #|  "polars": "s.cast(pl.Int32, strict=False)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -9824,6 +10170,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "str[empty]->i64/strict",
+  #|  "polars": "s.cast(pl.Int64, strict=True)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -9839,6 +10186,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "str[empty]->i64/lenient",
+  #|  "polars": "s.cast(pl.Int64, strict=False)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -9854,6 +10202,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "str[empty]->f32/strict",
+  #|  "polars": "s.cast(pl.Float32, strict=True)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -9869,6 +10218,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "str[empty]->f32/lenient",
+  #|  "polars": "s.cast(pl.Float32, strict=False)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -9884,6 +10234,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "str[empty]->f64/strict",
+  #|  "polars": "s.cast(pl.Float64, strict=True)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -9899,6 +10250,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "str[empty]->f64/lenient",
+  #|  "polars": "s.cast(pl.Float64, strict=False)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -9914,6 +10266,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "str[empty]->str/strict",
+  #|  "polars": "s.cast(pl.String, strict=True)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -9929,6 +10282,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "str[empty]->str/lenient",
+  #|  "polars": "s.cast(pl.String, strict=False)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -9944,6 +10298,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "str[empty]->date/strict",
+  #|  "polars": "s.cast(pl.Date, strict=True)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -9959,6 +10314,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "str[empty]->date/lenient",
+  #|  "polars": "s.cast(pl.Date, strict=False)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -9974,6 +10330,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "str[empty]->datetime[μs]/strict",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=True)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -9989,6 +10346,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "str[empty]->datetime[μs]/lenient",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=False)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -10004,6 +10362,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "str[empty]->null/strict",
+  #|  "polars": "s.cast(pl.Null, strict=True)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -10019,6 +10378,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "str[empty]->null/lenient",
+  #|  "polars": "s.cast(pl.Null, strict=False)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -10038,6 +10398,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "str[all-null]->bool/strict",
+  #|  "polars": "s.cast(pl.Boolean, strict=True)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -10061,6 +10422,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "str[all-null]->bool/lenient",
+  #|  "polars": "s.cast(pl.Boolean, strict=False)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -10084,6 +10446,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "str[all-null]->i32/strict",
+  #|  "polars": "s.cast(pl.Int32, strict=True)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -10107,6 +10470,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "str[all-null]->i32/lenient",
+  #|  "polars": "s.cast(pl.Int32, strict=False)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -10130,6 +10494,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "str[all-null]->i64/strict",
+  #|  "polars": "s.cast(pl.Int64, strict=True)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -10153,6 +10518,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "str[all-null]->i64/lenient",
+  #|  "polars": "s.cast(pl.Int64, strict=False)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -10176,6 +10542,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "str[all-null]->f32/strict",
+  #|  "polars": "s.cast(pl.Float32, strict=True)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -10199,6 +10566,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "str[all-null]->f32/lenient",
+  #|  "polars": "s.cast(pl.Float32, strict=False)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -10222,6 +10590,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "str[all-null]->f64/strict",
+  #|  "polars": "s.cast(pl.Float64, strict=True)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -10245,6 +10614,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "str[all-null]->f64/lenient",
+  #|  "polars": "s.cast(pl.Float64, strict=False)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -10268,6 +10638,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "str[all-null]->str/strict",
+  #|  "polars": "s.cast(pl.String, strict=True)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -10291,6 +10662,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "str[all-null]->str/lenient",
+  #|  "polars": "s.cast(pl.String, strict=False)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -10314,6 +10686,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "str[all-null]->date/strict",
+  #|  "polars": "s.cast(pl.Date, strict=True)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -10337,6 +10710,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "str[all-null]->date/lenient",
+  #|  "polars": "s.cast(pl.Date, strict=False)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -10360,6 +10734,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "str[all-null]->datetime[μs]/strict",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=True)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -10383,6 +10758,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "str[all-null]->datetime[μs]/lenient",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=False)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -10406,6 +10782,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "str[all-null]->null/strict",
+  #|  "polars": "s.cast(pl.Null, strict=True)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -10429,6 +10806,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "str[all-null]->null/lenient",
+  #|  "polars": "s.cast(pl.Null, strict=False)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -10448,6 +10826,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "date[empty]->bool/strict",
+  #|  "polars": "s.cast(pl.Boolean, strict=True)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -10463,6 +10842,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "date[empty]->bool/lenient",
+  #|  "polars": "s.cast(pl.Boolean, strict=False)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -10478,6 +10858,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "date[empty]->i32/strict",
+  #|  "polars": "s.cast(pl.Int32, strict=True)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -10493,6 +10874,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "date[empty]->i32/lenient",
+  #|  "polars": "s.cast(pl.Int32, strict=False)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -10508,6 +10890,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "date[empty]->i64/strict",
+  #|  "polars": "s.cast(pl.Int64, strict=True)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -10523,6 +10906,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "date[empty]->i64/lenient",
+  #|  "polars": "s.cast(pl.Int64, strict=False)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -10538,6 +10922,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "date[empty]->f32/strict",
+  #|  "polars": "s.cast(pl.Float32, strict=True)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -10553,6 +10938,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "date[empty]->f32/lenient",
+  #|  "polars": "s.cast(pl.Float32, strict=False)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -10568,6 +10954,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "date[empty]->f64/strict",
+  #|  "polars": "s.cast(pl.Float64, strict=True)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -10583,6 +10970,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "date[empty]->f64/lenient",
+  #|  "polars": "s.cast(pl.Float64, strict=False)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -10598,6 +10986,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "date[empty]->str/strict",
+  #|  "polars": "s.cast(pl.String, strict=True)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -10613,6 +11002,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "date[empty]->str/lenient",
+  #|  "polars": "s.cast(pl.String, strict=False)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -10628,6 +11018,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "date[empty]->date/strict",
+  #|  "polars": "s.cast(pl.Date, strict=True)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -10643,6 +11034,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "date[empty]->date/lenient",
+  #|  "polars": "s.cast(pl.Date, strict=False)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -10658,6 +11050,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "date[empty]->datetime[μs]/strict",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=True)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -10673,6 +11066,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "date[empty]->datetime[μs]/lenient",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=False)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -10688,6 +11082,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "date[empty]->null/strict",
+  #|  "polars": "s.cast(pl.Null, strict=True)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -10703,6 +11098,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "date[empty]->null/lenient",
+  #|  "polars": "s.cast(pl.Null, strict=False)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -10722,6 +11118,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "date[all-null]->bool/strict",
+  #|  "polars": "s.cast(pl.Boolean, strict=True)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -10745,6 +11142,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "date[all-null]->bool/lenient",
+  #|  "polars": "s.cast(pl.Boolean, strict=False)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -10768,6 +11166,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "date[all-null]->i32/strict",
+  #|  "polars": "s.cast(pl.Int32, strict=True)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -10791,6 +11190,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "date[all-null]->i32/lenient",
+  #|  "polars": "s.cast(pl.Int32, strict=False)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -10814,6 +11214,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "date[all-null]->i64/strict",
+  #|  "polars": "s.cast(pl.Int64, strict=True)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -10837,6 +11238,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "date[all-null]->i64/lenient",
+  #|  "polars": "s.cast(pl.Int64, strict=False)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -10860,6 +11262,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "date[all-null]->f32/strict",
+  #|  "polars": "s.cast(pl.Float32, strict=True)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -10883,6 +11286,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "date[all-null]->f32/lenient",
+  #|  "polars": "s.cast(pl.Float32, strict=False)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -10906,6 +11310,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "date[all-null]->f64/strict",
+  #|  "polars": "s.cast(pl.Float64, strict=True)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -10929,6 +11334,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "date[all-null]->f64/lenient",
+  #|  "polars": "s.cast(pl.Float64, strict=False)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -10952,6 +11358,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "date[all-null]->str/strict",
+  #|  "polars": "s.cast(pl.String, strict=True)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -10975,6 +11382,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "date[all-null]->str/lenient",
+  #|  "polars": "s.cast(pl.String, strict=False)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -10998,6 +11406,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "date[all-null]->date/strict",
+  #|  "polars": "s.cast(pl.Date, strict=True)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -11021,6 +11430,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "date[all-null]->date/lenient",
+  #|  "polars": "s.cast(pl.Date, strict=False)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -11044,6 +11454,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "date[all-null]->datetime[μs]/strict",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=True)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -11067,6 +11478,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "date[all-null]->datetime[μs]/lenient",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=False)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -11090,6 +11502,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "date[all-null]->null/strict",
+  #|  "polars": "s.cast(pl.Null, strict=True)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -11113,6 +11526,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "date[all-null]->null/lenient",
+  #|  "polars": "s.cast(pl.Null, strict=False)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -11132,6 +11546,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "datetime[μs][empty]->bool/strict",
+  #|  "polars": "s.cast(pl.Boolean, strict=True)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -11147,6 +11562,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "datetime[μs][empty]->bool/lenient",
+  #|  "polars": "s.cast(pl.Boolean, strict=False)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -11162,6 +11578,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "datetime[μs][empty]->i32/strict",
+  #|  "polars": "s.cast(pl.Int32, strict=True)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -11177,6 +11594,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "datetime[μs][empty]->i32/lenient",
+  #|  "polars": "s.cast(pl.Int32, strict=False)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -11192,6 +11610,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "datetime[μs][empty]->i64/strict",
+  #|  "polars": "s.cast(pl.Int64, strict=True)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -11207,6 +11626,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "datetime[μs][empty]->i64/lenient",
+  #|  "polars": "s.cast(pl.Int64, strict=False)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -11222,6 +11642,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "datetime[μs][empty]->f32/strict",
+  #|  "polars": "s.cast(pl.Float32, strict=True)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -11237,6 +11658,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "datetime[μs][empty]->f32/lenient",
+  #|  "polars": "s.cast(pl.Float32, strict=False)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -11252,6 +11674,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "datetime[μs][empty]->f64/strict",
+  #|  "polars": "s.cast(pl.Float64, strict=True)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -11267,6 +11690,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "datetime[μs][empty]->f64/lenient",
+  #|  "polars": "s.cast(pl.Float64, strict=False)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -11282,6 +11706,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "datetime[μs][empty]->str/strict",
+  #|  "polars": "s.cast(pl.String, strict=True)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -11297,6 +11722,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "datetime[μs][empty]->str/lenient",
+  #|  "polars": "s.cast(pl.String, strict=False)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -11312,6 +11738,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "datetime[μs][empty]->date/strict",
+  #|  "polars": "s.cast(pl.Date, strict=True)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -11327,6 +11754,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "datetime[μs][empty]->date/lenient",
+  #|  "polars": "s.cast(pl.Date, strict=False)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -11342,6 +11770,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "datetime[μs][empty]->datetime[μs]/strict",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=True)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -11357,6 +11786,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "datetime[μs][empty]->datetime[μs]/lenient",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=False)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -11372,6 +11802,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "datetime[μs][empty]->null/strict",
+  #|  "polars": "s.cast(pl.Null, strict=True)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -11387,6 +11818,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "datetime[μs][empty]->null/lenient",
+  #|  "polars": "s.cast(pl.Null, strict=False)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -11406,6 +11838,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "datetime[μs][all-null]->bool/strict",
+  #|  "polars": "s.cast(pl.Boolean, strict=True)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -11429,6 +11862,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "datetime[μs][all-null]->bool/lenient",
+  #|  "polars": "s.cast(pl.Boolean, strict=False)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -11452,6 +11886,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "datetime[μs][all-null]->i32/strict",
+  #|  "polars": "s.cast(pl.Int32, strict=True)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -11475,6 +11910,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "datetime[μs][all-null]->i32/lenient",
+  #|  "polars": "s.cast(pl.Int32, strict=False)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -11498,6 +11934,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "datetime[μs][all-null]->i64/strict",
+  #|  "polars": "s.cast(pl.Int64, strict=True)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -11521,6 +11958,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "datetime[μs][all-null]->i64/lenient",
+  #|  "polars": "s.cast(pl.Int64, strict=False)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -11544,6 +11982,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "datetime[μs][all-null]->f32/strict",
+  #|  "polars": "s.cast(pl.Float32, strict=True)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -11567,6 +12006,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "datetime[μs][all-null]->f32/lenient",
+  #|  "polars": "s.cast(pl.Float32, strict=False)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -11590,6 +12030,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "datetime[μs][all-null]->f64/strict",
+  #|  "polars": "s.cast(pl.Float64, strict=True)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -11613,6 +12054,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "datetime[μs][all-null]->f64/lenient",
+  #|  "polars": "s.cast(pl.Float64, strict=False)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -11636,6 +12078,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "datetime[μs][all-null]->str/strict",
+  #|  "polars": "s.cast(pl.String, strict=True)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -11659,6 +12102,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "datetime[μs][all-null]->str/lenient",
+  #|  "polars": "s.cast(pl.String, strict=False)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -11682,6 +12126,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "datetime[μs][all-null]->date/strict",
+  #|  "polars": "s.cast(pl.Date, strict=True)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -11705,6 +12150,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "datetime[μs][all-null]->date/lenient",
+  #|  "polars": "s.cast(pl.Date, strict=False)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -11728,6 +12174,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "datetime[μs][all-null]->datetime[μs]/strict",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=True)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -11751,6 +12198,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "datetime[μs][all-null]->datetime[μs]/lenient",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=False)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -11774,6 +12222,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "datetime[μs][all-null]->null/strict",
+  #|  "polars": "s.cast(pl.Null, strict=True)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -11797,6 +12246,7 @@ let golden_cast : String =
   #|   ]
   #|  },
   #|  "id": "datetime[μs][all-null]->null/lenient",
+  #|  "polars": "s.cast(pl.Null, strict=False)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -11816,6 +12266,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "null[empty]->bool/strict",
+  #|  "polars": "s.cast(pl.Boolean, strict=True)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -11831,6 +12282,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "null[empty]->bool/lenient",
+  #|  "polars": "s.cast(pl.Boolean, strict=False)",
   #|  "result": {
   #|   "dtype": "bool",
   #|   "name": "a",
@@ -11846,6 +12298,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "null[empty]->i32/strict",
+  #|  "polars": "s.cast(pl.Int32, strict=True)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -11861,6 +12314,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "null[empty]->i32/lenient",
+  #|  "polars": "s.cast(pl.Int32, strict=False)",
   #|  "result": {
   #|   "dtype": "i32",
   #|   "name": "a",
@@ -11876,6 +12330,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "null[empty]->i64/strict",
+  #|  "polars": "s.cast(pl.Int64, strict=True)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -11891,6 +12346,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "null[empty]->i64/lenient",
+  #|  "polars": "s.cast(pl.Int64, strict=False)",
   #|  "result": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -11906,6 +12362,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "null[empty]->f32/strict",
+  #|  "polars": "s.cast(pl.Float32, strict=True)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -11921,6 +12378,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "null[empty]->f32/lenient",
+  #|  "polars": "s.cast(pl.Float32, strict=False)",
   #|  "result": {
   #|   "dtype": "f32",
   #|   "name": "a",
@@ -11936,6 +12394,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "null[empty]->f64/strict",
+  #|  "polars": "s.cast(pl.Float64, strict=True)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -11951,6 +12410,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "null[empty]->f64/lenient",
+  #|  "polars": "s.cast(pl.Float64, strict=False)",
   #|  "result": {
   #|   "dtype": "f64",
   #|   "name": "a",
@@ -11966,6 +12426,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "null[empty]->str/strict",
+  #|  "polars": "s.cast(pl.String, strict=True)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -11981,6 +12442,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "null[empty]->str/lenient",
+  #|  "polars": "s.cast(pl.String, strict=False)",
   #|  "result": {
   #|   "dtype": "str",
   #|   "name": "a",
@@ -11996,6 +12458,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "null[empty]->date/strict",
+  #|  "polars": "s.cast(pl.Date, strict=True)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -12011,6 +12474,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "null[empty]->date/lenient",
+  #|  "polars": "s.cast(pl.Date, strict=False)",
   #|  "result": {
   #|   "dtype": "date",
   #|   "name": "a",
@@ -12026,6 +12490,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "null[empty]->datetime[μs]/strict",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=True)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -12041,6 +12506,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "null[empty]->datetime[μs]/lenient",
+  #|  "polars": "s.cast(pl.Datetime(\"us\"), strict=False)",
   #|  "result": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "a",
@@ -12056,6 +12522,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "null[empty]->null/strict",
+  #|  "polars": "s.cast(pl.Null, strict=True)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",
@@ -12071,6 +12538,7 @@ let golden_cast : String =
   #|   "values": []
   #|  },
   #|  "id": "null[empty]->null/lenient",
+  #|  "polars": "s.cast(pl.Null, strict=False)",
   #|  "result": {
   #|   "dtype": "null",
   #|   "name": "a",

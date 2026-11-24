@@ -13,28 +13,29 @@ struct DataFrame {
 ///
 /// # Errors
 /// Raises `DuplicateColumn` when two columns share a name and
-/// `ShapeMismatch` when the columns differ in length.
+/// `ShapeMismatch` when the columns differ in length. The messages and the
+/// order of the two checks are those of `pl.DataFrame([series, ...])`:
+/// `could not create a new DataFrame: column with name 'a' has more than one
+/// occurrence` and `could not create a new DataFrame: height of column 'b'
+/// (2) does not match height of column 'a' (3)` (the first column is the
+/// reference). With up to four columns each column is checked in turn, its
+/// height first and then whether a later column has its name; with more, the
+/// columns are checked in turn for their height and then for an earlier column
+/// with the same name.
 pub fn DataFrame::new(columns : Array[Series]) -> DataFrame raise PolarsError {
-  let index : Map[String, Int32] = Map([])
-  let cols : Array[Series] = Array(capacity=columns.length())
-  for s in columns {
-    if index.contains(s.name()) {
-      raise DuplicateColumn(
-        "column with name '\{s.name()}' has more than one occurrence",
-      )
-    }
-    if cols.length() > 0 {
-      let first = cols[0]
-      if s.len() != first.len() {
-        raise ShapeMismatch(
-          "column '\{s.name()}' has length \{s.len()} but column '\{first.name()}' has length \{first.len()}",
-        )
-      }
-    }
-    index[s.name()] = cols.length()
-    cols.push(s)
+  if columns.length() > 0 {
+    let first = columns[0]
+    concat_validate_columns(
+      columns,
+      first.len(),
+      "height of column '\{first.name()}' (\{first.len()})",
+    )
   }
-  { cols, index, }
+  let index : Map[String, Int32] = Map([])
+  for i, s in columns {
+    index[s.name()] = i
+  }
+  { cols: columns.copy(), index, }
 }
 
 ///|
@@ -122,16 +123,18 @@ pub fn DataFrame::get_column_index(self : DataFrame, name : String) -> Int32? {
 }
 
 ///|
-/// The first `n` rows; a negative `n` drops the last `-n` rows instead.
-/// Same semantics as `Series::head`; never fails.
-pub fn DataFrame::head(self : DataFrame, n~ : Int32 = 10) -> DataFrame {
+/// The first `n` rows (default 5, as in polars; `Series::head` defaults to
+/// 10); a negative `n` drops the last `-n` rows instead. Same semantics as
+/// `Series::head`; never fails.
+pub fn DataFrame::head(self : DataFrame, n~ : Int32 = 5) -> DataFrame {
   DataFrame::from_valid(self.cols.map(s => s.head(n~)))
 }
 
 ///|
-/// The last `n` rows; a negative `n` drops the first `-n` rows instead.
-/// Same semantics as `Series::tail`; never fails.
-pub fn DataFrame::tail(self : DataFrame, n~ : Int32 = 10) -> DataFrame {
+/// The last `n` rows (default 5, as in polars; `Series::tail` defaults to
+/// 10); a negative `n` drops the first `-n` rows instead. Same semantics as
+/// `Series::tail`; never fails.
+pub fn DataFrame::tail(self : DataFrame, n~ : Int32 = 5) -> DataFrame {
   DataFrame::from_valid(self.cols.map(s => s.tail(n~)))
 }
 

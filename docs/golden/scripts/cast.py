@@ -85,6 +85,21 @@ SOURCES = {
 }
 
 
+# How each display name is spelled in polars (the `polars` field of a case).
+PL_SPELLING = {
+    "bool": "pl.Boolean",
+    "i32": "pl.Int32",
+    "i64": "pl.Int64",
+    "f32": "pl.Float32",
+    "f64": "pl.Float64",
+    "str": "pl.String",
+    "date": "pl.Date",
+    "datetime[μs]": 'pl.Datetime("us")',
+    "null": "pl.Null",
+}
+assert set(PL_SPELLING) == set(DTYPE_NAMES)
+
+
 def error_of(e):
     """(variant name, first line of the message): polars' `InvalidOperationError`
     is the variant `InvalidOperation`. Only the first line is the contract:
@@ -159,6 +174,7 @@ def main():
                 else:
                     case["result"] = encode_series(r)
                 case["id"] = f"{src_name}->{dst_name}/{'strict' if strict else 'lenient'}"
+                case["polars"] = f"s.cast({PL_SPELLING[dst_name]}, strict={strict})"
                 cases.append(case)
     emit("cast", cases)
     print(f"polars {pl.__version__}: wrote {len(cases)} cases")
