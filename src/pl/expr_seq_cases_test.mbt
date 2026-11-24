@@ -6,66 +6,66 @@ fn golden_expr_seq_cases_0(
   vs : Map[String, @pl.Series],
 ) -> Unit {
   ignore(vs)
-  m["shift/q/i32/1"] = [@pl.col("i32").shift(1)]
-  m["shift/q/i32/-2"] = [@pl.col("i32").shift(-2)]
-  m["shift/q/i32/0"] = [@pl.col("i32").shift(0)]
-  m["shift/q/i32/20"] = [@pl.col("i32").shift(20)]
+  m["shift/q/i32/1"] = [@pl.col("i32").shift(n=1)]
+  m["shift/q/i32/-2"] = [@pl.col("i32").shift(n=-2)]
+  m["shift/q/i32/0"] = [@pl.col("i32").shift(n=0)]
+  m["shift/q/i32/20"] = [@pl.col("i32").shift(n=20)]
   m["diff/q/i32/1"] = [@pl.col("i32").diff(n=1)]
   m["diff/q/i32/2"] = [@pl.col("i32").diff(n=2)]
   m["diff/q/i32/-1"] = [@pl.col("i32").diff(n=-1)]
-  m["shift/q/i64/1"] = [@pl.col("i64").shift(1)]
-  m["shift/q/i64/-2"] = [@pl.col("i64").shift(-2)]
-  m["shift/q/i64/0"] = [@pl.col("i64").shift(0)]
-  m["shift/q/i64/20"] = [@pl.col("i64").shift(20)]
+  m["shift/q/i64/1"] = [@pl.col("i64").shift(n=1)]
+  m["shift/q/i64/-2"] = [@pl.col("i64").shift(n=-2)]
+  m["shift/q/i64/0"] = [@pl.col("i64").shift(n=0)]
+  m["shift/q/i64/20"] = [@pl.col("i64").shift(n=20)]
   m["diff/q/i64/1"] = [@pl.col("i64").diff(n=1)]
   m["diff/q/i64/2"] = [@pl.col("i64").diff(n=2)]
   m["diff/q/i64/-1"] = [@pl.col("i64").diff(n=-1)]
-  m["shift/q/f32/1"] = [@pl.col("f32").shift(1)]
-  m["shift/q/f32/-2"] = [@pl.col("f32").shift(-2)]
-  m["shift/q/f32/0"] = [@pl.col("f32").shift(0)]
-  m["shift/q/f32/20"] = [@pl.col("f32").shift(20)]
+  m["shift/q/f32/1"] = [@pl.col("f32").shift(n=1)]
+  m["shift/q/f32/-2"] = [@pl.col("f32").shift(n=-2)]
+  m["shift/q/f32/0"] = [@pl.col("f32").shift(n=0)]
+  m["shift/q/f32/20"] = [@pl.col("f32").shift(n=20)]
   m["diff/q/f32/1"] = [@pl.col("f32").diff(n=1)]
   m["diff/q/f32/2"] = [@pl.col("f32").diff(n=2)]
   m["diff/q/f32/-1"] = [@pl.col("f32").diff(n=-1)]
-  m["shift/q/f64/1"] = [@pl.col("f64").shift(1)]
-  m["shift/q/f64/-2"] = [@pl.col("f64").shift(-2)]
-  m["shift/q/f64/0"] = [@pl.col("f64").shift(0)]
-  m["shift/q/f64/20"] = [@pl.col("f64").shift(20)]
+  m["shift/q/f64/1"] = [@pl.col("f64").shift(n=1)]
+  m["shift/q/f64/-2"] = [@pl.col("f64").shift(n=-2)]
+  m["shift/q/f64/0"] = [@pl.col("f64").shift(n=0)]
+  m["shift/q/f64/20"] = [@pl.col("f64").shift(n=20)]
   m["diff/q/f64/1"] = [@pl.col("f64").diff(n=1)]
   m["diff/q/f64/2"] = [@pl.col("f64").diff(n=2)]
   m["diff/q/f64/-1"] = [@pl.col("f64").diff(n=-1)]
-  m["shift/q/s/1"] = [@pl.col("s").shift(1)]
-  m["shift/q/s/-2"] = [@pl.col("s").shift(-2)]
-  m["shift/q/s/0"] = [@pl.col("s").shift(0)]
-  m["shift/q/s/20"] = [@pl.col("s").shift(20)]
+  m["shift/q/s/1"] = [@pl.col("s").shift(n=1)]
+  m["shift/q/s/-2"] = [@pl.col("s").shift(n=-2)]
+  m["shift/q/s/0"] = [@pl.col("s").shift(n=0)]
+  m["shift/q/s/20"] = [@pl.col("s").shift(n=20)]
   m["diff/q/s/1"] = [@pl.col("s").diff(n=1)]
   m["diff/q/s/2"] = [@pl.col("s").diff(n=2)]
   m["diff/q/s/-1"] = [@pl.col("s").diff(n=-1)]
-  m["shift/q/b/1"] = [@pl.col("b").shift(1)]
-  m["shift/q/b/-2"] = [@pl.col("b").shift(-2)]
-  m["shift/q/b/0"] = [@pl.col("b").shift(0)]
-  m["shift/q/b/20"] = [@pl.col("b").shift(20)]
+  m["shift/q/b/1"] = [@pl.col("b").shift(n=1)]
+  m["shift/q/b/-2"] = [@pl.col("b").shift(n=-2)]
+  m["shift/q/b/0"] = [@pl.col("b").shift(n=0)]
+  m["shift/q/b/20"] = [@pl.col("b").shift(n=20)]
   m["diff/q/b/1"] = [@pl.col("b").diff(n=1)]
   m["diff/q/b/2"] = [@pl.col("b").diff(n=2)]
   m["diff/q/b/-1"] = [@pl.col("b").diff(n=-1)]
-  m["shift/q/d/1"] = [@pl.col("d").shift(1)]
-  m["shift/q/d/-2"] = [@pl.col("d").shift(-2)]
-  m["shift/q/d/0"] = [@pl.col("d").shift(0)]
-  m["shift/q/d/20"] = [@pl.col("d").shift(20)]
+  m["shift/q/d/1"] = [@pl.col("d").shift(n=1)]
+  m["shift/q/d/-2"] = [@pl.col("d").shift(n=-2)]
+  m["shift/q/d/0"] = [@pl.col("d").shift(n=0)]
+  m["shift/q/d/20"] = [@pl.col("d").shift(n=20)]
   m["diff/q/d/1"] = [@pl.col("d").diff(n=1)]
   m["diff/q/d/2"] = [@pl.col("d").diff(n=2)]
   m["diff/q/d/-1"] = [@pl.col("d").diff(n=-1)]
-  m["shift/q/dt/1"] = [@pl.col("dt").shift(1)]
-  m["shift/q/dt/-2"] = [@pl.col("dt").shift(-2)]
-  m["shift/q/dt/0"] = [@pl.col("dt").shift(0)]
-  m["shift/q/dt/20"] = [@pl.col("dt").shift(20)]
+  m["shift/q/dt/1"] = [@pl.col("dt").shift(n=1)]
+  m["shift/q/dt/-2"] = [@pl.col("dt").shift(n=-2)]
+  m["shift/q/dt/0"] = [@pl.col("dt").shift(n=0)]
+  m["shift/q/dt/20"] = [@pl.col("dt").shift(n=20)]
   m["diff/q/dt/1"] = [@pl.col("dt").diff(n=1)]
   m["diff/q/dt/2"] = [@pl.col("dt").diff(n=2)]
   m["diff/q/dt/-1"] = [@pl.col("dt").diff(n=-1)]
-  m["shift/q/n/1"] = [@pl.col("n").shift(1)]
-  m["shift/q/n/-2"] = [@pl.col("n").shift(-2)]
-  m["shift/q/n/0"] = [@pl.col("n").shift(0)]
-  m["shift/q/n/20"] = [@pl.col("n").shift(20)]
+  m["shift/q/n/1"] = [@pl.col("n").shift(n=1)]
+  m["shift/q/n/-2"] = [@pl.col("n").shift(n=-2)]
+  m["shift/q/n/0"] = [@pl.col("n").shift(n=0)]
+  m["shift/q/n/20"] = [@pl.col("n").shift(n=20)]
 }
 
 ///|
@@ -77,128 +77,128 @@ fn golden_expr_seq_cases_1(
   m["diff/q/n/1"] = [@pl.col("n").diff(n=1)]
   m["diff/q/n/2"] = [@pl.col("n").diff(n=2)]
   m["diff/q/n/-1"] = [@pl.col("n").diff(n=-1)]
-  m["shift/t/i32/1"] = [@pl.col("i32").shift(1)]
-  m["shift/t/i32/-2"] = [@pl.col("i32").shift(-2)]
-  m["shift/t/i32/0"] = [@pl.col("i32").shift(0)]
-  m["shift/t/i32/20"] = [@pl.col("i32").shift(20)]
+  m["shift/t/i32/1"] = [@pl.col("i32").shift(n=1)]
+  m["shift/t/i32/-2"] = [@pl.col("i32").shift(n=-2)]
+  m["shift/t/i32/0"] = [@pl.col("i32").shift(n=0)]
+  m["shift/t/i32/20"] = [@pl.col("i32").shift(n=20)]
   m["diff/t/i32/1"] = [@pl.col("i32").diff(n=1)]
   m["diff/t/i32/2"] = [@pl.col("i32").diff(n=2)]
-  m["shift/t/f64/1"] = [@pl.col("f64").shift(1)]
-  m["shift/t/f64/-2"] = [@pl.col("f64").shift(-2)]
-  m["shift/t/f64/0"] = [@pl.col("f64").shift(0)]
-  m["shift/t/f64/20"] = [@pl.col("f64").shift(20)]
+  m["shift/t/f64/1"] = [@pl.col("f64").shift(n=1)]
+  m["shift/t/f64/-2"] = [@pl.col("f64").shift(n=-2)]
+  m["shift/t/f64/0"] = [@pl.col("f64").shift(n=0)]
+  m["shift/t/f64/20"] = [@pl.col("f64").shift(n=20)]
   m["diff/t/f64/1"] = [@pl.col("f64").diff(n=1)]
   m["diff/t/f64/2"] = [@pl.col("f64").diff(n=2)]
-  m["shift/t/s/1"] = [@pl.col("s").shift(1)]
-  m["shift/t/s/-2"] = [@pl.col("s").shift(-2)]
-  m["shift/t/s/0"] = [@pl.col("s").shift(0)]
-  m["shift/t/s/20"] = [@pl.col("s").shift(20)]
+  m["shift/t/s/1"] = [@pl.col("s").shift(n=1)]
+  m["shift/t/s/-2"] = [@pl.col("s").shift(n=-2)]
+  m["shift/t/s/0"] = [@pl.col("s").shift(n=0)]
+  m["shift/t/s/20"] = [@pl.col("s").shift(n=20)]
   m["diff/t/s/1"] = [@pl.col("s").diff(n=1)]
   m["diff/t/s/2"] = [@pl.col("s").diff(n=2)]
-  m["shift/t/b/1"] = [@pl.col("b").shift(1)]
-  m["shift/t/b/-2"] = [@pl.col("b").shift(-2)]
-  m["shift/t/b/0"] = [@pl.col("b").shift(0)]
-  m["shift/t/b/20"] = [@pl.col("b").shift(20)]
+  m["shift/t/b/1"] = [@pl.col("b").shift(n=1)]
+  m["shift/t/b/-2"] = [@pl.col("b").shift(n=-2)]
+  m["shift/t/b/0"] = [@pl.col("b").shift(n=0)]
+  m["shift/t/b/20"] = [@pl.col("b").shift(n=20)]
   m["diff/t/b/1"] = [@pl.col("b").diff(n=1)]
   m["diff/t/b/2"] = [@pl.col("b").diff(n=2)]
   m["shift-fill/q/i32/date"] = [
-    @pl.col("i32").shift(1, fill_value=@pl.AnyValue::Date(100)),
+    @pl.col("i32").shift(n=1, fill_value=@pl.AnyValue::Date(100)),
   ]
   m["shift-fill/q/i32/i32"] = [
-    @pl.col("i32").shift(1, fill_value=@pl.AnyValue::Int32(99)),
+    @pl.col("i32").shift(n=1, fill_value=@pl.AnyValue::Int32(99)),
   ]
   m["shift-fill/q/i32/i64"] = [
-    @pl.col("i32").shift(1, fill_value=@pl.AnyValue::Int64(-5L)),
+    @pl.col("i32").shift(n=1, fill_value=@pl.AnyValue::Int64(-5L)),
   ]
   m["shift-fill/q/i32/str"] = [
-    @pl.col("i32").shift(1, fill_value=@pl.AnyValue::String("x")),
+    @pl.col("i32").shift(n=1, fill_value=@pl.AnyValue::String("x")),
   ]
   m["shift-fill/q/i32/back"] = [
-    @pl.col("i32").shift(-3, fill_value=@pl.AnyValue::Int32(99)),
+    @pl.col("i32").shift(n=-3, fill_value=@pl.AnyValue::Int32(99)),
   ]
   m["shift-fill/q/i64/date"] = [
-    @pl.col("i64").shift(1, fill_value=@pl.AnyValue::Date(100)),
+    @pl.col("i64").shift(n=1, fill_value=@pl.AnyValue::Date(100)),
   ]
   m["shift-fill/q/i64/i64"] = [
-    @pl.col("i64").shift(1, fill_value=@pl.AnyValue::Int64(-5L)),
+    @pl.col("i64").shift(n=1, fill_value=@pl.AnyValue::Int64(-5L)),
   ]
   m["shift-fill/q/i64/str"] = [
-    @pl.col("i64").shift(1, fill_value=@pl.AnyValue::String("x")),
+    @pl.col("i64").shift(n=1, fill_value=@pl.AnyValue::String("x")),
   ]
   m["shift-fill/q/i64/back"] = [
-    @pl.col("i64").shift(-3, fill_value=@pl.AnyValue::Int64(-5L)),
+    @pl.col("i64").shift(n=-3, fill_value=@pl.AnyValue::Int64(-5L)),
   ]
   m["shift-fill/q/f32/date"] = [
-    @pl.col("f32").shift(1, fill_value=@pl.AnyValue::Date(100)),
+    @pl.col("f32").shift(n=1, fill_value=@pl.AnyValue::Date(100)),
   ]
   m["shift-fill/q/f32/f32"] = [
-    @pl.col("f32").shift(1, fill_value=@pl.AnyValue::Float32(1.5)),
+    @pl.col("f32").shift(n=1, fill_value=@pl.AnyValue::Float32(1.5)),
   ]
   m["shift-fill/q/f32/i64"] = [
-    @pl.col("f32").shift(1, fill_value=@pl.AnyValue::Int64(-5L)),
+    @pl.col("f32").shift(n=1, fill_value=@pl.AnyValue::Int64(-5L)),
   ]
   m["shift-fill/q/f32/str"] = [
-    @pl.col("f32").shift(1, fill_value=@pl.AnyValue::String("x")),
+    @pl.col("f32").shift(n=1, fill_value=@pl.AnyValue::String("x")),
   ]
   m["shift-fill/q/f32/back"] = [
-    @pl.col("f32").shift(-3, fill_value=@pl.AnyValue::Float32(1.5)),
+    @pl.col("f32").shift(n=-3, fill_value=@pl.AnyValue::Float32(1.5)),
   ]
   m["shift-fill/q/f64/date"] = [
-    @pl.col("f64").shift(1, fill_value=@pl.AnyValue::Date(100)),
+    @pl.col("f64").shift(n=1, fill_value=@pl.AnyValue::Date(100)),
   ]
   m["shift-fill/q/f64/f64"] = [
-    @pl.col("f64").shift(1, fill_value=@pl.AnyValue::Float64(2.5)),
+    @pl.col("f64").shift(n=1, fill_value=@pl.AnyValue::Float64(2.5)),
   ]
   m["shift-fill/q/f64/i64"] = [
-    @pl.col("f64").shift(1, fill_value=@pl.AnyValue::Int64(-5L)),
+    @pl.col("f64").shift(n=1, fill_value=@pl.AnyValue::Int64(-5L)),
   ]
   m["shift-fill/q/f64/str"] = [
-    @pl.col("f64").shift(1, fill_value=@pl.AnyValue::String("x")),
+    @pl.col("f64").shift(n=1, fill_value=@pl.AnyValue::String("x")),
   ]
   m["shift-fill/q/f64/back"] = [
-    @pl.col("f64").shift(-3, fill_value=@pl.AnyValue::Float64(2.5)),
+    @pl.col("f64").shift(n=-3, fill_value=@pl.AnyValue::Float64(2.5)),
   ]
   m["shift-fill/q/s/date"] = [
-    @pl.col("s").shift(1, fill_value=@pl.AnyValue::Date(100)),
+    @pl.col("s").shift(n=1, fill_value=@pl.AnyValue::Date(100)),
   ]
   m["shift-fill/q/s/i64"] = [
-    @pl.col("s").shift(1, fill_value=@pl.AnyValue::Int64(-5L)),
+    @pl.col("s").shift(n=1, fill_value=@pl.AnyValue::Int64(-5L)),
   ]
   m["shift-fill/q/s/str"] = [
-    @pl.col("s").shift(1, fill_value=@pl.AnyValue::String("x")),
+    @pl.col("s").shift(n=1, fill_value=@pl.AnyValue::String("x")),
   ]
   m["shift-fill/q/s/back"] = [
-    @pl.col("s").shift(-3, fill_value=@pl.AnyValue::String("x")),
+    @pl.col("s").shift(n=-3, fill_value=@pl.AnyValue::String("x")),
   ]
   m["shift-fill/q/b/bool"] = [
-    @pl.col("b").shift(1, fill_value=@pl.AnyValue::Boolean(true)),
+    @pl.col("b").shift(n=1, fill_value=@pl.AnyValue::Boolean(true)),
   ]
   m["shift-fill/q/b/date"] = [
-    @pl.col("b").shift(1, fill_value=@pl.AnyValue::Date(100)),
+    @pl.col("b").shift(n=1, fill_value=@pl.AnyValue::Date(100)),
   ]
   m["shift-fill/q/b/i64"] = [
-    @pl.col("b").shift(1, fill_value=@pl.AnyValue::Int64(-5L)),
+    @pl.col("b").shift(n=1, fill_value=@pl.AnyValue::Int64(-5L)),
   ]
   m["shift-fill/q/b/str"] = [
-    @pl.col("b").shift(1, fill_value=@pl.AnyValue::String("x")),
+    @pl.col("b").shift(n=1, fill_value=@pl.AnyValue::String("x")),
   ]
   m["shift-fill/q/b/back"] = [
-    @pl.col("b").shift(-3, fill_value=@pl.AnyValue::Boolean(true)),
+    @pl.col("b").shift(n=-3, fill_value=@pl.AnyValue::Boolean(true)),
   ]
   m["shift-fill/q/d/date"] = [
-    @pl.col("d").shift(1, fill_value=@pl.AnyValue::Date(100)),
+    @pl.col("d").shift(n=1, fill_value=@pl.AnyValue::Date(100)),
   ]
   m["shift-fill/q/d/i64"] = [
-    @pl.col("d").shift(1, fill_value=@pl.AnyValue::Int64(-5L)),
+    @pl.col("d").shift(n=1, fill_value=@pl.AnyValue::Int64(-5L)),
   ]
   m["shift-fill/q/d/str"] = [
-    @pl.col("d").shift(1, fill_value=@pl.AnyValue::String("x")),
+    @pl.col("d").shift(n=1, fill_value=@pl.AnyValue::String("x")),
   ]
   m["shift-fill/q/d/back"] = [
-    @pl.col("d").shift(-3, fill_value=@pl.AnyValue::Date(100)),
+    @pl.col("d").shift(n=-3, fill_value=@pl.AnyValue::Date(100)),
   ]
   m["shift-fill/q/dt/date"] = [
-    @pl.col("dt").shift(1, fill_value=@pl.AnyValue::Date(100)),
+    @pl.col("dt").shift(n=1, fill_value=@pl.AnyValue::Date(100)),
   ]
 }
 
@@ -209,46 +209,46 @@ fn golden_expr_seq_cases_2(
 ) -> Unit {
   ignore(vs)
   m["shift-fill/q/dt/datetime[μs]"] = [
-    @pl.col("dt").shift(1, fill_value=@pl.AnyValue::Datetime(1000000L)),
+    @pl.col("dt").shift(n=1, fill_value=@pl.AnyValue::Datetime(1000000L)),
   ]
   m["shift-fill/q/dt/i64"] = [
-    @pl.col("dt").shift(1, fill_value=@pl.AnyValue::Int64(-5L)),
+    @pl.col("dt").shift(n=1, fill_value=@pl.AnyValue::Int64(-5L)),
   ]
   m["shift-fill/q/dt/str"] = [
-    @pl.col("dt").shift(1, fill_value=@pl.AnyValue::String("x")),
+    @pl.col("dt").shift(n=1, fill_value=@pl.AnyValue::String("x")),
   ]
   m["shift-fill/q/dt/back"] = [
-    @pl.col("dt").shift(-3, fill_value=@pl.AnyValue::Datetime(1000000L)),
+    @pl.col("dt").shift(n=-3, fill_value=@pl.AnyValue::Datetime(1000000L)),
   ]
   m["shift-fill/q/n/date"] = [
-    @pl.col("n").shift(1, fill_value=@pl.AnyValue::Date(100)),
+    @pl.col("n").shift(n=1, fill_value=@pl.AnyValue::Date(100)),
   ]
   m["shift-fill/q/n/i32"] = [
-    @pl.col("n").shift(1, fill_value=@pl.AnyValue::Int32(99)),
+    @pl.col("n").shift(n=1, fill_value=@pl.AnyValue::Int32(99)),
   ]
   m["shift-fill/q/n/i64"] = [
-    @pl.col("n").shift(1, fill_value=@pl.AnyValue::Int64(-5L)),
+    @pl.col("n").shift(n=1, fill_value=@pl.AnyValue::Int64(-5L)),
   ]
   m["shift-fill/q/n/str"] = [
-    @pl.col("n").shift(1, fill_value=@pl.AnyValue::String("x")),
+    @pl.col("n").shift(n=1, fill_value=@pl.AnyValue::String("x")),
   ]
   m["shift-fill/q/n/back"] = [
-    @pl.col("n").shift(-3, fill_value=@pl.AnyValue::Int32(7)),
+    @pl.col("n").shift(n=-3, fill_value=@pl.AnyValue::Int32(7)),
   ]
-  m["shift/e0/i32"] = [@pl.col("i32").shift(1)]
+  m["shift/e0/i32"] = [@pl.col("i32").shift(n=1)]
   m["diff/e0/i32"] = [@pl.col("i32").diff(n=1)]
   m["shift-fill/e0/i32"] = [
-    @pl.col("i32").shift(1, fill_value=@pl.AnyValue::Int32(5)),
+    @pl.col("i32").shift(n=1, fill_value=@pl.AnyValue::Int32(5)),
   ]
-  m["shift/e0/s"] = [@pl.col("s").shift(1)]
+  m["shift/e0/s"] = [@pl.col("s").shift(n=1)]
   m["diff/e0/s"] = [@pl.col("s").diff(n=1)]
   m["shift-fill/e0/s"] = [
-    @pl.col("s").shift(1, fill_value=@pl.AnyValue::Int32(5)),
+    @pl.col("s").shift(n=1, fill_value=@pl.AnyValue::Int32(5)),
   ]
-  m["shift/e0/n"] = [@pl.col("n").shift(1)]
+  m["shift/e0/n"] = [@pl.col("n").shift(n=1)]
   m["diff/e0/n"] = [@pl.col("n").diff(n=1)]
   m["shift-fill/e0/n"] = [
-    @pl.col("n").shift(1, fill_value=@pl.AnyValue::Int32(5)),
+    @pl.col("n").shift(n=1, fill_value=@pl.AnyValue::Int32(5)),
   ]
   m["cum_sum/q/i32/fwd"] = [@pl.col("i32").cum_sum()]
   m["cum_sum/q/i32/rev"] = [@pl.col("i32").cum_sum(reverse=true)]
@@ -349,40 +349,40 @@ fn golden_expr_seq_cases_3(
   m["cum_count/q/n/fwd"] = [@pl.col("n").cum_count()]
   m["cum_count/q/n/rev"] = [@pl.col("n").cum_count(reverse=true)]
   m["rank/q/average/i32/asc"] = [
-    @pl.col("i32").rank(method=@pl.RankMethod::Average),
+    @pl.col("i32").rank(method_=@pl.RankMethod::Average),
   ]
   m["rank/q/average/i32/desc"] = [
-    @pl.col("i32").rank(method=@pl.RankMethod::Average, descending=true),
+    @pl.col("i32").rank(method_=@pl.RankMethod::Average, descending=true),
   ]
   m["rank/q/average/i64/asc"] = [
-    @pl.col("i64").rank(method=@pl.RankMethod::Average),
+    @pl.col("i64").rank(method_=@pl.RankMethod::Average),
   ]
   m["rank/q/average/i64/desc"] = [
-    @pl.col("i64").rank(method=@pl.RankMethod::Average, descending=true),
+    @pl.col("i64").rank(method_=@pl.RankMethod::Average, descending=true),
   ]
   m["rank/q/average/f32/asc"] = [
-    @pl.col("f32").rank(method=@pl.RankMethod::Average),
+    @pl.col("f32").rank(method_=@pl.RankMethod::Average),
   ]
   m["rank/q/average/f32/desc"] = [
-    @pl.col("f32").rank(method=@pl.RankMethod::Average, descending=true),
+    @pl.col("f32").rank(method_=@pl.RankMethod::Average, descending=true),
   ]
   m["rank/q/average/f64/asc"] = [
-    @pl.col("f64").rank(method=@pl.RankMethod::Average),
+    @pl.col("f64").rank(method_=@pl.RankMethod::Average),
   ]
   m["rank/q/average/f64/desc"] = [
-    @pl.col("f64").rank(method=@pl.RankMethod::Average, descending=true),
+    @pl.col("f64").rank(method_=@pl.RankMethod::Average, descending=true),
   ]
   m["rank/q/average/s/asc"] = [
-    @pl.col("s").rank(method=@pl.RankMethod::Average),
+    @pl.col("s").rank(method_=@pl.RankMethod::Average),
   ]
   m["rank/q/average/s/desc"] = [
-    @pl.col("s").rank(method=@pl.RankMethod::Average, descending=true),
+    @pl.col("s").rank(method_=@pl.RankMethod::Average, descending=true),
   ]
   m["rank/q/average/b/asc"] = [
-    @pl.col("b").rank(method=@pl.RankMethod::Average),
+    @pl.col("b").rank(method_=@pl.RankMethod::Average),
   ]
   m["rank/q/average/b/desc"] = [
-    @pl.col("b").rank(method=@pl.RankMethod::Average, descending=true),
+    @pl.col("b").rank(method_=@pl.RankMethod::Average, descending=true),
   ]
 }
 
@@ -393,138 +393,138 @@ fn golden_expr_seq_cases_4(
 ) -> Unit {
   ignore(vs)
   m["rank/q/average/d/asc"] = [
-    @pl.col("d").rank(method=@pl.RankMethod::Average),
+    @pl.col("d").rank(method_=@pl.RankMethod::Average),
   ]
   m["rank/q/average/d/desc"] = [
-    @pl.col("d").rank(method=@pl.RankMethod::Average, descending=true),
+    @pl.col("d").rank(method_=@pl.RankMethod::Average, descending=true),
   ]
   m["rank/q/average/dt/asc"] = [
-    @pl.col("dt").rank(method=@pl.RankMethod::Average),
+    @pl.col("dt").rank(method_=@pl.RankMethod::Average),
   ]
   m["rank/q/average/dt/desc"] = [
-    @pl.col("dt").rank(method=@pl.RankMethod::Average, descending=true),
+    @pl.col("dt").rank(method_=@pl.RankMethod::Average, descending=true),
   ]
   m["rank/q/average/n/asc"] = [
-    @pl.col("n").rank(method=@pl.RankMethod::Average),
+    @pl.col("n").rank(method_=@pl.RankMethod::Average),
   ]
   m["rank/q/average/n/desc"] = [
-    @pl.col("n").rank(method=@pl.RankMethod::Average, descending=true),
+    @pl.col("n").rank(method_=@pl.RankMethod::Average, descending=true),
   ]
-  m["rank/q/min/i32/asc"] = [@pl.col("i32").rank(method=@pl.RankMethod::Min)]
-  m["rank/q/min/i64/asc"] = [@pl.col("i64").rank(method=@pl.RankMethod::Min)]
-  m["rank/q/min/f32/asc"] = [@pl.col("f32").rank(method=@pl.RankMethod::Min)]
-  m["rank/q/min/f64/asc"] = [@pl.col("f64").rank(method=@pl.RankMethod::Min)]
+  m["rank/q/min/i32/asc"] = [@pl.col("i32").rank(method_=@pl.RankMethod::Min)]
+  m["rank/q/min/i64/asc"] = [@pl.col("i64").rank(method_=@pl.RankMethod::Min)]
+  m["rank/q/min/f32/asc"] = [@pl.col("f32").rank(method_=@pl.RankMethod::Min)]
+  m["rank/q/min/f64/asc"] = [@pl.col("f64").rank(method_=@pl.RankMethod::Min)]
   m["rank/q/min/f64/desc"] = [
-    @pl.col("f64").rank(method=@pl.RankMethod::Min, descending=true),
+    @pl.col("f64").rank(method_=@pl.RankMethod::Min, descending=true),
   ]
-  m["rank/q/min/s/asc"] = [@pl.col("s").rank(method=@pl.RankMethod::Min)]
+  m["rank/q/min/s/asc"] = [@pl.col("s").rank(method_=@pl.RankMethod::Min)]
   m["rank/q/min/s/desc"] = [
-    @pl.col("s").rank(method=@pl.RankMethod::Min, descending=true),
+    @pl.col("s").rank(method_=@pl.RankMethod::Min, descending=true),
   ]
-  m["rank/q/min/b/asc"] = [@pl.col("b").rank(method=@pl.RankMethod::Min)]
-  m["rank/q/min/d/asc"] = [@pl.col("d").rank(method=@pl.RankMethod::Min)]
-  m["rank/q/min/dt/asc"] = [@pl.col("dt").rank(method=@pl.RankMethod::Min)]
-  m["rank/q/min/n/asc"] = [@pl.col("n").rank(method=@pl.RankMethod::Min)]
-  m["rank/q/max/i32/asc"] = [@pl.col("i32").rank(method=@pl.RankMethod::Max)]
-  m["rank/q/max/i64/asc"] = [@pl.col("i64").rank(method=@pl.RankMethod::Max)]
-  m["rank/q/max/f32/asc"] = [@pl.col("f32").rank(method=@pl.RankMethod::Max)]
-  m["rank/q/max/f64/asc"] = [@pl.col("f64").rank(method=@pl.RankMethod::Max)]
+  m["rank/q/min/b/asc"] = [@pl.col("b").rank(method_=@pl.RankMethod::Min)]
+  m["rank/q/min/d/asc"] = [@pl.col("d").rank(method_=@pl.RankMethod::Min)]
+  m["rank/q/min/dt/asc"] = [@pl.col("dt").rank(method_=@pl.RankMethod::Min)]
+  m["rank/q/min/n/asc"] = [@pl.col("n").rank(method_=@pl.RankMethod::Min)]
+  m["rank/q/max/i32/asc"] = [@pl.col("i32").rank(method_=@pl.RankMethod::Max)]
+  m["rank/q/max/i64/asc"] = [@pl.col("i64").rank(method_=@pl.RankMethod::Max)]
+  m["rank/q/max/f32/asc"] = [@pl.col("f32").rank(method_=@pl.RankMethod::Max)]
+  m["rank/q/max/f64/asc"] = [@pl.col("f64").rank(method_=@pl.RankMethod::Max)]
   m["rank/q/max/f64/desc"] = [
-    @pl.col("f64").rank(method=@pl.RankMethod::Max, descending=true),
+    @pl.col("f64").rank(method_=@pl.RankMethod::Max, descending=true),
   ]
-  m["rank/q/max/s/asc"] = [@pl.col("s").rank(method=@pl.RankMethod::Max)]
+  m["rank/q/max/s/asc"] = [@pl.col("s").rank(method_=@pl.RankMethod::Max)]
   m["rank/q/max/s/desc"] = [
-    @pl.col("s").rank(method=@pl.RankMethod::Max, descending=true),
+    @pl.col("s").rank(method_=@pl.RankMethod::Max, descending=true),
   ]
-  m["rank/q/max/b/asc"] = [@pl.col("b").rank(method=@pl.RankMethod::Max)]
-  m["rank/q/max/d/asc"] = [@pl.col("d").rank(method=@pl.RankMethod::Max)]
-  m["rank/q/max/dt/asc"] = [@pl.col("dt").rank(method=@pl.RankMethod::Max)]
-  m["rank/q/max/n/asc"] = [@pl.col("n").rank(method=@pl.RankMethod::Max)]
+  m["rank/q/max/b/asc"] = [@pl.col("b").rank(method_=@pl.RankMethod::Max)]
+  m["rank/q/max/d/asc"] = [@pl.col("d").rank(method_=@pl.RankMethod::Max)]
+  m["rank/q/max/dt/asc"] = [@pl.col("dt").rank(method_=@pl.RankMethod::Max)]
+  m["rank/q/max/n/asc"] = [@pl.col("n").rank(method_=@pl.RankMethod::Max)]
   m["rank/q/dense/i32/asc"] = [
-    @pl.col("i32").rank(method=@pl.RankMethod::Dense),
+    @pl.col("i32").rank(method_=@pl.RankMethod::Dense),
   ]
   m["rank/q/dense/i32/desc"] = [
-    @pl.col("i32").rank(method=@pl.RankMethod::Dense, descending=true),
+    @pl.col("i32").rank(method_=@pl.RankMethod::Dense, descending=true),
   ]
   m["rank/q/dense/i64/asc"] = [
-    @pl.col("i64").rank(method=@pl.RankMethod::Dense),
+    @pl.col("i64").rank(method_=@pl.RankMethod::Dense),
   ]
   m["rank/q/dense/i64/desc"] = [
-    @pl.col("i64").rank(method=@pl.RankMethod::Dense, descending=true),
+    @pl.col("i64").rank(method_=@pl.RankMethod::Dense, descending=true),
   ]
   m["rank/q/dense/f32/asc"] = [
-    @pl.col("f32").rank(method=@pl.RankMethod::Dense),
+    @pl.col("f32").rank(method_=@pl.RankMethod::Dense),
   ]
   m["rank/q/dense/f32/desc"] = [
-    @pl.col("f32").rank(method=@pl.RankMethod::Dense, descending=true),
+    @pl.col("f32").rank(method_=@pl.RankMethod::Dense, descending=true),
   ]
   m["rank/q/dense/f64/asc"] = [
-    @pl.col("f64").rank(method=@pl.RankMethod::Dense),
+    @pl.col("f64").rank(method_=@pl.RankMethod::Dense),
   ]
   m["rank/q/dense/f64/desc"] = [
-    @pl.col("f64").rank(method=@pl.RankMethod::Dense, descending=true),
+    @pl.col("f64").rank(method_=@pl.RankMethod::Dense, descending=true),
   ]
-  m["rank/q/dense/s/asc"] = [@pl.col("s").rank(method=@pl.RankMethod::Dense)]
+  m["rank/q/dense/s/asc"] = [@pl.col("s").rank(method_=@pl.RankMethod::Dense)]
   m["rank/q/dense/s/desc"] = [
-    @pl.col("s").rank(method=@pl.RankMethod::Dense, descending=true),
+    @pl.col("s").rank(method_=@pl.RankMethod::Dense, descending=true),
   ]
-  m["rank/q/dense/b/asc"] = [@pl.col("b").rank(method=@pl.RankMethod::Dense)]
+  m["rank/q/dense/b/asc"] = [@pl.col("b").rank(method_=@pl.RankMethod::Dense)]
   m["rank/q/dense/b/desc"] = [
-    @pl.col("b").rank(method=@pl.RankMethod::Dense, descending=true),
+    @pl.col("b").rank(method_=@pl.RankMethod::Dense, descending=true),
   ]
-  m["rank/q/dense/d/asc"] = [@pl.col("d").rank(method=@pl.RankMethod::Dense)]
+  m["rank/q/dense/d/asc"] = [@pl.col("d").rank(method_=@pl.RankMethod::Dense)]
   m["rank/q/dense/d/desc"] = [
-    @pl.col("d").rank(method=@pl.RankMethod::Dense, descending=true),
+    @pl.col("d").rank(method_=@pl.RankMethod::Dense, descending=true),
   ]
-  m["rank/q/dense/dt/asc"] = [@pl.col("dt").rank(method=@pl.RankMethod::Dense)]
+  m["rank/q/dense/dt/asc"] = [@pl.col("dt").rank(method_=@pl.RankMethod::Dense)]
   m["rank/q/dense/dt/desc"] = [
-    @pl.col("dt").rank(method=@pl.RankMethod::Dense, descending=true),
+    @pl.col("dt").rank(method_=@pl.RankMethod::Dense, descending=true),
   ]
-  m["rank/q/dense/n/asc"] = [@pl.col("n").rank(method=@pl.RankMethod::Dense)]
+  m["rank/q/dense/n/asc"] = [@pl.col("n").rank(method_=@pl.RankMethod::Dense)]
   m["rank/q/dense/n/desc"] = [
-    @pl.col("n").rank(method=@pl.RankMethod::Dense, descending=true),
+    @pl.col("n").rank(method_=@pl.RankMethod::Dense, descending=true),
   ]
   m["rank/q/ordinal/i32/asc"] = [
-    @pl.col("i32").rank(method=@pl.RankMethod::Ordinal),
+    @pl.col("i32").rank(method_=@pl.RankMethod::Ordinal),
   ]
   m["rank/q/ordinal/i32/desc"] = [
-    @pl.col("i32").rank(method=@pl.RankMethod::Ordinal, descending=true),
+    @pl.col("i32").rank(method_=@pl.RankMethod::Ordinal, descending=true),
   ]
   m["rank/q/ordinal/i64/asc"] = [
-    @pl.col("i64").rank(method=@pl.RankMethod::Ordinal),
+    @pl.col("i64").rank(method_=@pl.RankMethod::Ordinal),
   ]
   m["rank/q/ordinal/i64/desc"] = [
-    @pl.col("i64").rank(method=@pl.RankMethod::Ordinal, descending=true),
+    @pl.col("i64").rank(method_=@pl.RankMethod::Ordinal, descending=true),
   ]
   m["rank/q/ordinal/f32/asc"] = [
-    @pl.col("f32").rank(method=@pl.RankMethod::Ordinal),
+    @pl.col("f32").rank(method_=@pl.RankMethod::Ordinal),
   ]
   m["rank/q/ordinal/f32/desc"] = [
-    @pl.col("f32").rank(method=@pl.RankMethod::Ordinal, descending=true),
+    @pl.col("f32").rank(method_=@pl.RankMethod::Ordinal, descending=true),
   ]
   m["rank/q/ordinal/f64/asc"] = [
-    @pl.col("f64").rank(method=@pl.RankMethod::Ordinal),
+    @pl.col("f64").rank(method_=@pl.RankMethod::Ordinal),
   ]
   m["rank/q/ordinal/f64/desc"] = [
-    @pl.col("f64").rank(method=@pl.RankMethod::Ordinal, descending=true),
+    @pl.col("f64").rank(method_=@pl.RankMethod::Ordinal, descending=true),
   ]
   m["rank/q/ordinal/s/asc"] = [
-    @pl.col("s").rank(method=@pl.RankMethod::Ordinal),
+    @pl.col("s").rank(method_=@pl.RankMethod::Ordinal),
   ]
   m["rank/q/ordinal/s/desc"] = [
-    @pl.col("s").rank(method=@pl.RankMethod::Ordinal, descending=true),
+    @pl.col("s").rank(method_=@pl.RankMethod::Ordinal, descending=true),
   ]
   m["rank/q/ordinal/b/asc"] = [
-    @pl.col("b").rank(method=@pl.RankMethod::Ordinal),
+    @pl.col("b").rank(method_=@pl.RankMethod::Ordinal),
   ]
   m["rank/q/ordinal/b/desc"] = [
-    @pl.col("b").rank(method=@pl.RankMethod::Ordinal, descending=true),
+    @pl.col("b").rank(method_=@pl.RankMethod::Ordinal, descending=true),
   ]
   m["rank/q/ordinal/d/asc"] = [
-    @pl.col("d").rank(method=@pl.RankMethod::Ordinal),
+    @pl.col("d").rank(method_=@pl.RankMethod::Ordinal),
   ]
   m["rank/q/ordinal/d/desc"] = [
-    @pl.col("d").rank(method=@pl.RankMethod::Ordinal, descending=true),
+    @pl.col("d").rank(method_=@pl.RankMethod::Ordinal, descending=true),
   ]
 }
 
@@ -535,16 +535,16 @@ fn golden_expr_seq_cases_5(
 ) -> Unit {
   ignore(vs)
   m["rank/q/ordinal/dt/asc"] = [
-    @pl.col("dt").rank(method=@pl.RankMethod::Ordinal),
+    @pl.col("dt").rank(method_=@pl.RankMethod::Ordinal),
   ]
   m["rank/q/ordinal/dt/desc"] = [
-    @pl.col("dt").rank(method=@pl.RankMethod::Ordinal, descending=true),
+    @pl.col("dt").rank(method_=@pl.RankMethod::Ordinal, descending=true),
   ]
   m["rank/q/ordinal/n/asc"] = [
-    @pl.col("n").rank(method=@pl.RankMethod::Ordinal),
+    @pl.col("n").rank(method_=@pl.RankMethod::Ordinal),
   ]
   m["rank/q/ordinal/n/desc"] = [
-    @pl.col("n").rank(method=@pl.RankMethod::Ordinal, descending=true),
+    @pl.col("n").rank(method_=@pl.RankMethod::Ordinal, descending=true),
   ]
   m["reverse/q/i32"] = [@pl.col("i32").reverse()]
   m["reverse/q/i64"] = [@pl.col("i64").reverse()]
@@ -586,45 +586,45 @@ fn golden_expr_seq_cases_5(
   m["cum_count/t/s/fwd"] = [@pl.col("s").cum_count()]
   m["cum_count/t/s/rev"] = [@pl.col("s").cum_count(reverse=true)]
   m["rank/t/average/f64/asc"] = [
-    @pl.col("f64").rank(method=@pl.RankMethod::Average),
+    @pl.col("f64").rank(method_=@pl.RankMethod::Average),
   ]
   m["rank/t/average/f64/desc"] = [
-    @pl.col("f64").rank(method=@pl.RankMethod::Average, descending=true),
+    @pl.col("f64").rank(method_=@pl.RankMethod::Average, descending=true),
   ]
   m["rank/t/average/s/asc"] = [
-    @pl.col("s").rank(method=@pl.RankMethod::Average),
+    @pl.col("s").rank(method_=@pl.RankMethod::Average),
   ]
   m["rank/t/average/s/desc"] = [
-    @pl.col("s").rank(method=@pl.RankMethod::Average, descending=true),
+    @pl.col("s").rank(method_=@pl.RankMethod::Average, descending=true),
   ]
-  m["rank/t/min/f64/asc"] = [@pl.col("f64").rank(method=@pl.RankMethod::Min)]
+  m["rank/t/min/f64/asc"] = [@pl.col("f64").rank(method_=@pl.RankMethod::Min)]
   m["rank/t/min/f64/desc"] = [
-    @pl.col("f64").rank(method=@pl.RankMethod::Min, descending=true),
+    @pl.col("f64").rank(method_=@pl.RankMethod::Min, descending=true),
   ]
-  m["rank/t/min/s/asc"] = [@pl.col("s").rank(method=@pl.RankMethod::Min)]
+  m["rank/t/min/s/asc"] = [@pl.col("s").rank(method_=@pl.RankMethod::Min)]
   m["rank/t/min/s/desc"] = [
-    @pl.col("s").rank(method=@pl.RankMethod::Min, descending=true),
+    @pl.col("s").rank(method_=@pl.RankMethod::Min, descending=true),
   ]
-  m["rank/t/max/f64/asc"] = [@pl.col("f64").rank(method=@pl.RankMethod::Max)]
+  m["rank/t/max/f64/asc"] = [@pl.col("f64").rank(method_=@pl.RankMethod::Max)]
   m["rank/t/max/f64/desc"] = [
-    @pl.col("f64").rank(method=@pl.RankMethod::Max, descending=true),
+    @pl.col("f64").rank(method_=@pl.RankMethod::Max, descending=true),
   ]
-  m["rank/t/max/s/asc"] = [@pl.col("s").rank(method=@pl.RankMethod::Max)]
+  m["rank/t/max/s/asc"] = [@pl.col("s").rank(method_=@pl.RankMethod::Max)]
   m["rank/t/max/s/desc"] = [
-    @pl.col("s").rank(method=@pl.RankMethod::Max, descending=true),
+    @pl.col("s").rank(method_=@pl.RankMethod::Max, descending=true),
   ]
   m["rank/t/dense/f64/asc"] = [
-    @pl.col("f64").rank(method=@pl.RankMethod::Dense),
+    @pl.col("f64").rank(method_=@pl.RankMethod::Dense),
   ]
   m["rank/t/dense/f64/desc"] = [
-    @pl.col("f64").rank(method=@pl.RankMethod::Dense, descending=true),
+    @pl.col("f64").rank(method_=@pl.RankMethod::Dense, descending=true),
   ]
-  m["rank/t/dense/s/asc"] = [@pl.col("s").rank(method=@pl.RankMethod::Dense)]
+  m["rank/t/dense/s/asc"] = [@pl.col("s").rank(method_=@pl.RankMethod::Dense)]
   m["rank/t/dense/s/desc"] = [
-    @pl.col("s").rank(method=@pl.RankMethod::Dense, descending=true),
+    @pl.col("s").rank(method_=@pl.RankMethod::Dense, descending=true),
   ]
   m["rank/t/ordinal/f64/asc"] = [
-    @pl.col("f64").rank(method=@pl.RankMethod::Ordinal),
+    @pl.col("f64").rank(method_=@pl.RankMethod::Ordinal),
   ]
 }
 
@@ -635,13 +635,13 @@ fn golden_expr_seq_cases_6(
 ) -> Unit {
   ignore(vs)
   m["rank/t/ordinal/f64/desc"] = [
-    @pl.col("f64").rank(method=@pl.RankMethod::Ordinal, descending=true),
+    @pl.col("f64").rank(method_=@pl.RankMethod::Ordinal, descending=true),
   ]
   m["rank/t/ordinal/s/asc"] = [
-    @pl.col("s").rank(method=@pl.RankMethod::Ordinal),
+    @pl.col("s").rank(method_=@pl.RankMethod::Ordinal),
   ]
   m["rank/t/ordinal/s/desc"] = [
-    @pl.col("s").rank(method=@pl.RankMethod::Ordinal, descending=true),
+    @pl.col("s").rank(method_=@pl.RankMethod::Ordinal, descending=true),
   ]
   m["reverse/t/i32"] = [@pl.col("i32").reverse()]
   m["reverse/t/f64"] = [@pl.col("f64").reverse()]
@@ -651,9 +651,9 @@ fn golden_expr_seq_cases_6(
   m["cum_max/e0/i32"] = [@pl.col("i32").cum_max()]
   m["cum_prod/e0/i32"] = [@pl.col("i32").cum_prod()]
   m["cum_count/e0/i32"] = [@pl.col("i32").cum_count()]
-  m["rank/e0/i32"] = [@pl.col("i32").rank(method=@pl.RankMethod::Average)]
+  m["rank/e0/i32"] = [@pl.col("i32").rank(method_=@pl.RankMethod::Average)]
   m["rank/e0/i32/ordinal"] = [
-    @pl.col("i32").rank(method=@pl.RankMethod::Ordinal),
+    @pl.col("i32").rank(method_=@pl.RankMethod::Ordinal),
   ]
   m["reverse/e0/i32"] = [@pl.col("i32").reverse()]
   m["cum_sum/e0/s"] = [@pl.col("s").cum_sum()]
@@ -661,16 +661,16 @@ fn golden_expr_seq_cases_6(
   m["cum_max/e0/s"] = [@pl.col("s").cum_max()]
   m["cum_prod/e0/s"] = [@pl.col("s").cum_prod()]
   m["cum_count/e0/s"] = [@pl.col("s").cum_count()]
-  m["rank/e0/s"] = [@pl.col("s").rank(method=@pl.RankMethod::Average)]
-  m["rank/e0/s/ordinal"] = [@pl.col("s").rank(method=@pl.RankMethod::Ordinal)]
+  m["rank/e0/s"] = [@pl.col("s").rank(method_=@pl.RankMethod::Average)]
+  m["rank/e0/s/ordinal"] = [@pl.col("s").rank(method_=@pl.RankMethod::Ordinal)]
   m["reverse/e0/s"] = [@pl.col("s").reverse()]
   m["cum_sum/e0/n"] = [@pl.col("n").cum_sum()]
   m["cum_min/e0/n"] = [@pl.col("n").cum_min()]
   m["cum_max/e0/n"] = [@pl.col("n").cum_max()]
   m["cum_prod/e0/n"] = [@pl.col("n").cum_prod()]
   m["cum_count/e0/n"] = [@pl.col("n").cum_count()]
-  m["rank/e0/n"] = [@pl.col("n").rank(method=@pl.RankMethod::Average)]
-  m["rank/e0/n/ordinal"] = [@pl.col("n").rank(method=@pl.RankMethod::Ordinal)]
+  m["rank/e0/n"] = [@pl.col("n").rank(method_=@pl.RankMethod::Average)]
+  m["rank/e0/n/ordinal"] = [@pl.col("n").rank(method_=@pl.RankMethod::Ordinal)]
   m["reverse/e0/n"] = [@pl.col("n").reverse()]
   m["fills/q/forward/i32"] = [
     @pl.col("i32").fill_null_strategy(@pl.FillStrategy::Forward),
@@ -1037,14 +1037,14 @@ fn golden_expr_seq_cases_8(
   m["mix/cum_max-first"] = [@pl.col("f32").cum_max().first()]
   m["mix/diff-sum"] = [@pl.col("i32").diff(n=1).sum()]
   m["mix/diff-mean"] = [@pl.col("f64").diff(n=2).mean()]
-  m["mix/rank-max"] = [@pl.col("s").rank(method=@pl.RankMethod::Average).max()]
-  m["mix/rank-sum"] = [@pl.col("i32").rank(method=@pl.RankMethod::Dense).sum()]
-  m["mix/shift-count"] = [@pl.col("i32").shift(3).count()]
-  m["mix/shift-null_count-like"] = [@pl.col("i32").shift(2).is_null().sum()]
+  m["mix/rank-max"] = [@pl.col("s").rank(method_=@pl.RankMethod::Average).max()]
+  m["mix/rank-sum"] = [@pl.col("i32").rank(method_=@pl.RankMethod::Dense).sum()]
+  m["mix/shift-count"] = [@pl.col("i32").shift(n=3).count()]
+  m["mix/shift-null_count-like"] = [@pl.col("i32").shift(n=2).is_null().sum()]
   m["mix/reverse-first"] = [@pl.col("s").reverse().first()]
   m["mix/cum_sum-minus-col"] = [@pl.col("i64").cum_sum() - @pl.col("i64")]
   m["mix/col-minus-shift"] = [
-    (@pl.col("f64") - @pl.col("f64").shift(1)).alias("d"),
+    (@pl.col("f64") - @pl.col("f64").shift(n=1)).alias("d"),
   ]
   m["mix/cum_sum-plus-lit"] = [@pl.col("i32").cum_sum() + @pl.lit_int(1L)]
   m["mix/cum_sum-gt"] = [@pl.col("i32").cum_sum().gt(@pl.lit_int(10L))]
@@ -1052,18 +1052,18 @@ fn golden_expr_seq_cases_8(
   m["mix/abs-diff"] = [@pl.col("i32").diff(n=1).abs()]
   m["mix/diff-is_null"] = [@pl.col("i64").diff(n=1).is_null()]
   m["mix/shift-fill_null"] = [
-    @pl.col("i32").shift(1).fill_null(@pl.lit_int(0L)),
+    @pl.col("i32").shift(n=1).fill_null(@pl.lit_int(0L)),
   ]
   m["mix/shift-fill_null-col"] = [
-    @pl.col("i64").shift(1).fill_null(@pl.col("i64")),
+    @pl.col("i64").shift(n=1).fill_null(@pl.col("i64")),
   ]
   m["mix/shift-fill-lit"] = [
     (@pl.col("i32") + @pl.lit_int(1L)).shift(
-      2,
+      n=2,
       fill_value=@pl.AnyValue::Int32(0),
     ),
   ]
-  m["mix/shift-twice"] = [@pl.col("i32").shift(1).shift(2)]
+  m["mix/shift-twice"] = [@pl.col("i32").shift(n=1).shift(n=2)]
   m["mix/cum-of-cum"] = [@pl.col("i32").cum_sum().cum_sum()]
 }
 
@@ -1074,14 +1074,14 @@ fn golden_expr_seq_cases_9(
 ) -> Unit {
   ignore(vs)
   m["mix/rank-of-neg"] = [
-    (-@pl.col("f64")).rank(method=@pl.RankMethod::Average),
+    (-@pl.col("f64")).rank(method_=@pl.RankMethod::Average),
   ]
   m["mix/reverse-reverse"] = [@pl.col("s").reverse().reverse()]
   m["mix/fills-of-shift"] = [
-    @pl.col("i32").shift(1).fill_null_strategy(@pl.FillStrategy::Forward),
+    @pl.col("i32").shift(n=1).fill_null_strategy(@pl.FillStrategy::Forward),
   ]
   m["mix/shift-of-fills"] = [
-    @pl.col("i32").fill_null_strategy(@pl.FillStrategy::Forward).shift(1),
+    @pl.col("i32").fill_null_strategy(@pl.FillStrategy::Forward).shift(n=1),
   ]
   m["mix/cast-cum"] = [@pl.col("b").cast(@pl.DataType::Int32).cum_sum()]
   m["mix/when-cum"] = [
@@ -1089,35 +1089,41 @@ fn golden_expr_seq_cases_9(
     .then(@pl.lit_int(1L))
     .otherwise(@pl.lit_int(0L)),
   ]
-  m["mix/is_in-shift"] = [@pl.col("i32").shift(1).is_in(vs["i32"])]
+  m["mix/is_in-shift"] = [@pl.col("i32").shift(n=1).is_in(vs["i32"])]
   m["mix/alias"] = [@pl.col("i32").cum_sum().alias("z")]
   m["mix/alias-inner"] = [@pl.col("i32").alias("z").cum_sum()]
-  m["mix/alias-inner-shift"] = [@pl.col("i32").alias("z").shift(1)]
+  m["mix/alias-inner-shift"] = [@pl.col("i32").alias("z").shift(n=1)]
   m["mix/names-several"] = [
-    @pl.col("i32").shift(1),
+    @pl.col("i32").shift(n=1),
     @pl.col("i64").diff(n=1).alias("d64"),
-    @pl.col("f64").rank(method=@pl.RankMethod::Average).alias("r"),
+    @pl.col("f64").rank(method_=@pl.RankMethod::Average).alias("r"),
     @pl.col("s").cum_count().alias("c"),
     @pl.col("d").reverse().alias("rev"),
   ]
-  m["mix/dup-name"] = [@pl.col("i32"), @pl.col("i32").shift(1)]
-  m["mix/dup-name-shift"] = [@pl.col("i32").shift(1), @pl.col("i32").cum_sum()]
-  m["mix/missing"] = [@pl.col("zz").shift(1)]
+  m["mix/dup-name"] = [@pl.col("i32"), @pl.col("i32").shift(n=1)]
+  m["mix/dup-name-shift"] = [
+    @pl.col("i32").shift(n=1),
+    @pl.col("i32").cum_sum(),
+  ]
+  m["mix/missing"] = [@pl.col("zz").shift(n=1)]
   m["mix/missing-after"] = [@pl.col("s").cum_sum(), @pl.col("zz").cum_sum()]
   m["mix/type-error-first"] = [@pl.col("s").cum_sum(), @pl.col("s").diff(n=1)]
-  m["mix/error-then-missing"] = [@pl.col("s").cum_sum(), @pl.col("zz").shift(1)]
+  m["mix/error-then-missing"] = [
+    @pl.col("s").cum_sum(),
+    @pl.col("zz").shift(n=1),
+  ]
   m["mix/wc"] = [
     @pl.col("i32").cum_sum().alias("cs"),
-    @pl.col("i32").shift(1).alias("sh"),
+    @pl.col("i32").shift(n=1).alias("sh"),
   ]
   m["mix/wc-in-place"] = [@pl.col("i32").cum_sum().alias("i32")]
-  m["mix/wc-dup"] = [@pl.col("i32").cum_sum(), @pl.col("i32").shift(1)]
+  m["mix/wc-dup"] = [@pl.col("i32").cum_sum(), @pl.col("i32").shift(n=1)]
   m["mix/wc-e0"] = [@pl.col("i32").cum_sum().alias("cs")]
   m["mix/wc-agg-seq"] = [@pl.col("i32").cum_sum().sum().alias("tot")]
   m["sel/cols-cum_sum"] = [@pl.cols(["i32", "f64"]).cum_sum()]
-  m["sel/all-shift"] = [@pl.all().shift(1)]
+  m["sel/all-shift"] = [@pl.all().shift(n=1)]
   m["sel/all-cum_max"] = [@pl.all().cum_max(reverse=true)]
-  m["sel/all-rank"] = [@pl.all().rank(method=@pl.RankMethod::Min)]
+  m["sel/all-rank"] = [@pl.all().rank(method_=@pl.RankMethod::Min)]
   m["sel/all-diff"] = [@pl.all().diff(n=1)]
   m["sel/all-diff-dates"] = [@pl.all().diff(n=1)]
   m["sel/all-reverse"] = [@pl.all().reverse()]
@@ -1125,27 +1131,27 @@ fn golden_expr_seq_cases_9(
   m["sel/all-fills-mean"] = [
     @pl.all().fill_null_strategy(@pl.FillStrategy::Mean),
   ]
-  m["sel/all-shift-z0"] = [@pl.all().shift(1)]
-  m["sel/all-shift-e0"] = [@pl.all().shift(1)]
-  m["sel/cols-empty"] = [@pl.cols([]).shift(1)]
-  m["sel/cols-missing"] = [@pl.cols(["i32", "zz"]).shift(1)]
+  m["sel/all-shift-z0"] = [@pl.all().shift(n=1)]
+  m["sel/all-shift-e0"] = [@pl.all().shift(n=1)]
+  m["sel/cols-empty"] = [@pl.cols([]).shift(n=1)]
+  m["sel/cols-missing"] = [@pl.cols(["i32", "zz"]).shift(n=1)]
   m["sel/cols-op"] = [
-    @pl.cols(["i32", "i64"]) - @pl.cols(["i32", "i64"]).shift(1),
+    @pl.cols(["i32", "i64"]) - @pl.cols(["i32", "i64"]).shift(n=1),
   ]
   m["sel/cols-op-width"] = [
-    @pl.cols(["i32", "i64"]) - @pl.cols(["i32", "i64", "f64"]).shift(1),
+    @pl.cols(["i32", "i64"]) - @pl.cols(["i32", "i64", "f64"]).shift(n=1),
   ]
   m["sel/cols-alias"] = [@pl.cols(["i32", "i64"]).cum_sum().alias("x")]
   m["sel/all-wc"] = [@pl.all().cum_sum()]
-  m["len1/sum-shift"] = [@pl.col("i32").sum().shift(1)]
-  m["len1/sum-shift-neg"] = [@pl.col("i32").sum().shift(-1)]
+  m["len1/sum-shift"] = [@pl.col("i32").sum().shift(n=1)]
+  m["len1/sum-shift-neg"] = [@pl.col("i32").sum().shift(n=-1)]
   m["len1/sum-shift-fill"] = [
-    @pl.col("i32").sum().shift(1, fill_value=@pl.AnyValue::Int32(7)),
+    @pl.col("i32").sum().shift(n=1, fill_value=@pl.AnyValue::Int32(7)),
   ]
   m["len1/sum-cum_sum"] = [@pl.col("i32").sum().cum_sum()]
   m["len1/sum-diff"] = [@pl.col("i32").sum().diff(n=1)]
   m["len1/sum-rank"] = [
-    @pl.col("i32").sum().rank(method=@pl.RankMethod::Average),
+    @pl.col("i32").sum().rank(method_=@pl.RankMethod::Average),
   ]
   m["len1/sum-reverse"] = [@pl.col("i32").sum().reverse()]
   m["len1/sum-fills"] = [
@@ -1153,22 +1159,22 @@ fn golden_expr_seq_cases_9(
   ]
   m["len1/lit-cum_sum"] = [@pl.lit_int(1L).cum_sum()]
   m["len1/litf-cum_sum"] = [@pl.lit_float(1.5).cum_sum()]
-  m["len1/lit-shift"] = [@pl.lit_int(1L).shift(1)]
+  m["len1/lit-shift"] = [@pl.lit_int(1L).shift(n=1)]
   m["len1/lit-diff"] = [@pl.lit_int(1L).diff(n=1)]
-  m["len1/lit-rank"] = [@pl.lit_int(1L).rank(method=@pl.RankMethod::Average)]
+  m["len1/lit-rank"] = [@pl.lit_int(1L).rank(method_=@pl.RankMethod::Average)]
   m["len1/lit-reverse"] = [@pl.lit_int(1L).reverse()]
   m["len1/lit-cum_count"] = [@pl.lit_int(1L).cum_count()]
   m["len1/lit-strong-cum_sum"] = [@pl.lit(@pl.AnyValue::Int32(5)).cum_sum()]
   m["len1/lit-str-cum_min"] = [@pl.lit_str("a").cum_min()]
   m["len1/lit-null-cum_sum"] = [@pl.lit(@pl.AnyValue::Null).cum_sum()]
-  m["len1/lit-null-shift"] = [@pl.lit(@pl.AnyValue::Null).shift(1)]
+  m["len1/lit-null-shift"] = [@pl.lit(@pl.AnyValue::Null).shift(n=1)]
   m["len1/col-and-lit-cum"] = [
     @pl.col("i32"),
     @pl.lit_int(1L).cum_sum().alias("c"),
   ]
   m["len1/col-and-sum-shift"] = [
     @pl.col("i32"),
-    @pl.col("i32").sum().shift(1).alias("s"),
+    @pl.col("i32").sum().shift(n=1).alias("s"),
   ]
 }
 
@@ -1183,9 +1189,9 @@ fn golden_expr_seq_cases_10(
     @pl.col("i64").sum().cum_sum().alias("c"),
   ]
   m["len1/wc-lit-cum"] = [@pl.lit_int(1L).cum_sum().alias("c")]
-  m["len1/wc-sum-shift"] = [@pl.col("i32").sum().shift(1).alias("c")]
+  m["len1/wc-sum-shift"] = [@pl.col("i32").sum().shift(n=1).alias("c")]
   m["len1/z0-lit-cum"] = [@pl.lit_int(1L).cum_sum()]
-  m["len1/z0-lit-shift"] = [@pl.lit_int(1L).shift(1)]
+  m["len1/z0-lit-shift"] = [@pl.lit_int(1L).shift(n=1)]
   m["len1/e0-col-and-seq"] = [
     @pl.col("i32"),
     @pl.col("i64").sum().cum_sum().alias("c"),
@@ -1194,11 +1200,11 @@ fn golden_expr_seq_cases_10(
   m["len1/e0-cum-lit"] = [@pl.lit_int(1L).cum_sum().alias("c"), @pl.col("i32")]
   m["len1/r1-cum"] = [
     @pl.col("i32").cum_sum(),
-    @pl.col("i64").shift(1).alias("s"),
+    @pl.col("i64").shift(n=1).alias("s"),
   ]
   m["len1/r1-lit-seq"] = [@pl.col("i32"), @pl.lit_int(2L).cum_sum().alias("c")]
   m["shape/two-lens"] = [
-    @pl.col("i32").shift(1),
+    @pl.col("i32").shift(n=1),
     @pl.lit_int(1L).cum_sum().alias("x"),
   ]
   m["shape/sum-vs-col"] = [@pl.col("i32").sum().cum_sum(), @pl.col("i64")]
@@ -1624,7 +1630,7 @@ fn golden_expr_seq_cases_14(
     @pl.col("s"),
     @pl.col("s").max().str().to_uppercase().alias("m"),
   ]
-  m["str/shift-then"] = [@pl.col("s").shift(1).str().to_uppercase()]
+  m["str/shift-then"] = [@pl.col("s").shift(n=1).str().to_uppercase()]
   m["str/cum_min-then"] = [@pl.col("s").cum_min().str().len_chars()]
   m["str/add-strings"] = [@pl.col("s").str().to_uppercase() + @pl.col("u")]
   m["str/cast-len"] = [
@@ -1649,7 +1655,7 @@ fn golden_expr_seq_cases_14(
     ),
   ]
   m["str/rank-len"] = [
-    @pl.col("s").str().len_chars().rank(method=@pl.RankMethod::Dense),
+    @pl.col("s").str().len_chars().rank(method_=@pl.RankMethod::Dense),
   ]
   m["str/cum_sum-len"] = [@pl.col("s").str().len_chars().cum_sum()]
   m["str/diff-len"] = [@pl.col("s").str().len_chars().diff(n=1)]
@@ -1835,7 +1841,7 @@ fn golden_expr_seq_cases_16(
     @pl.col("s").dt().year(),
     @pl.col("zz").dt().year(),
   ]
-  m["dt/shift-then"] = [@pl.col("d").shift(1).dt().year()]
+  m["dt/shift-then"] = [@pl.col("d").shift(n=1).dt().year()]
   m["dt/cum_max-then"] = [@pl.col("d").cum_max().dt().year()]
   m["dt/reverse-then"] = [@pl.col("dt").reverse().dt().day()]
   m["dt/fills-then"] = [
@@ -1846,7 +1852,7 @@ fn golden_expr_seq_cases_16(
     @pl.col("d").cast(@pl.DataType::Datetime).dt().hour(),
   ]
   m["dt/rank-year"] = [
-    @pl.col("d").dt().year().rank(method=@pl.RankMethod::Min),
+    @pl.col("d").dt().year().rank(method_=@pl.RankMethod::Min),
   ]
   m["dt/diff-year"] = [@pl.col("d").dt().year().diff(n=1)]
   m["dt/lit-col"] = [

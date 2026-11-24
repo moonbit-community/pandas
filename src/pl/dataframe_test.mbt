@@ -93,7 +93,7 @@ test "dataframe error messages" {
     "ShapeMismatch: could not create a new DataFrame: height of column 'n' (0) does not match height of column 'a' (1)",
   )
   match raises(() => @pl.DataFrame::new([a]).column("zz")) {
-    Some(@pl.ColumnNotFound(m)) => assert_eq(m, "column 'zz' not found")
+    Some(@pl.ColumnNotFound(m)) => assert_eq(m, "\"zz\" not found")
     _ => fail("expected ColumnNotFound")
   }
 }
@@ -330,7 +330,7 @@ test "DataFrame::get out-of-bounds message" {
   // an unknown column is reported before the row is looked at
   assert_eq(
     err_text(() => df.get(99, "zz")),
-    "ColumnNotFound: column 'zz' not found",
+    "ColumnNotFound: \"zz\" not found",
   )
   let z = @pl.DataFrame::new([@pl.Series::null("n", 0)])
   assert_eq(
@@ -340,7 +340,7 @@ test "DataFrame::get out-of-bounds message" {
   // a frame without columns has no column 'a', whatever the row
   assert_eq(
     err_text(() => @pl.DataFrame::empty().get(0, "a")),
-    "ColumnNotFound: column 'a' not found",
+    "ColumnNotFound: \"a\" not found",
   )
   assert_true(
     raises(() => @pl.DataFrame::empty().get(0, "a"))

@@ -81,14 +81,14 @@ fn xseq_check_limit(
 /// The operation on the evaluated input.
 fn SeqOp::apply(self : SeqOp, s : Series) -> Series raise PolarsError {
   match self {
-    Shift(n, fill) => s.shift(n, fill_value=fill)
+    Shift(n, fill) => s.shift(n~, fill_value=fill)
     Diff(n) => s.diff(n~)
     CumSum(rev) => s.cum_sum(reverse=rev)
     CumMin(rev) => s.cum_min(reverse=rev)
     CumMax(rev) => s.cum_max(reverse=rev)
     CumProd(rev) => s.cum_prod(reverse=rev)
     CumCount(rev) => s.cum_count(reverse=rev)
-    Rank(method, descending) => s.rank(method~, descending~)
+    Rank(method, descending) => s.rank(method_=method, descending~)
     Reverse => s.reverse()
     Fill(strategy, limit) => s.fill_null_strategy(strategy, limit?)
   }
@@ -104,8 +104,8 @@ fn Expr::seq(self : Expr, op : SeqOp) -> Expr {
 // ---------------------------------------------------------------------------
 
 ///|
-/// Moves the values down by `n` rows (up for a negative `n`); the rows that
-/// are left empty are null, or `fill_value` when it is not `AnyValue::Null`.
+/// Moves the values down by `n` rows (default 1, as in polars; up for a negative
+/// `n`); the rows that are left empty are null, or `fill_value` when it is not `AnyValue::Null`.
 /// The type is that of the column, or the supertype of the column and the
 /// fill value (a typed value: an `Int32` column with `AnyValue::Float64(0.5)`
 /// gives `Float64`). `n` beyond the length gives all nulls. The output is
@@ -114,7 +114,7 @@ fn Expr::seq(self : Expr, op : SeqOp) -> Expr {
 /// ```mbt check
 /// test {
 ///   let df = @pl.DataFrame::new([@pl.Series::int32("a", [1, 2, 3])])
-///   let out = df.select([@pl.col("a").shift(1)])
+///   let out = df.select([@pl.col("a").shift()])
 ///   assert_eq(out.column("a").to_int32_array(), [None, Some(1), Some(2)])
 /// }
 /// ```
@@ -125,7 +125,7 @@ fn Expr::seq(self : Expr, op : SeqOp) -> Expr {
 /// value in a `Boolean` column (see `Series::shift`).
 pub fn Expr::shift(
   self : Expr,
-  n : Int32,
+  n~ : Int32 = 1,
   fill_value~ : AnyValue = AnyValue::Null,
 ) -> Expr {
   self.seq(SeqOp::Shift(n, fill_value))
@@ -190,10 +190,10 @@ pub fn Expr::cum_count(self : Expr, reverse~ : Bool = false) -> Expr {
 /// The output is named after the column.
 pub fn Expr::rank(
   self : Expr,
-  method~ : RankMethod = Average,
+  method_~ : RankMethod = Average,
   descending~ : Bool = false,
 ) -> Expr {
-  self.seq(SeqOp::Rank(method, descending))
+  self.seq(SeqOp::Rank(method_, descending))
 }
 
 ///|

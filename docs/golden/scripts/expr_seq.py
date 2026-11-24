@@ -258,7 +258,7 @@ def to_mb(n):
         return _prev["to_mb"](n)
     if k == "shift":
         f = "" if n[3] is None else f", fill_value={anyv_mb(n[3][0], n[3][1])}"
-        return f"{to_mb(n[1])}.shift({mb_i32(n[2])}{f})"
+        return f"{to_mb(n[1])}.shift(n={mb_i32(n[2])}{f})"
     if k == "diff":
         return f"{to_mb(n[1])}.diff(n={mb_i32(n[2])})"
     if k == "cum":
@@ -266,7 +266,7 @@ def to_mb(n):
         return f"{to_mb(n[2])}.cum_{n[1]}({r[2:]})"
     if k == "rank":
         d = ", descending=true" if n[3] else ""
-        return f"{to_mb(n[1])}.rank(method=@pl.RankMethod::{MB_RANK[n[2]]}{d})"
+        return f"{to_mb(n[1])}.rank(method_=@pl.RankMethod::{MB_RANK[n[2]]}{d})"
     if k == "reverse":
         return f"{to_mb(n[1])}.reverse()"
     if k == "fills":

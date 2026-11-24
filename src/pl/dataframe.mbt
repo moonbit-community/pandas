@@ -105,14 +105,16 @@ pub fn DataFrame::get_columns(self : DataFrame) -> Array[Series] {
 /// The column called `name`.
 ///
 /// # Errors
-/// Raises `ColumnNotFound` when there is no such column.
+/// Raises `ColumnNotFound` when there is no such column, with the text of
+/// polars' `df.get_column("zz")`: `"zz" not found` (the name quoted as
+/// Rust's `Debug` does, like `drop` and `rename`).
 pub fn DataFrame::column(
   self : DataFrame,
   name : String,
 ) -> Series raise PolarsError {
   match self.index.get(name) {
     Some(i) => self.cols[i]
-    None => raise ColumnNotFound("column '\{name}' not found")
+    None => raise ColumnNotFound("\{debug_quote(name)} not found")
   }
 }
 

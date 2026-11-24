@@ -83,31 +83,42 @@ pub extend RankMethod with Show::{to_string}
 // ---------------------------------------------------------------------------
 
 ///|
-/// `a` moved down by `n` rows (up for a negative `n`): row `i` takes row
-/// `i - n`; rows without a source get `fill` (null for `None`). `n` is
-/// widened so that `Int32::MIN` cannot overflow.
-fn[T : Default] seq_shift_prim(
-  a : @arrow.PrimArray[T],
+/// The loop of every `shift`: for each of the `len` output rows `take(j)` is
+/// called with the row `j = i - n` of the source when it exists and `fill()`
+/// when it does not. `n` is widened so that `Int32::MIN` cannot overflow.
+fn seq_shift_loop(
+  len : Int32,
   n : Int32,
-  fill : T?,
-) -> @arrow.PrimArray[T] {
-  let len = a.length()
-  let b : @arrow.PrimBuilder[T] = @arrow.PrimBuilder::new(capacity=len)
+  take : (Int32) -> Unit,
+  fill : () -> Unit,
+) -> Unit {
   let wide = n.to_int64()
   let len64 = len.to_int64()
   for i in 0..<len {
     let src = i.to_int64() - wide
     if src >= 0L && src < len64 {
-      let j = src.to_int()
-      if a.is_valid(j) {
-        b.push(a.value(j))
-      } else {
-        b.push_null()
-      }
+      take(src.to_int())
     } else {
-      b.push_option(fill)
+      fill()
     }
   }
+}
+
+///|
+/// `a` moved down by `n` rows (up for a negative `n`): row `i` takes row
+/// `i - n`; rows without a source get `fill` (null for `None`).
+fn[T : Default] seq_shift_prim(
+  a : @arrow.PrimArray[T],
+  n : Int32,
+  fill : T?,
+) -> @arrow.PrimArray[T] {
+  let b : @arrow.PrimBuilder[T] = @arrow.PrimBuilder::new(capacity=a.length())
+  seq_shift_loop(
+    a.length(),
+    n,
+    j => if a.is_valid(j) { b.push(a.value(j)) } else { b.push_null() },
+    () => b.push_option(fill),
+  )
   b.finish()
 }
 
@@ -117,23 +128,13 @@ fn seq_shift_bool(
   n : Int32,
   fill : Bool?,
 ) -> @arrow.BoolArray {
-  let len = a.length()
-  let b = @arrow.BoolBuilder::new(capacity=len)
-  let wide = n.to_int64()
-  let len64 = len.to_int64()
-  for i in 0..<len {
-    let src = i.to_int64() - wide
-    if src >= 0L && src < len64 {
-      let j = src.to_int()
-      if a.is_valid(j) {
-        b.push(a.value(j))
-      } else {
-        b.push_null()
-      }
-    } else {
-      b.push_option(fill)
-    }
-  }
+  let b = @arrow.BoolBuilder::new(capacity=a.length())
+  seq_shift_loop(
+    a.length(),
+    n,
+    j => if a.is_valid(j) { b.push(a.value(j)) } else { b.push_null() },
+    () => b.push_option(fill),
+  )
   b.finish()
 }
 
@@ -143,23 +144,13 @@ fn seq_shift_str(
   n : Int32,
   fill : String?,
 ) -> @arrow.StrArray {
-  let len = a.length()
-  let b = @arrow.StrBuilder::new(capacity=len)
-  let wide = n.to_int64()
-  let len64 = len.to_int64()
-  for i in 0..<len {
-    let src = i.to_int64() - wide
-    if src >= 0L && src < len64 {
-      let j = src.to_int()
-      if a.is_valid(j) {
-        b.push(a.value(j))
-      } else {
-        b.push_null()
-      }
-    } else {
-      b.push_option(fill)
-    }
-  }
+  let b = @arrow.StrBuilder::new(capacity=a.length())
+  seq_shift_loop(
+    a.length(),
+    n,
+    j => if a.is_valid(j) { b.push(a.value(j)) } else { b.push_null() },
+    () => b.push_option(fill),
+  )
   b.finish()
 }
 
@@ -205,7 +196,8 @@ fn seq_shift_fill(
 }
 
 ///|
-/// Moves the values down by `n` rows (up for a negative `n`). The rows that
+/// Moves the values down by `n` rows (default 1, as in polars; up for a negative
+/// `n`). The rows that
 /// get no value from the series are null, or `fill_value` when it is not
 /// `Null`; `n` beyond the length (either way) gives only fill rows.
 ///
@@ -222,7 +214,7 @@ fn seq_shift_fill(
 /// or `Datetime` fill value in a `Boolean` series.
 pub fn Series::shift(
   self : Series,
-  n : Int32,
+  n~ : Int32 = 1,
   fill_value~ : AnyValue = AnyValue::Null,
 ) -> Series raise PolarsError {
   let (base, fill) = if fill_value is Null {
@@ -632,18 +624,18 @@ pub fn Series::reverse(self : Series) -> Series {
 /// `descending`); a null row stays null and takes no rank.
 ///
 /// Equal values (`-0.0` and `0.0`, and every NaN, are equal) are numbered by
-/// `method`. The result is a `Float64` series for `Average` and an `Int64`
+/// `method_`. The result is a `Float64` series for `Average` and an `Int64`
 /// series for the other methods; a `Null` series gives all nulls of that
 /// type. The order is `Series::sort`'s (NaN above every number, strings by
 /// code point, stable), computed in O(n log n); `Ordinal` ranks of equal
 /// values follow the original order also for `descending`.
 pub fn Series::rank(
   self : Series,
-  method~ : RankMethod = Average,
+  method_~ : RankMethod = Average,
   descending~ : Bool = false,
 ) -> Series {
   let n = self.col.length()
-  let avg = method is Average
+  let avg = method_ is Average
   if self.col is Null(_) {
     let t = if avg { DataType::Float64 } else { DataType::Int64 }
     return Series::make(self.name, Column::full_null(t, n))
@@ -670,7 +662,7 @@ pub fn Series::rank(
     dense += 1L
     for k in start..<stop {
       let row = order[k]
-      match method {
+      match method_ {
         Average => floats[row] = (start + 1 + stop).to_double() / 2.0
         Min => ints[row] = (start + 1).to_int64()
         Max => ints[row] = stop.to_int64()

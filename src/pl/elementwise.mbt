@@ -21,6 +21,24 @@ pub(all) enum ClosedInterval {
 }
 
 ///|
+/// Formats the option with its polars name (`both`, `left`, `right`, `none`).
+pub impl Show for ClosedInterval with fn output(self, logger) {
+  logger.write_string(
+    match self {
+      Both => "both"
+      Left => "left"
+      Right => "right"
+      Neither => "none"
+    },
+  )
+}
+
+///|
+/// Makes `to_string` callable as a method, giving the same polars name as
+/// `Show`.
+pub extend ClosedInterval with Show::{to_string}
+
+///|
 /// The error polars gives for a function the type does not support.
 fn ew_unsupported(op : String, dtype : DataType) -> PolarsError {
   InvalidOperation("`\{op}` operation not supported for dtype `\{dtype}`")

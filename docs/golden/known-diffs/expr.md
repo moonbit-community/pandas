@@ -38,8 +38,8 @@
 
 ## 错误的先后：类型解析错误先于缺列和重名（终审修复轮）
 
-polars 在规划表达式时就会发现一部分类型错误（`date * i64`、`~date`、`f64 & date`），它们先于“缺列”和“输出重名”报出。本库现在也是这个次序：`select` 对每个表达式依次查缺列、类型解析错误、重名；`with_columns` 先查所有表达式的缺列，再对每个表达式查类型解析错误和重名（`eval.mbt` 的 `plan_check`：把表达式在一个同列无行的表上先算一遍，只保留下面三类错误，别的错误留给真正的求值）。
+polars 在规划表达式时就会发现一部分类型错误（`date * i64`、`~date`、`f64 & date`），它们先于“缺列”和“输出重名”报出。本库现在也是这个次序：`select` 对每个表达式依次查缺列、类型解析错误、重名；`with_columns` 先查所有表达式的缺列，再对每个表达式查类型解析错误和重名（`eval.mbt` 的 `plan_check`：把表达式在一个无行的表上先算一遍，只保留下面三类错误，别的错误留给真正的求值）。这次预演只在可能出错时做：表达式里有 `&`、`|`、`~`，或者有算术运算而且涉及时间类型（`Date`/`Datetime` 列或字面量、转成它们的 `cast`、`str().to_date()` / `to_datetime()` 的结果、带时间类型填充值的 `shift`）；预演用的表只含表达式读到的列，`is_in` 的值集合换成同类型的空 Series，所以代价与表的宽度和集合大小无关。
 
-- 三类错误是按**错误文案**判断的（`is_plan_time_error`）：含 `Date`/`Datetime` 操作数的算术（`operation not supported for dtypes ...` 带 `date`/`datetime`，以及 ` not allowed on `）、`&`/`|` 的 `ComputeError`（`& on ... is not supported`）、`~` 的 `not supported in 'not' operation`（`Float`、`String`、`Date` 等 polars 没有按位取反的类型；`Int32`/`Int64` 在 polars 里是合法的按位取反，本库在运行时才拒绝，见 `arith.md`，所以不算，名字检查先报）。
+- 三类错误是按**错误文案**判断的（`is_plan_time_error`）：含 `Date`/`Datetime` 操作数的算术（`operation not supported for dtypes ...` 带 `date`/`datetime`，以及 ` not allowed on `；例外：两边都是时间类型的减法 `Date - Date`、`Datetime - Datetime` 在 polars 里合法（得 `Duration`，本库没有这个类型），只在运行时报错，不算规划错误，所以后面的缺列和重名先报；同一个原因的推论：`(d - e) + 1`、`(t - u) + 1`（差再做算术）后面跟缺列或重名时，polars 在规划阶段就报 `InvalidOperation`（`Duration + int` 不合法），本库没有 `Duration`，先报 `ColumnNotFound` / `DuplicateColumn`）、`&`/`|` 的 `ComputeError`（`& on ... is not supported`）、`~` 的 `not supported in 'not' operation`（`Float`、`String`、`Date` 等 polars 没有按位取反的类型；`Int32`/`Int64` 在 polars 里是合法的按位取反，本库在运行时才拒绝，见 `arith.md`，所以不算，名字检查先报）。
 - polars 里一个错误是规划阶段还是运行阶段发现的，随运算和类型对而变（终审修复轮在 polars 2.1.0 上核实过的只有上面三类），本库没有逐对核实别的组合。别的类型错误仍按求值次序报，所以同时存在缺列或重名时，次序可能与 polars 相反。
 - `tests` 里 `type resolution errors come before missing columns and duplicate names`（`select_test.mbt`）钉住上面三类。
