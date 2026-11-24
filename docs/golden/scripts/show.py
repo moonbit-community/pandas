@@ -222,11 +222,17 @@ def frame_case(case_id, series):
         "id": case_id,
         "frame": [encode_series(s) for s in series],
         "expected": str(df),
+        "polars": "str(pl.DataFrame(frame))" if series else "str(pl.DataFrame())",
     }
 
 
 def series_case(case_id, s):
-    return {"id": case_id, "series": encode_series(s), "expected": str(s)}
+    return {
+        "id": case_id,
+        "series": encode_series(s),
+        "expected": str(s),
+        "polars": "str(series)",
+    }
 
 
 def main():
@@ -669,7 +675,6 @@ def main():
         # multi-line cells
         ("newline_wrap", "日" * 10 + " " + "日" * 10 + "\n" + "日 " * 14),
         ("newline_short_long", "ab\n" + "日" * 17),
-        # a cut cell (more than 30 characters)
         # exactly the column width: a line (with a leading space), and a word after a short word
         ("exact_31_line", "日" * 15 + "x"),
         ("exact_31_leading_space", " " + "日" * 15),
@@ -679,6 +684,7 @@ def main():
         ("exact_31_word_first", "日" * 15 + "x ab"),
         ("exact_31_word_empty_cur", " " + "日" * 15 + "x"),
         ("exact_32_word_after_word", "ab " + "日" * 16),
+        # a cut cell (more than 30 characters)
         ("cut_wide_words", "日 " * 20),
         ("cut_mixed", "ab日 " * 10),
     ]

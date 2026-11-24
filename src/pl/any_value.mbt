@@ -43,3 +43,44 @@ pub fn AnyValue::is_null(self : AnyValue) -> Bool {
     _ => false
   }
 }
+
+///|
+/// The value as a `Double` for the integer and float types (`Int32`, `Int64`,
+/// `Float32`, `Float64`); `None` for `Null`, `Boolean`, `String`, `Date` and
+/// `Datetime`. An `Int64` beyond 2^53 is rounded to the nearest `Double`.
+///
+/// ```mbt check
+/// test {
+///   let m = @pl.Series::int32("a", [1, 2, 4]).mean()
+///   assert_eq(m.to_double(), Some(7.0 / 3.0))
+///   assert_eq(@pl.AnyValue::String("x").to_double(), None)
+/// }
+/// ```
+pub fn AnyValue::to_double(self : AnyValue) -> Double? {
+  match self {
+    Int32(x) => Some(x.to_double())
+    Int64(x) => Some(x.to_double())
+    Float32(x) => Some(x.to_double())
+    Float64(x) => Some(x)
+    _ => None
+  }
+}
+
+///|
+/// The value as an `Int64` for the integer types (`Int32`, `Int64`); `None`
+/// for everything else, floats included (cast the series first to truncate).
+///
+/// ```mbt check
+/// test {
+///   let total = @pl.Series::int32("a", [1, 2, 4]).sum()
+///   assert_eq(total.to_int64(), Some(7L))
+///   assert_eq(@pl.AnyValue::Float64(1.0).to_int64(), None)
+/// }
+/// ```
+pub fn AnyValue::to_int64(self : AnyValue) -> Int64? {
+  match self {
+    Int32(x) => Some(x.to_int64())
+    Int64(x) => Some(x)
+    _ => None
+  }
+}

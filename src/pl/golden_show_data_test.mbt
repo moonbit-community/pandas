@@ -43,7 +43,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/mixed"
+  #|  "id": "frame/mixed",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (25, 1)\n┌─────┐\n│ n   │\n│ --- │\n│ i64 │\n╞═════╡\n│ 0   │\n│ 1   │\n│ 2   │\n│ 3   │\n│ 4   │\n│ …   │\n│ 20  │\n│ 21  │\n│ 22  │\n│ 23  │\n│ 24  │\n└─────┘",
@@ -80,7 +81,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/rows25"
+  #|  "id": "frame/rows25",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (0, 1)\n┌─────┐\n│ n   │\n│ --- │\n│ i64 │\n╞═════╡\n└─────┘",
@@ -91,7 +93,8 @@ let golden_show : String =
   #|    "values": []
   #|   }
   #|  ],
-  #|  "id": "frame/rows0"
+  #|  "id": "frame/rows0",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (1, 1)\n┌─────┐\n│ n   │\n│ --- │\n│ i64 │\n╞═════╡\n│ 0   │\n└─────┘",
@@ -104,7 +107,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/rows1"
+  #|  "id": "frame/rows1",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (9, 1)\n┌─────┐\n│ n   │\n│ --- │\n│ i64 │\n╞═════╡\n│ 0   │\n│ 1   │\n│ 2   │\n│ 3   │\n│ 4   │\n│ 5   │\n│ 6   │\n│ 7   │\n│ 8   │\n└─────┘",
@@ -125,7 +129,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/rows9"
+  #|  "id": "frame/rows9",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (10, 1)\n┌─────┐\n│ n   │\n│ --- │\n│ i64 │\n╞═════╡\n│ 0   │\n│ 1   │\n│ 2   │\n│ 3   │\n│ 4   │\n│ 5   │\n│ 6   │\n│ 7   │\n│ 8   │\n│ 9   │\n└─────┘",
@@ -147,7 +152,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/rows10"
+  #|  "id": "frame/rows10",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (11, 1)\n┌─────┐\n│ n   │\n│ --- │\n│ i64 │\n╞═════╡\n│ 0   │\n│ 1   │\n│ 2   │\n│ 3   │\n│ 4   │\n│ …   │\n│ 6   │\n│ 7   │\n│ 8   │\n│ 9   │\n│ 10  │\n└─────┘",
@@ -170,7 +176,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/rows11"
+  #|  "id": "frame/rows11",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (12, 1)\n┌─────┐\n│ n   │\n│ --- │\n│ i64 │\n╞═════╡\n│ 0   │\n│ 1   │\n│ 2   │\n│ 3   │\n│ 4   │\n│ …   │\n│ 7   │\n│ 8   │\n│ 9   │\n│ 10  │\n│ 11  │\n└─────┘",
@@ -194,7 +201,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/rows12"
+  #|  "id": "frame/rows12",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 12)\n┌─────┬─────┬─────┬─────┬───┬─────┬─────┬─────┬─────┐\n│ c0  ┆ c1  ┆ c2  ┆ c3  ┆ … ┆ c8  ┆ c9  ┆ c10 ┆ c11 │\n│ --- ┆ --- ┆ --- ┆ --- ┆   ┆ --- ┆ --- ┆ --- ┆ --- │\n│ i32 ┆ i32 ┆ i32 ┆ i32 ┆   ┆ i32 ┆ i32 ┆ i32 ┆ i32 │\n╞═════╪═════╪═════╪═════╪═══╪═════╪═════╪═════╪═════╡\n│ 0   ┆ 1   ┆ 2   ┆ 3   ┆ … ┆ 8   ┆ 9   ┆ 10  ┆ 11  │\n│ 0   ┆ -1  ┆ -2  ┆ -3  ┆ … ┆ -8  ┆ -9  ┆ -10 ┆ -11 │\n└─────┴─────┴─────┴─────┴───┴─────┴─────┴─────┴─────┘",
@@ -296,7 +304,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/cols12"
+  #|  "id": "frame/cols12",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 7)\n┌─────┬─────┬─────┬─────┬─────┬─────┬─────┐\n│ c0  ┆ c1  ┆ c2  ┆ c3  ┆ c4  ┆ c5  ┆ c6  │\n│ --- ┆ --- ┆ --- ┆ --- ┆ --- ┆ --- ┆ --- │\n│ i32 ┆ i32 ┆ i32 ┆ i32 ┆ i32 ┆ i32 ┆ i32 │\n╞═════╪═════╪═════╪═════╪═════╪═════╪═════╡\n│ 0   ┆ 1   ┆ 2   ┆ 3   ┆ 4   ┆ 5   ┆ 6   │\n│ 0   ┆ -1  ┆ -2  ┆ -3  ┆ -4  ┆ -5  ┆ -6  │\n└─────┴─────┴─────┴─────┴─────┴─────┴─────┘",
@@ -358,7 +367,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/cols7"
+  #|  "id": "frame/cols7",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 8)\n┌─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┐\n│ c0  ┆ c1  ┆ c2  ┆ c3  ┆ c4  ┆ c5  ┆ c6  ┆ c7  │\n│ --- ┆ --- ┆ --- ┆ --- ┆ --- ┆ --- ┆ --- ┆ --- │\n│ i32 ┆ i32 ┆ i32 ┆ i32 ┆ i32 ┆ i32 ┆ i32 ┆ i32 │\n╞═════╪═════╪═════╪═════╪═════╪═════╪═════╪═════╡\n│ 0   ┆ 1   ┆ 2   ┆ 3   ┆ 4   ┆ 5   ┆ 6   ┆ 7   │\n│ 0   ┆ -1  ┆ -2  ┆ -3  ┆ -4  ┆ -5  ┆ -6  ┆ -7  │\n└─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘",
@@ -428,7 +438,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/cols8"
+  #|  "id": "frame/cols8",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 9)\n┌─────┬─────┬─────┬─────┬───┬─────┬─────┬─────┬─────┐\n│ c0  ┆ c1  ┆ c2  ┆ c3  ┆ … ┆ c5  ┆ c6  ┆ c7  ┆ c8  │\n│ --- ┆ --- ┆ --- ┆ --- ┆   ┆ --- ┆ --- ┆ --- ┆ --- │\n│ i32 ┆ i32 ┆ i32 ┆ i32 ┆   ┆ i32 ┆ i32 ┆ i32 ┆ i32 │\n╞═════╪═════╪═════╪═════╪═══╪═════╪═════╪═════╪═════╡\n│ 0   ┆ 1   ┆ 2   ┆ 3   ┆ … ┆ 5   ┆ 6   ┆ 7   ┆ 8   │\n│ 0   ┆ -1  ┆ -2  ┆ -3  ┆ … ┆ -5  ┆ -6  ┆ -7  ┆ -8  │\n└─────┴─────┴─────┴─────┴───┴─────┴─────┴─────┴─────┘",
@@ -506,7 +517,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/cols9"
+  #|  "id": "frame/cols9",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 10)\n┌─────┬─────┬─────┬─────┬───┬─────┬─────┬─────┬─────┐\n│ c0  ┆ c1  ┆ c2  ┆ c3  ┆ … ┆ c6  ┆ c7  ┆ c8  ┆ c9  │\n│ --- ┆ --- ┆ --- ┆ --- ┆   ┆ --- ┆ --- ┆ --- ┆ --- │\n│ i32 ┆ i32 ┆ i32 ┆ i32 ┆   ┆ i32 ┆ i32 ┆ i32 ┆ i32 │\n╞═════╪═════╪═════╪═════╪═══╪═════╪═════╪═════╪═════╡\n│ 0   ┆ 1   ┆ 2   ┆ 3   ┆ … ┆ 6   ┆ 7   ┆ 8   ┆ 9   │\n│ 0   ┆ -1  ┆ -2  ┆ -3  ┆ … ┆ -6  ┆ -7  ┆ -8  ┆ -9  │\n└─────┴─────┴─────┴─────┴───┴─────┴─────┴─────┴─────┘",
@@ -592,7 +604,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/cols10"
+  #|  "id": "frame/cols10",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (4, 4)\n┌────────────┬────────────────────────────┬───────────┬─────────────┐\n│ d          ┆ t                          ┆ f         ┆ i           │\n│ ---        ┆ ---                        ┆ ---       ┆ ---         │\n│ date       ┆ datetime[μs]               ┆ f32       ┆ i32         │\n╞════════════╪════════════════════════════╪═══════════╪═════════════╡\n│ 1900-01-01 ┆ 1969-12-31 23:59:59.999999 ┆ 0.1       ┆ -2147483648 │\n│ 1969-12-31 ┆ 1970-01-01 00:00:00        ┆ -0.0      ┆ 0           │\n│ 1970-01-01 ┆ 2024-02-29 12:34:56.123456 ┆ inf       ┆ 1           │\n│ 2024-02-29 ┆ 1970-01-01 23:59:59.999999 ┆ 3.4000e38 ┆ 2147483647  │\n└────────────┴────────────────────────────┴───────────┴─────────────┘",
@@ -638,7 +651,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/temporal_narrow"
+  #|  "id": "frame/temporal_narrow",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (7, 2)\n┌────────────────────────────┬────────────┐\n│ t                          ┆ d          │\n│ ---                        ┆ ---        │\n│ datetime[μs]               ┆ date       │\n╞════════════════════════════╪════════════╡\n│ 1970-01-01 00:00:00        ┆ 9999-12-31 │\n│ 1970-01-01 00:00:00.001    ┆ 0001-01-01 │\n│ 1970-01-01 00:00:01        ┆ 2243-10-17 │\n│ 1970-01-01 00:01:00        ┆ 1997-05-19 │\n│ 1970-01-01 00:00:00.000001 ┆ null       │\n│ 1970-01-01 00:00:00.123    ┆ 1970-01-01 │\n│ null                       ┆ 1969-12-31 │\n└────────────────────────────┴────────────┘",
@@ -670,7 +684,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/datetime_variants"
+  #|  "id": "frame/datetime_variants",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (6, 1)\n┌───────────┐\n│ x         │\n│ ---       │\n│ f64       │\n╞═══════════╡\n│ 0.1       │\n│ 1.0000e20 │\n│ 0.0000001 │\n│ 1.2346e8  │\n│ -inf      │\n│ 0.333333  │\n└───────────┘",
@@ -688,7 +703,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/floats"
+  #|  "id": "frame/floats",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (8, 2)\n┌─────────────┬─────────────┐\n│ x           ┆ y           │\n│ ---         ┆ ---         │\n│ f64         ┆ f32         │\n╞═════════════╪═════════════╡\n│ 1.0000e15   ┆ 1.0000e12   │\n│ 1.0000e16   ┆ 1.0000e13   │\n│ 1.2346e7    ┆ 1.0000e-6   │\n│ 0.00001     ┆ 1.0000e-7   │\n│ 0.0001      ┆ 1.6777216e7 │\n│ -0.0        ┆ 3.141593    │\n│ 4.9407e-324 ┆ 0.5         │\n│ 1.7977e308  ┆ null        │\n└─────────────┴─────────────┘",
@@ -722,7 +738,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/floats2"
+  #|  "id": "frame/floats2",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (4, 1)\n┌─────────────────────────────────┐\n│ s                               │\n│ ---                             │\n│ str                             │\n╞═════════════════════════════════╡\n│                                 │\n│ 012345678901234567890123456789… │\n│ line1                           │\n│ line2                           │\n│ say \"hi\"                        │\n└─────────────────────────────────┘",
@@ -738,7 +755,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/strings"
+  #|  "id": "frame/strings",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (7, 1)\n┌─────────────────────────────────┐\n│ s                               │\n│ ---                             │\n│ str                             │\n╞═════════════════════════════════╡\n│ aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa  │\n│ aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa… │\n│ bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb… │\n│ tab\there                        │\n│ back\\slash                      │\n│ cr\rx                            │\n│ null                            │\n└─────────────────────────────────┘",
@@ -757,7 +775,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/strings_more"
+  #|  "id": "frame/strings_more",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 1)\n┌──────┐\n│ z    │\n│ ---  │\n│ null │\n╞══════╡\n│ null │\n│ null │\n└──────┘",
@@ -771,7 +790,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/null_col"
+  #|  "id": "frame/null_col",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ z    ┆ a   │\n│ ---  ┆ --- │\n│ null ┆ i64 │\n╞══════╪═════╡\n│ null ┆ 1   │\n│ null ┆ 2   │\n└──────┴─────┘",
@@ -793,12 +813,14 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/null_col_mixed"
+  #|  "id": "frame/null_col_mixed",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (0, 0)\n┌┐\n╞╡\n└┘",
   #|  "frame": [],
-  #|  "id": "frame/no_columns"
+  #|  "id": "frame/no_columns",
+  #|  "polars": "str(pl.DataFrame())"
   #| },
   #| {
   #|  "expected": "shape: (0, 2)\n┌─────┬─────┐\n│ a   ┆ b   │\n│ --- ┆ --- │\n│ i64 ┆ str │\n╞═════╪═════╡\n└─────┴─────┘",
@@ -814,7 +836,8 @@ let golden_show : String =
   #|    "values": []
   #|   }
   #|  ],
-  #|  "id": "frame/zero_rows"
+  #|  "id": "frame/zero_rows",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (0, 6)\n┌──────┬─────┬─────┬──────┬──────────────┬──────┐\n│ b    ┆ i   ┆ f   ┆ d    ┆ t            ┆ n    │\n│ ---  ┆ --- ┆ --- ┆ ---  ┆ ---          ┆ ---  │\n│ bool ┆ i32 ┆ f32 ┆ date ┆ datetime[μs] ┆ null │\n╞══════╪═════╪═════╪══════╪══════════════╪══════╡\n└──────┴─────┴─────┴──────┴──────────────┴──────┘",
@@ -850,7 +873,8 @@ let golden_show : String =
   #|    "values": []
   #|   }
   #|  ],
-  #|  "id": "frame/zero_rows_all"
+  #|  "id": "frame/zero_rows_all",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (3, 1)\n┌──────────────────────┐\n│ big                  │\n│ ---                  │\n│ i64                  │\n╞══════════════════════╡\n│ -9223372036854775808 │\n│ 9223372036854775807  │\n│ null                 │\n└──────────────────────┘",
@@ -865,7 +889,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/int64_extremes"
+  #|  "id": "frame/int64_extremes",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (3, 1)\n┌────────────────────────────────┐\n│ a_rather_long_column_name_here │\n│ ---                            │\n│ i64                            │\n╞════════════════════════════════╡\n│ 1                              │\n│ 22                             │\n│ 333                            │\n└────────────────────────────────┘",
@@ -880,7 +905,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/long_name"
+  #|  "id": "frame/long_name",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (3, 1)\n┌───────┐\n│ b     │\n│ ---   │\n│ bool  │\n╞═══════╡\n│ true  │\n│ false │\n│ null  │\n└───────┘",
@@ -895,7 +921,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/bools"
+  #|  "id": "frame/bools",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬──────┐\n│ a    ┆ b    │\n│ ---  ┆ ---  │\n│ i64  ┆ str  │\n╞══════╪══════╡\n│ null ┆ null │\n│ null ┆ null │\n└──────┴──────┘",
@@ -917,11 +944,13 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/all_null_cols"
+  #|  "id": "frame/all_null_cols",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (3,)\nSeries: 'a' [i64]\n[\n\t1\n\t2\n\tnull\n]",
   #|  "id": "series/mixed_a",
+  #|  "polars": "str(series)",
   #|  "series": {
   #|   "dtype": "i64",
   #|   "name": "a",
@@ -935,6 +964,7 @@ let golden_show : String =
   #| {
   #|  "expected": "shape: (25,)\nSeries: 'n' [i64]\n[\n\t0\n\t1\n\t2\n\t3\n\t4\n\t…\n\t20\n\t21\n\t22\n\t23\n\t24\n]",
   #|  "id": "series/rows25",
+  #|  "polars": "str(series)",
   #|  "series": {
   #|   "dtype": "i64",
   #|   "name": "n",
@@ -970,6 +1000,7 @@ let golden_show : String =
   #| {
   #|  "expected": "shape: (0,)\nSeries: 's' [str]\n[\n]",
   #|  "id": "series/empty_str",
+  #|  "polars": "str(series)",
   #|  "series": {
   #|   "dtype": "str",
   #|   "name": "s",
@@ -979,6 +1010,7 @@ let golden_show : String =
   #| {
   #|  "expected": "shape: (3,)\nSeries: 'b' [str]\n[\n\t\"x\"\n\tnull\n\t\"a\"q\"\n]",
   #|  "id": "series/str",
+  #|  "polars": "str(series)",
   #|  "series": {
   #|   "dtype": "str",
   #|   "name": "b",
@@ -992,6 +1024,7 @@ let golden_show : String =
   #| {
   #|  "expected": "shape: (3,)\nSeries: 'c' [f64]\n[\n\t1.0\n\t2.5\n\tNaN\n]",
   #|  "id": "series/f64",
+  #|  "polars": "str(series)",
   #|  "series": {
   #|   "dtype": "f64",
   #|   "name": "c",
@@ -1005,6 +1038,7 @@ let golden_show : String =
   #| {
   #|  "expected": "shape: (3,)\nSeries: 'd' [bool]\n[\n\ttrue\n\tnull\n\tfalse\n]",
   #|  "id": "series/bool",
+  #|  "polars": "str(series)",
   #|  "series": {
   #|   "dtype": "bool",
   #|   "name": "d",
@@ -1018,6 +1052,7 @@ let golden_show : String =
   #| {
   #|  "expected": "shape: (4,)\nSeries: 'd' [date]\n[\n\t1900-01-01\n\t1969-12-31\n\t1970-01-01\n\t2024-02-29\n]",
   #|  "id": "series/date",
+  #|  "polars": "str(series)",
   #|  "series": {
   #|   "dtype": "date",
   #|   "name": "d",
@@ -1032,6 +1067,7 @@ let golden_show : String =
   #| {
   #|  "expected": "shape: (4,)\nSeries: 't' [datetime[μs]]\n[\n\t1969-12-31 23:59:59.999999\n\t1970-01-01 00:00:00\n\t2024-02-29 12:34:56.123456\n\t1970-01-01 23:59:59.999999\n]",
   #|  "id": "series/datetime",
+  #|  "polars": "str(series)",
   #|  "series": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "t",
@@ -1046,6 +1082,7 @@ let golden_show : String =
   #| {
   #|  "expected": "shape: (4,)\nSeries: 'f' [f32]\n[\n\t0.1\n\t-0.0\n\tinf\n\t3.4000e38\n]",
   #|  "id": "series/f32",
+  #|  "polars": "str(series)",
   #|  "series": {
   #|   "dtype": "f32",
   #|   "name": "f",
@@ -1060,6 +1097,7 @@ let golden_show : String =
   #| {
   #|  "expected": "shape: (4,)\nSeries: 'i' [i32]\n[\n\t-2147483648\n\t0\n\t1\n\t2147483647\n]",
   #|  "id": "series/i32",
+  #|  "polars": "str(series)",
   #|  "series": {
   #|   "dtype": "i32",
   #|   "name": "i",
@@ -1074,6 +1112,7 @@ let golden_show : String =
   #| {
   #|  "expected": "shape: (2,)\nSeries: 'z' [null]\n[\n\tnull\n\tnull\n]",
   #|  "id": "series/null",
+  #|  "polars": "str(series)",
   #|  "series": {
   #|   "dtype": "null",
   #|   "name": "z",
@@ -1086,6 +1125,7 @@ let golden_show : String =
   #| {
   #|  "expected": "shape: (4,)\nSeries: 's' [str]\n[\n\t\"\"\n\t\"012345678901234567890123456789…\n\t\"line1\nline2\"\n\t\"say \"hi\"\"\n]",
   #|  "id": "series/strings",
+  #|  "polars": "str(series)",
   #|  "series": {
   #|   "dtype": "str",
   #|   "name": "s",
@@ -1100,6 +1140,7 @@ let golden_show : String =
   #| {
   #|  "expected": "shape: (10,)\nSeries: 'n' [i64]\n[\n\t0\n\t1\n\t2\n\t3\n\t4\n\t5\n\t6\n\t7\n\t8\n\t9\n]",
   #|  "id": "series/rows10",
+  #|  "polars": "str(series)",
   #|  "series": {
   #|   "dtype": "i64",
   #|   "name": "n",
@@ -1120,6 +1161,7 @@ let golden_show : String =
   #| {
   #|  "expected": "shape: (11,)\nSeries: 'n' [i64]\n[\n\t0\n\t1\n\t2\n\t3\n\t4\n\t…\n\t6\n\t7\n\t8\n\t9\n\t10\n]",
   #|  "id": "series/rows11",
+  #|  "polars": "str(series)",
   #|  "series": {
   #|   "dtype": "i64",
   #|   "name": "n",
@@ -1141,6 +1183,7 @@ let golden_show : String =
   #| {
   #|  "expected": "shape: (0,)\nSeries: 'n' [i64]\n[\n]",
   #|  "id": "series/empty_i64",
+  #|  "polars": "str(series)",
   #|  "series": {
   #|   "dtype": "i64",
   #|   "name": "n",
@@ -1150,6 +1193,7 @@ let golden_show : String =
   #| {
   #|  "expected": "shape: (0,)\nSeries: 'n' [null]\n[\n]",
   #|  "id": "series/empty_null",
+  #|  "polars": "str(series)",
   #|  "series": {
   #|   "dtype": "null",
   #|   "name": "n",
@@ -1159,6 +1203,7 @@ let golden_show : String =
   #| {
   #|  "expected": "shape: (2,)\nSeries: '' [i64]\n[\n\t1\n\t2\n]",
   #|  "id": "series/empty_name",
+  #|  "polars": "str(series)",
   #|  "series": {
   #|   "dtype": "i64",
   #|   "name": "",
@@ -1171,6 +1216,7 @@ let golden_show : String =
   #| {
   #|  "expected": "shape: (1,)\nSeries: 'one' [f64]\n[\n\t1.5\n]",
   #|  "id": "series/one",
+  #|  "polars": "str(series)",
   #|  "series": {
   #|   "dtype": "f64",
   #|   "name": "one",
@@ -1212,7 +1258,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/floats_boundaries"
+  #|  "id": "frame/floats_boundaries",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (12, 1)\n┌──────────────┐\n│ x            │\n│ ---          │\n│ f32          │\n╞══════════════╡\n│ 1234.567749  │\n│ 0.123457     │\n│ 100.123001   │\n│ 0.000034     │\n│ 1.234567e6   │\n│ …            │\n│ 1.23456792e8 │\n│ 1e8          │\n│ 1.0          │\n│ 1.5          │\n│ 1.4013e-45   │\n└──────────────┘",
@@ -1236,11 +1283,13 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/f32_widening"
+  #|  "id": "frame/f32_widening",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (5,)\nSeries: 'x' [f64]\n[\n\t999999.5\n\t1e6\n\t12.123456\n\t0.0000001\n\t2.5000e-7\n]",
   #|  "id": "series/floats_boundaries",
+  #|  "polars": "str(series)",
   #|  "series": {
   #|   "dtype": "f64",
   #|   "name": "x",
@@ -1277,7 +1326,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/floats_carry"
+  #|  "id": "frame/floats_carry",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (5, 2)\n┌───────────────┬────────────────────────┐\n│ d             ┆ t                      │\n│ ---           ┆ ---                    │\n│ date          ┆ datetime[μs]           │\n╞═══════════════╪════════════════════════╡\n│ +10183-09-21  ┆ +14645-06-30 15:06:40  │\n│ -0768-02-04   ┆ -10706-07-03 08:53:20  │\n│ +262071-03-02 ┆ +255479-11-28 14:13:20 │\n│ -258132-11-01 ┆ -251540-02-03 09:46:40 │\n│ null          ┆ null                   │\n└───────────────┴────────────────────────┘",
@@ -1305,7 +1355,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/temporal_far"
+  #|  "id": "frame/temporal_far",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (7, 1)\n┌─────────────────────────────────┐\n│ s                               │\n│ ---                             │\n│ str                             │\n╞═════════════════════════════════╡\n│ x                               │\n│                                 │\n│ a\r                              │\n│ b                               │\n│  pad                            │\n│ éééééééééééééééééééééééééééééé… │\n│ éééééééééééééééééééééééééééééé  │\n│                                 │\n│                                 │\n│ a                               │\n│                                 │\n│ b                               │\n└─────────────────────────────────┘",
@@ -1324,7 +1375,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/strings_edge"
+  #|  "id": "frame/strings_edge",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ a   ┆ b   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ l1  ┆ 1   │\n│ l2  ┆     │\n│ l3  ┆     │\n│ x   ┆ 2   │\n└─────┴─────┘",
@@ -1346,7 +1398,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/multiline_two_cols"
+  #|  "id": "frame/multiline_two_cols",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (5, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 数据                            ┆ 1   │\n│ ａｂ                            ┆ 2   │\n│ 😀x                             ┆ 3   │\n│ 日本語日本語日本語日本語日本語  ┆ 4   │\n│ 日本語日本語日本語日本語日本語  ┆ 5   │\n│ 日本語                          ┆     │\n└─────────────────────────────────┴─────┘",
@@ -1374,7 +1427,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wide_chars"
+  #|  "id": "frame/wide_chars",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (3, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日本語日本語日本語日本語日本語  ┆ 1   │\n│ 日本語日本語日本語日本語日本語… ┆     │\n│ 数数数数数数数数数数数数数数数  ┆ 2   │\n│ 数                              ┆     │\n│ ok                              ┆ 3   │\n└─────────────────────────────────┴─────┘",
@@ -1398,7 +1452,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wide_truncated"
+  #|  "id": "frame/wide_truncated",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (1, 3)\n┌─────────────────────────────────┬─────┬──────┐\n│ aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa… ┆ b   ┆ 数据 │\n│ ---                             ┆ c   ┆ ---  │\n│ i64                             ┆ --- ┆ i64  │\n│                                 ┆ i64 ┆      │\n╞═════════════════════════════════╪═════╪══════╡\n│ 1                               ┆ 2   ┆ 3    │\n└─────────────────────────────────┴─────┴──────┘",
@@ -1425,7 +1480,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/name_edge"
+  #|  "id": "frame/name_edge",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (1, 1)\n┌────────────────────────────────┐\n│ nnnnnnnnnnnnnnnnnnnnnnnnnnnnnn │\n│ ---                            │\n│ i64                            │\n╞════════════════════════════════╡\n│ 1                              │\n└────────────────────────────────┘",
@@ -1438,7 +1494,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/name_30"
+  #|  "id": "frame/name_30",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (25, 12)\n┌─────┬─────┬─────┬─────┬───┬─────┬─────┬─────┬─────┐\n│ c0  ┆ c1  ┆ c2  ┆ c3  ┆ … ┆ c8  ┆ c9  ┆ c10 ┆ c11 │\n│ --- ┆ --- ┆ --- ┆ --- ┆   ┆ --- ┆ --- ┆ --- ┆ --- │\n│ i64 ┆ i64 ┆ i64 ┆ i64 ┆   ┆ i64 ┆ i64 ┆ i64 ┆ i64 │\n╞═════╪═════╪═════╪═════╪═══╪═════╪═════╪═════╪═════╡\n│ 0   ┆ 0   ┆ 0   ┆ 0   ┆ … ┆ 0   ┆ 0   ┆ 0   ┆ 0   │\n│ 1   ┆ 1   ┆ 1   ┆ 1   ┆ … ┆ 1   ┆ 1   ┆ 1   ┆ 1   │\n│ 2   ┆ 2   ┆ 2   ┆ 2   ┆ … ┆ 2   ┆ 2   ┆ 2   ┆ 2   │\n│ 3   ┆ 3   ┆ 3   ┆ 3   ┆ … ┆ 3   ┆ 3   ┆ 3   ┆ 3   │\n│ 4   ┆ 4   ┆ 4   ┆ 4   ┆ … ┆ 4   ┆ 4   ┆ 4   ┆ 4   │\n│ …   ┆ …   ┆ …   ┆ …   ┆ … ┆ …   ┆ …   ┆ …   ┆ …   │\n│ 20  ┆ 20  ┆ 20  ┆ 20  ┆ … ┆ 20  ┆ 20  ┆ 20  ┆ 20  │\n│ 21  ┆ 21  ┆ 21  ┆ 21  ┆ … ┆ 21  ┆ 21  ┆ 21  ┆ 21  │\n│ 22  ┆ 22  ┆ 22  ┆ 22  ┆ … ┆ 22  ┆ 22  ┆ 22  ┆ 22  │\n│ 23  ┆ 23  ┆ 23  ┆ 23  ┆ … ┆ 23  ┆ 23  ┆ 23  ┆ 23  │\n│ 24  ┆ 24  ┆ 24  ┆ 24  ┆ … ┆ 24  ┆ 24  ┆ 24  ┆ 24  │\n└─────┴─────┴─────┴─────┴───┴─────┴─────┴─────┴─────┘",
@@ -1816,7 +1873,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/folded_both"
+  #|  "id": "frame/folded_both",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (11, 4)\n┌─────┬──────────┬────────────┬───────┐\n│ a   ┆ b        ┆ c          ┆ d     │\n│ --- ┆ ---      ┆ ---        ┆ ---   │\n│ str ┆ f64      ┆ date       ┆ bool  │\n╞═════╪══════════╪════════════╪═══════╡\n│ 0   ┆ 0.0      ┆ 1970-01-01 ┆ true  │\n│ 1   ┆ 0.333333 ┆ 1970-01-02 ┆ false │\n│ 2   ┆ 0.666667 ┆ 1970-01-03 ┆ true  │\n│ 3   ┆ 1.0      ┆ 1970-01-04 ┆ false │\n│ 4   ┆ 1.333333 ┆ 1970-01-05 ┆ true  │\n│ …   ┆ …        ┆ …          ┆ …     │\n│ 6   ┆ 2.0      ┆ 1970-01-07 ┆ true  │\n│ 7   ┆ 2.333333 ┆ 1970-01-08 ┆ false │\n│ 8   ┆ 2.666667 ┆ 1970-01-09 ┆ true  │\n│ 9   ┆ 3.0      ┆ 1970-01-10 ┆ false │\n│ 10  ┆ 3.333333 ┆ 1970-01-11 ┆ true  │\n└─────┴──────────┴────────────┴───────┘",
@@ -1890,11 +1948,13 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/folded_mixed_types"
+  #|  "id": "frame/folded_mixed_types",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (1,)\nSeries: 's' [str]\n[\n\t\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n]",
   #|  "id": "series/str_30",
+  #|  "polars": "str(series)",
   #|  "series": {
   #|   "dtype": "str",
   #|   "name": "s",
@@ -1906,6 +1966,7 @@ let golden_show : String =
   #| {
   #|  "expected": "shape: (3,)\nSeries: 's' [str]\n[\n\t\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa…\n\t\"数数数数数数数数数数数数数数数数数数数数数数数数数数数数数数…\n\t\"x\ty\"\n]",
   #|  "id": "series/str_31",
+  #|  "polars": "str(series)",
   #|  "series": {
   #|   "dtype": "str",
   #|   "name": "s",
@@ -1919,6 +1980,7 @@ let golden_show : String =
   #| {
   #|  "expected": "shape: (12,)\nSeries: 's' [str]\n[\n\t\"0\"\n\t\"1\"\n\t\"2\"\n\t\"3\"\n\t\"4\"\n\t…\n\t\"7\"\n\t\"8\"\n\t\"9\"\n\t\"10\"\n\t\"11\"\n]",
   #|  "id": "series/folded_str",
+  #|  "polars": "str(series)",
   #|  "series": {
   #|   "dtype": "str",
   #|   "name": "s",
@@ -1941,6 +2003,7 @@ let golden_show : String =
   #| {
   #|  "expected": "shape: (3,)\nSeries: 't' [datetime[μs]]\n[\n\t+14645-06-30 15:06:40\n\t1970-01-01 00:00:00.001\n\t1970-01-01 00:00:00.000001\n]",
   #|  "id": "series/temporal_far",
+  #|  "polars": "str(series)",
   #|  "series": {
   #|   "dtype": "datetime[μs]",
   #|   "name": "t",
@@ -1954,6 +2017,7 @@ let golden_show : String =
   #| {
   #|  "expected": "shape: (2,)\nSeries: 'd' [date]\n[\n\t+10183-09-21\n\t-0768-02-04\n]",
   #|  "id": "series/date_far",
+  #|  "polars": "str(series)",
   #|  "series": {
   #|   "dtype": "date",
   #|   "name": "d",
@@ -1966,6 +2030,7 @@ let golden_show : String =
   #| {
   #|  "expected": "shape: (3,)\nSeries: 'x' [f32]\n[\n\t1234.567749\n\t0.1\n\t1.0000e-7\n]",
   #|  "id": "series/f32_widening",
+  #|  "polars": "str(series)",
   #|  "series": {
   #|   "dtype": "f32",
   #|   "name": "x",
@@ -1996,7 +2061,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/width_hangul"
+  #|  "id": "frame/width_hangul",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ é   ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2018,7 +2084,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/width_combining"
+  #|  "id": "frame/width_combining",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ a​b  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2040,7 +2107,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/width_zwsp"
+  #|  "id": "frame/width_zwsp",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ☺️  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2062,7 +2130,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/width_variation_selector"
+  #|  "id": "frame/width_variation_selector",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ￥  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2084,7 +2153,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/width_fullwidth_yen"
+  #|  "id": "frame/width_fullwidth_yen",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ｱｲｳ ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2106,7 +2176,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/width_halfwidth_katakana"
+  #|  "id": "frame/width_halfwidth_katakana",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ￨   ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2128,7 +2199,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/width_halfwidth_form"
+  #|  "id": "frame/width_halfwidth_form",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 𠀀  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2150,7 +2222,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/width_cjk_ext_b"
+  #|  "id": "frame/width_cjk_ext_b",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 🚀  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2172,7 +2245,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/width_rocket"
+  #|  "id": "frame/width_rocket",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 1️  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2194,7 +2268,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/width_vs16_digit"
+  #|  "id": "frame/width_vs16_digit",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ©️  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2216,7 +2291,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/width_vs16_copyright"
+  #|  "id": "frame/width_vs16_copyright",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ↔️  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2238,7 +2314,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/width_vs16_arrow"
+  #|  "id": "frame/width_vs16_arrow",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 🛳️  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2260,7 +2337,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/width_vs16_ship"
+  #|  "id": "frame/width_vs16_ship",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ a️   ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2282,7 +2360,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/width_vs16_letter"
+  #|  "id": "frame/width_vs16_letter",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (14, 1)\n┌────────┐\n│ s      │\n│ ---    │\n│ str    │\n╞════════╡\n│ 한국어 │\n│ é      │\n│ a​b     │\n│ ☺️     │\n│ ￥     │\n│ …      │\n│ 1️     │\n│ ©️     │\n│ ↔️     │\n│ 🛳️     │\n│ a️      │\n└────────┘",
@@ -2308,11 +2387,13 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/width_mixed"
+  #|  "id": "frame/width_mixed",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (14,)\nSeries: 's' [str]\n[\n\t\"한국어\"\n\t\"é\"\n\t\"a​b\"\n\t\"☺️\"\n\t\"￥\"\n\t…\n\t\"1️\"\n\t\"©️\"\n\t\"↔️\"\n\t\"🛳️\"\n\t\"a️\"\n]",
   #|  "id": "series/width_mixed",
+  #|  "polars": "str(series)",
   #|  "series": {
   #|   "dtype": "str",
   #|   "name": "s",
@@ -2354,7 +2435,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_zwj_family"
+  #|  "id": "frame/seq_zwj_family",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 👨‍👩‍👧‍👦  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2376,7 +2458,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_zwj_family_four"
+  #|  "id": "frame/seq_zwj_family_four",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 👩‍💻  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2398,7 +2481,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_zwj_profession"
+  #|  "id": "frame/seq_zwj_profession",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 👩‍❤️‍👨  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2420,7 +2504,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_zwj_couple_heart"
+  #|  "id": "frame/seq_zwj_couple_heart",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 🏳️‍🌈  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2442,7 +2527,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_zwj_pride_flag"
+  #|  "id": "frame/seq_zwj_pride_flag",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 👩🏽‍🤝‍👨🏻  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2464,7 +2550,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_zwj_tone_chain"
+  #|  "id": "frame/seq_zwj_tone_chain",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ❤‍🔥 ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2486,7 +2573,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_zwj_text_heart"
+  #|  "id": "frame/seq_zwj_text_heart",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ❤️‍🔥  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2508,7 +2596,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_zwj_heart_vs16"
+  #|  "id": "frame/seq_zwj_heart_vs16",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ a‍😀 ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2530,7 +2619,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_zwj_after_ascii"
+  #|  "id": "frame/seq_zwj_after_ascii",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 😀‍a ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2552,7 +2642,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_zwj_before_ascii"
+  #|  "id": "frame/seq_zwj_before_ascii",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ あ‍い ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -2574,7 +2665,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_zwj_wide_text"
+  #|  "id": "frame/seq_zwj_wide_text",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ‍    ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2596,7 +2688,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_zwj_alone"
+  #|  "id": "frame/seq_zwj_alone",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ 😀‍‍😀 ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -2618,7 +2711,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_zwj_twice"
+  #|  "id": "frame/seq_zwj_twice",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 👍🏽  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2640,7 +2734,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tone_thumb"
+  #|  "id": "frame/seq_tone_thumb",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ☝🏻  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2662,7 +2757,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tone_text_base"
+  #|  "id": "frame/seq_tone_text_base",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ a🏽 ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2684,7 +2780,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tone_after_ascii"
+  #|  "id": "frame/seq_tone_after_ascii",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 🏽  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2706,7 +2803,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tone_alone"
+  #|  "id": "frame/seq_tone_alone",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 1️⃣  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2728,7 +2826,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_keycap_digit"
+  #|  "id": "frame/seq_keycap_digit",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ #️⃣  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2750,7 +2849,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_keycap_hash"
+  #|  "id": "frame/seq_keycap_hash",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 1⃣   ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2772,7 +2872,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_keycap_no_vs16"
+  #|  "id": "frame/seq_keycap_no_vs16",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 😀⃣  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2794,7 +2895,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_keycap_on_emoji"
+  #|  "id": "frame/seq_keycap_on_emoji",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 🇨🇳  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2816,7 +2918,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_flag_cn"
+  #|  "id": "frame/seq_flag_cn",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 🇨   ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2838,7 +2941,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_flag_single"
+  #|  "id": "frame/seq_flag_single",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 🇨🇳🇺 ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2860,7 +2964,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_flag_three"
+  #|  "id": "frame/seq_flag_three",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ 🇨🇳🇺🇸 ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -2882,7 +2987,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_flag_two"
+  #|  "id": "frame/seq_flag_two",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 🏴󠁧󠁢󠁥󠁮󠁧󠁿  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2904,7 +3010,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_flag_england"
+  #|  "id": "frame/seq_flag_england",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ⌚︎   ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2926,7 +3033,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_vs15_emoji"
+  #|  "id": "frame/seq_vs15_emoji",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ☺︎   ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2948,7 +3056,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_vs15_text"
+  #|  "id": "frame/seq_vs15_text",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 👍︎   ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2970,7 +3079,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_vs15_thumb"
+  #|  "id": "frame/seq_vs15_thumb",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ あ️  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -2992,7 +3102,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_vs16_on_wide"
+  #|  "id": "frame/seq_vs16_on_wide",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ☺️️  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -3014,7 +3125,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_vs16_twice"
+  #|  "id": "frame/seq_vs16_twice",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ️    ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -3036,7 +3148,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_vs16_alone"
+  #|  "id": "frame/seq_vs16_alone",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ‘︁  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -3058,7 +3171,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_vs1_quote"
+  #|  "id": "frame/seq_vs1_quote",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ a︁   ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -3080,7 +3194,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_vs1_other"
+  #|  "id": "frame/seq_vs1_other",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ᠠ᠋   ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -3102,7 +3217,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_vs_mongolian"
+  #|  "id": "frame/seq_vs_mongolian",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 가  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -3124,7 +3240,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_hangul_lv"
+  #|  "id": "frame/seq_hangul_lv",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 각  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -3146,7 +3263,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_hangul_lvt"
+  #|  "id": "frame/seq_hangul_lvt",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ᅡ    ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -3168,7 +3286,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_hangul_v_alone"
+  #|  "id": "frame/seq_hangul_v_alone",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ᆨ    ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -3190,7 +3309,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_hangul_t_alone"
+  #|  "id": "frame/seq_hangul_t_alone",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 각  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -3212,7 +3332,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_hangul_syllable_t"
+  #|  "id": "frame/seq_hangul_syllable_t",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ ᄀᄀ ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -3234,7 +3355,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_hangul_ll"
+  #|  "id": "frame/seq_hangul_ll",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ꥠힰퟋ  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -3256,7 +3378,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_hangul_extended"
+  #|  "id": "frame/seq_hangul_extended",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ㅤﾠ    ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -3278,7 +3401,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_hangul_filler"
+  #|  "id": "frame/seq_hangul_filler",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ あ́  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -3300,7 +3424,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_comb_on_wide"
+  #|  "id": "frame/seq_comb_on_wide",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ é   ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -3322,7 +3447,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_comb_on_narrow"
+  #|  "id": "frame/seq_comb_on_narrow",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ẹ́̂   ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -3344,7 +3470,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_comb_stack"
+  #|  "id": "frame/seq_comb_stack",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ́    ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -3366,7 +3493,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_comb_alone"
+  #|  "id": "frame/seq_comb_alone",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ a⃝   ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -3388,7 +3516,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_comb_enclosing"
+  #|  "id": "frame/seq_comb_enclosing",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ क्षि ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -3410,7 +3539,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_devanagari_conjunct"
+  #|  "id": "frame/seq_devanagari_conjunct",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ कि  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -3432,7 +3562,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_devanagari_vowel_sign"
+  #|  "id": "frame/seq_devanagari_vowel_sign",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ क्   ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -3454,7 +3585,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_devanagari_virama"
+  #|  "id": "frame/seq_devanagari_virama",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ক্ষ  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -3476,7 +3608,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_bengali"
+  #|  "id": "frame/seq_bengali",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ தமிழ் ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -3498,7 +3631,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tamil"
+  #|  "id": "frame/seq_tamil",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌───────┬─────┐\n│ s     ┆ t   │\n│ ---   ┆ --- │\n│ str   ┆ i64 │\n╞═══════╪═════╡\n│ తెలుగు ┆ 1   │\n│ ab    ┆ 2   │\n└───────┴─────┘",
@@ -3520,7 +3654,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_telugu"
+  #|  "id": "frame/seq_telugu",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌───────┬─────┐\n│ s     ┆ t   │\n│ ---   ┆ --- │\n│ str   ┆ i64 │\n╞═══════╪═════╡\n│ മലയാളം ┆ 1   │\n│ ab    ┆ 2   │\n└───────┴─────┘",
@@ -3542,7 +3677,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_malayalam"
+  #|  "id": "frame/seq_malayalam",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ සිංහල ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -3564,7 +3700,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_sinhala"
+  #|  "id": "frame/seq_sinhala",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌───────┬─────┐\n│ s     ┆ t   │\n│ ---   ┆ --- │\n│ str   ┆ i64 │\n╞═══════╪═════╡\n│ བོད་ཡིག ┆ 1   │\n│ ab    ┆ 2   │\n└───────┴─────┘",
@@ -3586,7 +3723,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tibetan"
+  #|  "id": "frame/seq_tibetan",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌───────┬─────┐\n│ s     ┆ t   │\n│ ---   ┆ --- │\n│ str   ┆ i64 │\n╞═══════╪═════╡\n│ မြန်မာ ┆ 1   │\n│ ab    ┆ 2   │\n└───────┴─────┘",
@@ -3608,7 +3746,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_myanmar"
+  #|  "id": "frame/seq_myanmar",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ខ្មែរ ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -3630,7 +3769,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_khmer"
+  #|  "id": "frame/seq_khmer",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ สวัสดี ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -3652,7 +3792,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_thai"
+  #|  "id": "frame/seq_thai",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ น้ำ  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -3674,7 +3815,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_thai_sara_am"
+  #|  "id": "frame/seq_thai_sara_am",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ລາວ ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -3696,7 +3838,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_lao"
+  #|  "id": "frame/seq_lao",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ مُحَمَّد ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -3718,7 +3861,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_arabic_diacritics"
+  #|  "id": "frame/seq_arabic_diacritics",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ لا   ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -3740,7 +3884,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_arabic_lam_alef"
+  #|  "id": "frame/seq_arabic_lam_alef",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ لَا   ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -3762,7 +3907,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_arabic_lam_mark_alef"
+  #|  "id": "frame/seq_arabic_lam_mark_alef",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ لآ   ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -3784,7 +3930,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_arabic_lam_madda"
+  #|  "id": "frame/seq_arabic_lam_madda",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ل   ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -3806,7 +3953,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_arabic_lam_alone"
+  #|  "id": "frame/seq_arabic_lam_alone",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ שָׁלוֹם ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -3828,7 +3976,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_hebrew_points"
+  #|  "id": "frame/seq_hebrew_points",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ א‍ל   ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -3850,7 +3999,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_hebrew_alef_zwj_lamed"
+  #|  "id": "frame/seq_hebrew_alef_zwj_lamed",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ אל  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -3872,7 +4022,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_hebrew_alef_lamed"
+  #|  "id": "frame/seq_hebrew_alef_lamed",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ 𗀀𗀁 ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -3894,7 +4045,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tangut"
+  #|  "id": "frame/seq_tangut",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ 𘬀𘬁 ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -3916,7 +4068,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_khitan"
+  #|  "id": "frame/seq_khitan",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 𛅰  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -3938,7 +4091,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_nushu"
+  #|  "id": "frame/seq_nushu",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ 𛀀𛄲 ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -3960,7 +4114,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_kana_extended"
+  #|  "id": "frame/seq_kana_extended",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────────────┬─────┐\n│ s            ┆ t   │\n│ ---          ┆ --- │\n│ str          ┆ i64 │\n╞══════════════╪═════╡\n│ 〈〉⏩☔☰⚊ ┆ 1   │\n│ ab           ┆ 2   │\n└──────────────┴─────┘",
@@ -3982,7 +4137,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_symbols_wide"
+  #|  "id": "frame/seq_symbols_wide",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌────────┬─────┐\n│ s      ┆ t   │\n│ ---    ┆ --- │\n│ str    ┆ i64 │\n╞════════╪═════╡\n│ 🥱🫠🩰 ┆ 1   │\n│ ab     ┆ 2   │\n└────────┴─────┘",
@@ -4004,7 +4160,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_symbols_new_emoji"
+  #|  "id": "frame/seq_symbols_new_emoji",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ ︐︙ ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -4026,7 +4183,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_vertical_forms"
+  #|  "id": "frame/seq_vertical_forms",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ 🈁🉐 ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -4048,7 +4206,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_enclosed_ideographic"
+  #|  "id": "frame/seq_enclosed_ideographic",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ ⿰⿻ ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -4070,7 +4229,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_ideographic_description"
+  #|  "id": "frame/seq_ideographic_description",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ៘ ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4092,7 +4252,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_khmer_beyyal"
+  #|  "id": "frame/seq_khmer_beyyal",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ⸻   ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4114,7 +4275,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_three_em_dash"
+  #|  "id": "frame/seq_three_em_dash",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ a­b  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4136,7 +4298,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_soft_hyphen"
+  #|  "id": "frame/seq_soft_hyphen",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ a⁠᠎b⁢  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4158,7 +4321,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_invisible_format"
+  #|  "id": "frame/seq_invisible_format",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ a󠄀   ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4180,7 +4344,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_variation_supplement"
+  #|  "id": "frame/seq_variation_supplement",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ⠀⠁  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4202,7 +4367,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_braille_misc"
+  #|  "id": "frame/seq_braille_misc",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ א‍aל ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4224,7 +4390,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_hebrew_alef_zwj_a_lamed"
+  #|  "id": "frame/seq_hebrew_alef_zwj_a_lamed",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ︁︎    ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4246,7 +4413,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_vs_pair_at_start"
+  #|  "id": "frame/seq_vs_pair_at_start",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ A្‍ឆ   ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4268,7 +4436,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_khmer_coeng_zwj_letter"
+  #|  "id": "frame/seq_khmer_coeng_zwj_letter",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ A្️ឆ   ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4290,7 +4459,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_khmer_coeng_fe0f_letter"
+  #|  "id": "frame/seq_khmer_coeng_fe0f_letter",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ A្︎ឆ   ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4312,7 +4482,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_khmer_coeng_fe0e_letter"
+  #|  "id": "frame/seq_khmer_coeng_fe0e_letter",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ Aل‍ا ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4334,7 +4505,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_arabic_lam_zwj_alef"
+  #|  "id": "frame/seq_arabic_lam_zwj_alef",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ⌚︎‍😀 ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4356,7 +4528,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_vs15_emoji_zwj_emoji"
+  #|  "id": "frame/seq_vs15_emoji_zwj_emoji",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ل︁︎ا  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4378,7 +4551,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_arabic_lam_vs_pair_alef"
+  #|  "id": "frame/seq_arabic_lam_vs_pair_alef",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ل︎︁ا  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4400,7 +4574,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_arabic_lam_vs_pair_alef_rev"
+  #|  "id": "frame/seq_arabic_lam_vs_pair_alef_rev",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ AAلA ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -4422,7 +4597,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_arabic_lam_other_letter"
+  #|  "id": "frame/seq_arabic_lam_other_letter",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ الله ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -4444,7 +4620,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_arabic_allah"
+  #|  "id": "frame/seq_arabic_allah",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ لم  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4466,7 +4643,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_arabic_lam_meem"
+  #|  "id": "frame/seq_arabic_lam_meem",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 🇦🇿  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4488,7 +4666,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_ri_first_last"
+  #|  "id": "frame/seq_ri_first_last",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 👍🏿  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4510,7 +4689,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tone_last"
+  #|  "id": "frame/seq_tone_last",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ’︁  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4532,7 +4712,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_vs1_rsquo"
+  #|  "id": "frame/seq_vs1_rsquo",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ “︁  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4554,7 +4735,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_vs1_ldquo"
+  #|  "id": "frame/seq_vs1_ldquo",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ”︁  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4576,7 +4758,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_vs1_rdquo"
+  #|  "id": "frame/seq_vs1_rdquo",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌────────┬─────┐\n│ s      ┆ t   │\n│ ---    ┆ --- │\n│ str    ┆ i64 │\n╞════════╪═════╡\n│ 힤゗・䷀ ┆ 1   │\n│ ab     ┆ 2   │\n└────────┴─────┘",
@@ -4598,7 +4781,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_just_after_blocks"
+  #|  "id": "frame/seq_just_after_blocks",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 🏴󠁧󠁢󠁳󠁣󠁴󠁿‍😀  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4620,7 +4804,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tags_zwj_emoji"
+  #|  "id": "frame/seq_tags_zwj_emoji",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 🏴󠁧󠁢󠁳󠁿‍🇨🇳  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4642,7 +4827,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tags_zwj_flag"
+  #|  "id": "frame/seq_tags_zwj_flag",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 🏴󠁧󠁢󠁳󠁿‍👍🏽  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4664,7 +4850,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tags_zwj_tone"
+  #|  "id": "frame/seq_tags_zwj_tone",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 🏴󠁧󠁢󠁳󠁿‍☺️  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4686,7 +4873,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tags_zwj_vs16"
+  #|  "id": "frame/seq_tags_zwj_vs16",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 🏴󠁧󠁢󠁳󠁿‍1️⃣  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4708,7 +4896,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tags_zwj_keycap"
+  #|  "id": "frame/seq_tags_zwj_keycap",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 🏴󠁧󠁢󠁳󠁿‍🏴󠁧󠁢󠁳󠁿  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4730,7 +4919,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tags_zwj_tags"
+  #|  "id": "frame/seq_tags_zwj_tags",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 🏴󠁧󠁢󠁳󠁿‍a ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4752,7 +4942,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tags_zwj_ascii"
+  #|  "id": "frame/seq_tags_zwj_ascii",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 🏴󠀱󠀲󠀳󠁿‍😀  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4774,7 +4965,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tags_digits"
+  #|  "id": "frame/seq_tags_digits",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ 🏴󠁧󠁢󠁿‍😀 ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -4796,7 +4988,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tags_two"
+  #|  "id": "frame/seq_tags_two",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 🏴󠁡󠁡󠁡󠁡󠁡󠁡󠁿‍😀  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4818,7 +5011,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tags_six"
+  #|  "id": "frame/seq_tags_six",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ 🏴󠁡󠁡󠁡󠁡󠁡󠁡󠁡󠁿‍😀 ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -4840,7 +5034,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tags_seven"
+  #|  "id": "frame/seq_tags_seven",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 🏳󠁧󠁢󠁳󠁿‍😀 ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4862,7 +5057,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tags_other_base"
+  #|  "id": "frame/seq_tags_other_base",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ 🏴󠀠󠀡󠀢󠁿‍😀 ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -4884,7 +5080,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tags_not_letter"
+  #|  "id": "frame/seq_tags_not_letter",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ 🏴󠁧󠁢󠁳‍😀 ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -4906,7 +5103,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tags_no_end"
+  #|  "id": "frame/seq_tags_no_end",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ្︎︁ខ   ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4928,7 +5126,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_khmer_coeng_vs_pair"
+  #|  "id": "frame/seq_khmer_coeng_vs_pair",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ្︁︎ខ   ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4950,7 +5149,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_khmer_coeng_vs_pair_rev"
+  #|  "id": "frame/seq_khmer_coeng_vs_pair_rev",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ្͏︁︎ខ    ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4972,7 +5172,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_khmer_coeng_vs_pair_after_mark"
+  #|  "id": "frame/seq_khmer_coeng_vs_pair_after_mark",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ្︁️︎ខ   ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -4994,7 +5195,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_khmer_coeng_vs_fe0f_pair"
+  #|  "id": "frame/seq_khmer_coeng_vs_fe0f_pair",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ א︎︁‍ל  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -5016,7 +5218,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_hebrew_vs_pair"
+  #|  "id": "frame/seq_hebrew_vs_pair",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 😀‍🇦🇿  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -5038,7 +5241,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_zwj_ri_pair_edges"
+  #|  "id": "frame/seq_zwj_ri_pair_edges",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ 😀‍🇥🇦 ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -5060,7 +5264,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_zwj_before_ri_pair"
+  #|  "id": "frame/seq_zwj_before_ri_pair",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌───────┬─────┐\n│ s     ┆ t   │\n│ ---   ┆ --- │\n│ str   ┆ i64 │\n╞═══════╪═════╡\n│ 😀‍🇦🈀 ┆ 1   │\n│ ab    ┆ 2   │\n└───────┴─────┘",
@@ -5082,7 +5287,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_zwj_ri_then_after"
+  #|  "id": "frame/seq_zwj_ri_then_after",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌───────┬─────┐\n│ s     ┆ t   │\n│ ---   ┆ --- │\n│ str   ┆ i64 │\n╞═══════╪═════╡\n│ 😀‍🇿🈀 ┆ 1   │\n│ ab    ┆ 2   │\n└───────┴─────┘",
@@ -5104,7 +5310,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_zwj_ri_last_then_after"
+  #|  "id": "frame/seq_zwj_ri_last_then_after",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌───────┬─────┐\n│ s     ┆ t   │\n│ ---   ┆ --- │\n│ str   ┆ i64 │\n╞═══════╪═════╡\n│ 😀‍🈀🇦 ┆ 1   │\n│ ab    ┆ 2   │\n└───────┴─────┘",
@@ -5126,7 +5333,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_zwj_after_then_ri"
+  #|  "id": "frame/seq_zwj_after_then_ri",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ 😀‍🇥🇥 ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -5148,7 +5356,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_zwj_before_then_ri"
+  #|  "id": "frame/seq_zwj_before_then_ri",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 🇥🇦  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -5170,7 +5379,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_ri_pair_before"
+  #|  "id": "frame/seq_ri_pair_before",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 🇿🈀 ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -5192,7 +5402,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_ri_pair_after"
+  #|  "id": "frame/seq_ri_pair_after",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 🇿🇦  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -5214,7 +5425,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_ri_pair_last_first"
+  #|  "id": "frame/seq_ri_pair_last_first",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ 👍🏺 ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -5236,7 +5448,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tone_before"
+  #|  "id": "frame/seq_tone_before",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 👍🏻  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -5258,7 +5471,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tone_first"
+  #|  "id": "frame/seq_tone_first",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ 👍🐀 ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -5280,7 +5494,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tone_after"
+  #|  "id": "frame/seq_tone_after",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ 😀‍👍🏺 ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -5302,7 +5517,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_zwj_tone_before"
+  #|  "id": "frame/seq_zwj_tone_before",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 😀‍👍🏻  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -5324,7 +5540,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_zwj_tone_first"
+  #|  "id": "frame/seq_zwj_tone_first",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 😀‍👍🏿  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -5346,7 +5563,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_zwj_tone_last"
+  #|  "id": "frame/seq_zwj_tone_last",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ 😀‍👍🐀 ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -5368,7 +5586,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_zwj_tone_after"
+  #|  "id": "frame/seq_zwj_tone_after",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ a🏺 ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -5390,7 +5609,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tone_alone_before"
+  #|  "id": "frame/seq_tone_alone_before",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ a🐀 ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -5412,7 +5632,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tone_alone_after"
+  #|  "id": "frame/seq_tone_alone_after",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ a🏻 ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -5434,7 +5655,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tone_alone_first"
+  #|  "id": "frame/seq_tone_alone_first",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ل︁️︎ا  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -5456,7 +5678,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_arabic_lam_fe01_fe0f_fe0e_alef"
+  #|  "id": "frame/seq_arabic_lam_fe01_fe0f_fe0e_alef",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ل︎️︁ا  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -5478,7 +5701,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_arabic_lam_fe0e_fe0f_fe01_alef"
+  #|  "id": "frame/seq_arabic_lam_fe0e_fe0f_fe01_alef",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ل️ا   ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -5500,7 +5724,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_arabic_lam_fe0f_alef"
+  #|  "id": "frame/seq_arabic_lam_fe0f_alef",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ل️️ا   ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -5522,7 +5747,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_arabic_lam_fe0f_fe0f_alef"
+  #|  "id": "frame/seq_arabic_lam_fe0f_fe0f_alef",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ 🏴󠁧󠁢󠀰󠁿‍😀 ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -5544,7 +5770,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tags_ll_d"
+  #|  "id": "frame/seq_tags_ll_d",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ 🏴󠀰󠀰󠀰󠀰󠁿‍😀 ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -5566,7 +5793,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tags_dddd"
+  #|  "id": "frame/seq_tags_dddd",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ 🏴󠀰󠀰󠀰󠀰󠀰󠁿‍😀 ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -5588,7 +5816,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tags_ddddd"
+  #|  "id": "frame/seq_tags_ddddd",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 🏴󠀰󠀰󠀰󠁿‍😀  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -5610,7 +5839,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tags_ddd"
+  #|  "id": "frame/seq_tags_ddd",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 🏴󠀰󠀰󠀰󠁡󠁿‍😀  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -5632,7 +5862,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tags_ddd_l"
+  #|  "id": "frame/seq_tags_ddd_l",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 🏴󠀰󠀰󠀰󠁡󠁡󠁡󠁡󠁿‍😀  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -5654,7 +5885,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tags_ddd_llll"
+  #|  "id": "frame/seq_tags_ddd_llll",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ 🏴󠀰󠀰󠀰󠁡󠁡󠁡󠁡󠁡󠁿‍😀 ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -5676,7 +5908,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tags_ddd_lllll"
+  #|  "id": "frame/seq_tags_ddd_lllll",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ 🏴󠀰󠀰󠁡󠁡󠁡󠁿‍😀 ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -5698,7 +5931,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tags_dd_lll"
+  #|  "id": "frame/seq_tags_dd_lll",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ 🏴󠁡󠀰󠀰󠀰󠁿‍😀 ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -5720,7 +5954,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tags_l_ddd"
+  #|  "id": "frame/seq_tags_l_ddd",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ 🏴󠁡󠁡󠁡󠀰󠁿‍😀 ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -5742,7 +5977,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tags_lll_d"
+  #|  "id": "frame/seq_tags_lll_d",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ 🏴󠁧󠁢󠀺󠁿‍😀 ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -5764,7 +6000,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tags_edge_3a"
+  #|  "id": "frame/seq_tags_edge_3a",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ 🏴󠁧󠁢󠁠󠁿‍😀 ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -5786,7 +6023,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tags_edge_60"
+  #|  "id": "frame/seq_tags_edge_60",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ 🏴󠁧󠁢󠁻󠁿‍😀 ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -5808,7 +6046,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tags_edge_7b"
+  #|  "id": "frame/seq_tags_edge_7b",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ 🏴󠁧󠁢󠀯󠁿‍😀 ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -5830,7 +6069,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tags_edge_2f"
+  #|  "id": "frame/seq_tags_edge_2f",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ 🏴󠀺󠀺󠀺󠁿‍😀 ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -5852,7 +6092,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tags_edge_3a_run"
+  #|  "id": "frame/seq_tags_edge_3a_run",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ 🏴󠀺󠀰󠀰󠁿‍😀 ┆ 1   │\n│ ab   ┆ 2   │\n└──────┴─────┘",
@@ -5874,7 +6115,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tags_edge_3a_first"
+  #|  "id": "frame/seq_tags_edge_3a_first",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 🏴󠀹󠀹󠀹󠁿‍😀  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -5896,7 +6138,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tags_edge_39"
+  #|  "id": "frame/seq_tags_edge_39",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ 🏴󠁺󠁺󠁺󠁿‍😀  ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -5918,7 +6161,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_tags_edge_7a"
+  #|  "id": "frame/seq_tags_edge_7a",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ្︎្︀︁︎ខ    ┆ 1   │\n│ ab  ┆ 2   │\n└─────┴─────┘",
@@ -5940,7 +6184,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_khmer_coeng_stale_vs"
+  #|  "id": "frame/seq_khmer_coeng_stale_vs",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (9, 1)\n┌─────┐\n│ s   │\n│ --- │\n│ str │\n╞═════╡\n│ 👨‍👩‍👧  │\n│ 👨‍👩‍👧‍👦  │\n│ 👩‍💻  │\n│ 👩‍❤️‍👨  │\n│ 🏳️‍🌈  │\n│ 👩🏽‍🤝‍👨🏻  │\n│ ❤‍🔥 │\n│ ❤️‍🔥  │\n│ a‍😀 │\n└─────┘",
@@ -5961,7 +6206,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_mixed_0"
+  #|  "id": "frame/seq_mixed_0",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (9, 1)\n┌──────┐\n│ s    │\n│ ---  │\n│ str  │\n╞══════╡\n│ 😀‍a  │\n│ あ‍い │\n│ ‍     │\n│ 😀‍‍😀 │\n│ 👍🏽   │\n│ ☝🏻   │\n│ a🏽  │\n│ 🏽   │\n│ 1️⃣   │\n└──────┘",
@@ -5982,7 +6228,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_mixed_1"
+  #|  "id": "frame/seq_mixed_1",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (9, 1)\n┌──────┐\n│ s    │\n│ ---  │\n│ str  │\n╞══════╡\n│ #️⃣   │\n│ 1⃣    │\n│ 😀⃣   │\n│ 🇨🇳   │\n│ 🇨    │\n│ 🇨🇳🇺  │\n│ 🇨🇳🇺🇸 │\n│ 🏴󠁧󠁢󠁥󠁮󠁧󠁿   │\n│ ⌚︎    │\n└──────┘",
@@ -6003,7 +6250,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_mixed_2"
+  #|  "id": "frame/seq_mixed_2",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (9, 1)\n┌─────┐\n│ s   │\n│ --- │\n│ str │\n╞═════╡\n│ ☺︎   │\n│ 👍︎   │\n│ あ️  │\n│ ☺️️  │\n│ ️    │\n│ ‘︁  │\n│ a︁   │\n│ ᠠ᠋   │\n│ 가  │\n└─────┘",
@@ -6024,7 +6272,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_mixed_3"
+  #|  "id": "frame/seq_mixed_3",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (9, 1)\n┌──────┐\n│ s    │\n│ ---  │\n│ str  │\n╞══════╡\n│ 각   │\n│ ᅡ     │\n│ ᆨ     │\n│ 각   │\n│ ᄀᄀ │\n│ ꥠힰퟋ   │\n│ ㅤﾠ     │\n│ あ́   │\n│ é    │\n└──────┘",
@@ -6045,7 +6294,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_mixed_4"
+  #|  "id": "frame/seq_mixed_4",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (9, 1)\n┌───────┐\n│ s     │\n│ ---   │\n│ str   │\n╞═══════╡\n│ ẹ́̂     │\n│ ́      │\n│ a⃝     │\n│ क्षि   │\n│ कि    │\n│ क्     │\n│ ক্ষ    │\n│ தமிழ்  │\n│ తెలుగు │\n└───────┘",
@@ -6066,7 +6316,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_mixed_5"
+  #|  "id": "frame/seq_mixed_5",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (9, 1)\n┌───────┐\n│ s     │\n│ ---   │\n│ str   │\n╞═══════╡\n│ മലയാളം │\n│ සිංහල  │\n│ བོད་ཡིག │\n│ မြန်မာ │\n│ ខ្មែរ   │\n│ สวัสดี  │\n│ น้ำ    │\n│ ລາວ   │\n│ مُحَمَّد  │\n└───────┘",
@@ -6087,7 +6338,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_mixed_6"
+  #|  "id": "frame/seq_mixed_6",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (9, 1)\n┌──────┐\n│ s    │\n│ ---  │\n│ str  │\n╞══════╡\n│ لا    │\n│ لَا    │\n│ لآ    │\n│ ل    │\n│ שָׁלוֹם │\n│ א‍ל    │\n│ אל   │\n│ 𗀀𗀁 │\n│ 𘬀𘬁 │\n└──────┘",
@@ -6108,7 +6360,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_mixed_7"
+  #|  "id": "frame/seq_mixed_7",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (9, 1)\n┌──────────────┐\n│ s            │\n│ ---          │\n│ str          │\n╞══════════════╡\n│ 𛅰           │\n│ 𛀀𛄲         │\n│ 〈〉⏩☔☰⚊ │\n│ 🥱🫠🩰       │\n│ ︐︙         │\n│ 🈁🉐         │\n│ ⿰⿻         │\n│ ៘          │\n│ ⸻            │\n└──────────────┘",
@@ -6129,7 +6382,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_mixed_8"
+  #|  "id": "frame/seq_mixed_8",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (9, 1)\n┌─────┐\n│ s   │\n│ --- │\n│ str │\n╞═════╡\n│ a­b  │\n│ a⁠᠎b⁢  │\n│ a󠄀   │\n│ ⠀⠁  │\n│ א‍aל │\n│ ︁︎    │\n│ A្‍ឆ   │\n│ A្️ឆ   │\n│ A្︎ឆ   │\n└─────┘",
@@ -6150,7 +6404,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_mixed_9"
+  #|  "id": "frame/seq_mixed_9",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (9, 1)\n┌──────┐\n│ s    │\n│ ---  │\n│ str  │\n╞══════╡\n│ Aل‍ا  │\n│ ⌚︎‍😀  │\n│ ل︁︎ا   │\n│ ل︎︁ا   │\n│ AAلA │\n│ الله │\n│ لم   │\n│ 🇦🇿   │\n│ 👍🏿   │\n└──────┘",
@@ -6171,7 +6426,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_mixed_10"
+  #|  "id": "frame/seq_mixed_10",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (9, 1)\n┌────────┐\n│ s      │\n│ ---    │\n│ str    │\n╞════════╡\n│ ’︁     │\n│ “︁     │\n│ ”︁     │\n│ 힤゗・䷀ │\n│ 🏴󠁧󠁢󠁳󠁣󠁴󠁿‍😀     │\n│ 🏴󠁧󠁢󠁳󠁿‍🇨🇳     │\n│ 🏴󠁧󠁢󠁳󠁿‍👍🏽     │\n│ 🏴󠁧󠁢󠁳󠁿‍☺️     │\n│ 🏴󠁧󠁢󠁳󠁿‍1️⃣     │\n└────────┘",
@@ -6192,7 +6448,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_mixed_11"
+  #|  "id": "frame/seq_mixed_11",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (9, 1)\n┌──────┐\n│ s    │\n│ ---  │\n│ str  │\n╞══════╡\n│ 🏴󠁧󠁢󠁳󠁿‍🏴󠁧󠁢󠁳󠁿   │\n│ 🏴󠁧󠁢󠁳󠁿‍a  │\n│ 🏴󠀱󠀲󠀳󠁿‍😀   │\n│ 🏴󠁧󠁢󠁿‍😀 │\n│ 🏴󠁡󠁡󠁡󠁡󠁡󠁡󠁿‍😀   │\n│ 🏴󠁡󠁡󠁡󠁡󠁡󠁡󠁡󠁿‍😀 │\n│ 🏳󠁧󠁢󠁳󠁿‍😀  │\n│ 🏴󠀠󠀡󠀢󠁿‍😀 │\n│ 🏴󠁧󠁢󠁳‍😀 │\n└──────┘",
@@ -6213,7 +6470,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_mixed_12"
+  #|  "id": "frame/seq_mixed_12",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (9, 1)\n┌───────┐\n│ s     │\n│ ---   │\n│ str   │\n╞═══════╡\n│ ្︎︁ខ     │\n│ ្︁︎ខ     │\n│ ្͏︁︎ខ      │\n│ ្︁️︎ខ     │\n│ א︎︁‍ל    │\n│ 😀‍🇦🇿    │\n│ 😀‍🇥🇦  │\n│ 😀‍🇦🈀 │\n│ 😀‍🇿🈀 │\n└───────┘",
@@ -6234,7 +6492,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_mixed_13"
+  #|  "id": "frame/seq_mixed_13",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (9, 1)\n┌───────┐\n│ s     │\n│ ---   │\n│ str   │\n╞═══════╡\n│ 😀‍🈀🇦 │\n│ 😀‍🇥🇥  │\n│ 🇥🇦    │\n│ 🇿🈀   │\n│ 🇿🇦    │\n│ 👍🏺  │\n│ 👍🏻    │\n│ 👍🐀  │\n│ 😀‍👍🏺  │\n└───────┘",
@@ -6255,7 +6514,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_mixed_14"
+  #|  "id": "frame/seq_mixed_14",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (9, 1)\n┌──────┐\n│ s    │\n│ ---  │\n│ str  │\n╞══════╡\n│ 😀‍👍🏻   │\n│ 😀‍👍🏿   │\n│ 😀‍👍🐀 │\n│ a🏺  │\n│ a🐀  │\n│ a🏻  │\n│ ل︁️︎ا   │\n│ ل︎️︁ا   │\n│ ل️ا    │\n└──────┘",
@@ -6276,7 +6536,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_mixed_15"
+  #|  "id": "frame/seq_mixed_15",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (9, 1)\n┌──────┐\n│ s    │\n│ ---  │\n│ str  │\n╞══════╡\n│ ل️️ا    │\n│ 🏴󠁧󠁢󠀰󠁿‍😀 │\n│ 🏴󠀰󠀰󠀰󠀰󠁿‍😀 │\n│ 🏴󠀰󠀰󠀰󠀰󠀰󠁿‍😀 │\n│ 🏴󠀰󠀰󠀰󠁿‍😀   │\n│ 🏴󠀰󠀰󠀰󠁡󠁿‍😀   │\n│ 🏴󠀰󠀰󠀰󠁡󠁡󠁡󠁡󠁿‍😀   │\n│ 🏴󠀰󠀰󠀰󠁡󠁡󠁡󠁡󠁡󠁿‍😀 │\n│ 🏴󠀰󠀰󠁡󠁡󠁡󠁿‍😀 │\n└──────┘",
@@ -6297,7 +6558,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_mixed_16"
+  #|  "id": "frame/seq_mixed_16",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (9, 1)\n┌──────┐\n│ s    │\n│ ---  │\n│ str  │\n╞══════╡\n│ 🏴󠁡󠀰󠀰󠀰󠁿‍😀 │\n│ 🏴󠁡󠁡󠁡󠀰󠁿‍😀 │\n│ 🏴󠁧󠁢󠀺󠁿‍😀 │\n│ 🏴󠁧󠁢󠁠󠁿‍😀 │\n│ 🏴󠁧󠁢󠁻󠁿‍😀 │\n│ 🏴󠁧󠁢󠀯󠁿‍😀 │\n│ 🏴󠀺󠀺󠀺󠁿‍😀 │\n│ 🏴󠀺󠀰󠀰󠁿‍😀 │\n│ 🏴󠀹󠀹󠀹󠁿‍😀   │\n└──────┘",
@@ -6318,7 +6580,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_mixed_17"
+  #|  "id": "frame/seq_mixed_17",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 1)\n┌─────┐\n│ s   │\n│ --- │\n│ str │\n╞═════╡\n│ 🏴󠁺󠁺󠁺󠁿‍😀  │\n│ ្︎្︀︁︎ខ    │\n└─────┘",
@@ -6332,11 +6595,13 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_mixed_18"
+  #|  "id": "frame/seq_mixed_18",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (10,)\nSeries: 's' [str]\n[\n\t\"👨‍👩‍👧\"\n\t\"👨‍👩‍👧‍👦\"\n\t\"👩‍💻\"\n\t\"👩‍❤️‍👨\"\n\t\"🏳️‍🌈\"\n\t\"👩🏽‍🤝‍👨🏻\"\n\t\"❤‍🔥\"\n\t\"❤️‍🔥\"\n\t\"a‍😀\"\n\t\"😀‍a\"\n]",
   #|  "id": "series/seq_mixed",
+  #|  "polars": "str(series)",
   #|  "series": {
   #|   "dtype": "str",
   #|   "name": "s",
@@ -6368,7 +6633,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_cut_zwj"
+  #|  "id": "frame/seq_cut_zwj",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (4, 1)\n┌─────────────────────────────────┐\n│ s                               │\n│ ---                             │\n│ str                             │\n╞═════════════════════════════════╡\n│ あああああああああああああああ́  │\n│ い                              │\n│ あああああああああああああああ  │\n│ あ‍い                            │\n│ 👩‍💻👩‍💻👩‍💻👩‍💻👩‍💻👩‍💻                    │\n│ abababababababababababababab👨‍… │\n└─────────────────────────────────┘",
@@ -6384,11 +6650,13 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/seq_wrap"
+  #|  "id": "frame/seq_wrap",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2,)\nSeries: 's' [str]\n[\n\t\"👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧👨‍👩‍👧…\n\t\"ééééééééééééééé…\n]",
   #|  "id": "series/seq_cut",
+  #|  "polars": "str(series)",
   #|  "series": {
   #|   "dtype": "str",
   #|   "name": "s",
@@ -6418,7 +6686,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_korean"
+  #|  "id": "frame/wrap_korean",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 东京 大学 的 学生 都 喜欢 吃    ┆ 0   │\n│ 日本 料理 和 中国 菜            ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -6440,7 +6709,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_chinese"
+  #|  "id": "frame/wrap_chinese",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ Hello 世界 this is a test       ┆ 0   │\n│ 你好世界 o…                     ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -6462,7 +6732,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_latin_cjk"
+  #|  "id": "frame/wrap_latin_cjk",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 私は 毎日 学校へ 行って 友達と  ┆ 0   │\n│ 一緒に 勉強します ね            ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -6484,7 +6755,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_japanese"
+  #|  "id": "frame/wrap_japanese",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 我 爱 北京 天安门 天安门 上     ┆ 0   │\n│ 太阳 升 伟大 领袖 毛主…         ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -6506,7 +6778,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_chinese_long"
+  #|  "id": "frame/wrap_chinese_long",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日            ┆ 0   │\n│ 日日日日日                      ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -6528,7 +6801,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_two_spaces"
+  #|  "id": "frame/wrap_two_spaces",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日   日日日日日         ┆ 0   │\n│ 日日日日日   日日日日日         ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -6550,7 +6824,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_three_spaces"
+  #|  "id": "frame/wrap_three_spaces",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日日  ┆ 0   │\n│ 日                              ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -6572,7 +6847,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_leading_spaces"
+  #|  "id": "frame/wrap_leading_spaces",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日日  ┆ 0   │\n│ 日                              ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -6594,7 +6870,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_trailing_spaces"
+  #|  "id": "frame/wrap_trailing_spaces",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日日  ┆ 0   │\n│ 日日日                          ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -6616,7 +6893,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_spaces_only_gap"
+  #|  "id": "frame/wrap_spaces_only_gap",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日日  ┆ 0   │\n│ 日日日日日                      ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -6638,7 +6916,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_single_space_gap"
+  #|  "id": "frame/wrap_single_space_gap",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日日  ┆ 0   │\n│ 日日日日日 日日                 ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -6660,7 +6939,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_long_word_first"
+  #|  "id": "frame/wrap_long_word_first",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ ab 日日日日日日日日日日日日日日 ┆ 0   │\n│ 日日日日日日                    ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -6682,7 +6962,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_long_word_second"
+  #|  "id": "frame/wrap_long_word_second",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日 日日日日日日日日日日 ┆ 0   │\n│ 日日日日日日日日日日            ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -6704,7 +6985,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_long_word_after_cjk"
+  #|  "id": "frame/wrap_long_word_after_cjk",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日日  ┆ 0   │\n│ 日 日日日日日                   ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -6726,7 +7008,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_long_word_exact"
+  #|  "id": "frame/wrap_long_word_exact",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ ab 日日日日日日日日日日日日日日 ┆ 0   │\n│ 日日日日日日日日日日日日        ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -6748,7 +7031,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_long_word_three_lines"
+  #|  "id": "frame/wrap_long_word_three_lines",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日日  ┆ 0   │\n│ 日 日日日日日日日日日日日日     ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -6770,7 +7054,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_two_long_words"
+  #|  "id": "frame/wrap_two_long_words",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日 aa ┆ 0   │\n│ 日日日日日日日日日日            ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -6792,7 +7077,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_fits_exactly"
+  #|  "id": "frame/wrap_fits_exactly",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日 a  ┆ 0   │\n│ 日日日日日日日日日日            ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -6814,7 +7100,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_one_short"
+  #|  "id": "frame/wrap_one_short",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日    ┆ 0   │\n│ aaa 日日日日日日日日日日        ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -6836,7 +7123,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_one_over"
+  #|  "id": "frame/wrap_one_over",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ a b c d e f g h                 ┆ 0   │\n│ 日日日日日日日日日日 日日日     ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -6858,7 +7146,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_ascii_words_cjk"
+  #|  "id": "frame/wrap_ascii_words_cjk",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日a ́  ┆ 0   │\n│ 日日                            ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -6880,7 +7169,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_zero_wide_word_fits"
+  #|  "id": "frame/wrap_zero_wide_word_fits",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日日  ┆ 0   │\n│ ́ 日日                           ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -6902,7 +7192,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_zero_wide_word_full"
+  #|  "id": "frame/wrap_zero_wide_word_full",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日日  ┆ 0   │\n│ ​ 日日                           ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -6924,7 +7215,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_zero_wide_word_full_zwsp"
+  #|  "id": "frame/wrap_zero_wide_word_full_zwsp",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ ៘៘៘៘៘៘៘៘៘ a日 ┆ 0   │\n│ 日日日日日日日日日日日日日日日  ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -6946,7 +7238,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_cut_room_three"
+  #|  "id": "frame/wrap_cut_room_three",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ ៘៘៘៘៘៘៘៘៘a    ┆ 0   │\n│ a日日日日日日日日日日日日日日日 ┆     │\n│ 日                              ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -6968,7 +7261,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_cut_room_two"
+  #|  "id": "frame/wrap_cut_room_two",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日៘៘៘៘៘៘    ┆ 0   │\n│ 日日日日日日日日日日日日日日日  ┆     │\n│ 日日日                          ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -6990,7 +7284,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_cut_room_two_wide"
+  #|  "id": "frame/wrap_cut_room_two_wide",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ ៘៘៘៘៘៘៘៘៘aa   ┆ 0   │\n│ a日日日日日日日日日日日日       ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7012,7 +7307,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_cut_room_one"
+  #|  "id": "frame/wrap_cut_room_one",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ ៘៘៘៘៘៘៘៘៘ 日  ┆ 0   │\n│ 日日日日日日日日日日日日日日日  ┆     │\n│ 日日                            ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7034,7 +7330,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_cut_room_four"
+  #|  "id": "frame/wrap_cut_room_four",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日            ┆ 0   │\n│ 日日日日日日日日日日            ┆     │\n│ 日 日 日 日 …                   ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7056,7 +7353,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_newline_wrap"
+  #|  "id": "frame/wrap_newline_wrap",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ ab                              ┆ 0   │\n│ 日日日日日日日日日日日日日日日  ┆     │\n│ 日日                            ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7078,7 +7376,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_newline_short_long"
+  #|  "id": "frame/wrap_newline_short_long",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日日x ┆ 0   │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7100,7 +7399,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_exact_31_line"
+  #|  "id": "frame/wrap_exact_31_line",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│  日日日日日日日日日日日日日日日 ┆ 0   │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7122,7 +7422,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_exact_31_leading_space"
+  #|  "id": "frame/wrap_exact_31_leading_space",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日日  ┆ 0   │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7144,7 +7445,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_exact_31_trailing_space"
+  #|  "id": "frame/wrap_exact_31_trailing_space",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ ab                              ┆ 0   │\n│ 日日日日日日日日日日日日日日日x ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7166,7 +7468,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_exact_31_word_after_word"
+  #|  "id": "frame/wrap_exact_31_word_after_word",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日                              ┆ 0   │\n│ 日日日日日日日日日日日日日日日x ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7188,7 +7491,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_exact_31_word_after_cjk"
+  #|  "id": "frame/wrap_exact_31_word_after_cjk",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日日x ┆ 0   │\n│ ab                              ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7210,7 +7514,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_exact_31_word_first"
+  #|  "id": "frame/wrap_exact_31_word_first",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日日x ┆ 0   │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7232,7 +7537,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_exact_31_word_empty_cur"
+  #|  "id": "frame/wrap_exact_31_word_empty_cur",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ ab 日日日日日日日日日日日日日日 ┆ 0   │\n│ 日日                            ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7254,7 +7560,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_exact_32_word_after_word"
+  #|  "id": "frame/wrap_exact_32_word_after_word",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日 日 日 日 日 日 日 日 日 日   ┆ 0   │\n│ 日 日 日 日 日 …                ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7276,7 +7583,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_cut_wide_words"
+  #|  "id": "frame/wrap_cut_wide_words",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ ab日 ab日 ab日 ab日 ab日 ab日   ┆ 0   │\n│ ab日 ab…                        ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7298,7 +7606,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_cut_mixed"
+  #|  "id": "frame/wrap_cut_mixed",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (8, 1)\n┌─────────────────────────────────┐\n│ s                               │\n│ ---                             │\n│ str                             │\n╞═════════════════════════════════╡\n│ 안녕하세요 저는 한국어를        │\n│ 공부하고 있습니다               │\n│ 东京 大学 的 学生 都 喜欢 吃    │\n│ 日本 料理 和 中国 菜            │\n│ Hello 世界 this is a test       │\n│ 你好世界 o…                     │\n│ 私は 毎日 学校へ 行って 友達と  │\n│ 一緒に 勉強します ね            │\n│ 我 爱 北京 天安门 天安门 上     │\n│ 太阳 升 伟大 领袖 毛主…         │\n│ ok                              │\n│ null                            │\n│ x y                             │\n└─────────────────────────────────┘",
@@ -7318,7 +7627,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_rows"
+  #|  "id": "frame/wrap_rows",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────────────────────────────────┐\n│ 数据 分析 结果 汇总 表 的 名称  ┆ aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa… │\n│ 很 长 很 长 很 长               ┆ ---                             │\n│ ---                             ┆ str                             │\n│ i64                             ┆                                 │\n╞═════════════════════════════════╪═════════════════════════════════╡\n│ 1                               ┆ 日 日 日 日 日 日 日 日 日 日   │\n│                                 ┆ 日 日 日 日                     │\n│ 2                               ┆ x                               │\n└─────────────────────────────────┴─────────────────────────────────┘",
@@ -7340,7 +7650,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_header"
+  #|  "id": "frame/wrap_header",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (1, 2)\n┌─────────────────────────────────┬─────────────────────────────────┐\n│ 数据数据数据数据数据数据数据数  ┆ éééééééééééééééééééé            │\n│ 据数据数据                      ┆ 日日日日日日日日日…             │\n│ ---                             ┆ ---                             │\n│ str                             ┆ i64                             │\n╞═════════════════════════════════╪═════════════════════════════════╡\n│ x                               ┆ 1                               │\n└─────────────────────────────────┴─────────────────────────────────┘",
@@ -7360,7 +7671,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/wrap_header_cjk"
+  #|  "id": "frame/wrap_header_cjk",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日日  ┆ 0   │\n│ 🇨🇳日日                          ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7382,7 +7694,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/cluster_flag"
+  #|  "id": "frame/cluster_flag",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日x🇨🇳 ┆ 0   │\n│ 🇺🇸日                            ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7404,7 +7717,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/cluster_flag_two"
+  #|  "id": "frame/cluster_flag_two",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日日  ┆ 0   │\n│ 1️⃣日日                          ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7426,7 +7740,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/cluster_keycap"
+  #|  "id": "frame/cluster_keycap",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日日  ┆ 0   │\n│ ☺️                              ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7448,7 +7763,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/cluster_vs16"
+  #|  "id": "frame/cluster_vs16",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日x   ┆ 0   │\n│ क्षि                             ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7470,7 +7786,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/cluster_conjunct_after_x"
+  #|  "id": "frame/cluster_conjunct_after_x",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日日  ┆ 0   │\n│ क्षि                             ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7492,7 +7809,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/cluster_conjunct"
+  #|  "id": "frame/cluster_conjunct",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日日  ┆ 0   │\n│ ‘︁                              ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7514,7 +7832,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/cluster_vs1_quote"
+  #|  "id": "frame/cluster_vs1_quote",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日x👨‍👩‍👧 ┆ 0   │\n│ 日日                            ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7536,7 +7855,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/cluster_zwj_family"
+  #|  "id": "frame/cluster_zwj_family",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日日  ┆ 0   │\n│ 👍🏽日日                          ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7558,7 +7878,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/cluster_tone"
+  #|  "id": "frame/cluster_tone",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日日  ┆ 0   │\n│ က္က                              ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7580,7 +7901,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/cluster_myanmar_virama"
+  #|  "id": "frame/cluster_myanmar_virama",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日日★‍ ┆ 0   │\n│ ★                               ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7602,7 +7924,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/cluster_star_zwj_star"
+  #|  "id": "frame/cluster_star_zwj_star",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日日ក្ខ ┆ 0   │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7624,7 +7947,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/cluster_khmer_coeng"
+  #|  "id": "frame/cluster_khmer_coeng",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日日  ┆ 0   │\n│ 각                              ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7646,7 +7970,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/cluster_hangul_lvt"
+  #|  "id": "frame/cluster_hangul_lvt",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日日  ┆ 0   │\n│ ؀ا                              ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7668,7 +7993,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/cluster_prepend"
+  #|  "id": "frame/cluster_prepend",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日日é̂̃ ┆ 0   │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7690,7 +8016,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/cluster_combining_run"
+  #|  "id": "frame/cluster_combining_run",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日لا   ┆ 0   │\n│ 日日                            ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7712,7 +8039,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/cluster_lam_alef"
+  #|  "id": "frame/cluster_lam_alef",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌───────────────────────────────┬─────┐\n│ s                             ┆ t   │\n│ ---                           ┆ --- │\n│ str                           ┆ i64 │\n╞═══════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日日لا ┆ 0   │\n│ ab                            ┆ 1   │\n└───────────────────────────────┴─────┘",
@@ -7734,7 +8062,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/cluster_lam_alef_end"
+  #|  "id": "frame/cluster_lam_alef_end",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日日日日لالا    ┆ 0   │\n│ 日日                            ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7756,7 +8085,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/cluster_lam_alef_two"
+  #|  "id": "frame/cluster_lam_alef_two",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ ᄀ                              ┆ 0   │\n│ ᄀᄀᄀᄀᄀᄀᄀᄀᄀᄀᄀᄀᄀᄀᄀ  ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7778,7 +8108,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/cluster_jamo_run"
+  #|  "id": "frame/cluster_jamo_run",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ ab                              ┆ 0   │\n│ ᄀ                              ┆     │\n│ ᄀ                              ┆     │\n│ ᄀ                              ┆     │\n│ ᄀ                              ┆     │\n│ ᄀ                              ┆     │\n│ ᄀᄀᄀᄀᄀᄀᄀᄀᄀᄀᄀᄀᄀᄀᄀ  ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7800,7 +8131,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/cluster_jamo_run_after_word"
+  #|  "id": "frame/cluster_jamo_run_after_word",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ ᄀ                              ┆ 0   │\n│ ᄀ                              ┆     │\n│ ᄀ                              ┆     │\n│ ᄀ                              ┆     │\n│ ᄀ                              ┆     │\n│ ᄀᄀᄀᄀᄀᄀᄀᄀᄀᄀᄀᄀᄀᄀᄀ  ┆     │\n│ 日                              ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7822,7 +8154,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/cluster_jamo_run_after_cjk"
+  #|  "id": "frame/cluster_jamo_run_after_cjk",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ 日日日日日日日日日日            ┆ 0   │\n│ ᄀᄀᄀᄀᄀᄀᄀᄀᄀᄀᄀᄀ        ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -7844,7 +8177,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/cluster_jamo_run_in_line"
+  #|  "id": "frame/cluster_jamo_run_in_line",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (9, 1)\n┌─────────────────────────────────┐\n│ s                               │\n│ ---                             │\n│ str                             │\n╞═════════════════════════════════╡\n│ 日日日日日日日日日日日日日日日  │\n│ 🇨🇳日日                          │\n│ 日日日日日日日日日日日日日日x🇨🇳 │\n│ 🇺🇸日                            │\n│ 日日日日日日日日日日日日日日日  │\n│ 1️⃣日日                          │\n│ 日日日日日日日日日日日日日日日  │\n│ ☺️                              │\n│ 日日日日日日日日日日日日日日x   │\n│ क्षि                             │\n│ 日日日日日日日日日日日日日日日  │\n│ क्षि                             │\n│ 日日日日日日日日日日日日日日日  │\n│ ‘︁                              │\n│ 日日日日日日日日日日日日日日x👨‍👩‍👧 │\n│ 日日                            │\n│ 日日日日日日日日日日日日日日日  │\n│ 👍🏽日日                          │\n└─────────────────────────────────┘",
@@ -7865,7 +8199,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/cluster_rows"
+  #|  "id": "frame/cluster_rows",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ ៘  ┆ 0   │\n│ ៘  ┆     │\n│ ab   ┆ 1   │\n└──────┴─────┘",
@@ -7887,7 +8222,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/khmer_pair"
+  #|  "id": "frame/khmer_pair",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ 👍   ┆ 0   │\n│ ៘  ┆     │\n│ ab   ┆ 1   │\n└──────┴─────┘",
@@ -7909,7 +8245,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/khmer_emoji"
+  #|  "id": "frame/khmer_emoji",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ 日   ┆ 0   │\n│ ៘  ┆     │\n│ ab   ┆ 1   │\n└──────┴─────┘",
@@ -7931,7 +8268,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/khmer_wide"
+  #|  "id": "frame/khmer_wide",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌────────┬─────┐\n│ s      ┆ t   │\n│ ---    ┆ --- │\n│ str    ┆ i64 │\n╞════════╪═════╡\n│ 日日   ┆ 0   │\n│ ៘    ┆     │\n│ ab     ┆ 1   │\n└────────┴─────┘",
@@ -7953,7 +8291,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/khmer_two_wide"
+  #|  "id": "frame/khmer_two_wide",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌───────┬─────┐\n│ s     ┆ t   │\n│ ---   ┆ --- │\n│ str   ┆ i64 │\n╞═══════╪═════╡\n│ a៘b ┆ 0   │\n│ ab    ┆ 1   │\n└───────┴─────┘",
@@ -7975,7 +8314,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/khmer_in_ascii"
+  #|  "id": "frame/khmer_in_ascii",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌───────┬─────┐\n│ s     ┆ t   │\n│ ---   ┆ --- │\n│ str   ┆ i64 │\n╞═══════╪═════╡\n│ ab៘ ┆ 0   │\n│ ab    ┆ 1   │\n└───────┴─────┘",
@@ -7997,7 +8337,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/khmer_ascii_before"
+  #|  "id": "frame/khmer_ascii_before",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ ៘a ┆ 0   │\n│ ab   ┆ 1   │\n└──────┴─────┘",
@@ -8019,7 +8360,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/khmer_ascii_after"
+  #|  "id": "frame/khmer_ascii_after",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────┬─────┐\n│ s   ┆ t   │\n│ --- ┆ --- │\n│ str ┆ i64 │\n╞═════╪═════╡\n│ ៘ ┆ 0   │\n│ ab  ┆ 1   │\n└─────┴─────┘",
@@ -8041,7 +8383,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/khmer_single"
+  #|  "id": "frame/khmer_single",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────────────────────┬─────┐\n│ s                    ┆ t   │\n│ ---                  ┆ --- │\n│ str                  ┆ i64 │\n╞══════════════════════╪═════╡\n│ ៘៘៘៘៘៘   ┆ 0   │\n│ ៘៘៘៘         ┆     │\n│ ab                   ┆ 1   │\n└──────────────────────┴─────┘",
@@ -8063,7 +8406,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/khmer_ten"
+  #|  "id": "frame/khmer_ten",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌────────────────────────┬─────┐\n│ s                      ┆ t   │\n│ ---                    ┆ --- │\n│ str                    ┆ i64 │\n╞════════════════════════╪═════╡\n│ ៘៘៘៘៘៘៘  ┆ 0   │\n│ ៘៘៘៘           ┆     │\n│ ab                     ┆ 1   │\n└────────────────────────┴─────┘",
@@ -8085,7 +8429,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/khmer_eleven"
+  #|  "id": "frame/khmer_eleven",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────────────────────────┬─────┐\n│ s                        ┆ t   │\n│ ---                      ┆ --- │\n│ str                      ┆ i64 │\n╞══════════════════════════╪═════╡\n│ ៘៘៘៘៘៘៘៘ ┆ 0   │\n│ ៘៘៘៘             ┆     │\n│ ab                       ┆ 1   │\n└──────────────────────────┴─────┘",
@@ -8107,7 +8452,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/khmer_twelve"
+  #|  "id": "frame/khmer_twelve",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ ៘៘៘៘៘៘៘៘៘៘  ┆ 0   │\n│ ៘៘៘៘៘៘៘៘៘៘  ┆     │\n│ ៘៘៘៘៘៘៘៘៘៘  ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -8129,7 +8475,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/khmer_thirty"
+  #|  "id": "frame/khmer_thirty",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌─────────────────────────────────┬─────┐\n│ s                               ┆ t   │\n│ ---                             ┆ --- │\n│ str                             ┆ i64 │\n╞═════════════════════════════════╪═════╡\n│ ៘៘៘៘៘៘៘៘៘៘  ┆ 0   │\n│ ៘៘៘៘៘៘៘៘៘៘  ┆     │\n│ ៘៘៘៘៘៘៘៘៘៘… ┆     │\n│ ab                              ┆ 1   │\n└─────────────────────────────────┴─────┘",
@@ -8151,7 +8498,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/khmer_thirty_one"
+  #|  "id": "frame/khmer_thirty_one",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌────────┬─────┐\n│ s      ┆ t   │\n│ ---    ┆ --- │\n│ str    ┆ i64 │\n╞════════╪═════╡\n│ ៘a   ┆ 0   │\n│ ៘    ┆     │\n│ ab     ┆ 1   │\n└────────┴─────┘",
@@ -8173,7 +8521,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/khmer_sandwich"
+  #|  "id": "frame/khmer_sandwich",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌────────────────────┬─────┐\n│ s                  ┆ t   │\n│ ---                ┆ --- │\n│ str                ┆ i64 │\n╞════════════════════╪═════╡\n│ ៘៘៘៘       ┆ 0   │\n│ ៘៘៘៘       ┆     │\n│ ab                 ┆ 1   │\n└────────────────────┴─────┘",
@@ -8195,7 +8544,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/khmer_word_wrap"
+  #|  "id": "frame/khmer_word_wrap",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────────────────────────┬─────┐\n│ s                        ┆ t   │\n│ ---                      ┆ --- │\n│ str                      ┆ i64 │\n╞══════════════════════════╪═════╡\n│ a៘៘៘៘៘៘៘   ┆ 0   │\n│ ៘៘៘៘             ┆     │\n│ ab                       ┆ 1   │\n└──────────────────────────┴─────┘",
@@ -8217,7 +8567,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/khmer_ascii_prefix"
+  #|  "id": "frame/khmer_ascii_prefix",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────────────────────────────┬─────┐\n│ s                            ┆ t   │\n│ ---                          ┆ --- │\n│ str                          ┆ i64 │\n╞══════════════════════════════╪═════╡\n│ ab ៘៘៘៘៘៘៘៘  ┆ 0   │\n│ ៘៘៘                    ┆     │\n│ ab                           ┆ 1   │\n└──────────────────────────────┴─────┘",
@@ -8239,7 +8590,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/khmer_ascii_prefix_words"
+  #|  "id": "frame/khmer_ascii_prefix_words",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌────────┬─────┐\n│ s      ┆ t   │\n│ ---    ┆ --- │\n│ str    ┆ i64 │\n╞════════╪═════╡\n│ ៘́៘ ┆ 0   │\n│ ab     ┆ 1   │\n└────────┴─────┘",
@@ -8261,7 +8613,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/khmer_mark_between"
+  #|  "id": "frame/khmer_mark_between",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌───────┬─────┐\n│ s     ┆ t   │\n│ ---   ┆ --- │\n│ str   ┆ i64 │\n╞═══════╪═════╡\n│ a日a  ┆ 0   │\n│ ៘   ┆ 1   │\n│ ៘   ┆     │\n└───────┴─────┘",
@@ -8283,7 +8636,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/khmer_col_with_mixed"
+  #|  "id": "frame/khmer_col_with_mixed",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌────────┬─────┐\n│ s      ┆ t   │\n│ ---    ┆ --- │\n│ str    ┆ i64 │\n╞════════╪═════╡\n│ 日日a  ┆ 0   │\n│ ៘៘ ┆ 1   │\n└────────┴─────┘",
@@ -8305,7 +8659,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/khmer_col_with_cjk_ascii"
+  #|  "id": "frame/khmer_col_with_cjk_ascii",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ aaaa ┆ 0   │\n│ ៘  ┆ 1   │\n│ ៘  ┆     │\n└──────┴─────┘",
@@ -8327,7 +8682,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/khmer_col_with_ascii"
+  #|  "id": "frame/khmer_col_with_ascii",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌───────┬─────┐\n│ s     ┆ t   │\n│ ---   ┆ --- │\n│ str   ┆ i64 │\n╞═══════╪═════╡\n│ aaaaa ┆ 0   │\n│ ៘   ┆ 1   │\n│ ៘   ┆     │\n└───────┴─────┘",
@@ -8349,7 +8705,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/khmer_col_with_ascii_5"
+  #|  "id": "frame/khmer_col_with_ascii_5",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌────────┬─────┐\n│ s      ┆ t   │\n│ ---    ┆ --- │\n│ str    ┆ i64 │\n╞════════╪═════╡\n│ 日aaa  ┆ 0   │\n│ ៘៘ ┆ 1   │\n└────────┴─────┘",
@@ -8371,7 +8728,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/khmer_col_with_wide_ascii"
+  #|  "id": "frame/khmer_col_with_wide_ascii",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬─────┐\n│ s    ┆ t   │\n│ ---  ┆ --- │\n│ str  ┆ i64 │\n╞══════╪═════╡\n│ 日日 ┆ 0   │\n│ ៘  ┆ 1   │\n│ ៘  ┆     │\n└──────┴─────┘",
@@ -8393,7 +8751,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/khmer_col_with_cjk"
+  #|  "id": "frame/khmer_col_with_cjk",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (3, 2)\n┌───────────┬─────┐\n│ s         ┆ t   │\n│ ---       ┆ --- │\n│ str       ┆ i64 │\n╞═══════════╪═════╡\n│ a日 ៘a  ┆ 0   │\n│ ៘៘    ┆ 1   │\n│ ៘       ┆     │\n│ 日日a     ┆ 2   │\n└───────────┴─────┘",
@@ -8417,7 +8776,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/khmer_col_three_cells"
+  #|  "id": "frame/khmer_col_three_cells",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (1, 2)\n┌───────┬─────┐\n│ xxxxx ┆ t   │\n│ ---   ┆ --- │\n│ str   ┆ i64 │\n╞═══════╪═════╡\n│ ៘   ┆ 0   │\n│ ៘   ┆     │\n└───────┴─────┘",
@@ -8437,7 +8797,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/khmer_col_with_header_5"
+  #|  "id": "frame/khmer_col_with_header_5",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (2, 2)\n┌──────┬──────────────┐\n│ ៘  ┆ ៘៘៘៘ │\n│ ៘  ┆ ៘៘       │\n│ ---  ┆ ---          │\n│ i64  ┆ str          │\n╞══════╪══════════════╡\n│ 1    ┆ x            │\n│ 2    ┆ y            │\n└──────┴──────────────┘",
@@ -8459,7 +8820,8 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/khmer_header"
+  #|  "id": "frame/khmer_header",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| },
   #| {
   #|  "expected": "shape: (1, 2)\n┌─────────────────────┬────────┐\n│ d                   ┆ s      │\n│ ---                 ┆ ---    │\n│ datetime[μs]        ┆ str    │\n╞═════════════════════╪════════╡\n│ 1970-01-01 00:00:00 ┆ ៘៘ │\n│                     ┆ ៘    │\n└─────────────────────┴────────┘",
@@ -8479,6 +8841,7 @@ let golden_show : String =
   #|    ]
   #|   }
   #|  ],
-  #|  "id": "frame/khmer_dtype"
+  #|  "id": "frame/khmer_dtype",
+  #|  "polars": "str(pl.DataFrame(frame))"
   #| }
   #|]

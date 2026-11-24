@@ -1,7 +1,8 @@
 ///|
-test "AnyValue show matches table cells" {
+test "AnyValue show is the full value" {
   assert_eq(@pl.AnyValue::Null.to_string(), "null")
   assert_eq(@pl.AnyValue::Boolean(true).to_string(), "true")
+  assert_eq(@pl.AnyValue::Boolean(false).to_string(), "false")
   assert_eq(@pl.AnyValue::Int32(-7).to_string(), "-7")
   assert_eq(
     @pl.AnyValue::Int64(@int64.MIN_VALUE).to_string(),
@@ -9,14 +10,23 @@ test "AnyValue show matches table cells" {
   )
   assert_eq(@pl.AnyValue::Float64(1.0).to_string(), "1.0")
   assert_eq(@pl.AnyValue::Float64(-0.0).to_string(), "-0.0")
-  assert_eq(@pl.AnyValue::Float64(1.0 / 3.0).to_string(), "0.333333")
-  assert_eq(@pl.AnyValue::Float64(123456789.125).to_string(), "1.2346e8")
-  assert_eq(@pl.AnyValue::Float64(1.0e6).to_string(), "1e6")
+  // shortest round-trip digits, not the six decimals of a table cell
+  assert_eq(@pl.AnyValue::Float64(10.0 / 3.0).to_string(), "3.3333333333333335")
+  assert_eq(@pl.AnyValue::Float64(1.0 / 3.0).to_string(), "0.3333333333333333")
+  assert_eq(@pl.AnyValue::Float64(1234567.891).to_string(), "1234567.891")
+  assert_eq(@pl.AnyValue::Float64(123456789.125).to_string(), "123456789.125")
+  assert_eq(@pl.AnyValue::Float64(1.0e6).to_string(), "1000000.0")
+  assert_eq(@pl.AnyValue::Float64(0.1 + 0.2).to_string(), "0.30000000000000004")
+  assert_eq(@pl.AnyValue::Float64(1.5e16).to_string(), "1.5e+16")
+  assert_eq(@pl.AnyValue::Float64(1.0e-6).to_string(), "1e-6")
   assert_eq(@pl.AnyValue::Float64(0.0 / 0.0).to_string(), "NaN")
+  assert_eq(@pl.AnyValue::Float64(1.0 / 0.0).to_string(), "inf")
   assert_eq(@pl.AnyValue::Float64(-1.0 / 0.0).to_string(), "-inf")
   assert_eq(@pl.AnyValue::Float32(0.1).to_string(), "0.1")
-  assert_eq(@pl.AnyValue::Float32(1234.5678).to_string(), "1234.567749")
+  assert_eq(@pl.AnyValue::Float32(1234.5678).to_string(), "1234.5677")
+  assert_eq(@pl.AnyValue::Float32(-0.0).to_string(), "-0.0")
   assert_eq(@pl.AnyValue::String("a\"q").to_string(), "a\"q")
+  assert_eq(@pl.AnyValue::String("").to_string(), "")
   assert_eq(@pl.AnyValue::Date(0).to_string(), "1970-01-01")
   assert_eq(@pl.AnyValue::Date(-1).to_string(), "1969-12-31")
   assert_eq(
@@ -31,10 +41,21 @@ test "AnyValue show matches table cells" {
 }
 
 ///|
-test "AnyValue show cuts long strings like a table cell" {
+test "AnyValue show does not cut long strings, a table does" {
   let s30 = "a".repeat(30)
+  let s40 = "b".repeat(40)
   assert_eq(@pl.AnyValue::String(s30).to_string(), s30)
-  assert_eq(@pl.AnyValue::String(s30 + "b").to_string(), s30 + "…")
+  assert_eq(@pl.AnyValue::String(s30 + "b").to_string(), s30 + "b")
+  assert_eq(@pl.AnyValue::String(s40).to_string().length(), 40)
+  assert_eq("\{@pl.AnyValue::String(s40)}", s40)
+  inspect(@pl.AnyValue::String(s40), content=s40)
+  // the table cut stays
+  let df = @pl.DataFrame::new([@pl.Series::str("s", [s40])])
+  assert_true(df.to_string().contains("b".repeat(30) + "…"))
+  assert_false(df.to_string().contains(s40))
+  // an aggregation result can be interpolated without losing digits
+  let m = @pl.Series::float64("x", [1.0, 2.0, 7.0]).mean()
+  assert_eq("mean=\{m}", "mean=3.3333333333333335")
 }
 
 ///|
@@ -170,9 +191,14 @@ test "show floats never aborts across the exponent range" {
 }
 
 ///|
-test "show float rounding carries into the next digit" {
-  assert_eq(@pl.AnyValue::Float64(9.99996e20).to_string(), "1.0000e21")
-  assert_eq(@pl.AnyValue::Float64(0.9999999999).to_string(), "1.0")
-  assert_eq(@pl.AnyValue::Float64(12345500000.0).to_string(), "1.2346e10")
-  assert_eq(@pl.AnyValue::Float64(12344500000.0).to_string(), "1.2344e10")
+test "table float rounding carries into the next digit" {
+  let t = (x : Double) => @pl.DataFrame::new([@pl.Series::float64("x", [x])])
+  assert_true(t(9.99996e20).to_string().contains("1.0000e21"))
+  assert_true(t(0.9999999999).to_string().contains("1.0"))
+  assert_true(t(12345500000.0).to_string().contains("1.2346e10"))
+  assert_true(t(12344500000.0).to_string().contains("1.2344e10"))
+  // AnyValue::Float64 shows the full value instead
+  assert_eq(@pl.AnyValue::Float64(9.99996e20).to_string(), "9.99996e+20")
+  assert_eq(@pl.AnyValue::Float64(0.9999999999).to_string(), "0.9999999999")
+  assert_eq(@pl.AnyValue::Float64(12345500000.0).to_string(), "12345500000.0")
 }

@@ -500,13 +500,26 @@ fn cell_text(v : AnyValue) -> String {
 }
 
 ///|
-/// Shows the value as polars prints it in a table cell: `null`, `true`,
-/// `-3`, floats like `1.0`, `0.333333`, `1.2346e8`, `NaN`, `inf`; dates as
-/// `1970-01-01`, datetimes as `1970-01-01 00:00:00` (plus `.123` or
-/// `.123456` when there is a fraction). Strings are printed without quotes
-/// and cut to 30 characters followed by `…`, exactly as in a table.
+/// The complete text of a value (not cut or rounded like a table cell).
+fn full_text(v : AnyValue) -> String {
+  match v {
+    Float32(x) => format_f32(x)
+    Float64(x) => format_f64(x)
+    String(s) => s
+    v => cell_text(v)
+  }
+}
+
+///|
+/// Shows the whole value, never a table-cell abbreviation: `null`, `true`,
+/// `-3`; floats as their shortest round-trip digits (`3.3333333333333335`,
+/// `1234567.891`, `1e-6`, `1.5e+16`, `NaN`, `inf`; the text of
+/// `Series::cast` to `String`); strings in full and without quotes; dates as
+/// `1970-01-01` and datetimes as `1970-01-01 00:00:00` (plus `.123` or
+/// `.123456` when there is a fraction). A `DataFrame` or `Series` print cuts
+/// long strings and rounds floats to table width; this does not.
 pub impl Show for AnyValue with fn output(self, logger) {
-  logger.write_string(cell_text(self))
+  logger.write_string(full_text(self))
 }
 
 ///|
