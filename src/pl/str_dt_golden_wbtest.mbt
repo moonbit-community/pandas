@@ -96,6 +96,7 @@ fn sd_error_parts(e : PolarsError) -> (String, String) {
     InvalidOperation(m) => ("InvalidOperation", m)
     ComputeError(m) => ("ComputeError", m)
     ParseError(m) => ("ParseError", m)
+    IOError(m) => ("IOError", m)
   }
 }
 

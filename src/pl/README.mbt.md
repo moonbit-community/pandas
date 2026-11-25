@@ -5,11 +5,12 @@ A polars-style data layer for MoonBit: typed, nullable, immutable columns
 what to compute and eager operations that run them: `select`,
 `with_columns`, `filter`, `sort`, aggregation, `group_by`, `join`, window
 expressions (`over`), `pivot` and `unpivot`, `unique`, `concat`, `describe`,
-`cast` and printing.
+`cast`, printing, and CSV reading and writing.
 
-Every fallible call raises `PolarsError`; nothing aborts on bad user input.
+Every fallible call raises `PolarsError` (the file functions of `@plfs` also pass
+on file system errors through); nothing aborts on bad user input.
 Coming from the old `lib/pandas` package? See `docs/migration.md`. Not here
-yet: CSV (planned). There is no `List` type: see
+yet: ndjson (later). There is no `List` type: see
 [group_by and agg](#group_by-and-agg).
 
 ## Quick start
@@ -76,6 +77,7 @@ test "quick start" {
 | stack tables, drop duplicates, summarize | [concat, unique and describe](#concat-unique-and-describe) |
 | work on one column without a table | [Series operations](#series-operations) |
 | change a type | [Cast](#cast) |
+| read or write CSV text or files | [CSV](#csv) |
 | understand an error | [Error handling](#error-handling), [Errors](#errors) |
 | the few places where this package differs from polars | [Good to know](#good-to-know) |
 
@@ -1556,6 +1558,414 @@ test "cast" {
 }
 ```
 
+## CSV
+
+`read_csv_str` turns CSV text into a `DataFrame` and `write_csv_str` turns a
+`DataFrame` into CSV text. Both work on every backend (they only touch
+strings); reading and writing files is in the separate package
+[`@plfs`](#files).
+
+### Reading
+
+The first line is the header. Each column gets the first of `Int64`,
+`Float64`, `Boolean` and `String` that reads all of its values; an empty
+field is null. The inference looks at the first 100 records (see
+`infer_schema_length` below).
+
+```mbt check
+///|
+test "csv: read text" {
+  let df = @pl.read_csv_str(
+    "name,score,ratio,passed\nann,3,0.5,true\nbob,5,,false\n",
+  )
+  inspect(
+    df,
+    content=(
+      #|shape: (2, 4)
+      #|┌──────┬───────┬───────┬────────┐
+      #|│ name ┆ score ┆ ratio ┆ passed │
+      #|│ ---  ┆ ---   ┆ ---   ┆ ---    │
+      #|│ str  ┆ i64   ┆ f64   ┆ bool   │
+      #|╞══════╪═══════╪═══════╪════════╡
+      #|│ ann  ┆ 3     ┆ 0.5   ┆ true   │
+      #|│ bob  ┆ 5     ┆ null  ┆ false  │
+      #|└──────┴───────┴───────┴────────┘
+    ),
+  )
+}
+```
+
+The options are labelled arguments of `CsvReadOptions::new`; leave out the
+ones you do not need.
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `separator` | `','` | the field separator, any one character except a line break |
+| `has_header` | `true` | with `false` the columns are `column_0`, `column_1`, ... |
+| `quote_char` | `Some('"')` | a `Char?`: `Some('\'')` for single quotes, `None` turns quoting off (the writer's `quote_char` is a plain `Char`) |
+| `null_values` | `[]` | texts that read as null in every column, quoted ones too |
+| `schema_overrides` | `{}` | column name to `DataType`: read the column as that type instead of inferring it |
+| `infer_schema_length` | `Some(100)` | how many records the inference looks at; `None` is all, `Some(0)` makes every column a `String` |
+| `n_rows` | all | stop after this many rows |
+| `skip_rows` | `0` | records to skip before the header |
+| `try_parse_dates` | `false` | read dates and datetimes (see [Dates](#dates)); day first is tried before month first, so `01/02/2024` is 1 February, and there is no `format` option |
+
+```mbt check
+///|
+test "csv: read options" {
+  // a semicolon file, no header, "-" for missing, only the first 2 rows
+  let text = "1;x\n2;-\n3;z\n"
+  let df = @pl.read_csv_str(
+    text,
+    options=@pl.CsvReadOptions::new(
+      separator=';',
+      has_header=false,
+      null_values=["-"],
+      n_rows=2,
+    ),
+  )
+  @debug.debug_inspect(df.columns(), content="[\"column_0\", \"column_1\"]")
+  @debug.debug_inspect(
+    df.column("column_1").to_str_array(),
+    content="[Some(\"x\"), None]",
+  )
+  // an id column that looks like a number but is a code
+  let ids = @pl.read_csv_str(
+    "id,n\n007,1\n010,2\n",
+    options=@pl.CsvReadOptions::new(schema_overrides={ "id": String }),
+  )
+  @debug.debug_inspect(
+    ids.column("id").to_str_array(),
+    content="[Some(\"007\"), Some(\"010\")]",
+  )
+}
+```
+
+Only an empty field is null by default. `NA`, `null` and `N/A` are not: they
+make the column a `String`. `NaN` is the float NaN, not null. List the texts
+you want as missing in `null_values`.
+
+An integer too big for `Int64` follows polars, except where polars reads
+`Int128`, which the library does not have: there the column is a `String` and
+the original text is kept to the last digit. That is the case when the window
+holds such integers and no float-shaped value (`1.5`, `1e3`, `NaN`, `inf`).
+With float-shaped values and no small integer the column is `Float64`, as in
+polars; with a small integer as well it is a `String`, also as in polars. To
+get floats from big integers use `schema_overrides={ "id": Float64 }`.
+
+Quoted fields may hold separators, line breaks and doubled quotes, `\r\n` and
+`\n` both end a record, a blank line is a row of nulls, a short record is
+padded with nulls, and a leading byte order mark is dropped. A record with more
+fields than the header is a `ParseError`. Without a header, the table is as wide
+as the widest record the inference looks at (the whole file with
+`infer_schema_length=None`) and every shorter row is padded with nulls, as in
+polars. So a table of N rows and one record of W fields is N x W cells: one very
+wide row in a long file takes a lot of memory.
+
+### Dates
+
+Like polars, the reader leaves `2024-01-02` as a `String` unless you ask for
+dates with `try_parse_dates=true` (or give the column a `Date` or `Datetime`
+override). Datetimes with a time zone (`Z`, `+01:00`) and bare times stay
+strings.
+
+For texts such as `01/02/2024` the day-first reading is tried before the
+month-first one, so `01/02/2024` is 1 February 2024 (day 1, month 2). There is
+no `format` option to change that. If the same column also holds a value that
+can only be read month first, such as `03/13/2024`, the whole column stays a
+`String`; `str().to_date()` has no `format` argument either, so such a column
+cannot be turned into dates afterwards.
+
+```mbt check
+///|
+test "csv: try_parse_dates" {
+  let text = "d,t\n2024-01-02,2024-01-02T03:04:05\n"
+  let plain = @pl.read_csv_str(text)
+  @debug.debug_inspect(plain.dtypes(), content="[String, String]")
+  let parsed = @pl.read_csv_str(
+    text,
+    options=@pl.CsvReadOptions::new(try_parse_dates=true),
+  )
+  @debug.debug_inspect(parsed.dtypes(), content="[Date, Datetime]")
+}
+```
+
+### null and the empty string
+
+An empty field with no quotes is null; `""` is the empty string. The writer
+keeps them apart the same way (null is empty, the empty string is `""`), so
+the pair survives a round trip.
+
+```mbt check
+///|
+test "csv: null versus empty string" {
+  let df = @pl.read_csv_str("a,b\n1,\n2,\"\"\n3,x\n")
+  @debug.debug_inspect(
+    df.column("b").to_str_array(),
+    content="[None, Some(\"\"), Some(\"x\")]",
+  )
+  assert_eq(@pl.write_csv_str(df), "a,b\n1,\n2,\"\"\n3,x\n")
+}
+```
+
+### Errors
+
+Reading raises `ParseError` for a value that does not parse, a record with too
+many fields, a quote that is never closed, text after a closing quote and
+empty input. The message is polars' first line followed by ` at line N`, the
+line (counting line breaks inside quotes) where the record starts. Bad options
+are `InvalidOperation`, with these texts:
+
+- `separator must not be a line break (LF or CR)`
+- `quote_char must not be a line break (LF or CR)`
+- `separator and quote_char must differ, got '<c>'`
+- `n_rows must not be negative, got <n>` (and the same for `skip_rows` and
+  `infer_schema_length`)
+
+The types come from the first 100 records only. A value after that window that
+does not fit the type is a `ParseError` (`could not parse `N/A` as dtype `i64`
+...`), so a file that has 150 integers and then `N/A` fails on row 151. There
+are three ways out: read the whole file for the inference with
+`infer_schema_length=None`, name the type of the column in `schema_overrides`
+(`{ "a": String }` keeps the text), or list the text in `null_values`.
+
+```mbt check
+///|
+test "csv: parse errors name the line" {
+  try
+    @pl.read_csv_str(
+      "a\n1\nx\n",
+      options=@pl.CsvReadOptions::new(schema_overrides={ "a": Int64 }),
+    )
+  catch {
+    @pl.ParseError(msg) =>
+      inspect(
+        msg,
+        content="could not parse `x` as dtype `i64` at column 'a' (column number 1) at line 3",
+      )
+    _ => fail("expected ParseError")
+  } noraise {
+    _ => fail("expected an error")
+  }
+}
+```
+
+```mbt check
+///|
+test "csv: a bad value after the inference window" {
+  // the window is 2 records, so `N/A` on the third is not seen by the inference
+  let text = "a\n1\n2\nN/A\n"
+  try
+    @pl.read_csv_str(
+      text,
+      options=@pl.CsvReadOptions::new(infer_schema_length=Some(2)),
+    )
+  catch {
+    @pl.ParseError(_) => ()
+    _ => fail("expected ParseError")
+  } noraise {
+    _ => fail("expected an error")
+  }
+  // look at every record, or say which texts are missing
+  let all = @pl.read_csv_str(
+    text,
+    options=@pl.CsvReadOptions::new(infer_schema_length=None),
+  )
+  @debug.debug_inspect(all.dtypes(), content="[String]")
+  let nulls = @pl.read_csv_str(
+    text,
+    options=@pl.CsvReadOptions::new(infer_schema_length=Some(2), null_values=[
+      "N/A",
+    ]),
+  )
+  @debug.debug_inspect(
+    nulls.column("a").to_int64_array(),
+    content="[Some(1), Some(2), None]",
+  )
+}
+```
+
+### Not supported
+
+These polars options and inputs have no counterpart in the CSV functions:
+
+- `decimal_comma` (reading and writing), `comment_prefix`, `skip_lines`,
+  `truncate_ragged_lines`, `ignore_errors`, and the other options listed in
+  `docs/golden/known-diffs/csv_read.md`
+- encodings other than UTF-8
+- `null_values` for one column only (the list applies to every column)
+- a date `format` (dates and datetimes are read in the formats of
+  `try_parse_dates`, see [Dates](#dates))
+- reading from `Bytes`: pass the text, or use `@plfs.read_csv` for a file
+- streaming, `scan_csv` and `read_ndjson` / `write_ndjson`; everything is read
+  into memory at once
+
+For writing see `docs/golden/known-diffs/csv_write.md`.
+
+### Writing
+
+`write_csv_str(df, options~)` returns the text; every line, the last one
+included, ends with the line terminator. A field is quoted when it is empty or
+contains the separator, the quote character, `\n` or `\r`; quote characters
+inside are doubled.
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `include_header` | `true` | write the column names first |
+| `separator` | `','` | any one character except a line break |
+| `line_terminator` | `"\n"` | the end of every line |
+| `quote_char` | `'"'` | |
+| `quote_style` | `Necessary` | `Necessary`, `Always`, `NonNumeric` (quote strings, booleans, dates, datetimes and names) or `Never` |
+| `null_value` | `""` | what a null looks like |
+| `include_bom` | `false` | start with a UTF-8 byte order mark |
+
+Floats are written in the shortest form that reads back exactly (`1.0`, `0.1`,
+`1e+20`, `NaN`, `inf`, `-0.0`), dates as `2024-01-02` and datetimes as
+`2024-01-02T03:04:05.000000`.
+
+```mbt check
+///|
+test "csv: write text" {
+  let df = @pl.DataFrame::new([
+    @pl.Series::str_nullable("note", [Some("a,b"), None, Some("say \"hi\"")]),
+    @pl.Series::float64("x", [1.0, 0.1, 0.0 / 0.0]),
+  ])
+  assert_eq(
+    @pl.write_csv_str(df),
+    "note,x\n\"a,b\",1.0\n,0.1\n\"say \"\"hi\"\"\",NaN\n",
+  )
+  assert_eq(
+    @pl.write_csv_str(
+      df,
+      options=@pl.CsvWriteOptions::new(
+        separator=';',
+        null_value="NA",
+        line_terminator="\r\n",
+      ),
+    ),
+    "note;x\r\na,b;1.0\r\nNA;0.1\r\n\"say \"\"hi\"\"\";NaN\r\n",
+  )
+}
+```
+
+A field that contains the separator is always quoted, numbers and dates
+included (polars writes them as they are, which breaks the row for a
+separator such as `.`). `Never` writes no quotes at all and cannot be read
+back when a value needs them. Under `Always` a null is written as `""`, so it
+is read back as null only with `null_values=[""]` (which also turns real empty
+strings into null).
+
+### Round trips
+
+`read_csv_str(write_csv_str(df), options~)` gives back `df` when
+`schema_overrides` names the type of every column. Without them the reader
+sniffs the text, so a `String` column of `"007"` comes back `Int64`
+(`7`), `Int32` comes back `Int64`, `Float32` comes back `Float64`, `Date` and
+`Datetime` come back `String` (unless `try_parse_dates=true`), and a `Null`
+column or an `Int64` column with no value comes back as a `String` column of
+nulls. A `Null` column cannot be overridden. A table with no rows comes back
+with `String` columns; a table with no columns writes one empty line, which is
+not a CSV (`ParseError`: `empty CSV`).
+
+```mbt check
+///|
+test "csv: a round trip with overrides" {
+  let df = @pl.DataFrame::new([
+    @pl.Series::str("code", ["007", "x,y"]),
+    @pl.Series::date("day", [19000, -1]),
+    @pl.Series::float64("v", [-0.0, 5.0e-324]),
+  ])
+  let text = @pl.write_csv_str(df)
+  assert_eq(
+    text, "code,day,v\n007,2022-01-08,-0.0\n\"x,y\",1969-12-31,5e-324\n",
+  )
+  let back = @pl.read_csv_str(
+    text,
+    options=@pl.CsvReadOptions::new(schema_overrides={
+      "code": String,
+      "day": Date,
+      "v": Float64,
+    }),
+  )
+  assert_true(back.equals(df))
+  // without overrides "007" turns into the integer 7 and the date into text
+  @debug.debug_inspect(
+    @pl.read_csv_str(text).dtypes(),
+    content="[String, String, Float64]",
+  )
+}
+```
+
+The reader reads years -262143 to 262142 (the range of the calendar library
+polars uses). The writer formats `Date` values up to 110 000 000 days from
+1970 and every `Datetime`, so a date or datetime beyond that range is written
+but read back as a `ParseError`.
+
+### Files
+
+The file functions live in a separate package so that `@pl` stays free of
+file system code. Import it in `moon.pkg` next to `@pl`; the alias is yours to
+choose (it is `@plfs` here):
+
+```
+import {
+  "smallbearrr/pandas/pl" @pl,
+  "smallbearrr/pandas/pl/fs" @plfs,
+}
+```
+
+```mbt nocheck
+///|
+fn example() -> Unit raise Error {
+  let df = @plfs.read_csv(
+    "data/in.csv",
+    options=@pl.CsvReadOptions::new(separator=';'),
+  )
+  @plfs.write_csv(
+    df,
+    "data/out.csv",
+    options=@pl.CsvWriteOptions::new(include_bom=true),
+  )
+}
+```
+
+A file that cannot be read or written is a `PolarsError`, like every other
+problem. `IOError(msg)` carries the text of the operating system, including the
+path, and `e.to_string()` is `IOError: <msg>`. You do not need to import
+`moonbitlang/x` to handle it:
+
+```mbt nocheck
+///|
+fn load(path : String) -> Unit {
+  try @plfs.read_csv(path) catch {
+    @pl.IOError(msg) => println("cannot read the file: \{msg}")
+    @pl.ParseError(msg) => println("not a valid CSV: \{msg}")
+    e => println("failed: \{e}")
+  } noraise {
+    df => println(df)
+  }
+}
+```
+
+- `read_csv(path, options~)` reads the whole file, decodes it as strict UTF-8
+  and calls `read_csv_str`. A file that is not UTF-8 is
+  `ParseError("invalid utf-8 sequence")`. A byte order mark is removed by
+  `read_csv_str`. `\r\n` files work.
+- `write_csv(df, path, options~)` writes `write_csv_str`'s text as UTF-8,
+  creating the file or replacing its content. The directory must exist. A string
+  that holds a lone surrogate cannot be encoded as UTF-8: `write_csv` raises
+  `ComputeError` and leaves the file alone, while `write_csv_str` returns the
+  string as usual.
+- Both functions raise `PolarsError`: `IOError` for file system problems (a
+  missing file, a missing directory, no permission), `ParseError` and
+  `InvalidOperation` for the text and the options, `ComputeError` as above.
+- They work on native, js, wasm and wasm-gc. On js the package uses
+  `import ... from "node:fs"`, so Node has to load the output as an ES module;
+  if it reports `Cannot use import statement outside a module`, set
+  `link: { "js": { "format": "cjs" } }` in the `moon.pkg` of your program.
+- The snippets above are not checked examples because `@pl` cannot depend on
+  `@plfs`; the file functions are tested in `src/pl/fs/csv_test.mbt`.
+
 ## Error handling
 
 Errors are values of the `PolarsError` suberror; match on the variant.
@@ -1614,6 +2024,13 @@ The package follows polars 2.1.0; the full list of differences is in
 - **`over` takes `partition_by` only**: no `order_by`, no `mapping_strategy`.
 - **Keys are expressions**: `group_by([col("a")])`, `join(on=[col("a")])`,
   not plain strings.
+- **CSV reads only an empty field as null, and looks at 100 records to pick the
+  types.** `NA` and `N/A` are text, and a bad value after the window is a
+  `ParseError`: use `null_values`, `schema_overrides` or
+  `infer_schema_length=None` (see [CSV](#csv)). An integer beyond `Int64`
+  makes the column a `String` unless floats are in the window (details above). `try_parse_dates` has no `format` option. What
+  CSV does not support is listed under [Not supported](#not-supported), and the
+  details are in `docs/golden/known-diffs/csv_read.md` and `csv_write.md`.
 
 ```mbt check
 ///|

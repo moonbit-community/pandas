@@ -38,6 +38,20 @@ M3 的对照数据（用例数以各文件为准）：
 
 M3 全部对照用例（含 M1、M2）共 21 030 条，`check_annotations.py` 通过；M3 的 `known-diffs/*.md`（`group_by`、`join`、`expr_shape`、`window`、`reshape`、`date_parse`）是英文，写给库的使用者看。
 
+M4 又加了 `csv_read.py`、`csv_write.py`（CSV 读写对照，运行命令同上）：
+
+| 文件 | 内容 | 用例数 |
+| --- | --- | --- |
+| `csv_read.json` | `pl.read_csv` 读字节：每种值文本（带引号和不带）、14 种文本两两组合的整列推断、`infer_schema_length`、表头与无表头、不整齐的行、RFC 4180（引号里的分隔符/换行/`""`、CRLF、BOM、引号错误）、分隔符、`null_values`、`skip_rows`、`n_rows`、八种 `schema_overrides`、`try_parse_dates`、报错顺序、纯空白字段、种子固定的随机表 | 1538 |
+| `csv_write.json` | `DataFrame.write_csv()` 的文本：每种类型的特殊值、四种 `quote_style` 乘六种选项组合、表头里的怪名字、0 行/0 列、`null_value`、`line_terminator`、`quote_char`、`separator`、BOM；8 条非法选项用例标 `restricted`（polars 接受，本库报 `InvalidOperation`） | 165 |
+
+- 读的用例里 polars 报 `ComputeError`/`NoDataError` 的，本库是 `ParseError`（文案是 polars 第一行加 ` at line N`），用例标 `"restricted": true`；polars 有 `Int128`、`Time`、带时区 Datetime 而本库没有的，也标 restricted，期望值按本库的退路类型写。
+- CSV 的输入字符串里不能有原始 U+2028/U+2029（`#|` 行的词法错误，`emit.py` 不改）；非法 UTF-8 只能在文件包 `@plfs` 的测试（`src/pl/fs/csv_test.mbt`）里用字节造，BOM、CRLF 文件、文件系统错误也在那里测。
+- 往返测试在 `src/pl/csv_roundtrip_test.mbt`（quickcheck：`write_csv_str` 再 `read_csv_str`，带 `schema_overrides` 时浮点逐位相同；不带时钉住类型推断造成的差异），不是对照数据。
+- 1M 行 × 5 列的读写基准在 `docs/bench/m4.md`。
+- M4 的差异记录是英文：`known-diffs/csv_read.md`、`known-diffs/csv_write.md`，汇总在 `docs/migration.md` 的 “CSV (M4)” 一节。
+- M4 之后全部对照用例共 22 733 条，`check_annotations.py` 通过。
+
 **每个用例都有 `polars` 字段**，写明对应的 polars 写法（spec 第 7 节“测试注释”）：`cast.json` 是 `s.cast(pl.Int32, strict=True)`，`show.json` 是 `str(pl.DataFrame(frame))` 或 `str(series)`，其余各文件的写法见各自的数据。检查与复现：
 
 ```
@@ -150,7 +164,7 @@ date/datetime（1970 年之前、年份超过 9999、负年份、毫秒/微秒�
 
 ## 已知差异
 
-面向使用者的汇总（M1、M2 和 M3 全部差异，英文）在 [`docs/migration.md`](../migration.md) 的 “Differences from polars” 一节；M2、M3 各任务的详细记录在 `known-diffs/*.md`。下面是 M1（cast、Show、Series 基础）的记录。
+面向使用者的汇总（M1、M2、M3 和 M4 全部差异，英文）在 [`docs/migration.md`](../migration.md) 的 “Differences from polars” 一节；M2、M3、M4 各任务的详细记录在 `known-diffs/*.md`。下面是 M1（cast、Show、Series 基础）的记录。
 
 没有被跳过的用例：cast 的 468 条和 show 的 363 条全部与 polars 一致（cast 里有 3 条为避开 polars 的 panic 去掉了个别输入值，见上）。下面是对照数据没覆盖、或实现有意不同的地方（其中前几条是 polars 在这些输入上 panic，没有可对照的结果）：
 

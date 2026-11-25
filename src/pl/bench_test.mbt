@@ -446,3 +446,128 @@ test "bench m3 join left int64 right keys all equal 1M x 10" (it : @bench.T) {
   let (l, r) = m3_join_same_key_frames()
   it.bench(fn() { it.keep(must(() => l.join(r, on=[@pl.col("k")], how=Left))) })
 }
+
+// ---- M4: CSV, 1M rows x 5 columns (i64, f64, str, bool, date) ----
+
+///|
+/// A CSV text of `bench_n` rows and five columns: an integer, a float, a
+/// string, a boolean and a date.
+fn csv_bench_text() -> String {
+  let sb = StringBuilder()
+  sb.write_string("i,f,s,b,d\n")
+  for i in 0..<bench_n {
+    let day = i % 28 + 1
+    let month = i % 12 + 1
+    sb.write_string("\{i},\{i % 1000}.\{i % 97 + 10},str\{i % 1000},")
+    sb.write_string(if i % 2 == 0 { "true" } else { "false" })
+    sb.write_string(
+      ",2024-\{if month < 10 { "0" } else { "" }}\{month}-\{if day < 10 { "0" } else { "" }}\{day}\n",
+    )
+  }
+  sb.to_string()
+}
+
+///|
+fn csv_bench_must(text : String, options : @pl.CsvReadOptions) -> @pl.DataFrame {
+  @pl.read_csv_str(text, options~) catch {
+    e => abort("\{e}")
+  }
+}
+
+///|
+test "bench csv read_csv_str 5 columns n=1000000 inferred default" (
+  it : @bench.T,
+) {
+  let text = csv_bench_text()
+  let options = @pl.CsvReadOptions::new()
+  it.bench(fn() { it.keep(csv_bench_must(text, options).height()) })
+}
+
+///|
+test "bench csv read_csv_str 5 columns n=1000000 inferred try_parse_dates=true" (
+  it : @bench.T,
+) {
+  let text = csv_bench_text()
+  let options = @pl.CsvReadOptions::new(try_parse_dates=true)
+  it.bench(fn() { it.keep(csv_bench_must(text, options).height()) })
+}
+
+///|
+test "bench csv read_csv_str 5 columns n=1000000 all strings" (it : @bench.T) {
+  let text = csv_bench_text()
+  let options = @pl.CsvReadOptions::new(infer_schema_length=Some(0))
+  it.bench(fn() { it.keep(csv_bench_must(text, options).height()) })
+}
+
+///|
+test "bench csv read_csv_str 5 columns n=1000000 overrides" (it : @bench.T) {
+  let text = csv_bench_text()
+  let options = @pl.CsvReadOptions::new(
+    schema_overrides=Map::from_array([
+      ("i", @pl.DataType::Int64),
+      ("f", Float64),
+      ("s", String),
+      ("b", Boolean),
+      ("d", Date),
+    ]),
+  )
+  it.bench(fn() { it.keep(csv_bench_must(text, options).height()) })
+}
+
+///|
+/// The frame of the write benchmarks: i64, f64, str (every 5th needs quotes), bool, date.
+fn csvw_bench_frame() -> @pl.DataFrame {
+  must(() => {
+    @pl.DataFrame::new([
+      @pl.Series::int64(
+        "i",
+        Array::makei(bench_n, i => i.to_int64() * 7919L - 1000L),
+      ),
+      @pl.Series::float64(
+        "f",
+        Array::makei(bench_n, i => i.to_double() * 0.37 - 5.0),
+      ),
+      @pl.Series::str(
+        "s",
+        Array::makei(bench_n, i => {
+          if i % 5 == 0 {
+            "a,\"q\"\{i}"
+          } else {
+            "value\{i}"
+          }
+        }),
+      ),
+      @pl.Series::bool("b", Array::makei(bench_n, i => i % 3 == 0)),
+      @pl.Series::date("d", Array::makei(bench_n, i => i % 40000)),
+    ])
+  })
+}
+
+///|
+test "bench write_csv_str 1M rows x 5 columns (i64 f64 str bool date)" (
+  it : @bench.T,
+) {
+  let df = csvw_bench_frame()
+  it.bench(fn() { it.keep(must(() => @pl.write_csv_str(df))) })
+}
+
+///|
+test "bench write_csv_str 1M rows x 5 columns, quote_style always" (
+  it : @bench.T,
+) {
+  let df = csvw_bench_frame()
+  let o = @pl.CsvWriteOptions::new(quote_style=Always)
+  it.bench(fn() { it.keep(must(() => @pl.write_csv_str(df, options=o))) })
+}
+
+///|
+test "bench write_csv_str 1M rows x 1 string column needing quotes" (
+  it : @bench.T,
+) {
+  let df = must(() => {
+    @pl.DataFrame::new([
+      @pl.Series::str("s", Array::makei(bench_n, i => "x,\"y\" \{i} z")),
+    ])
+  })
+  it.bench(fn() { it.keep(must(() => @pl.write_csv_str(df))) })
+}

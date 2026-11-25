@@ -44,6 +44,7 @@ fn golden_error_parts(e : @pl.PolarsError) -> (String, String) {
     @pl.InvalidOperation(m) => ("InvalidOperation", m)
     @pl.ComputeError(m) => ("ComputeError", m)
     @pl.ParseError(m) => ("ParseError", m)
+    @pl.IOError(m) => ("IOError", m)
   }
 }
 
