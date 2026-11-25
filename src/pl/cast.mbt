@@ -156,6 +156,13 @@ fn format_date_checked(days : Int32) -> String? {
 /// division, so -1 is 1969-12-31 23:59:59.999999). Every `Int64` value is in
 /// range.
 fn format_datetime(us : Int64) -> String {
+  format_datetime_sep(us, " ")
+}
+
+///|
+/// `format_datetime` with `sep` between the date and the time (`" "` for
+/// casts, `"T"` for `write_csv`).
+fn format_datetime_sep(us : Int64, sep : String) -> String {
   let days = floor_div64(us, micros_per_day).to_int()
   let rem = floor_mod64(us, micros_per_day)
   let secs = (rem / 1_000_000L).to_int()
@@ -165,7 +172,7 @@ fn format_datetime(us : Int64) -> String {
     None => abort("format_datetime: day \{days} out of range")
   }
   date +
-  " " +
+  sep +
   pad_digits(secs / 3600, 2) +
   ":" +
   pad_digits(secs / 60 % 60, 2) +

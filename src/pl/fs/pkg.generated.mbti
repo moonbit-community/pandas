@@ -1,0 +1,19 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "smallbearrr/pandas/pl/fs"
+
+import {
+  "smallbearrr/pandas/pl",
+}
+
+// Values
+pub fn read_csv(String, options? : @pl.CsvReadOptions) -> @pl.DataFrame raise @pl.PolarsError
+
+pub fn write_csv(@pl.DataFrame, String, options? : @pl.CsvWriteOptions) -> Unit raise @pl.PolarsError
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

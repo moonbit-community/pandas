@@ -12,6 +12,8 @@ pub(all) suberror PolarsError {
   InvalidOperation(String)
   ComputeError(String)
   ParseError(String)
+  /// file system error from the `@plfs` file package; the message is the operating system's text
+  IOError(String)
 }
 
 ///|
@@ -26,6 +28,7 @@ pub impl Show for PolarsError with fn output(self, logger) {
     InvalidOperation(m) => ("InvalidOperation", m)
     ComputeError(m) => ("ComputeError", m)
     ParseError(m) => ("ParseError", m)
+    IOError(m) => ("IOError", m)
   }
   logger.write_string(name)
   logger.write_string(": ")

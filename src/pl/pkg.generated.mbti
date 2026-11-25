@@ -30,9 +30,13 @@ pub fn max_horizontal(Array[Expr]) -> Expr
 
 pub fn min_horizontal(Array[Expr]) -> Expr
 
+pub fn read_csv_str(String, options? : CsvReadOptions) -> DataFrame raise PolarsError
+
 pub fn sum_horizontal(Array[Expr], ignore_nulls? : Bool) -> Expr
 
 pub fn when(Expr) -> When
+
+pub fn write_csv_str(DataFrame, options? : CsvWriteOptions) -> String raise PolarsError
 
 // Errors
 pub(all) suberror PolarsError {
@@ -44,6 +48,7 @@ pub(all) suberror PolarsError {
   InvalidOperation(String)
   ComputeError(String)
   ParseError(String)
+  IOError(String)
 }
 pub fn PolarsError::to_string(Self) -> String
 pub impl Show for PolarsError
@@ -89,6 +94,32 @@ pub(all) enum ConcatHow {
 }
 pub fn ConcatHow::to_string(Self) -> String
 pub impl Show for ConcatHow
+
+#derive(Eq, @debug.Debug)
+pub struct CsvReadOptions {
+  separator : Char
+  has_header : Bool
+  quote_char : Char?
+  null_values : Array[String]
+  schema_overrides : Map[String, DataType]
+  infer_schema_length : Int32?
+  n_rows : Int32?
+  skip_rows : Int32
+  try_parse_dates : Bool
+}
+pub fn CsvReadOptions::new(separator? : Char, has_header? : Bool, quote_char? : Char?, null_values? : Array[String], schema_overrides? : Map[String, DataType], infer_schema_length? : Int32?, n_rows? : Int32, skip_rows? : Int32, try_parse_dates? : Bool) -> Self
+
+#derive(Eq, @debug.Debug)
+pub struct CsvWriteOptions {
+  include_header : Bool
+  separator : Char
+  line_terminator : String
+  quote_char : Char
+  quote_style : QuoteStyle
+  null_value : String
+  include_bom : Bool
+}
+pub fn CsvWriteOptions::new(include_header? : Bool, separator? : Char, line_terminator? : String, quote_char? : Char, quote_style? : QuoteStyle, null_value? : String, include_bom? : Bool) -> Self
 
 type DataFrame
 pub fn DataFrame::column(Self, String) -> Series raise PolarsError
@@ -326,6 +357,16 @@ pub(all) enum QuantileMethod {
 }
 pub fn QuantileMethod::to_string(Self) -> String
 pub impl Show for QuantileMethod
+
+#derive(Eq, @debug.Debug)
+pub(all) enum QuoteStyle {
+  Necessary
+  Always
+  NonNumeric
+  Never
+}
+pub fn QuoteStyle::to_string(Self) -> String
+pub impl Show for QuoteStyle
 
 #derive(Eq, @debug.Debug)
 pub(all) enum RankMethod {

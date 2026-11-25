@@ -14,10 +14,11 @@ test "error show for every variant" {
     InvalidOperation("m5"),
     ComputeError("m6"),
     ParseError("m7"),
+    IOError("m8"),
   ]
   let expected = [
     "DuplicateColumn: m1", "SchemaMismatch: m2", "ShapeMismatch: m3", "OutOfBounds: m4",
-    "InvalidOperation: m5", "ComputeError: m6", "ParseError: m7",
+    "InvalidOperation: m5", "ComputeError: m6", "ParseError: m7", "IOError: m8",
   ]
   for i in 0..<errs.length() {
     assert_eq(Show::to_string(errs[i]), expected[i])

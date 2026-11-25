@@ -1,0 +1,18 @@
+import {
+  "moonbitlang/core/encoding/utf8",
+  "moonbitlang/x/fs" @xfs,
+  "smallbearrr/pandas/pl",
+}
+
+import {
+  "smallbearrr/pandas/pl/fs" @plfs,
+} for "test"
+
+options(
+  targets: {
+    "backend_native_test.mbt": [ "native" ],
+    "backend_js_test.mbt": [ "js" ],
+    "backend_wasm_test.mbt": [ "wasm" ],
+    "backend_wasm_gc_test.mbt": [ "wasm-gc" ],
+  },
+)

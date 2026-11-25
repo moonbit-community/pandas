@@ -19,8 +19,9 @@ follows [polars](https://pola.rs) instead of pandas, so a few ideas change:
   NaN and ordering rules follow polars.
 - **One error type.** Every fallible call is `raise PolarsError` with the
   variants `ColumnNotFound`, `DuplicateColumn`, `SchemaMismatch`,
-  `ShapeMismatch`, `OutOfBounds`, `InvalidOperation`, `ComputeError` and
-  `ParseError`. User errors never abort.
+  `ShapeMismatch`, `OutOfBounds`, `InvalidOperation`, `ComputeError`,
+  `ParseError` and `IOError` (file system errors from `@plfs`). User errors
+  never abort.
 - **Abstract types.** `Series`, `DataFrame` and `Expr` have no public fields.
 
 Status words used below:
@@ -29,7 +30,6 @@ Status words used below:
 | --- | --- |
 | Available | Same idea, same or very similar name; differences are noted. |
 | Changed | Available under a different shape (immutable result, other name, other arguments). |
-| M4 | Arrives with CSV input and output (M4). |
 | Not provided | Intentionally absent; see [Not provided on purpose](#not-provided-on-purpose). |
 
 Examples assume `using @pl { col, lit_int, lit_float, lit_str, lit_bool }` or
@@ -57,7 +57,7 @@ the `@pl.` prefix.
 | `DataFrame::dtypes` | Changed | returns `Array[DataType]` (the old one returned strings); `DataType::to_string()` gives the name |
 | `DataFrame::fill_null` | Changed | value: `df.fill_null(lit_int(0))` (an `Expr`; `Series::fill_null` takes an `AnyValue`, see [Operations](#operations)); strategy: `df.fill_null_strategy(Forward, limit=2)` with the `FillStrategy` enum (`Forward`, `Backward`, `Min`, `Max`, `Mean`, `Zero`, `One`) instead of strings |
 | `DataFrame::filter` | Changed | takes an expression, not a closure: `df.filter(col("a").gt(lit_int(1)))` |
-| `DataFrame::from_NyaCSV` | M4 | `@pl.read_csv_str` |
+| `DataFrame::from_NyaCSV` | Changed | `@pl.read_csv_str(text, options=CsvReadOptions::new(...))` parses CSV text, not an already parsed `@NyaCSV.CSV` (`@pl` does not depend on NyaCSV): call `csv.to_string()` first, or pass the original text. It infers `Int64`, `Float64`, `Boolean` and `String` (the old one inferred `Int32`, `Float32`, `Bool`, `String`), reads quoted fields, null versus empty string, and has options for the separator, header, null texts, column types, row limits and dates. See [CSV](#csv-m4) |
 | `DataFrame::gather_every` | Available | `df.gather_every(n, offset=0)`; raises `InvalidOperation` for `n = 0` as polars does |
 | `DataFrame::get_column_index` | Changed | returns `Int32?` (`None` when the column does not exist) instead of raising |
 | `DataFrame::has_nulls` | Changed | `df.null_count()` is a one-row frame of per-column null counts |
@@ -74,7 +74,7 @@ the `@pl.` prefix.
 | `DataFrame::null_count` | Available | `df.null_count()`, one row of `Int64` counts |
 | `DataFrame::op_get` | Changed | `df.slice(i, length=1)` is a one-row frame; `df.row(i)` is `Array[AnyValue]`. Negative `i` counts from the end |
 | `DataFrame::product` | Changed | `df.select([all().product()])` |
-| `DataFrame::read_csv` | M4 | `@plfs.read_csv` |
+| `DataFrame::read_csv` | Changed | `@plfs.read_csv(path, options=CsvReadOptions::new(...))`, from the file package `smallbearrr/pandas/pl/fs` (add it to `moon.pkg`). There is no `.csv` suffix check (the old `NotCSVFile`) and no `PathNotFound`: a missing file raises `PolarsError::IOError(msg)` (`msg` is the operating system's text, with the path); a file that is not UTF-8 raises `ParseError("invalid utf-8 sequence")`. The function raises `PolarsError`, so no import of `moonbitlang/x` is needed |
 | `DataFrame::rename` | Changed | `df.rename({"old": "new"})` takes a `Map` and returns a new frame |
 | `DataFrame::replace_column` | Changed | `df.with_columns([expr.alias(name)])` replaces a column in place of its position; `df.drop([name]).hstack([series])` appends the series instead |
 | `DataFrame::reverse` | Changed | `df.select([all().reverse()])` |
@@ -87,7 +87,7 @@ the `@pl.` prefix.
 | `DataFrame::sum` | Changed | `df.select([all().sum()])` (numeric columns; pick with `cols([...])`) |
 | `DataFrame::sum_horizontal` | Changed | `df.select([sum_horizontal([col("a"), col("b")])])`; nulls count as zero unless `ignore_nulls=false` |
 | `DataFrame::tail` | Changed | `df.tail(n=5)` (default 5 as in polars; the old `tail(n)` had no default). `Series::tail` defaults to 10 (polars) |
-| `DataFrame::to_NyaCSV` | M4 | `@pl.write_csv_str` |
+| `DataFrame::to_NyaCSV` | Changed | `@pl.write_csv_str(df, options=CsvWriteOptions::new(...))` returns the CSV text (a `String`), not a `@NyaCSV.CSV`; `has_header~` is `include_header~`. See [CSV](#csv-m4) |
 | `DataFrame::to_dict` | Changed | `df.to_dict()` returns `Map[String, Series]`, the columns by name (always the series; use `Series::to_list` for values) |
 | `DataFrame::to_init_repr` | Not provided | printing is `df.to_string()` / `println(df)` (polars-style table) |
 | `DataFrame::to_series` | Changed | `df.get_columns()[i]` by position, `df.column(name)` by name |
@@ -96,7 +96,7 @@ the `@pl.` prefix.
 | `DataFrame::vstack` | Changed | `df.vstack(other)` returns a new frame and copies all the data on every call; use `concat([a, b, c], how=Vertical)` once for many frames, not `vstack` in a loop |
 | `DataFrame::width` | Available | `df.width()` |
 | `DataFrame::with_row_index` | Changed | `df.with_row_index(name="index", offset=0)`; the column is `Int64` |
-| `DataFrame::write_csv` | M4 | `@plfs.write_csv` |
+| `DataFrame::write_csv` | Changed | `@plfs.write_csv(df, path, options=CsvWriteOptions::new(...))` creates the file when it does not exist (the old one required it to exist: `PathNotFound`) and replaces its content when it does; the directory must exist (`IOError`). `has_header~` is `include_header~`. Raises `PolarsError`; a string with a lone surrogate raises `ComputeError` and the file is not touched |
 | `impl Hash for DataFrame` | Not provided | compare with `df.equals(other)` or `==` |
 | `impl Show for DataFrame` | Changed | `Show` prints a polars-style table with `shape`, dtype row and folded rows |
 | `DataFrame` (the struct and its fields `data`, `shape`, `index`) | Changed | abstract type; use `get_columns()`, `shape()`, `get_column_index(name)` |
@@ -228,7 +228,8 @@ The old package already offered some of these polars functions; the rest arrived
 | `group_by`, `agg`, `over` | Available | `df.group_by([col("k")]).agg([...])`, `expr.over([col("k")])` |
 | `join` | Available | `df.join(other, on=[col("k")], how=Inner)` with `JoinHow` `Inner`, `Left`, `Right`, `Full`, `Semi`, `Anti`, `Cross` |
 | `explode` | Not provided | needs a `List` type, which this package does not have |
-| `read_csv`, `write_csv` | M4 | `@pl.read_csv_str`, `@pl.write_csv_str`, `@plfs.read_csv`, `@plfs.write_csv` |
+| `read_csv`, `write_csv` | Available | `@pl.read_csv_str`, `@pl.write_csv_str` for text (all backends), `@plfs.read_csv`, `@plfs.write_csv` for files; options are structs, see [CSV](#csv-m4) |
+| `read_ndjson`, `write_ndjson`, `scan_csv` | Not provided | ndjson may come later; everything is eager, so there is no `scan_csv` |
 
 ### Grouping, joining and reshaping (new in M3)
 
@@ -285,10 +286,10 @@ because MoonBit does not allow it or the repository has a convention:
 ## Differences from polars
 
 `@pl` takes polars 2.1.0 as the reference and checks itself against about
-20,700 recorded polars results (`docs/golden/*.json`; each case names the
+22,700 recorded polars results (`docs/golden/*.json`; each case names the
 polars call that produced it). The cases where the two disagree are listed
 here. The long form, with the exact inputs, is in `docs/golden/known-diffs/`
-(the files for `group_by`, `join`, `expr_shape`, `window`, `reshape` and
+(the files for `group_by`, `join`, `expr_shape`, `window`, `reshape`, `csv_read`, `csv_write` and
 `date_parse` are in English; the earlier ones are still in Chinese) and in the
 "已知差异" section of `docs/golden/README.md`.
 
@@ -676,6 +677,97 @@ Details and exact inputs: [`group_by.md`](golden/known-diffs/group_by.md),
 - **Dates from text.** There is no `String` to `Date` cast (as in polars);
   use `str().to_date()` and `str().to_datetime()` (see the casting entry
   above).
+
+### CSV (M4)
+
+`read_csv_str`, `write_csv_str` and the file functions of the package
+`smallbearrr/pandas/pl/fs` (`@plfs.read_csv`, `@plfs.write_csv`) are checked
+against polars 2.1.0 on 1,538 reading cases and 165 writing cases. Details and
+exact inputs: [`csv_read.md`](golden/known-diffs/csv_read.md) and
+[`csv_write.md`](golden/known-diffs/csv_write.md); examples are in the "CSV"
+section of `src/pl/README.mbt.md`.
+
+Reading (`pl.read_csv`):
+
+- **Errors are `ParseError`** (a bad value, a record with too many fields, an
+  unclosed quote, text after a closing quote, empty input) with polars' first
+  message line followed by ` at line N`; polars raises `ComputeError` or
+  `NoDataError`. Bad options are `InvalidOperation` (polars: `ValueError`).
+- **Integers beyond `Int64` follow polars, except where polars gives
+  `Int128`** (the library does not have it): there the column is a `String`,
+  with the text kept exactly. With float-shaped values and no small integer the
+  column is `Float64`, and with a small integer as well a `String`, as in polars.
+  For floats from big integers use `schema_overrides={"id": Float64}`.
+- **A letter as `quote_char`** can differ: with `quote_char=Some('N')` polars reads
+  `NNaNN` as `NaN`, the library raises `ParseError`.
+- **Option errors** are `InvalidOperation` with the same texts as the writer:
+  `separator must not be a line break (LF or CR)`, `quote_char must not be a
+  line break (LF or CR)`, `separator and quote_char must differ, got '<c>'`,
+  and `n_rows must not be negative, got <n>` (also `skip_rows`,
+  `infer_schema_length`).
+- **Only an empty field is null**, and the types come from the first 100
+  records (as in polars). A bad value after that is a `ParseError`; use
+  `infer_schema_length=None`, `schema_overrides` or `null_values`.
+- **`try_parse_dates` has no `format` option**: day first is tried before
+  month first (`01/02/2024` is 1 February), and a column that also holds
+  `03/13/2024` stays a `String`.
+- **A file that is not valid UTF-8** is a `ParseError("invalid utf-8 sequence")`
+  wherever the bad byte is. polars also raises for a bad byte in a value; it is
+  lenient only in the header (U+FFFD in the name) and in rows skipped by
+  `skip_rows` (ignored), where the library raises.
+- **`try_parse_dates` is an option, default `false`**, as in polars: without it
+  `2024-01-02` is a `String`. With it, dates and datetimes without a time zone
+  are read; texts with an offset and bare times stay `String`, and a `Datetime`
+  override on a text with an offset is a `ParseError` (polars converts it to
+  UTC).
+- **`separator` and `quote_char` are `Char`s** of any width (polars: one byte).
+  A quote inside an unquoted field is an ordinary character (polars reports
+  "CSV malformed" when the quotes are odd in number).
+- **`n_rows` stops reading early**: the scan ends after `max(n_rows,
+  infer_schema_length)` records, so an error later in the file is not seen
+  (polars parses a whole chunk and can raise it).
+- **Options that do not exist**: `null_values` per column (a dictionary), types
+  by position, `comment_prefix`, `truncate_ragged_lines`, `eol_char`,
+  `decimal_comma`, `columns`, `new_columns`, `ignore_errors`, `raise_if_empty`,
+  `skip_rows_after_header`, `encoding`, and the types the library does not have
+  (unsigned and small integers, `Time`, `Decimal`, `Categorical`).
+
+Writing (`DataFrame.write_csv`):
+
+- **A field that contains the separator is always quoted**, numbers, booleans
+  and dates included (polars writes those as they are, which breaks the row
+  for a separator such as `.` or `-`). It differs from polars only for
+  separators that can occur in such text.
+- **Seven options**: `include_header`, `separator`, `line_terminator`,
+  `quote_char`, `quote_style` (`Necessary`, `Always`, `NonNumeric`, `Never`),
+  `null_value`, `include_bom`. Not available: `float_precision`,
+  `float_scientific`, `decimal_comma`, `date_format`, `datetime_format`,
+  `time_format`, `batch_size`, `compression`. Floats are written in the
+  shortest form that reads back exactly.
+- **Bad options are `InvalidOperation`**: a separator or quote that is a line
+  break, or the same character for both. polars accepts them and writes
+  unreadable text.
+- **A `Date` more than 110,000,000 days from 1970 raises `ComputeError`**
+  (polars panics beyond about 96 million days).
+
+Files (`@plfs`): `read_csv` and `write_csv` raise `PolarsError`: `IOError(msg)`
+for the file system (`msg` is the operating system's text, with the path;
+`e.to_string()` is `IOError: <msg>`), `ParseError` and `InvalidOperation` for
+the text and the options. A file that is not valid UTF-8 is
+`ParseError("invalid utf-8 sequence")`. `write_csv` raises `ComputeError` for a
+string with a lone surrogate and leaves the file alone. The package works on
+all four backends; on js, Node has to load the output as an ES module, or the
+program sets `link: { "js": { "format": "cjs" } }` in its `moon.pkg`.
+
+Round trips: `read_csv_str(write_csv_str(df))` returns `df` only when
+`schema_overrides` gives every column its type (as `pl.read_csv` of
+`write_csv` does): a string `"007"` reads back as `Int64`, `Int32` as `Int64`,
+`Float32` as `Float64`, `Date` and `Datetime` as `String` without
+`try_parse_dates`, `Null` and all-null columns as `String`. The reader accepts
+years -262143 to 262142, so a `Date` or `Datetime` beyond that is written but
+cannot be read back.
+
+ndjson (`read_ndjson`, `write_ndjson`) is not provided yet; it may come later.
 
 ### Things you may notice that are not differences
 

@@ -713,6 +713,7 @@ fn GroupLeaves::fix_error(self : GroupLeaves, e : PolarsError) -> PolarsError {
     InvalidOperation(m) => InvalidOperation(fix(m))
     ComputeError(m) => ComputeError(fix(m))
     ParseError(m) => ParseError(fix(m))
+    IOError(m) => IOError(fix(m))
   }
 }
 
